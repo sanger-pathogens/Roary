@@ -1,0 +1,3 @@
+#!/usr/bin/env perl
+system("touch results.out");
+1;
