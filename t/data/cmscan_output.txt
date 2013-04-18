@@ -1,0 +1,18 @@
+#target name         accession query name           accession mdl mdl from   mdl to seq from   seq to strand trunc pass   gc  bias  score   E-value inc description of target
+#------------------- --------- -------------------- --------- --- -------- -------- -------- -------- ------ ----- ---- ---- ----- ------ --------- --- ---------------------
+RNaseP_bact_a        RF00010   Z123_00215          -          cm        1      367        1      360      +    no    1 0.61  17.9  279.3   1.8e-96 !   -
+RNaseP_arch          RF00373   Z123_00215          -          cm        1      289        8      357      +    no    1 0.60  15.9   45.4   3.6e-14 !   -
+NrrF                 RF01416   Z123_00341          -          cm      124      160      159      123      -    5'    2 0.57   0.1   37.3   3.4e-08 !   -
+6S                   RF00013   Z123_00358          -          cm        1      188        1      180      +    no    1 0.58   0.6   60.9   8.5e-14 !   -
+cspA                 RF01766   Z123_00215          -          cm       79      428        1      419      +    5'    2 0.43   2.6   74.5   2.4e-23 !   -
+PreQ1                RF00522   Z123_02089          -          cm        1       45        1       45      +    no    1 0.49   1.7   47.5     6e-12 !   -
+#
+# Program:         cmscan
+# Version:         1.1rc2 (December 2012)
+# Pipeline mode:   SCAN
+# Query file:      bases
+# Target file:     /path/to/dbs
+# Option settings: cmscan -o /dev/null --tblout /dev/stdout --noali -E 1E-6 --cpu 1/path/to/dbs bases 
+# Current dir:     /path/to/cur/dir
+# Date:            Mon Jan 1 00:00:00 2123
+# [ok]
