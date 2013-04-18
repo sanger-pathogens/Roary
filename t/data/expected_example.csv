@@ -1,0 +1,6 @@
+"File","speH","hly","arcC1","yfnB","argF","another_argF","another_hly","another_yfnB","another_arcC1","another_speH"
+"t/data/example_annotation.gff","1","1","1","1","1","0","0","0","0","0"
+"t/data/empty_annotation.gff","0","0","0","0","0","0","0","0","0","0"
+"t/data/copy_of_example_annotation.gff","1","1","1","1","1","0","0","0","0","0"
+"t/data/different_to_example_annotation.gff","0","0","0","0","0","1","1","1","1","1"
+"% Total","0.5","0.5","0.5","0.5","0.5","0.25","0.25","0.25","0.25","0.25"

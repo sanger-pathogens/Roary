@@ -1,0 +1,5 @@
+#!/usr/bin/env perl
+system("touch output");
+system("touch output.clstr");
+system("touch output.bak.clstr");
+1;

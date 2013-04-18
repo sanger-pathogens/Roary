@@ -1,0 +1,5 @@
+#!/usr/bin/env perl
+system("touch output_contigs.phr");
+system("touch output_contigs.pin");
+system("touch output_contigs.psq");
+1;
