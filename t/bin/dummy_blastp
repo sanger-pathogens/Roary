@@ -6,7 +6,5 @@ GetOptions(
     'o|output=s' => \$output_filename
 );
 
-
-system("touch results.out");
 system("touch $output_filename");
 1;

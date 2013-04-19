@@ -1,5 +1,16 @@
 #!/usr/bin/env perl
-system("touch output_contigs.phr");
-system("touch output_contigs.pin");
-system("touch output_contigs.psq");
+use Moose;
+use Getopt::Long;
+my($output_filename,$dbtype,$in,$logfile);
+GetOptions(
+    'o|out=s' => \$output_filename,
+    'd|dbtype=s' => \$dbtype,
+    'l|logfile=s' => \$logfile,
+    'i|in=s' => \$in,
+);
+
+system("touch $output_filename.phr");
+system("touch $output_filename.pin");
+system("touch $output_filename.psq");
+
 1;
