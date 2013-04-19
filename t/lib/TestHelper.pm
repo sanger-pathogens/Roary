@@ -27,7 +27,7 @@ sub mock_execute_script_and_check_output {
             my $expected_output_file_name = $scripts_and_expected_files->{$script_parameters}->[1];
             ok(-e $actual_output_file_name, "Actual output file exists $actual_output_file_name");
             is(read_file($actual_output_file_name), read_file($expected_output_file_name), "Actual and expected output match for '$script_parameters'");
-            #unlink($actual_output_file_name);
+            unlink($actual_output_file_name);
         }
         #close STDOUT;
         #close STDERR;
