@@ -20,7 +20,7 @@ ok($obj = Bio::PanGenome::External::Blastp->new(
   exec            => $cwd.'/t/bin/dummy_blastp',
 ),'initialise object');
 
-is($obj->_command_to_run, $cwd.'/t/bin/dummy_blastp -query t/data/some_fasta_file.fa -db some_blast_database -evalue 1e-06 -num_threads 1 -out results.out -num_descriptions 1 -num_alignments 1 2> /dev/null', 'Command constructed as expected');
+is($obj->_command_to_run, $cwd.'/t/bin/dummy_blastp -query t/data/some_fasta_file.fa -db some_blast_database -evalue 1e-06 -num_threads 1 -out results.out -m8 -num_descriptions 1 -num_alignments 1 2> /dev/null', 'Command constructed as expected');
 ok($obj->run(), 'run dummy command');
 unlink('results.out');
 

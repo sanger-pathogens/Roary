@@ -46,6 +46,7 @@ sub _command_to_run {
             '-evalue', $self->_evalue,
             '-num_threads', $self->_num_threads,
             '-out', $self->output_file,
+            '-m8',
             '-num_descriptions', $self->_num_descriptions,
             '-num_alignments', $self->_num_alignments,
             $self->_logging
