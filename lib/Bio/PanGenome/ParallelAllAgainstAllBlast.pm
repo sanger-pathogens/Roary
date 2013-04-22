@@ -93,7 +93,7 @@ sub _combine_blast_results {
 sub _build__memory_required_in_mb
 {
   my ($self) = @_;
-  my $filename = join('.',($self->_blast_database, 'psq'));
+  my $filename = $self->fasta_file;
   my $file_size = 1000;
   if(-e $filename)
   {
