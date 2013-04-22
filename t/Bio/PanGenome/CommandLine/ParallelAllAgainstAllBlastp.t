@@ -19,7 +19,7 @@ my $cwd = getcwd();
 my %scripts_and_expected_files = (
     '-m '.$cwd.'/t/bin/dummy_makeblastdb -b '.$cwd.'/t/bin/dummy_blastp -j Local t/data/example_1.faa' =>
       [ 'blast_results', 't/data/empty_file' ],
-    '-o different_output_filename -m '.$cwd.'/t/bin/dummy_makeblastdb -b '.$cwd.'/t/bin/dummy_blastp -j Local t/data/example_1.faa' =>
+   '-o different_output_filename -m '.$cwd.'/t/bin/dummy_makeblastdb -b '.$cwd.'/t/bin/dummy_blastp -j Local t/data/example_1.faa' =>
       [ 'different_output_filename', 't/data/empty_file'  ],
 );
 

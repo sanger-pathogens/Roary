@@ -21,7 +21,7 @@ use Bio::PanGenome::Exceptions;
 
 has 'commands_to_run' => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
 has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 500 );
-has 'queue'           => ( is => 'ro', isa => 'Int',             default  => 'normal' );
+has 'queue'           => ( is => 'ro', isa => 'Str',             default  => 'normal' );
 has '_job_manager'    => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
 
 sub _build__job_manager {
@@ -31,7 +31,7 @@ sub _build__job_manager {
 
 sub _generate_memory_parameter {
     my ($self) = @_;
-    return qq["select[mem > $self->memory_in_mb] rusage[mem=$self->memory_in_mb]"];
+    return "select[mem > ".$self->memory_in_mb."] rusage[mem=".$self->memory_in_mb."]";
 }
 
 sub _submit_job {
