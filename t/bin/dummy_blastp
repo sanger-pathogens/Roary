@@ -1,3 +1,10 @@
 #!/usr/bin/env perl
-system("touch results.out");
+use Moose;
+use Getopt::Long;
+my $output_filename;
+GetOptions(
+    'o|output=s' => \$output_filename
+);
+
+system("touch $output_filename");
 1;

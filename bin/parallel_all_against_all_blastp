@@ -1,0 +1,20 @@
+#!/usr/bin/env perl
+
+package Bio::PanGenome::Main::ParallelAllAgainstAllBlastp;
+
+# ABSTRACT: Take in a FASTA file of proteins and blast against itself
+# PODNAME: parallel_all_against_all_blastp
+
+=head1 SYNOPSIS
+
+Take in a FASTA file of proteins and blast against itself
+
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+BEGIN { unshift( @INC, '/software/pathogen/external/lib/site_perl/5.8.8/' ) }
+use Bio::PanGenome::CommandLine::ParallelAllAgainstAllBlastp;
+
+Bio::PanGenome::CommandLine::ParallelAllAgainstAllBlastp->new(args => \@ARGV, script_name => $0)->run;

@@ -11,6 +11,7 @@ Exceptions for input data
 use Exception::Class (
     Bio::PanGenome::Exceptions::FileNotFound   => { description => 'Couldnt open the file' },
     Bio::PanGenome::Exceptions::CouldntWriteToFile   => { description => 'Couldnt open the file for writing' },
+    Bio::PanGenome::Exceptions::LSFJobFailed   => { description => 'Jobs failed' },
 );  
 
 1;
