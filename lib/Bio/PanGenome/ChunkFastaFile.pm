@@ -21,7 +21,7 @@ use Cwd;
 use File::Temp;
 
 has 'fasta_file'          => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'target_chunk_size'   => ( is => 'ro', isa => 'Int',      default => 50000 );
+has 'target_chunk_size'   => ( is => 'ro', isa => 'Int',      default => 100000 );
 has 'sequence_file_names' => ( is => 'ro', isa => 'ArrayRef', lazy     => 1, builder => '_build_sequence_file_names' );
 has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
