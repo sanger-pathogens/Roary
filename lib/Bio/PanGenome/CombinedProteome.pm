@@ -23,6 +23,7 @@ use Bio::PanGenome::Exceptions;
 has 'proteome_files'                 => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'output_filename'                => ( is => 'ro', isa => 'Str',      default  => 'combined_output.fa' );
 has 'maximum_percentage_of_unknowns' => ( is => 'ro', isa => 'Num',      default  => 5 );
+has 'apply_unknowns_filter'          => ( is => 'ro', isa => 'Bool',     default  => 1 );
 
 has 'number_of_sequences_ignored'    => ( is => 'rw', isa => 'Int',      default  => 0 );
 has 'number_of_sequences_seen'       => ( is => 'rw', isa => 'Int',      default  => 0 );

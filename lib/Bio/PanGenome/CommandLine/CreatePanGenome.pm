@@ -86,11 +86,6 @@ sub run {
    );
    $blastp_obj->run();
 
-   print "Create GG file:\n";
-   my $ggfile = Bio::PanGenome::GGFile->new(
-     fasta_file   => 'clustered.faa'
-   );
-   $ggfile->create_gg_file;
 }
 
 sub usage_text {
