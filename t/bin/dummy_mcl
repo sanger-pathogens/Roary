@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+use Moose;
+use Getopt::Long;
+my ($output_filename,$abc_format,$inflation);
+GetOptions(
+    'o|output=s' => \$output_filename,
+    'i|inflation=s' => \$inflation,
+    'a|abc'         => \$abc_format
+);
+
+system("touch $output_filename");
+1;
