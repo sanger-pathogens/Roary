@@ -1,46 +1,58 @@
 package Bio::PanGenome::CommandLine::CreatePanGenome;
 
-# ABSTRACT: Create a pan genome from a set of proteins in a FASTA file
+# ABSTRACT: Take in FASTA files of proteins and cluster them
 
 =head1 SYNOPSIS
 
-Create a pan genome from a set of proteins in a FASTA file
+Take in FASTA files of proteins and cluster them
 
 =cut
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::CombinedProteome;
-use Bio::PanGenome::External::Cdhit;
-use Bio::PanGenome::External::Makeblastdb;
-use Bio::PanGenome::External::Blastp;
-use Bio::PanGenome::GGFile;
+use Bio::PanGenome;
 
-has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
-has 'fasta_files'     => ( is => 'rw', isa => 'ArrayRef' );
-has 'output_filename' => ( is => 'rw', isa => 'Str' );
+has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'script_name'       => ( is => 'ro', isa => 'Str',      required => 1 );
+has 'help'              => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
-has '_error_message' => ( is => 'rw', isa => 'Str' );
+has 'fasta_files'       => ( is => 'rw', isa => 'ArrayRef' );
+has 'output_filename'   => ( is => 'rw', isa => 'Str', default => 'clustered_proteins' );
+has 'job_runner'        => ( is => 'rw', isa => 'Str', default => 'LSF' );
+has 'makeblastdb_exec'  => ( is => 'rw', isa => 'Str', default => 'makeblastdb' );
+has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
+has 'mcxdeblast_exec'   => ( is => 'ro', isa => 'Str', default => 'mcxdeblast' );
+has 'mcl_exec'          => ( is => 'ro', isa => 'Str', default => 'mcl' );
+
+has '_error_message'    => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $help );
+    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $help );
 
     GetOptionsFromArray(
         $self->args,
-        'o|output=s' => \$output_filename,
-        'h|help'     => \$help,
+        'o|output=s'           => \$output_filename,
+        'j|job_runner=s'       => \$job_runner,
+        'm|makeblastdb_exec=s' => \$makeblastdb_exec,
+        'b|blastp_exec=s'      => \$blastp_exec,
+        'd|mcxdeblast_exec'    => \$mcxdeblast_exec,
+        'c|mcl_exec'           => \$mcl_exec,
+        'h|help'               => \$help,
     );
-
-    $self->output_filename($output_filename) if ( defined($output_filename) );
-
+    
     if ( @{ $self->args } == 0 ) {
-        $self->_error_message("Error: You need to provide at least 1 FASTA file");
+        $self->_error_message("Error: You need to provide a FASTA file");
     }
+
+    $self->output_filename($output_filename)   if ( defined($output_filename) );
+    $self->job_runner($job_runner)             if ( defined($job_runner) );
+    $self->makeblastdb_exec($makeblastdb_exec) if ( defined($makeblastdb_exec) );
+    $self->blastp_exec($blastp_exec)           if ( defined($blastp_exec) );
+    $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
+    $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -60,32 +72,15 @@ sub run {
         print $self->_error_message . "\n";
         die $self->usage_text;
     }
-
-    my $combined_proteome_obj = Bio::PanGenome::CombinedProteome->new(
-          proteome_files  => $self->fasta_files,
-          output_filename => 'combined_proteome.faa'
+    
+    my $pan_genome_obj = Bio::PanGenome->new(
+        fasta_files      => $self->fasta_files,
+        output_filename  => $self->output_filename,
+        job_runner       => $self->job_runner,
+        makeblastdb_exec => $self->makeblastdb_exec,
+        blastp_exec      => $self->blastp_exec
       );
-   $combined_proteome_obj->create_combined_proteome_file;
-   print "Created combined file:\n";
-   my $percentage_sequences_ignored = (($combined_proteome_obj->number_of_sequences_ignored/$combined_proteome_obj->number_of_sequences_seen)*100);
-   print $percentage_sequences_ignored."  percent of sequences ignored\n";
-   
-   print "Clustering the data:\n";
-   my $cdhit_obj = Bio::PanGenome::External::Cdhit->new( input_file   => 'combined_proteome.faa', output_base  => 'clustered.faa');
-   $cdhit_obj->run();
-   
-   print "Creating a blast database:\n";
-   my $blast_database= Bio::PanGenome::External::Makeblastdb->new(fasta_file => 'clustered.faa');
-   $blast_database->run();
-   
-   print "Blasting all against all:\n";
-   my $blastp_obj =  Bio::PanGenome::External::Blastp->new(
-     fasta_file     => 'clustered.faa',
-     blast_database => $blast_database->output_database,
-     output_file    => 'results.out'
-   );
-   $blastp_obj->run();
-
+    $pan_genome_obj->run();
 }
 
 sub usage_text {
@@ -93,13 +88,13 @@ sub usage_text {
 
     return <<USAGE;
     Usage: create_pan_geneome [options]
-    Create a pan genome from a set of proteins in a FASTA file
-
-    # Create a pan genome from some FASTA files
-    create_pan_geneome *.faa
+    Take in FASTA files of proteins and cluster them
+    
+    # Take in FASTA files of proteins and cluster them
+    create_pan_geneome example.faa
     
     # Provide an output filename
-    create_pan_geneome -o outputfile.faa *.faa
+    create_pan_geneome -o results *.faa
 
     # This help message
     create_pan_geneome -h
