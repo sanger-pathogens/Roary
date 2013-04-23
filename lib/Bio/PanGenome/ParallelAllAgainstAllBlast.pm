@@ -19,6 +19,7 @@ use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::ChunkFastaFile;
 use Bio::PanGenome::External::Makeblastdb;
 use Bio::PanGenome::External::Blastp;
+use Bio::PanGenome::JobRunner::LSF;
 use Cwd;
 use File::Temp;
 use File::Basename;
@@ -99,7 +100,7 @@ sub _build__memory_required_in_mb
   {
     $file_size = -s $filename;
     $file_size *=10;
-    $file_size = int($file_size/100000);
+    $file_size = int($file_size/1000000);
     $file_size = 100 if($file_size < 100);
   }
 
