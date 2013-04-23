@@ -28,6 +28,12 @@ has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 0
 has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 0.99 );
 has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 
+sub clusters_filename
+{
+  my ($self) = @_;
+  return join('.',($self->output_base,'clstr'));
+}
+
 sub _command_to_run {
     my ($self) = @_;
     return join(
