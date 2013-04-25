@@ -26,8 +26,8 @@ has 'mcl_exec'         => ( is => 'ro', isa => 'Str', default => 'mcl' );
 sub run {
     my ($self) = @_;
 
-    my $output_combined_filename      = 'combined_files.faa';
-    my $output_cd_hit_filename        = 'clustered.faa';
+    my $output_combined_filename      = 'combined_files';
+    my $output_cd_hit_filename        = 'clustered';
     my $output_blast_results_filename = 'blast_results';
     my $output_mcl_filename           = 'uninflated_mcl_groups';
 

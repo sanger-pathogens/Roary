@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::CreatePanGenome;
+package Bio::PanGenome::CommandLine::PlotPanGenomeGroups;
 
 # ABSTRACT: Take in the groups file and output some summary plots
 
@@ -45,7 +45,7 @@ sub BUILD {
      }
      else
      {
-       $self->_error_message("Error: Cant access the groups file $filename");
+       $self->_error_message("Error: Cant access the groups file $groups_filename");
      }
 
     for my $filename ( @{ $self->args } ) {

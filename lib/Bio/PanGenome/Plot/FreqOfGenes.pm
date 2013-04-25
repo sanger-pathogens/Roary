@@ -66,9 +66,8 @@ sub create_plot {
     $def->range_axis->baseline(0);
     $def->range_axis->label('%');
     $def->domain_axis->format('%d');
-    $def->domain_axis->fudge_amount(.3);
     $def->domain_axis->label('Number of genes');
-    $def->range_axis->fudge_amount(.1);
+
 
     $cc->write_output( $self->output_filename );
 }

@@ -33,8 +33,9 @@ has '_freq_groups_per_genome' =>
   ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_builder__freq_groups_per_genome' );
 
 sub _builder__number_of_isolates {
-    my ($self) = @_;
-    return @{ $self->fasta_files };
+  my ($self) = @_;
+   my @fasta_files = @{ $self->fasta_files };
+   return $#fasta_files;
 }
 
 sub _builder__number_of_genes_per_file {
