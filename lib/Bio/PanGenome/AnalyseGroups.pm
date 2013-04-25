@@ -99,6 +99,8 @@ sub _builder__freq_groups_per_genome {
     while (<$fh>) {
         chomp;
         my $line                     = $_;
+        # Remove the group name
+        $line  =~ s!^(.+: )?!!;
         my @elements                 = split( /\s+/, $line );
         my $number_of_files_in_group = $self->_count_num_files_in_group( \@elements );
         $number_of_files_in_group = ($number_of_files_in_group*100/$self->_number_of_isolates);
@@ -109,6 +111,10 @@ sub _builder__freq_groups_per_genome {
     my @sorted_group_count = sort { $b <=> $a } @group_count;
     return \@sorted_group_count;
 }
+
+
+
+
 
 sub create_plots {
     my ($self) = @_;

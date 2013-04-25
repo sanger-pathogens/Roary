@@ -31,6 +31,7 @@ sub run {
     my $output_cd_hit_filename        = 'clustered';
     my $output_blast_results_filename = 'blast_results';
     my $output_mcl_filename           = 'uninflated_mcl_groups';
+    my $output_inflate_clusters_filename = 'inflated_mcl_groups';
 
     my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
         proteome_files        => $self->fasta_files,
@@ -65,23 +66,27 @@ sub run {
     my $inflate_clusters = Bio::PanGenome::InflateClusters->new(
       clusters_filename  => $cdhit_obj->clusters_filename,
       mcl_filename       => $output_mcl_filename,
-      output_file        => $self->output_filename
+      output_file        => $output_inflate_clusters_filename
     );
     $inflate_clusters->inflate();
+    
+    my $group_labels = Bio::PanGenome::GroupLabels->new(
+        groups_filename => $output_inflate_clusters_filename,
+        output_filename => $self->output_filename
+    );
+    $group_labels->add_labels();
     
     my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
         fasta_files      => $self->fasta_files,
         groups_filename  => $self->output_filename
-      );
+    );
     $analyse_groups_obj->create_plots();
-    
-    
 
     unlink($output_blast_results_filename);
     unlink($output_combined_filename);
     unlink($output_cd_hit_filename );
     unlink($output_mcl_filename );
-    
+    unlink($output_inflate_clusters_filename);
 }
 
 no Moose;
