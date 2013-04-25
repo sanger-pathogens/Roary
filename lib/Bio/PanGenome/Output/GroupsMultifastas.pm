@@ -27,6 +27,8 @@ has 'output_filename_base' => ( is => 'ro', isa => 'Str',                       
 sub create_files {
     my ($self) = @_;
     for my $group_name ( @{ $self->group_names } ) {
+      # Check the group name exists
+      next unless($self->analyse_groups->_groups_to_genes->{$group_name});    
         my $group_multifasta = Bio::PanGenome::Output::GroupMultifasta->new(
             group_name           => $group_name,
             analyse_groups       => $self->analyse_groups,
