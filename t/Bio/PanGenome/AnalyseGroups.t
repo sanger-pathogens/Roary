@@ -8,11 +8,11 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::PlotGroups');
+    use_ok('Bio::PanGenome::AnalyseGroups');
 }
 
 ok(
-    my $plot_groups_obj = Bio::PanGenome::PlotGroups->new(
+    my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
         fasta_files     => [ 't/data/example_1.faa', 't/data/example_2.faa' ],
         groups_filename => 't/data/example_groups'
     ),

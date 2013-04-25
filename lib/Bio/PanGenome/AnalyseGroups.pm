@@ -1,13 +1,13 @@
-package Bio::PanGenome::PlotGroups;
+package Bio::PanGenome::AnalyseGroups;
 
 # ABSTRACT: Take in a groups file and the original FASTA files and create plots and stats
 
 =head1 SYNOPSIS
 
 Take in a groups file and the original FASTA files and create plots and stats 
-   use Bio::PanGenome::PlotGroups;
+   use Bio::PanGenome::AnalyseGroups;
    
-   my $plot_groups_obj = Bio::PanGenome::PlotGroups->new(
+   my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
        fasta_files      => $fasta_files,
        groups_filename  => $groups_filename,
        output_filename  => $output_filename
@@ -34,8 +34,7 @@ has '_freq_groups_per_genome' =>
 
 sub _builder__number_of_isolates {
   my ($self) = @_;
-   my @fasta_files = @{ $self->fasta_files };
-   return $#fasta_files;
+   return @{ $self->fasta_files };
 }
 
 sub _builder__number_of_genes_per_file {

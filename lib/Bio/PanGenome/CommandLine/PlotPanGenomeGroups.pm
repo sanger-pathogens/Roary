@@ -10,7 +10,7 @@ Take in the groups file and output some summary plots
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::PlotGroups;
+use Bio::PanGenome::AnalyseGroups;
 
 has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'       => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -67,7 +67,7 @@ sub run {
         die $self->usage_text;
     }
     
-    my $plot_groups_obj = Bio::PanGenome::PlotGroups->new(
+    my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
         fasta_files      => $self->fasta_files,
         groups_filename  => $self->groups_filename,
         output_filename  => $self->output_filename

@@ -14,6 +14,7 @@ use Bio::PanGenome::CombinedProteome;
 use Bio::PanGenome::External::Cdhit;
 use Bio::PanGenome::External::Mcl;
 use Bio::PanGenome::InflateClusters;
+use Bio::PanGenome::AnalyseGroups;
 
 has 'fasta_files'      => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename'  => ( is => 'rw', isa => 'Str', default => 'clustered_proteins' );
@@ -67,8 +68,20 @@ sub run {
       output_file        => $self->output_filename
     );
     $inflate_clusters->inflate();
+    
+    my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+        fasta_files      => $self->fasta_files,
+        groups_filename  => $self->output_filename
+      );
+    $analyse_groups_obj->create_plots();
+    
+    
 
-    # Cleanup files
+    unlink($output_blast_results_filename);
+    unlink($output_combined_filename);
+    unlink($output_cd_hit_filename );
+    unlink($output_mcl_filename );
+    
 }
 
 no Moose;
