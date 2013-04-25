@@ -48,6 +48,35 @@ is_deeply(
     'frequency of groups uniqued by genome'
 );
 
+is_deeply(
+    $plot_groups_obj->_groups_to_genes,
+    {
+        'group_3' => [ '1234#10_00005', '1234#10_00005' ],
+        'group_5' => [ '1234#10_00016' ],
+        'group_4' => [ '1234#10_00006', '1234#10_00007' ],
+        'group_6' => [ '1234#10_00017' ],
+        'group_1' => [ '1234#10_00001', '1234#10_00002' ],
+        'group_2' => [ '1234#10_00003', '1234#10_00018', '1234#10_00005' ]
+    },
+    'Groups to genes hash'
+);
+
+is_deeply(
+    $plot_groups_obj->_genes_to_groups,
+    {
+        '1234#10_00003' => 'group_2',
+        '1234#10_00017' => 'group_6',
+        '1234#10_00001' => 'group_1',
+        '1234#10_00016' => 'group_5',
+        '1234#10_00007' => 'group_4',
+        '1234#10_00006' => 'group_4',
+        '1234#10_00018' => 'group_2',
+        '1234#10_00005' => 'group_3',
+        '1234#10_00002' => 'group_1'
+    },
+    'genes to groups hash'
+);
+
 ok( $plot_groups_obj->create_plots, 'Create plots' );
 ok( -e 'freq_of_genes.png',         'plot of freq of genes created' );
 

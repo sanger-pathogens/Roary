@@ -31,10 +31,14 @@ has '_number_of_genes_per_file' =>
 has '_genes_to_file' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__genes_to_file' );
 has '_freq_groups_per_genome' =>
   ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_builder__freq_groups_per_genome' );
+has '_groups_to_genes' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_genes' );
+has '_genes_to_groups' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__genes_to_groups' );
+
+# Fixme: Same files opened multiple times
 
 sub _builder__number_of_isolates {
-  my ($self) = @_;
-   return @{ $self->fasta_files };
+    my ($self) = @_;
+    return @{ $self->fasta_files };
 }
 
 sub _builder__number_of_genes_per_file {
@@ -90,6 +94,47 @@ sub _count_num_files_in_group {
     return @uniq_filenames;
 }
 
+sub _builder__genes_to_groups {
+    my ($self) = @_;
+    my %genes_to_groups;
+
+    open( my $fh, $self->groups_filename )
+      or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
+    while (<$fh>) {
+        chomp;
+        my $line = $_;
+        if ( $line =~ /^(.+): (.+)$/ ) {
+            my $group_name = $1;
+            my $genes      = $2;
+            my @elements   = split( /\s+/, $genes );
+
+            for my $gene (@elements) {
+                $genes_to_groups{$gene} = $group_name;
+            }
+        }
+    }
+    return \%genes_to_groups;
+}
+
+sub _builder__groups_to_genes {
+    my ($self) = @_;
+    my %groups_to_genes;
+
+    open( my $fh, $self->groups_filename )
+      or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
+    while (<$fh>) {
+        chomp;
+        my $line = $_;
+        if ( $line =~ /^(.+): (.+)$/ ) {
+            my $group_name = $1;
+            my $genes      = $2;
+            my @elements   = split( /\s+/, $genes );
+            $groups_to_genes{$group_name} = \@elements;
+        }
+    }
+    return \%groups_to_genes;
+}
+
 sub _builder__freq_groups_per_genome {
     my ($self) = @_;
     my @group_count;
@@ -98,12 +143,13 @@ sub _builder__freq_groups_per_genome {
       or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
     while (<$fh>) {
         chomp;
-        my $line                     = $_;
+        my $line = $_;
+
         # Remove the group name
-        $line  =~ s!^(.+: )?!!;
-        my @elements                 = split( /\s+/, $line );
+        $line =~ s!^(.+: )?!!;
+        my @elements = split( /\s+/, $line );
         my $number_of_files_in_group = $self->_count_num_files_in_group( \@elements );
-        $number_of_files_in_group = ($number_of_files_in_group*100/$self->_number_of_isolates);
+        $number_of_files_in_group = ( $number_of_files_in_group * 100 / $self->_number_of_isolates );
         push( @group_count, $number_of_files_in_group );
 
     }
@@ -112,15 +158,11 @@ sub _builder__freq_groups_per_genome {
     return \@sorted_group_count;
 }
 
-
-
-
-
 sub create_plots {
     my ($self) = @_;
 
     my $plot_groups_obj =
-      Bio::PanGenome::Plot::FreqOfGenes->new( freq_groups_per_genome => $self->_freq_groups_per_genome);
+      Bio::PanGenome::Plot::FreqOfGenes->new( freq_groups_per_genome => $self->_freq_groups_per_genome );
     $plot_groups_obj->create_plot();
 }
 
