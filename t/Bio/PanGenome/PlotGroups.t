@@ -42,6 +42,15 @@ is_deeply(
     'genes map to the correct files'
 );
 
-is_deeply( $plot_groups_obj->_freq_groups_per_genome, [ 2, 1, 1, 1, 1, 1 ], 'frequency of groups uniqued by genome' );
+is_deeply(
+    $plot_groups_obj->_freq_groups_per_genome,
+    [ 100, 50, 50, 50, 50, 50 ],
+    'frequency of groups uniqued by genome'
+);
+
+ok( $plot_groups_obj->create_plots, 'Create plots' );
+ok( -e 'freq_of_genes.png',         'plot of freq of genes created' );
+
+unlink('freq_of_genes.png');
 
 done_testing();
