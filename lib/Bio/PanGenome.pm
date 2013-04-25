@@ -15,6 +15,7 @@ use Bio::PanGenome::External::Cdhit;
 use Bio::PanGenome::External::Mcl;
 use Bio::PanGenome::InflateClusters;
 use Bio::PanGenome::AnalyseGroups;
+use Bio::PanGenome::GroupLabels;
 
 has 'fasta_files'      => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename'  => ( is => 'rw', isa => 'Str', default => 'clustered_proteins' );

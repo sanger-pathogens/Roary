@@ -40,4 +40,6 @@ my %scripts_and_expected_files = (
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
+unlink('pan_genome_results_group_5.fa') if(-e 'pan_genome_results_group_5.fa');
+
 done_testing();
