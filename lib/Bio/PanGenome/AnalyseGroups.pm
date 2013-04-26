@@ -17,7 +17,6 @@ Take in a groups file and the original FASTA files and create plots and stats
 =cut
 
 use Moose;
-use Bio::SeqIO;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::Plot::FreqOfGenes;
 

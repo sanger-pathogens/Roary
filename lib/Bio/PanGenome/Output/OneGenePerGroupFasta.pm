@@ -45,14 +45,17 @@ sub _lookup_sequences {
     {
       $gene_queue{$gene}++;
     }
+    my $gene_params = join(' ', @{$genes});
     
-
-    my $fasta_obj = Bio::SeqIO->new( -file => $filename, -format => 'Fasta' );
+    open(my $fh, '-|', 'fasta_grep -f '.$filename. ' '.$gene_params);
+    my $fasta_obj = Bio::SeqIO->new( -fh => $fh, -format => 'Fasta' );
     while ( my $seq = $fasta_obj->next_seq() ) {
+        last unless(%gene_queue);
         for my $gene ( keys %gene_queue)
         {
           next unless ( $seq->display_id eq $gene );
           push(@sequences, $seq);
+          delete($gene_queue{$gene});
         }
     }
     return \@sequences;

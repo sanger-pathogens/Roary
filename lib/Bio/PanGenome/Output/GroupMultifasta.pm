@@ -43,7 +43,8 @@ sub _build__genes {
 sub _lookup_sequence {
     my ( $self, $gene, $filename ) = @_;
 
-    my $fasta_obj = Bio::SeqIO->new( -file => $filename, -format => 'Fasta' );
+    open(my $fh, '-|', 'fasta_grep -f '.$filename. ' '.$gene);
+    my $fasta_obj = Bio::SeqIO->new( -fh => $fh, -format => 'Fasta' );
     while ( my $seq = $fasta_obj->next_seq() ) {
         next unless ( $seq->display_id eq $gene );
         return $seq;
