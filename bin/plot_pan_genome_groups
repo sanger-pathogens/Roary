@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::PanGenome::Main::PlotPanGenomeGroups;
+
+# ABSTRACT: Take in the groups file and output some summary plots
+# PODNAME: plot_pan_genome_groups
+
+=head1 SYNOPSIS
+
+Take in the groups file and output some summary plots
+
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+use Bio::PanGenome::CommandLine::PlotPanGenomeGroups;
+
+Bio::PanGenome::CommandLine::PlotPanGenomeGroups->new(args => \@ARGV, script_name => $0)->run;

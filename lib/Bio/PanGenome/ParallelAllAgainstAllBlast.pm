@@ -19,7 +19,7 @@ use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::ChunkFastaFile;
 use Bio::PanGenome::External::Makeblastdb;
 use Bio::PanGenome::External::Blastp;
-use Bio::PanGenome::JobRunner::LSF;
+#use Bio::PanGenome::JobRunner::LSF;
 use Cwd;
 use File::Temp;
 use File::Basename;
