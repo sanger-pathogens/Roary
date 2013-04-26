@@ -72,10 +72,13 @@ sub _builder__genes_to_file {
     my ($self) = @_;
     my %genes_to_file;
     for my $filename ( @{ $self->fasta_files } ) {
-        my $fasta_obj = Bio::SeqIO->new( -file => $filename, -format => 'Fasta' );
-        while ( my $seq = $fasta_obj->next_seq() ) {
-            $genes_to_file{ $seq->display_id } = $filename;
-        }
+      open(my $fh, '-|', 'grep \> '.$filename.' | awk \'{print $1}\' | sed \'s/>//\' ');
+      while(<$fh>)
+      {
+        chomp;
+        $genes_to_file{ $_ } = $filename;
+      }
+      close($fh);
     }
     return \%genes_to_file;
 }
