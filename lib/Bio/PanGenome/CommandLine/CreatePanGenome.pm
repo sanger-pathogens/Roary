@@ -79,6 +79,7 @@ sub run {
     );
     
     my $pan_genome_obj = Bio::PanGenome->new(
+        input_files      => $self->fasta_files,
         fasta_files      => $prepare_input_files->fasta_files,
         output_filename  => $self->output_filename,
         job_runner       => $self->job_runner,
