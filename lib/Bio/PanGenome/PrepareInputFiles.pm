@@ -1,0 +1,62 @@
+package Bio::PanGenome::PrepareInputFiles;
+
+# ABSTRACT: Take in a mixture of FASTA and GFF input files and output FASTA proteomes only
+
+=head1 SYNOPSIS
+
+Take in a mixture of FASTA and GFF input files and output FASTA proteomes only
+   use Bio::PanGenome::PrepareInputFiles;
+   
+   my $obj = Bio::PanGenome::PrepareInputFiles->new(
+     input_files   => ['abc.gff','ddd.faa'],
+   );
+   $obj->fasta_files;
+
+=cut
+
+use Moose;
+use Bio::PanGenome::Exceptions;
+use Bio::PanGenome::ExtractProteomeFromGFF;
+use Cwd;
+
+has 'input_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has '_input_gff_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__input_gff_files' );
+has '_input_fasta_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__input_fasta_files' );
+has '_derived_fasta_files' =>
+  ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__derived_fasta_files' );
+has '_extract_proteome_obj' =>
+  ( is => 'ro', isa => 'Bio::PanGenome::ExtractProteomeFromGFF', lazy => 1, builder => '_build__extract_proteome_obj' );
+
+sub _build__input_gff_files {
+    my ($self) = @_;
+    my @gff_files = grep( /\.gff$/, @{ $self->input_files } );
+    return \@gff_files;
+}
+
+sub _build__input_fasta_files {
+    my ($self) = @_;
+    my @fasta_files = grep( !/\.gff$/, @{ $self->input_files } );
+    return \@fasta_files;
+}
+
+sub _build__extract_proteome_obj {
+    my ($self) = @_;
+    return Bio::PanGenome::ExtractProteomeFromGFF->new( gff_files => $self->_input_gff_files );
+}
+
+sub _build__derived_fasta_files {
+    my ($self) = @_;
+    return undef if ( !defined( $self->_input_gff_files ) );
+    return $self->_extract_proteome_obj->fasta_files();
+}
+
+sub fasta_files {
+    my ($self) = @_;
+    my @output_fasta_files = ( @{ $self->_input_fasta_files }, @{ $self->_derived_fasta_files } );
+    return \@output_fasta_files;
+}
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
+
+1;
