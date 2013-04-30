@@ -38,9 +38,8 @@ sub _build__working_directory_name {
 }
 
 sub _gff_parser {
-    my ( $self, $filename ) = @_;
-    # $self->_awk_filter .
-    open( my $fh, '-|',  "cat  " . $filename ) or die "Couldnt open GFF file";
+    my ( $self, $filename ) = @_; 
+    open( my $fh, '-|',  $self->_awk_filter . $filename ) or die "Couldnt open GFF file";
     my $gff_parser = Bio::Tools::GFF->new( -fh => $fh, gff_version => 3 );
     return $gff_parser;
 }

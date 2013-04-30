@@ -23,8 +23,8 @@ has 'output_filename'   => ( is => 'rw', isa => 'Str', default => 'clustered_pro
 has 'job_runner'        => ( is => 'rw', isa => 'Str', default => 'LSF' );
 has 'makeblastdb_exec'  => ( is => 'rw', isa => 'Str', default => 'makeblastdb' );
 has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
-has 'mcxdeblast_exec'   => ( is => 'ro', isa => 'Str', default => 'mcxdeblast' );
-has 'mcl_exec'          => ( is => 'ro', isa => 'Str', default => 'mcl' );
+has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' );
+has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 
@@ -39,8 +39,8 @@ sub BUILD {
         'j|job_runner=s'       => \$job_runner,
         'm|makeblastdb_exec=s' => \$makeblastdb_exec,
         'b|blastp_exec=s'      => \$blastp_exec,
-        'd|mcxdeblast_exec'    => \$mcxdeblast_exec,
-        'c|mcl_exec'           => \$mcl_exec,
+        'd|mcxdeblast_exec=s'    => \$mcxdeblast_exec,
+        'c|mcl_exec=s'           => \$mcl_exec,
         'h|help'               => \$help,
     );
     
