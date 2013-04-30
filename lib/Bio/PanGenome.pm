@@ -17,10 +17,12 @@ use Bio::PanGenome::InflateClusters;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::GroupLabels;
 use Bio::PanGenome::AnnotateGroups;
+use Bio::PanGenome::Output::OneGenePerGroupFasta;
 
 has 'fasta_files'      => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'      => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'output_filename'  => ( is => 'rw', isa => 'Str', default => 'clustered_proteins' );
+has 'output_pan_geneome_filename'  => ( is => 'rw', isa => 'Str', default => 'pan_genome.fa' );
 has 'job_runner'       => ( is => 'rw', isa => 'Str', default => 'LSF' );
 has 'makeblastdb_exec' => ( is => 'rw', isa => 'Str', default => 'makeblastdb' );
 has 'blastp_exec'      => ( is => 'rw', isa => 'Str', default => 'blastp' );
@@ -92,6 +94,12 @@ sub run {
       groups_filename   => $output_group_labels_filename,
     );
     $annotate_groups->reannotate;
+    
+    my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
+        analyse_groups  => $analyse_groups_obj,
+        output_filename => $self->output_pan_geneome_filename
+    );
+    $one_gene_per_fasta->create_file();
 
     unlink($output_blast_results_filename);
     unlink($output_combined_filename);
@@ -99,6 +107,8 @@ sub run {
     unlink($output_mcl_filename );
     unlink($output_inflate_clusters_filename);
     unlink($output_group_labels_filename);
+    unlink($output_cd_hit_filename.'.clstr');
+    unlink($output_cd_hit_filename.'.bak.clstr');
 }
 
 no Moose;
