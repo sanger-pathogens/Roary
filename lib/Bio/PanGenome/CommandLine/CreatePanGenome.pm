@@ -11,6 +11,7 @@ Take in FASTA files of proteins and cluster them
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome;
+use Bio::PanGenome::PrepareInputFiles;
 
 
 has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -73,8 +74,13 @@ sub run {
         die $self->usage_text;
     }
     
+    my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
+      input_files   => $self->fasta_files,
+    );
+    
     my $pan_genome_obj = Bio::PanGenome->new(
-        fasta_files      => $self->fasta_files,
+        input_files      => $self->fasta_files,
+        fasta_files      => $prepare_input_files->fasta_files,
         output_filename  => $self->output_filename,
         job_runner       => $self->job_runner,
         makeblastdb_exec => $self->makeblastdb_exec,

@@ -14,6 +14,7 @@ use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::Output::GroupsMultifastas;
 use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::Output::QueryGroups;
+use Bio::PanGenome::PrepareInputFiles;
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -75,9 +76,13 @@ sub run {
         print $self->_error_message . "\n";
         die $self->usage_text;
     }
+    
+    my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
+      input_files   => $self->fasta_files,
+    );
 
     my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
-        fasta_files     => $self->fasta_files,
+        fasta_files     => $prepare_input_files->fasta_files,
         groups_filename => $self->groups_filename,
     );
 
@@ -92,7 +97,7 @@ sub run {
         my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
             analyse_groups        => $analyse_groups_obj,
             output_union_filename => $self->output_filename,
-            input_filenames       => $self->fasta_files
+            input_filenames       => $prepare_input_files->fasta_files
         );
         $query_groups->groups_union();
     }
@@ -100,7 +105,7 @@ sub run {
         my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
             analyse_groups               => $analyse_groups_obj,
             output_intersection_filename => $self->output_filename, 
-            input_filenames => $self->fasta_files
+            input_filenames => $prepare_input_files->fasta_files
         );
         $query_groups->groups_intersection();
     }
@@ -108,7 +113,7 @@ sub run {
         my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
             analyse_groups             => $analyse_groups_obj,
             output_complement_filename => $self->output_filename, 
-            input_filenames => $self->fasta_files
+            input_filenames => $prepare_input_files->fasta_files
         );
         $query_groups->groups_complement();
     }
