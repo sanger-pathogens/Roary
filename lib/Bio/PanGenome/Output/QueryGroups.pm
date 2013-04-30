@@ -46,6 +46,7 @@ sub _build__groups_freq {
         
         for my $gene ( @{$genes} ) {
           next if(!defined($gene));
+          next if(!defined($self->analyse_groups->_genes_to_groups->{$gene}));
             push(@{$groups_freq{ $self->analyse_groups->_genes_to_groups->{$gene} }}, $gene);
         }
     }
