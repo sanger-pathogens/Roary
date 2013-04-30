@@ -89,8 +89,8 @@ sub _create_protein_file_from_gff {
       if ( $raw_feature->strand == -1 ) {
           $feature_sequence = revcom($feature_sequence)->seq;
       }
-      
-      my $feature = Bio::Seq->new( -display_id => $raw_feature->seq_id, -seq => $feature_sequence );
+      my ( $id_name, @junk ) = $raw_feature->get_tag_values('ID');
+      my $feature = Bio::Seq->new( -display_id => $id_name, -seq => $feature_sequence );
       $output_fh->write_seq( $feature->translate( -codontable_id => 11 ) );
     }
     $gff_parser->close();
