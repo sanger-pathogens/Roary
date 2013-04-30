@@ -45,6 +45,7 @@ sub _build__groups_freq {
         my $genes = $self->analyse_groups->_files_to_genes->{$filename};
         
         for my $gene ( @{$genes} ) {
+          next if(!defined($gene));
             push(@{$groups_freq{ $self->analyse_groups->_genes_to_groups->{$gene} }}, $gene);
         }
     }
