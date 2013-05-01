@@ -147,7 +147,10 @@ sub run {
     {
       my $difference_between_sets = Bio::PanGenome::Output::DifferenceBetweenSets->new(
           analyse_groups       => $analyse_groups_obj,
-          input_filenames_sets => [ $self->input_set_one, $self->input_set_two ],
+          input_filenames_sets => [ 
+            $prepare_input_files->lookup_fasta_files_from_unknown_input_files($self->input_set_one),  
+            $prepare_input_files->lookup_fasta_files_from_unknown_input_files($self->input_set_two) 
+          ],
         );
       $difference_between_sets->groups_set_one_unique();
       $difference_between_sets->groups_set_two_unique();
@@ -183,6 +186,9 @@ sub usage_text {
 
     # Complement (Union minus Intersection)
     query_pan_genome  -a complement -g groupfile *.faa
+    
+    # Difference between sets 
+    query_pan_genome  -a difference --input_set_one 1.faa,2.faa --input_set_two 3.faa,4.faa,5.faa  -g groupfile
 
     # This help message
     query_pan_genome -h
