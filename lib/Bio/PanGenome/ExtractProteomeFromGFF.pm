@@ -24,6 +24,8 @@ use File::Basename;
 
 has 'gff_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_fasta_files' );
+has 'fasta_files_to_gff_files' =>
+  ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_fasta_files_to_gff_files' );
 
 has '_awk_filter' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__awk_filter' );
 has '_tags_to_filter' => ( is => 'ro', isa => 'Str', default => 'CDS' );
@@ -38,8 +40,8 @@ sub _build__working_directory_name {
 }
 
 sub _gff_parser {
-    my ( $self, $filename ) = @_; 
-    open( my $fh, '-|',  $self->_awk_filter . $filename ) or die "Couldnt open GFF file";
+    my ( $self, $filename ) = @_;
+    open( my $fh, '-|', $self->_awk_filter . $filename ) or die "Couldnt open GFF file";
     my $gff_parser = Bio::Tools::GFF->new( -fh => $fh, gff_version => 3 );
     return $gff_parser;
 }
@@ -50,16 +52,15 @@ sub _output_filename {
     return join( '/', ( $self->_working_directory_name, $filename . '.faa' ) );
 }
 
-sub _setup_gff_sequences
-{
-  my ( $self, $gff_parser ) = @_;
-  my %seq_names_to_sequences;
-  my @sequences = $gff_parser->get_seqs;
+sub _setup_gff_sequences {
+    my ( $self, $gff_parser ) = @_;
+    my %seq_names_to_sequences;
+    my @sequences = $gff_parser->get_seqs;
 
-  for my $sequence (@sequences) {
-      $seq_names_to_sequences{ $sequence->id } = $sequence;
-  } 
-  return \%seq_names_to_sequences;
+    for my $sequence (@sequences) {
+        $seq_names_to_sequences{ $sequence->id } = $sequence;
+    }
+    return \%seq_names_to_sequences;
 }
 
 sub _create_protein_file_from_gff {
@@ -75,25 +76,24 @@ sub _create_protein_file_from_gff {
     while ( my $raw_feature = $gff_parser->next_feature() ) {
         last unless defined($raw_feature);    # No more features
         next if !( $raw_feature->primary_tag eq 'CDS' );
-        push(@features,$raw_feature);
+        push( @features, $raw_feature );
     }
-    
-    for my $raw_feature (@features)
-    {
-      if(!  %seq_names_to_sequences)
-      {
-        %seq_names_to_sequences = %{$self->_setup_gff_sequences($gff_parser)};
-      }
-      my $feature_sequence = $seq_names_to_sequences{ $raw_feature->seq_id }->subseq( $raw_feature->start, $raw_feature->end );
-      if ( $raw_feature->strand == -1 ) {
-          $feature_sequence = revcom($feature_sequence)->seq;
-      }
-      my ( $id_name, @junk ) = $raw_feature->get_tag_values('ID');
-      my $feature = Bio::Seq->new( -display_id => $id_name, -seq => $feature_sequence );
-      $output_fh->write_seq( $feature->translate( -codontable_id => 11 ) );
+
+    for my $raw_feature (@features) {
+        if ( !%seq_names_to_sequences ) {
+            %seq_names_to_sequences = %{ $self->_setup_gff_sequences($gff_parser) };
+        }
+        my $feature_sequence =
+          $seq_names_to_sequences{ $raw_feature->seq_id }->subseq( $raw_feature->start, $raw_feature->end );
+        if ( $raw_feature->strand == -1 ) {
+            $feature_sequence = revcom($feature_sequence)->seq;
+        }
+        my ( $id_name, @junk ) = $raw_feature->get_tag_values('ID');
+        my $feature = Bio::Seq->new( -display_id => $id_name, -seq => $feature_sequence );
+        $output_fh->write_seq( $feature->translate( -codontable_id => 11 ) );
     }
     $gff_parser->close();
-    
+
     return $output_filename;
 }
 
@@ -109,12 +109,18 @@ sub _build__awk_filter {
 
 sub _build_fasta_files {
     my ($self) = @_;
-
-    my @fasta_files;
-    for my $filename ( @{ $self->gff_files } ) {
-        push( @fasta_files, $self->_create_protein_file_from_gff($filename) );
-    }
+    my @fasta_files = sort values( $self->fasta_files_to_gff_files );
     return \@fasta_files;
+}
+
+sub _build_fasta_files_to_gff_files {
+    my ($self) = @_;
+
+    my %fasta_files;
+    for my $filename ( @{ $self->gff_files } ) {
+        $fasta_files{ $filename  } = $self->_create_protein_file_from_gff($filename);
+    }
+    return \%fasta_files;
 }
 
 no Moose;

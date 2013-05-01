@@ -26,6 +26,7 @@ has '_awk_filter'     => ( is => 'ro', isa => 'Str',             lazy    => 1, b
 has '_remove_sequence_filter' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__remove_sequence_filter' );
 
 has 'ids_to_gene_name' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_ids_to_gene_name' );
+has 'ids_to_product' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 
 sub _build_ids_to_gene_name {
     my ($self) = @_;
@@ -34,14 +35,32 @@ sub _build_ids_to_gene_name {
     while ( my $raw_feature = $self->_gff_parser->next_feature() ) {
         last unless defined($raw_feature);    # No more features
         next if !( $raw_feature->primary_tag eq 'CDS' );
+        my @junk;
+        
+        my $id_name;
+        if($raw_feature->has_tag('ID'))
+        {
+          ( $id_name, @junk ) = $raw_feature->get_tag_values('ID');
+        }
+        else
+        {
+          next;
+        }
+        
 
-        if ( $raw_feature->has_tag('gene') && $raw_feature->has_tag('ID')) {
-            my ( $gene_name, @junk ) = $raw_feature->get_tag_values('gene');
+        if ( $raw_feature->has_tag('gene') ) {
+            my $gene_name;
+            ( $gene_name, @junk ) = $raw_feature->get_tag_values('gene');
             $gene_name =~ s!"!!g;
             next if ( $gene_name eq "" );
-            my $id_name ;
-            ( $id_name, @junk ) = $raw_feature->get_tag_values('ID');
             $id_to_gene_name{$id_name} = $gene_name;
+        }
+
+        if ( $raw_feature->has_tag('product') ) {
+            if ( $raw_feature->has_tag('product') ) {
+                my( $product, @junk ) = $raw_feature->get_tag_values('product');
+                $self->ids_to_product->{$id_name} = $product;
+            }
         }
     }
     $self->_gff_parser->close();
@@ -61,14 +80,12 @@ sub _gff_fh_input_string {
     return $self->_awk_filter . " " . $self->gff_file . " | " . $self->_remove_sequence_filter;
 }
 
-# Parsing a GFF file with perl is slow, so filter out CDSs which dont contain a gene name
 sub _build__awk_filter {
     my ($self) = @_;
     return
         'awk \'BEGIN {FS="\t"};{ if ($3 ~/'
       . $self->_tags_to_filter
-      . '/ && $9 ~ /gene=/) print $0;else if ($3 ~/'
-      . $self->_tags_to_filter . '|'
+      . '/) print $0;else if ($3 ~/'
       . $self->_tags_to_ignore
       . '/) ; else print $0;}\' ';
 }
