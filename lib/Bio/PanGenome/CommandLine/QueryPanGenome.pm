@@ -15,14 +15,17 @@ use Bio::PanGenome::Output::GroupsMultifastas;
 use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::Output::QueryGroups;
 use Bio::PanGenome::PrepareInputFiles;
+use Bio::PanGenome::Output::DifferenceBetweenSets;
 
-has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'args'        => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'fasta_files'     => ( is => 'rw', isa => 'ArrayRef' );
 has 'groups_filename' => ( is => 'rw', isa => 'Str' );
 has 'group_names'     => ( is => 'rw', isa => 'ArrayRef' );
+has 'input_set_one'   => ( is => 'rw', isa => 'ArrayRef' );
+has 'input_set_two'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'pan_genome_results' );
 has 'action'          => ( is => 'rw', isa => 'Str', default => 'one_gene_per_group' );
 
@@ -31,7 +34,7 @@ has '_error_message' => ( is => 'rw', isa => 'Str' );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $groups_filename, @group_names, $action, $help );
+    my ( $fasta_files, $output_filename, $groups_filename, @group_names, @input_set_one, @input_set_two, $action, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -39,12 +42,10 @@ sub BUILD {
         'g|groups_filename=s' => \$groups_filename,
         'n|group_names=s'     => \@group_names,
         'a|action=s'          => \$action,
+        'i|input_set_one=s'   => \@input_set_one,
+        't|input_set_two=s'   => \@input_set_two,
         'h|help'              => \$help,
     );
-
-    if ( @{ $self->args } == 0 ) {
-        $self->_error_message("Error: You need to provide a FASTA file");
-    }
 
     $self->output_filename($output_filename) if ( defined($output_filename) );
     $self->action($action)                   if ( defined($action) );
@@ -57,7 +58,24 @@ sub BUILD {
 
     @group_names = split( /,/, join( ',', @group_names ) );
     $self->group_names( \@group_names ) if (@group_names);
+    
+    @input_set_one = split( /,/, join( ',', @input_set_one ) );
+    $self->input_set_one( \@input_set_one ) if (@input_set_one);
+    
+    @input_set_two = split( /,/, join( ',', @input_set_two ) );
+    $self->input_set_two( \@input_set_two ) if (@input_set_two);
+    
+    if(defined($self->input_set_one) && defined($self->input_set_two) )
+    {
+        my @all_input_files = (@{ $self->input_set_one },@{ $self->input_set_two });
+        $self->args(\@all_input_files);
+    }
 
+
+    if ( !defined($self->input_set_two) &&  @{ $self->args } == 0) {
+        $self->_error_message("Error: You need to provide a FASTA file");
+    }
+    
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
             $self->_error_message("Error: Cant access file $filename");
@@ -125,6 +143,17 @@ sub run {
         );
         $group_multi_fastas->create_files();
     }
+    elsif($self->action eq 'difference' && defined($self->input_set_one) && defined($self->input_set_two))
+    {
+      my $difference_between_sets = Bio::PanGenome::Output::DifferenceBetweenSets->new(
+          analyse_groups       => $analyse_groups_obj,
+          input_filenames_sets => [ $self->input_set_one, $self->input_set_two ],
+        );
+      $difference_between_sets->groups_set_one_unique();
+      $difference_between_sets->groups_set_two_unique();
+      $difference_between_sets->groups_in_common();
+    }
+    
     else {
         print "Nothing done\n";
     }
