@@ -84,7 +84,10 @@ sub _print_out_groups {
     open( my $fh, '>', $filename )
       or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw( error => 'Couldnt write to file: ' . $filename );
 
-    for my $group ( @{$groups} ) {
+   my %groups_freq = %{ $self->_groups_freq };
+   my @sorted_groups = sort { @{$groups_freq{$b}} <=> @{$groups_freq{$a}} } @{$groups};
+
+    for my $group ( @sorted_groups ) {
         print {$fh} $group.': '.join("\t",@{$self->_groups_freq->{$group}}) . "\n";
     }
     close($fh);
@@ -104,6 +107,13 @@ sub groups_intersection {
 sub groups_union {
     my ($self) = @_;
     $self->_print_out_groups( $self->output_union_filename, $self->_groups );
+}
+
+sub groups_with_external_inputs
+{
+  my ($self, $output_filename,$groups) = @_;
+  $self->_print_out_groups( $output_filename, $groups );
+  
 }
 
 no Moose;

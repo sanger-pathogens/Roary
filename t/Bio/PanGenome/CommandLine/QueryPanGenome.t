@@ -20,15 +20,15 @@ system('touch empty_file');
 my %scripts_and_expected_files = (
     '-g t/data/example_groups -a gene_multifasta -n group_2 t/data/example_1.faa t/data/example_2.faa' =>
       [ 'pan_genome_results_group_2.fa', 't/data/expected_output_groups_group_2.fa' ],
-    '-g t/data/example_groups -a gene_multifasta -n group_5 t/data/example_1.faa t/data/example_2.faa' =>
+    '-g t/data/example_groups -a gene_multifasta -n group_5 t/data/example_1.faa t/data/example_2.faa ' =>
       [ 'pan_genome_results_group_5.fa', 't/data/expected_output_groups_group_5.fa' ],
     '-g t/data/example_groups -a gene_multifasta -n group_2,group_5 t/data/example_1.faa t/data/example_2.faa' =>
       [ 'pan_genome_results_group_5.fa', 't/data/expected_output_groups_group_5.fa' ],
-    '-g t/data/example_groups -a gene_multifasta -n group_5,group_2 t/data/example_1.faa t/data/example_2.faa' =>
+    '-g t/data/example_groups -a gene_multifasta -n group_5,group_2 t/data/example_1.faa t/data/example_2.faa ' =>
       [ 'pan_genome_results_group_5.fa', 't/data/expected_output_groups_group_5.fa' ],
-    '-g t/data/example_groups -a gene_multifasta -n group_5,group_2 t/data/example_1.faa t/data/example_2.faa' =>
+    '-g t/data/example_groups -a gene_multifasta -n group_5,group_2 t/data/example_1.faa t/data/example_2.faa  ' =>
       [ 'pan_genome_results_group_2.fa', 't/data/expected_output_groups_group_2.fa' ],
-    '-g t/data/example_groups -a gene_multifasta -n group_2,group_5 t/data/example_1.faa t/data/example_2.faa' =>
+    '-g t/data/example_groups -a gene_multifasta -n group_2,group_5 t/data/example_1.faa t/data/example_2.faa   ' =>
       [ 'pan_genome_results_group_2.fa', 't/data/expected_output_groups_group_2.fa' ],
     '-g t/data/example_groups -a one_gene_per_group t/data/example_1.faa t/data/example_2.faa' =>
       [ 'pan_genome_results', 't/data/expected_pan_genome.fa' ],
@@ -42,6 +42,13 @@ my %scripts_and_expected_files = (
       [ 'pan_genome_results', 't/data/expected_intersection_of_groups.gg' ],
     '-g t/data/query_groups -a complement t/data/query_1.fa t/data/query_2.fa t/data/query_3.fa' =>
       [ 'pan_genome_results', 't/data/expected_complement_of_groups.gg' ],
+    '-g t/data/query_groups -a difference -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa' =>
+      [ 'set_difference_unique_set_one', 't/data/expected_set_difference_unique_set_one' ],
+    '-g t/data/query_groups -a difference  -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa' =>
+      [ 'set_difference_unique_set_two', 't/data/expected_set_difference_unique_set_two' ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa' =>
+      [ 'set_difference_common_set', 't/data/expected_set_difference_common_set' ],
+
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
