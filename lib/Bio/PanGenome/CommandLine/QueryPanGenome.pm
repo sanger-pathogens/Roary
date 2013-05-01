@@ -183,6 +183,9 @@ sub usage_text {
 
     # Complement (Union minus Intersection)
     query_pan_genome  -a complement -g groupfile *.faa
+    
+    # Difference between sets 
+    query_pan_genome  -a difference --input_set_one 1.faa,2.faa --input_set_two 3.faa,4.faa,5.faa  -g groupfile
 
     # This help message
     query_pan_genome -h

@@ -24,11 +24,20 @@ has 'gff_files'          => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'output_filename'    => ( is => 'ro', isa => 'Str',      default  => 'reannotated_groups_file' );
 has 'groups_filename'    => ( is => 'ro', isa => 'Str',      required => 1 );
 has '_ids_to_gene_names' => ( is => 'ro', isa => 'HashRef',  lazy     => 1, builder => '_build__ids_to_gene_names' );
-has '_groups_to_id_names' => ( is => 'ro', isa  => 'HashRef', lazy    => 1, builder => '_builder__groups_to_id_names' );
-has '_output_fh'          => ( is => 'ro', lazy => 1,         builder => '_build__output_fh' );
+has '_ids_to_product' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has '_groups_to_id_names' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_id_names' );
+has '_output_fh' => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
 has '_groups_to_consensus_gene_names' =>
   ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build__groups_to_consensus_gene_names' );
 has '_filtered_gff_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__filtered_gff_files' );
+
+
+
+sub BUILD {
+    my ($self) = @_;
+    $self->_ids_to_gene_names;
+}
+
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -47,11 +56,17 @@ sub _build__filtered_gff_files {
 sub _build__ids_to_gene_names {
     my ($self) = @_;
     my %ids_to_gene_names;
+    my %ids_to_product;
     for my $filename ( @{ $self->_filtered_gff_files } ) {
         my $gene_names_from_gff = Bio::PanGenome::GeneNamesFromGFF->new( gff_file => $filename );
         my %id_to_gene_lookup = %{ $gene_names_from_gff->ids_to_gene_name };
         @ids_to_gene_names{ keys %id_to_gene_lookup } = values %id_to_gene_lookup;
+
+        my %id_to_product_lookup = %{ $gene_names_from_gff->ids_to_product };
+        @ids_to_product{ keys %id_to_product_lookup } = values %id_to_product_lookup;
     }
+    $self->_ids_to_product( \%ids_to_product );
+
     return \%ids_to_gene_names;
 }
 

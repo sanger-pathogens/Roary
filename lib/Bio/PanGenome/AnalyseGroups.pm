@@ -34,7 +34,16 @@ has '_freq_groups_per_genome' =>
 has '_groups_to_genes' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_genes' );
 has '_genes_to_groups' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__genes_to_groups' );
 
+has '_groups' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_builder__groups' );
+
 # Fixme: Same files opened multiple times plus some fragile shelling out
+
+sub _builder__groups
+{
+  my ($self) = @_;
+  my @groups = sort keys %{$self->_groups_to_genes};
+  return \@groups;
+}
 
 sub _builder__number_of_isolates {
     my ($self) = @_;
