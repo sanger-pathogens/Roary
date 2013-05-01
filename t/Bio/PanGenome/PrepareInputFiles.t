@@ -34,5 +34,11 @@ is_deeply(
     'proteome extracted from gff files, input fasta files left alone'
 );
 
+is_deeply(
+    $obj->lookup_fasta_files_from_unknown_input_files( [ 't/data/example_annotation_2.gff', 't/data/example_1.faa' ] ),
+    [$obj->_extract_proteome_obj->_working_directory_name . '/example_annotation_2.faa','t/data/example_1.faa'],
+    'previously created faa file looked up from gff filename'
+);
+
 done_testing();
 

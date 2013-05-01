@@ -147,7 +147,10 @@ sub run {
     {
       my $difference_between_sets = Bio::PanGenome::Output::DifferenceBetweenSets->new(
           analyse_groups       => $analyse_groups_obj,
-          input_filenames_sets => [ $self->input_set_one, $self->input_set_two ],
+          input_filenames_sets => [ 
+            $prepare_input_files->lookup_fasta_files_from_unknown_input_files($self->input_set_one),  
+            $prepare_input_files->lookup_fasta_files_from_unknown_input_files($self->input_set_two) 
+          ],
         );
       $difference_between_sets->groups_set_one_unique();
       $difference_between_sets->groups_set_two_unique();

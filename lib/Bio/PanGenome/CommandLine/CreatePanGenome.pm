@@ -94,13 +94,13 @@ sub usage_text {
 
     return <<USAGE;
     Usage: create_pan_geneome [options]
-    Take in FASTA files of proteins and cluster them
+    Take in GFF files and cluster the genes
     
-    # Take in FASTA files of proteins and cluster them
-    create_pan_geneome example.faa
+    # Take in GFF files and cluster the genes
+    create_pan_geneome example.gff
     
     # Provide an output filename
-    create_pan_geneome -o results *.faa
+    create_pan_geneome -o results *.gff
 
     # This help message
     create_pan_geneome -h

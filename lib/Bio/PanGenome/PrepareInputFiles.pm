@@ -56,6 +56,26 @@ sub fasta_files {
     return \@output_fasta_files;
 }
 
+sub lookup_fasta_files_from_unknown_input_files
+{
+  my ($self,$input_files) = @_;
+  $self->fasta_files;
+  
+  my @output_fasta_files;
+  for my $input_file (@{$input_files})
+  {
+    if(defined($self->_extract_proteome_obj->fasta_files_to_gff_files->{$input_file}))
+    {
+      push(@output_fasta_files,$self->_extract_proteome_obj->fasta_files_to_gff_files->{$input_file});
+    }
+    else
+    {
+      push(@output_fasta_files,$input_file);
+    }
+  }
+  return \@output_fasta_files;
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
