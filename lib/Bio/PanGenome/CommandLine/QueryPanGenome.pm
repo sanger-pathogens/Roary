@@ -16,12 +16,14 @@ use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::Output::QueryGroups;
 use Bio::PanGenome::PrepareInputFiles;
 use Bio::PanGenome::Output::DifferenceBetweenSets;
+use Bio::PanGenome::AnnotateGroups;
+use Bio::PanGenome::GroupStatistics;
 
 has 'args'        => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
-has 'fasta_files'     => ( is => 'rw', isa => 'ArrayRef' );
+has 'input_files'     => ( is => 'rw', isa => 'ArrayRef' );
 has 'groups_filename' => ( is => 'rw', isa => 'Str' );
 has 'group_names'     => ( is => 'rw', isa => 'ArrayRef' );
 has 'input_set_one'   => ( is => 'rw', isa => 'ArrayRef' );
@@ -34,7 +36,7 @@ has '_error_message' => ( is => 'rw', isa => 'Str' );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $groups_filename, @group_names, @input_set_one, @input_set_two, $action, $help );
+    my ( $input_files, $output_filename, $groups_filename, @group_names, @input_set_one, @input_set_two, $action, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -82,7 +84,7 @@ sub BUILD {
             last;
         }
     }
-    $self->fasta_files( $self->args );
+    $self->input_files( $self->args );
 
 }
 
@@ -96,7 +98,7 @@ sub run {
     }
     
     my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
-      input_files   => $self->fasta_files,
+      input_files   => $self->input_files,
     );
 
     my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
@@ -155,11 +157,42 @@ sub run {
       $difference_between_sets->groups_set_one_unique();
       $difference_between_sets->groups_set_two_unique();
       $difference_between_sets->groups_in_common();
+      
+      for my $differences_group_filename(($difference_between_sets->groups_set_one_unique_filename,$difference_between_sets->groups_set_two_unique_filename,$difference_between_sets->groups_in_common_filename))
+      {
+        $self->create_spreadsheets($differences_group_filename, $prepare_input_files->fasta_files, $self->input_files);
+      }
+
     }
-    
     else {
         print "Nothing done\n";
     }
+}
+
+
+sub create_spreadsheets
+{
+      my ($self, $groups_file, $fasta_files, $gff_files) = @_;
+
+      my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+          fasta_files     => $fasta_files,
+          groups_filename => $groups_file,
+          output_plot_filename => $groups_file.'_plot.png'
+      );
+      $analyse_groups_obj->create_plots();
+      
+      my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
+          gff_files       => $gff_files,
+          output_filename => $groups_file.'_reannotated',
+          groups_filename => $groups_file,
+      );
+      
+      my $group_statistics = Bio::PanGenome::GroupStatistics->new(
+          output_filename     => $groups_file.'_statistics.csv',
+          annotate_groups_obj => $annotate_groups,
+          analyse_groups_obj  => $analyse_groups_obj
+      );
+      $group_statistics->create_spreadsheet;
 }
 
 sub usage_text {
@@ -167,28 +200,28 @@ sub usage_text {
 
     return <<USAGE;
     Usage: query_pan_genome [options]
-    Take in a groups file and the protein fasta files and output selected data
+    Take in a groups file and GFF files and output selected data
     
-    # Create a FASTA file with one gene per group (representative pan genome)
-    query_pan_genome -a one_gene_per_group -g groupfile example.faa
+    # Create a FASTA file with one gene per group (repregffsentative pan genome)
+    query_pan_genome -a one_gene_per_group -g groupfile example.gff
     
     # Provide an output filename
-    query_pan_genome  -a one_gene_per_group -g groupfile -o results.fa *.faa
+    query_pan_genome  -a one_gene_per_group -g groupfile -o results.fa *.gff
     
     # Create multifasta files for each group/gene passed in
-    query_pan_genome  -a gene_multifasta -g groupfile -n gryA,mecA,abc *.faa
+    query_pan_genome  -a gene_multifasta -g groupfile -n gryA,mecA,abc *.gff
     
     # Union
-    query_pan_genome  -a union -g groupfile *.faa
+    query_pan_genome  -a union -g groupfile *.gff
     
     # Intersection
-    query_pan_genome  -a intersection -g groupfile *.faa
+    query_pan_genome  -a intersection -g groupfile *.gff
 
     # Complement (Union minus Intersection)
-    query_pan_genome  -a complement -g groupfile *.faa
+    query_pan_genome  -a complement -g groupfile *.gff
     
     # Difference between sets 
-    query_pan_genome  -a difference --input_set_one 1.faa,2.faa --input_set_two 3.faa,4.faa,5.faa  -g groupfile
+    query_pan_genome  -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff  -g groupfile
 
     # This help message
     query_pan_genome -h

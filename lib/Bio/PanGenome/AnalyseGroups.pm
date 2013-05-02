@@ -23,6 +23,7 @@ use Bio::PanGenome::Plot::FreqOfGenes;
 has 'fasta_files'     => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'groups_filename' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'output_filename' => ( is => 'ro', isa => 'Str',      default  => 'summary_of_groups' );
+has 'output_plot_filename' => ( is => 'ro', isa => 'Str',      default  => 'freq_of_genes.png' );
 
 has '_number_of_isolates' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_builder__number_of_isolates' );
 has '_number_of_genes_per_file' =>
@@ -189,7 +190,7 @@ sub create_plots {
     my ($self) = @_;
 
     my $plot_groups_obj =
-      Bio::PanGenome::Plot::FreqOfGenes->new( freq_groups_per_genome => $self->_freq_groups_per_genome );
+      Bio::PanGenome::Plot::FreqOfGenes->new( freq_groups_per_genome => $self->_freq_groups_per_genome, output_filename => $self->output_plot_filename );
     $plot_groups_obj->create_plot();
 }
 
