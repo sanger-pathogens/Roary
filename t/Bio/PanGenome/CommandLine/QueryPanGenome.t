@@ -48,13 +48,34 @@ my %scripts_and_expected_files = (
       [ 'set_difference_unique_set_two', 't/data/expected_set_difference_unique_set_two' ],
     '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa' =>
       [ 'set_difference_common_set', 't/data/expected_set_difference_common_set' ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa ' => [
+        'set_difference_unique_set_two_statistics.csv', 't/data/expected_set_difference_unique_set_two_statistics.csv'
+    ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa  ' =>
+      [ 'set_difference_unique_set_two_plot.png', 't/data/expected_set_difference_unique_set_two_plot.png' ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa   ' => [
+        'set_difference_unique_set_one_statistics.csv', 't/data/expected_set_difference_unique_set_one_statistics.csv'
+    ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa   ' =>
+      [ 'set_difference_unique_set_one_plot.png', 't/data/expected_set_difference_unique_set_one_plot.png' ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa   ' =>
+      [ 'set_difference_common_set_statistics.csv', 't/data/expected_set_difference_common_set_statistics.csv' ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa    ' =>
+      [ 'set_difference_common_set_plot.png', 't/data/expected_set_difference_common_set_plot.png' ],
 
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
-unlink('set_difference_unique_set_two') if ( -e 'set_difference_unique_set_two' );
-unlink('set_difference_common_set') if ( -e 'set_difference_common_set' );
-unlink('pan_genome_results_group_5.fa') if ( -e 'pan_genome_results_group_5.fa' );
+unlink('set_difference_unique_set_two')                if ( -e 'set_difference_unique_set_two' );
+unlink('set_difference_common_set')                    if ( -e 'set_difference_common_set' );
+unlink('pan_genome_results_group_5.fa')                if ( -e 'pan_genome_results_group_5.fa' );
+unlink('group_statisics.csv')                          if ( -e 'group_statisics.csv' );
+unlink('set_difference_unique_set_two_statistics.csv') if ( -e 'set_difference_unique_set_two_statistics.csv' );
+unlink('set_difference_unique_set_two_plot.png')       if ( -e 'set_difference_unique_set_two_plot.png' );
+unlink('set_difference_unique_set_one_statistics.csv') if ( -e 'set_difference_unique_set_one_statistics.csv' );
+unlink('set_difference_unique_set_one_plot.png')       if ( -e 'set_difference_unique_set_one_plot.png' );
+unlink('set_difference_common_set_statistics.csv')     if ( -e 'set_difference_common_set_statistics.csv' );
+unlink('set_difference_common_set_plot.png')           if ( -e 'set_difference_common_set_plot.png' );
 
 done_testing();
