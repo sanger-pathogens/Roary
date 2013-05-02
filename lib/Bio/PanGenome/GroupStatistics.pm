@@ -30,8 +30,6 @@ has 'output_filename'     => ( is => 'ro', isa => 'Str',                        
 has '_output_fh' => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
 has '_text_csv_obj' => ( is => 'ro', isa => 'Text::CSV', lazy => 1, builder => '_build__text_csv_obj' );
 
-
-
 sub _build__output_fh {
     my ($self) = @_;
     open( my $fh, '>', $self->output_filename )
@@ -51,24 +49,35 @@ sub _header {
 }
 
 sub _row {
-    my ($self, $group) = @_;
+    my ( $self, $group ) = @_;
     my $genes = $self->analyse_groups_obj->_groups_to_genes->{$group};
-    
-    my $num_isolates_in_group = $self->analyse_groups_obj->_count_num_files_in_group($genes);
-    my $num_sequences_in_group = $#{$genes}+1;
-    my $avg_sequences_per_isolate = ceil(($num_sequences_in_group / $num_isolates_in_group)*100)/100;
 
-    my $annotation = $self->annotate_groups_obj->_ids_to_product->{$genes->[0]};
+    my $num_isolates_in_group     = $self->analyse_groups_obj->_count_num_files_in_group($genes);
+    my $num_sequences_in_group    = $#{$genes} + 1;
+    my $avg_sequences_per_isolate = ceil( ( $num_sequences_in_group / $num_isolates_in_group ) * 100 ) / 100;
+
+    my $annotation           = $self->annotate_groups_obj->_ids_to_product->{ $genes->[0] };
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
-    
-    return [$annotated_group_name,$annotation, $num_isolates_in_group, $num_sequences_in_group,$avg_sequences_per_isolate, @{$genes}];
+
+    return [
+        $annotated_group_name,   $annotation,                $num_isolates_in_group,
+        $num_sequences_in_group, $avg_sequences_per_isolate, @{$genes}
+    ];
 }
 
 sub create_spreadsheet {
     my ($self) = @_;
 
     $self->_text_csv_obj->print( $self->_output_fh, $self->_header );
-    for my $group ( @{ $self->analyse_groups_obj->_groups } ) {
+
+    for my $group (
+        sort {
+            $self->analyse_groups_obj->_count_num_files_in_group( $self->analyse_groups_obj->_groups_to_genes->{$b} )
+              <=> $self->analyse_groups_obj->_count_num_files_in_group(
+                $self->analyse_groups_obj->_groups_to_genes->{$a} )
+        } @{ $self->analyse_groups_obj->_groups }
+      )
+    {
         $self->_text_csv_obj->print( $self->_output_fh, $self->_row($group) );
     }
     close( $self->_output_fh );
