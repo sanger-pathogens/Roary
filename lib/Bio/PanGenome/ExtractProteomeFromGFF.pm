@@ -1,127 +1,128 @@
 package Bio::PanGenome::ExtractProteomeFromGFF;
 
-# ABSTRACT: Take in GFF files and create protein sequences in FASTA format
+# ABSTRACT: Take in a GFF file and create protein sequences in FASTA format
 
 =head1 SYNOPSIS
 
 Take in GFF files and create protein sequences in FASTA format
    use Bio::PanGenome::ExtractProteomeFromGFF;
    
-   my $plot_groups_obj = Bio::PanGenome::ExtractProteomeFromGFF->new(
-       gff_files        => $fasta_files,
+   my $obj = Bio::PanGenome::ExtractProteomeFromGFF->new(
+       gff_file        => $fasta_file,
      );
-   $plot_groups_obj->fasta_files();
+   $obj->fasta_file();
 
 =cut
 
 use Moose;
 use Cwd;
-use Bio::Perl;
-use Bio::SeqIO;
 use Bio::PanGenome::Exceptions;
-use Bio::Tools::GFF;
 use File::Basename;
+use File::Temp;
 
-has 'gff_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_fasta_files' );
-has 'fasta_files_to_gff_files' =>
-  ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_fasta_files_to_gff_files' );
+has 'gff_file' => ( is => 'ro', isa => 'Str', required => 1 );
+has 'fasta_file' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_files' );
 
-has '_awk_filter' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__awk_filter' );
-has '_tags_to_filter' => ( is => 'ro', isa => 'Str', default => 'CDS' );
-has '_tags_to_ignore' => ( is => 'ro', isa => 'Str', default => 'rRNA|tRNA|ncRNA|tmRNA' );
 has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
+
+
+sub _build_fasta_files
+{
+  my ($self) = @_;
+  $self->_extract_nucleotide_regions;
+  $self->_convert_nucleotide_to_protein;
+  return $self->_output_filename;
+}
 
 sub _build__working_directory_name {
     my ($self) = @_;
     return $self->_working_directory->dirname();
 }
 
-sub _gff_parser {
-    my ( $self, $filename ) = @_;
-    open( my $fh, '-|', $self->_awk_filter . $filename ) or die "Couldnt open GFF file";
-    my $gff_parser = Bio::Tools::GFF->new( -fh => $fh, gff_version => 3 );
-    return $gff_parser;
-}
-
 sub _output_filename {
-    my ( $self, $input_filename ) = @_;
-    my ( $filename, $directories, $suffix ) = fileparse( $input_filename, qr/\.[^.]*/ );
+    my ( $self ) = @_;
+    my ( $filename, $directories, $suffix ) = fileparse( $self->gff_file, qr/\.[^.]*/ );
     return join( '/', ( $self->_working_directory_name, $filename . '.faa' ) );
 }
 
-sub _setup_gff_sequences {
-    my ( $self, $gff_parser ) = @_;
-    my %seq_names_to_sequences;
-    my @sequences = $gff_parser->get_seqs;
-
-    for my $sequence (@sequences) {
-        $seq_names_to_sequences{ $sequence->id } = $sequence;
-    }
-    return \%seq_names_to_sequences;
-}
-
-sub _create_protein_file_from_gff {
-    my ( $self, $filename ) = @_;
-    my $gff_parser = $self->_gff_parser($filename);
-
-    my %seq_names_to_sequences;
-
-    my $output_filename = $self->_output_filename($filename);
-    my $output_fh = Bio::SeqIO->new( -file => '>' . $output_filename, -format => 'Fasta' );
-
-    my @features;
-    while ( my $raw_feature = $gff_parser->next_feature() ) {
-        last unless defined($raw_feature);    # No more features
-        next if !( $raw_feature->primary_tag eq 'CDS' );
-        push( @features, $raw_feature );
-    }
-
-    for my $raw_feature (@features) {
-        if ( !%seq_names_to_sequences ) {
-            %seq_names_to_sequences = %{ $self->_setup_gff_sequences($gff_parser) };
-        }
-        my $feature_sequence =
-          $seq_names_to_sequences{ $raw_feature->seq_id }->subseq( $raw_feature->start, $raw_feature->end );
-        if ( $raw_feature->strand == -1 ) {
-            $feature_sequence = revcom($feature_sequence)->seq;
-        }
-        my ( $id_name, @junk ) = $raw_feature->get_tag_values('ID');
-        my $feature = Bio::Seq->new( -display_id => $id_name, -seq => $feature_sequence );
-        $output_fh->write_seq( $feature->translate( -codontable_id => 11 ) );
-    }
-    $gff_parser->close();
-
-    return $output_filename;
-}
-
-sub _build__awk_filter {
+sub _bed_output_filename {
     my ($self) = @_;
-    return
-        'awk \'BEGIN {FS="\t"};{ if ($3 ~/'
-      . $self->_tags_to_filter
-      . '/) print $0;else if ($3 ~/'
-      . $self->_tags_to_ignore
-      . '/) ; else print $0;}\' ';
+    return join( '.', ( $self->_output_filename, 'intermediate.bed' ) );
 }
 
-sub _build_fasta_files {
+sub _nucleotide_fasta_file_from_gff_filename {
     my ($self) = @_;
-    my @fasta_files = sort values( $self->fasta_files_to_gff_files );
-    return \@fasta_files;
+    return join( '.', ( $self->_output_filename, 'intermediate.fa' ) );
 }
 
-sub _build_fasta_files_to_gff_files {
+sub _extracted_nucleotide_fasta_file_from_bed_filename {
+    my ($self) = @_;
+    return join( '.', ( $self->_output_filename, 'intermediate.extracted.fa' ) );
+}
+
+sub _create_bed_file_from_gff {
+    my ($self) = @_;
+    my $cmd =
+        'sed -n \'/##gff-version 3/,/##FASTA/p\' '
+      . $self->gff_file
+      . ' | grep -v \'^#\' | awk \'{print $1"\t"($4-1)"\t"($5)"\t"$9"\t1\t"$7}\' | sed \'s/ID=//\' | sed \'s/;[^\t]*\t/\t/g\' > '
+      . $self->_bed_output_filename;
+    system($cmd);
+}
+
+sub _create_nucleotide_fasta_file_from_gff {
+    my ($self) = @_;
+    my $cmd =
+        'sed -n \'/##FASTA/,//p\' '
+      . $self->gff_file
+      . ' | grep -v \'##FASTA\' > '
+      . $self->_nucleotide_fasta_file_from_gff_filename;
+    system($cmd);
+}
+
+sub _extract_nucleotide_regions {
     my ($self) = @_;
 
-    my %fasta_files;
-    for my $filename ( @{ $self->gff_files } ) {
-        $fasta_files{ $filename  } = $self->_create_protein_file_from_gff($filename);
-    }
-    return \%fasta_files;
+    $self->_create_nucleotide_fasta_file_from_gff;
+    $self->_create_bed_file_from_gff;
+
+    my $cmd =
+        'bedtools getfasta -fi '
+      . $self->_nucleotide_fasta_file_from_gff_filename
+      . ' -bed '
+      . $self->_bed_output_filename
+      . ' -fo '
+      . $self->_extracted_nucleotide_fasta_file_from_bed_filename
+      . ' -name > /dev/null 2>&1';
+      system($cmd);
+      unlink($self->_nucleotide_fasta_file_from_gff_filename);
+      unlink($self->_bed_output_filename);
+      unlink($self->_nucleotide_fasta_file_from_gff_filename.'.fai');
 }
+
+sub _fastatranslate_filename {
+    my ($self) = @_;
+    return join( '.', ( $self->_output_filename, 'intermediate.translate.fa' ) );
+}
+
+sub _fastatranslate_cmd
+{
+  my ($self) = @_;
+  return 'fastatranslate --geneticcode 11  -f '. $self->_extracted_nucleotide_fasta_file_from_bed_filename.' >> '.$self->_fastatranslate_filename;
+}
+
+sub _convert_nucleotide_to_protein
+{
+  my ($self) = @_;
+  system($self->_fastatranslate_cmd(1));
+  # Only keep sequences which have a start and stop codon.
+  my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' > '.$self->_output_filename;
+  unlink($self->_extracted_nucleotide_fasta_file_from_bed_filename);
+  system($cmd);
+}
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
