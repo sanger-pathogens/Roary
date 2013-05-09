@@ -20,3 +20,11 @@ Querying the data:
 1.) Given two sets of isolates, output the genes unique to each set, and the set of common genes (3 files).
 2.) Given a set of isolates, output the union, intersection or complement.
 3.) Given a list of genes, create multifasta files for each gene from all isolates
+
+
+
+Dependancies
+============
+exonerate
+BedTools
+gsed
