@@ -43,7 +43,7 @@ sub _build__extract_proteome_objects
 
 sub _build_fasta_files {
     my ($self) = @_;
-    my @fasta_files = sort values( $self->fasta_files_to_gff_files );
+    my @fasta_files = sort values( %{$self->fasta_files_to_gff_files} );
     return \@fasta_files;
 }
 
