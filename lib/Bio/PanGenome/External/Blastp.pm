@@ -30,8 +30,7 @@ has 'blast_database'    => ( is => 'ro', isa => 'Str', required => 1 );
 has 'exec'              => ( is => 'ro', isa => 'Str', default  => 'blastp' );
 has '_evalue'           => ( is => 'ro', isa => 'Num', default  => 1E-6 );
 has '_num_threads'      => ( is => 'ro', isa => 'Int', default  => 1 );
-has '_num_descriptions' => ( is => 'ro', isa => 'Int', default  => 1 );
-has '_num_alignments'   => ( is => 'ro', isa => 'Int', default  => 1 );
+has '_max_target_seqs'  => ( is => 'ro', isa => 'Int', default  => 100 );
 has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 has 'output_file'       => ( is => 'ro', isa => 'Str', default  => 'results.out' );
 
@@ -47,8 +46,7 @@ sub _command_to_run {
             '-num_threads', $self->_num_threads,
             '-out', $self->output_file,
             '-outfmt 6',
-            '-num_descriptions', $self->_num_descriptions,
-            '-num_alignments', $self->_num_alignments,
+            '-max_target_seqs', $self->_max_target_seqs,
             $self->_logging
         )
     );
