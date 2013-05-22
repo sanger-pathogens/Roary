@@ -20,12 +20,14 @@ ok(
     'initialise object'
 );
 
+my @sorted_fasta_files = sort(@{$plot_groups_obj->fasta_files()});
+my @sorted_expected_files = sort((
+$plot_groups_obj->_extract_proteome_objects->{'t/data/example_annotation_2.gff'}->_working_directory_name . '/example_annotation_2.faa',
+     $plot_groups_obj->_extract_proteome_objects->{'t/data/example_annotation.gff'}->_working_directory_name . '/example_annotation.faa',));
+
 is_deeply(
-    $plot_groups_obj->fasta_files(),
-    [
-        $plot_groups_obj->_extract_proteome_objects->{'t/data/example_annotation.gff'}->_working_directory_name . '/example_annotation.faa',
-        $plot_groups_obj->_extract_proteome_objects->{'t/data/example_annotation_2.gff'}->_working_directory_name . '/example_annotation_2.faa'
-    ],
+    \@sorted_fasta_files,
+\@sorted_expected_files,
     'one file created'
 );
 

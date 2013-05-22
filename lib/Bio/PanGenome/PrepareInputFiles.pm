@@ -16,7 +16,7 @@ Take in a mixture of FASTA and GFF input files and output FASTA proteomes only
 
 use Moose;
 use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::ExtractProteomeFromGFF;
+use Bio::PanGenome::ExtractProteomeFromGFFs;
 use Cwd;
 
 has 'input_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -25,7 +25,7 @@ has '_input_fasta_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, b
 has '_derived_fasta_files' =>
   ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__derived_fasta_files' );
 has '_extract_proteome_obj' =>
-  ( is => 'ro', isa => 'Bio::PanGenome::ExtractProteomeFromGFF', lazy => 1, builder => '_build__extract_proteome_obj' );
+  ( is => 'ro', isa => 'Bio::PanGenome::ExtractProteomeFromGFFs', lazy => 1, builder => '_build__extract_proteome_obj' );
 
 sub _build__input_gff_files {
     my ($self) = @_;
@@ -41,7 +41,7 @@ sub _build__input_fasta_files {
 
 sub _build__extract_proteome_obj {
     my ($self) = @_;
-    return Bio::PanGenome::ExtractProteomeFromGFF->new( gff_files => $self->_input_gff_files );
+    return Bio::PanGenome::ExtractProteomeFromGFFs->new( gff_files => $self->_input_gff_files );
 }
 
 sub _build__derived_fasta_files {
