@@ -33,14 +33,21 @@ sub _build__clustered_genes
   my($self) = @_;
   my $fh = $self->_clusters_fh;
   my %clustered_genes ;
-  my $current_gene_name;
+
+  my %raw_clusters;
+  my $current_cluster_name;
   while(<$fh>)
   {
     my $line = $_;
-    next if($line =~ /^>/);
+    if($line =~ /^>(.+)$/)
+    {
+      $current_cluster_name = $1;
+    }
+    
     #>Cluster 5
     #0	4201aa, >6630_4#9_00008... *
-    #1	4201aa, >6631_1#23_00379... at 100.00%        
+    #1	4201aa, >6631_1#23_00379... at 100.00%    
+        
     if($line =~ /[\d]+\t[\w]+, >(.+)\.\.\. (.+)$/)
     {
       my $gene_name = $1;
@@ -48,14 +55,21 @@ sub _build__clustered_genes
       
       if($identity eq '*')
       {
-        $current_gene_name = $gene_name;
+        $raw_clusters{$current_cluster_name}{representative_gene_name} = $gene_name;
       }
       else
       {
-        push(@{$clustered_genes{$current_gene_name}}, $gene_name);
+        push(@{$raw_clusters{$current_cluster_name}{gene_names}}, $gene_name);
       }
     }
   }
+  
+  # iterate over the raw clusters and convert to a simple hash
+  for my $cluster_name (keys %raw_clusters)
+  {
+    $clustered_genes{$raw_clusters{$cluster_name}{representative_gene_name}} = $raw_clusters{$cluster_name}{gene_names};
+  }
+  
   return \%clustered_genes;
 }
 
