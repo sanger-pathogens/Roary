@@ -26,6 +26,7 @@ use File::Temp;
 use Cwd;
 
 has 'fasta_file'         => ( is => 'ro', isa => 'Str', required => 1 );
+has 'mask_data'          => ( is => 'ro', isa => 'Str', required => 1  );
 has 'exec'               => ( is => 'ro', isa => 'Str', default  => 'makeblastdb' );
 has '_working_directory' => ( is => 'ro', isa => 'File::Temp::Dir', default  => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_dbtype'            => ( is => 'ro', isa => 'Str', default  => 'prot' );
@@ -45,6 +46,8 @@ sub _command_to_run {
             $self->exec,    
             '-in',      $self->fasta_file,       
             '-dbtype',  $self->_dbtype, 
+            '-parse_seqids',
+            '-mask_data', $self->mask_data,
             '-out',     $self->output_database, 
             '-logfile', $self->_logfile
         )
