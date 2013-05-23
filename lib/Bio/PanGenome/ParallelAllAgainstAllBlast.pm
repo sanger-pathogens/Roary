@@ -19,7 +19,7 @@ use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::ChunkFastaFile;
 use Bio::PanGenome::External::Makeblastdb;
 use Bio::PanGenome::External::Blastp;
-#use Bio::PanGenome::JobRunner::LSF;
+use Bio::PanGenome::External::Segmasker;
 use Cwd;
 use File::Temp;
 use File::Basename;
@@ -29,9 +29,11 @@ has 'job_runner'              => ( is => 'ro', isa => 'Str',      default  => 'L
 has 'blast_results_file_name' => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build_blast_results_file_name' );
 has 'makeblastdb_exec'        => ( is => 'ro', isa => 'Str',      default => 'makeblastdb' );
 has 'blastp_exec'             => ( is => 'ro', isa => 'Str',      default => 'blastp' );
+has 'segmasker_exec'          => ( is => 'ro', isa => 'Str',      default => 'segmasker' );
 has '_chunk_fasta_file_obj'   => ( is => 'ro', isa => 'Bio::PanGenome::ChunkFastaFile', lazy => 1, builder => '_build__chunk_fasta_file_obj' );
 has '_sequence_file_names'    => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__sequence_file_names' );
 has '_makeblastdb_obj'        => ( is => 'ro', isa => 'Bio::PanGenome::External::Makeblastdb', lazy => 1, builder => '_build__makeblastdb_obj' );
+has '_segmasker_obj'          => ( is => 'ro', isa => 'Bio::PanGenome::External::Segmasker', lazy => 1, builder => '_build__segmasker_obj' );
 has '_blast_database'         => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__blast_database' );
 has '_job_runner_class'       => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__job_runner_class' );
 has '_working_directory' =>
@@ -52,10 +54,18 @@ sub _build__blast_database {
     return $self->_makeblastdb_obj->output_database;
 }
 
+sub _build__segmasker_obj {
+    my ($self) = @_;
+    my $segmasker =
+      Bio::PanGenome::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec );
+    $segmasker->run();
+    return $segmasker;
+}
+
 sub _build__makeblastdb_obj {
     my ($self) = @_;
     my $blast_database =
-      Bio::PanGenome::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec );
+      Bio::PanGenome::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file );
     $blast_database->run();
     return $blast_database;
 }
