@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+use Moose;
+use Getopt::Long;
+my($output_filename,$dbtype,$in,$logfile,$parse_seqids,$mask_data,$infmt,$outfmt);
+GetOptions(
+    'o|out=s'      => \$output_filename,
+    'i|in=s'       => \$in,
+    'infmt=s'      => \$infmt,
+    'outfmt=s'     => \$outfmt,
+    'parse_seqids' => \$parse_seqids,
+    'mask_data=s'  => \$mask_data,
+);
+
+system("touch $output_filename");
+1;

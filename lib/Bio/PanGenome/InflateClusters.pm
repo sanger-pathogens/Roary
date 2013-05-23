@@ -99,7 +99,7 @@ sub _inflate_line
    my($self, $line) = @_;
    my @inflated_genes;
    chomp($line);
-   my @gene_names = split(/ /, $line);
+   my @gene_names = split(/[\t\s]+/, $line);
    for my $gene_name (@gene_names)
    {
      push(@inflated_genes, $self->_inflate_gene($gene_name));
@@ -113,7 +113,7 @@ sub _inflate_gene
    my $inflated_gene = $gene_name;
    if(defined($self->_clustered_genes->{$gene_name}))
    {
-     $inflated_gene = $inflated_gene.' '. join(' ',@{$self->_clustered_genes->{$gene_name}});
+     $inflated_gene = $inflated_gene."\t". join("\t",@{$self->_clustered_genes->{$gene_name}});
    }
    return $inflated_gene;
 }
