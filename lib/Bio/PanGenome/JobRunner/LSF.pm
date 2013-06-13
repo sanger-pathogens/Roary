@@ -39,7 +39,7 @@ sub _submit_job {
     $self->_job_manager->submit(
         -o => "out.o",
         -e => "out.e",
-        -M => $self->memory_in_mb * 1000,
+        -M => $self->memory_in_mb,
         -R => $self->_generate_memory_parameter,
         $command_to_run
     );
