@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::ExtractProteomeFromGFF;
+package Bio::PanGenome::CommandLine::ExtractProteomeFromGff;
 
 # ABSTRACT: Take in GFF files and output the proteome
 
