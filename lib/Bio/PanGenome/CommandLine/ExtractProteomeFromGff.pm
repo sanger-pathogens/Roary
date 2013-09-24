@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::ExtractProteomeFromGFF;
+package Bio::PanGenome::CommandLine::ExtractProteomeFromGff;
 
 # ABSTRACT: Take in GFF files and output the proteome
 
@@ -15,7 +15,7 @@ use File::Basename;
 
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
+has 'script_name' =bin/extract_proteome_from_gff> ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'gff_files'      => ( is => 'rw', isa => 'ArrayRef' );
