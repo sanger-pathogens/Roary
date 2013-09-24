@@ -17,7 +17,7 @@ my $cwd         = getcwd();
 
 my %scripts_and_expected_files = (
     't/data/example_annotation.gff' =>
-      [' t/data/example_annotation.gff.testing.intermediate.translate.fa','t/data/example_annotation.gff.expected.proteome' ],
+      ['example_annotation.gff.proteome.faa','t/data/example_annotation.gff.proteome.faa.expected' ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
