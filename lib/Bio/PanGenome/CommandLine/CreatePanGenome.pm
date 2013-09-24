@@ -26,12 +26,14 @@ has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
 has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' );
 has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
 
+has 'cpus'              => ( is => 'rw', isa => 'Int', default => 1 );
+
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $help );
+    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $cpus, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -40,7 +42,8 @@ sub BUILD {
         'm|makeblastdb_exec=s' => \$makeblastdb_exec,
         'b|blastp_exec=s'      => \$blastp_exec,
         'd|mcxdeblast_exec=s'    => \$mcxdeblast_exec,
-        'c|mcl_exec=s'           => \$mcl_exec,
+        'c|mcl_exec=s'           => \$mcl_exec, 
+        'p|processors=i'       => \$cpus,
         'h|help'               => \$help,
     );
     
@@ -54,6 +57,7 @@ sub BUILD {
     $self->blastp_exec($blastp_exec)           if ( defined($blastp_exec) );
     $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
     $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
+    $self->cpus($cpus)                         if ( defined($cpus) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {

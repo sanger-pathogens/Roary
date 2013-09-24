@@ -23,9 +23,18 @@ has 'gff_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_fasta_files' );
 has 'fasta_files_to_gff_files' =>
   ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_fasta_files_to_gff_files' );
+has 'job_runner'              => ( is => 'ro', isa => 'Str',      default  => 'Local' );
+
+has '_job_runner_class'       => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__job_runner_class' );
+has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  default => '1000' );
 
 
-has '_extract_proteome_objects' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build__extract_proteome_objects' );
+sub _build__job_runner_class {
+    my ($self) = @_;
+    my $job_runner_class = "Bio::PanGenome::JobRunner::" . $self->job_runner;
+    eval "require $job_runner_class";
+    return $job_runner_class;
+}
 
 sub _build__extract_proteome_objects
 {
@@ -51,9 +60,20 @@ sub _build_fasta_files_to_gff_files {
     my ($self) = @_;
 
     my %fasta_files;
-    for my $filename ( keys %{ $self->_extract_proteome_objects } ) {
-        $fasta_files{ $filename  } = $self->_extract_proteome_objects->{$filename}->fasta_file();
+    my @commands_to_run;
+    for my $filename ( @{ $self->gff_files } ) 
+    {
+        my($gff_filename_without_directory, $directories, $suffix) = fileparse($filename);
+        my $output_suffix = "proteome.faa";
+        
+        my $output_filename = $filename.'.'.$output_suffix;
+        $fasta_files{ $filename  } = $gff_filename_without_directory.'.'.$output_suffix;
+        push(@commands_to_run, "extract_proteome_from_gff -o $output_suffix $filename");
     }
+    # Farm out the computation and block until its ready
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb );
+    $job_runner_obj->run();
+    
     return \%fasta_files;
 }
 

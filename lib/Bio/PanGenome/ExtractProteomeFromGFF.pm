@@ -21,19 +21,21 @@ use File::Basename;
 use File::Temp;
 
 has 'gff_file' => ( is => 'ro', isa => 'Str', required => 1 );
-has 'fasta_file' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_files' );
+has 'fasta_file' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_file' );
 
 has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
 
+has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
 
-sub _build_fasta_files
+sub _build_fasta_file
 {
   my ($self) = @_;
   $self->_extract_nucleotide_regions;
   $self->_convert_nucleotide_to_protein;
-  return $self->_output_filename;
+  $self->_cleanup_intermediate_files;
+  return $self->output_filename;
 }
 
 sub _build__working_directory_name {
@@ -41,7 +43,7 @@ sub _build__working_directory_name {
     return $self->_working_directory->dirname();
 }
 
-sub _output_filename {
+sub _build_output_filename {
     my ( $self ) = @_;
     my ( $filename, $directories, $suffix ) = fileparse( $self->gff_file, qr/\.[^.]*/ );
     return join( '/', ( $self->_working_directory_name, $filename . '.faa' ) );
@@ -49,17 +51,23 @@ sub _output_filename {
 
 sub _bed_output_filename {
     my ($self) = @_;
-    return join( '.', ( $self->_output_filename, 'intermediate.bed' ) );
+    return join( '.', ( $self->output_filename, 'intermediate.bed' ) );
+}
+
+sub _cleanup_intermediate_files
+{
+  my ($self) = @_;
+  unlink($self->_fastatranslate_filename);
 }
 
 sub _nucleotide_fasta_file_from_gff_filename {
     my ($self) = @_;
-    return join( '.', ( $self->_output_filename, 'intermediate.fa' ) );
+    return join( '.', ( $self->output_filename, 'intermediate.fa' ) );
 }
 
 sub _extracted_nucleotide_fasta_file_from_bed_filename {
     my ($self) = @_;
-    return join( '.', ( $self->_output_filename, 'intermediate.extracted.fa' ) );
+    return join( '.', ( $self->output_filename, 'intermediate.extracted.fa' ) );
 }
 
 sub _create_bed_file_from_gff {
@@ -104,7 +112,7 @@ sub _extract_nucleotide_regions {
 
 sub _fastatranslate_filename {
     my ($self) = @_;
-    return join( '.', ( $self->_output_filename, 'intermediate.translate.fa' ) );
+    return join( '.', ( $self->output_filename, 'intermediate.translate.fa' ) );
 }
 
 sub _fastatranslate_cmd
@@ -118,7 +126,7 @@ sub _convert_nucleotide_to_protein
   my ($self) = @_;
   system($self->_fastatranslate_cmd(1));
   # Only keep sequences which have a start and stop codon.
-  my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' > '.$self->_output_filename;
+  my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' > '.$self->output_filename;
   unlink($self->_extracted_nucleotide_fasta_file_from_bed_filename);
   system($cmd);
 }

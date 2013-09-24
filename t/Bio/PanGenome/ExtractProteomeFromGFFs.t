@@ -22,8 +22,8 @@ ok(
 
 my @sorted_fasta_files = sort(@{$plot_groups_obj->fasta_files()});
 my @sorted_expected_files = sort((
-$plot_groups_obj->_extract_proteome_objects->{'t/data/example_annotation_2.gff'}->_working_directory_name . '/example_annotation_2.faa',
-     $plot_groups_obj->_extract_proteome_objects->{'t/data/example_annotation.gff'}->_working_directory_name . '/example_annotation.faa',));
+'example_annotation.gff.proteome.faa',
+'example_annotation_2.gff.proteome.faa'));
 
 is_deeply(
     \@sorted_fasta_files,
@@ -33,13 +33,12 @@ is_deeply(
 
 is(
     read_file( $plot_groups_obj->fasta_files->[0] ),
-    read_file('t/data/expected_example_annotation_1.faa'),
+    read_file('t/data/example_annotation.gff.proteome.faa.expected'),
     'content of proteome 1 as expected'
 );
-#is(
-#    read_file( $plot_groups_obj->fasta_files->[1] ),
-#    read_file('t/data/expected_example_annotation_1.faa'),
-#    'content of proteome 2 as expected'
-#);
+
+unlink('example_annotation.gff.proteome.faa');
+unlink('example_annotation_2.gff.proteome.faa');
+
 
 done_testing();
