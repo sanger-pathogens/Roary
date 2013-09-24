@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::ExtractProteomeFromGFF');
+    use_ok('Bio::PanGenome::CommandLine::ExtractProteomeFromGff');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::ExtractProteomeFromGFF';
+my $script_name = 'Bio::PanGenome::CommandLine::ExtractProteomeFromGff';
 my $cwd         = getcwd();
 
 my %scripts_and_expected_files = (
