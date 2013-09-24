@@ -26,7 +26,7 @@ has '_job_manager'    => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, 
 
 sub _build__job_manager {
     my ($self) = @_;
-    return LSF::JobManager->new( -q => $self->queue, history => 1 );
+    return LSF::JobManager->new( -q => $self->queue );
 }
 
 sub _generate_memory_parameter {
@@ -67,8 +67,7 @@ sub run {
     for my $command_to_run ( @{ $self->commands_to_run } ) {
         $self->_submit_job($command_to_run);
     }
-    $self->_job_manager->wait_all_children( history => 1 );
-    $self->_report_errors;
+    $self->_job_manager->wait_all_children();
     1;
 }
 no Moose;
