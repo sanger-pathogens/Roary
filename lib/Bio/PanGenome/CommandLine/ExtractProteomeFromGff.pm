@@ -13,35 +13,37 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::ExtractProteomeFromGFF;
 use File::Basename;
 
-
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
-has 'gff_files'      => ( is => 'rw', isa => 'ArrayRef' );
-has 'output_suffix' => ( is => 'rw', isa => 'Str', default => 'proteome.faa' );
-has '_error_message' => ( is => 'rw', isa => 'Str' );
+has 'gff_files'             => ( is => 'rw', isa => 'ArrayRef' );
+has 'output_suffix'         => ( is => 'rw', isa => 'Str', default => 'proteome.faa' );
+has '_error_message'        => ( is => 'rw', isa => 'Str' );
+has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $gff_files, $output_suffix, $help );
+    my ( $gff_files, $output_suffix, $apply_unknowns_filter, $help );
 
     GetOptionsFromArray(
         $self->args,
-        'o|output_suffix=s'          => \$output_suffix,
-        'h|help'              => \$help,
+        'o|output_suffix=s'       => \$output_suffix,
+        'apply_unknowns_filter=i' => \$apply_unknowns_filter,
+        'h|help'                  => \$help,
     );
 
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide a GFF file");
     }
 
-    if ( defined($output_suffix) )
-    {
-      $self->output_suffix($output_suffix) 
+    if ( defined($output_suffix) ) {
+        $self->output_suffix($output_suffix);
     }
-  
+
+    $self->apply_unknowns_filter($apply_unknowns_filter) if ( defined($apply_unknowns_filter) );
+
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
             $self->_error_message("Error: Cant access file $filename");
@@ -61,14 +63,14 @@ sub run {
         die $self->usage_text;
     }
 
-    for my $gff_file (@{$self->gff_files})
-    {
-      my($filename, $directories, $suffix) = fileparse($gff_file);
-      my $obj = Bio::PanGenome::ExtractProteomeFromGFF->new(
-        gff_file         => $gff_file,
-        output_filename   => $filename.'.'.$self->output_suffix,
-      );
-      $obj->fasta_file();
+    for my $gff_file ( @{ $self->gff_files } ) {
+        my ( $filename, $directories, $suffix ) = fileparse($gff_file);
+        my $obj = Bio::PanGenome::ExtractProteomeFromGFF->new(
+            gff_file              => $gff_file,
+            output_filename       => $filename . '.' . $self->output_suffix,
+            apply_unknowns_filter => $self->apply_unknowns_filter
+        );
+        $obj->fasta_file();
     }
 
 }

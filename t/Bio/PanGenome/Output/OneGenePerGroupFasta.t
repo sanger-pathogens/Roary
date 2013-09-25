@@ -21,8 +21,8 @@ ok(my $obj = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
   ),'initialise creating a fasta file with one gene per group');
 ok($obj->create_file(), 'create the fasta file');
 
-is(read_file('pan_genome.fa'), read_file('t/data/expected_pan_genome.fa'), 'contents of pan genome fasta as expected');
+is(read_file('pan_genome.fa'), read_file('t/data/expected_pan_genome_one_gene_per_fasta.fa'), 'contents of pan genome fasta as expected');
 
-unlink('pan_genome.fa');
+#unlink('pan_genome.fa');
 
 done_testing();

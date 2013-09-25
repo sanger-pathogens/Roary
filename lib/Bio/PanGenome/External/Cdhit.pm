@@ -22,7 +22,7 @@ has 'input_file'                   => ( is => 'ro', isa => 'Str',  required => 1
 has 'output_base'                  => ( is => 'ro', isa => 'Str',  default  => 'output' );
 has 'exec'                         => ( is => 'ro', isa => 'Str',  default  => 'cd-hit' );
 has '_number_of_threads'           => ( is => 'ro', isa => 'Int',  default  => 1 );
-has '_max_available_memory_in_mb'  => ( is => 'ro', isa => 'Int',  default  => 1000 );
+has '_max_available_memory_in_mb'  => ( is => 'ro', isa => 'Int',  default  => 3000 );
 has '_use_most_similar_clustering' => ( is => 'ro', isa => 'Bool', default  => 1 );
 has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 1 );

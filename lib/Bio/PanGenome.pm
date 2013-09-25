@@ -44,7 +44,6 @@ sub run {
     my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
         proteome_files        => $self->fasta_files,
         output_filename       => $output_combined_filename,
-        apply_unknowns_filter => 1
     );
     $combine_fasta_files->create_combined_proteome_file;
 
