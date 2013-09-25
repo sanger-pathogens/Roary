@@ -45,31 +45,46 @@ sub _submit_job {
     );
 }
 
-sub _report_errors {
-    my ($self) = @_;
-    my @errors;
-
-    for my $job ( $self->_job_manager->jobs ) {
-        if ( $job->history->exit_status != 0 ) {
-            push( @errors, $job );
-        }
-    }
-
-    if ( scalar @errors != 0 ) {
-        Bio::PanGenome::Exceptions::LSFJobFailed->throw( error => "The following jobs failed: ", join( ",", @errors ) );
-    }
-    $self->_job_manager->clear;
+sub _construct_dependancy_params
+{
+   my ($self, $ids) = @_;
+   return '' if((! defined($ids)) || @{$ids} == 0);
+   
+   my @done_ids;
+   for my $id ( @{$ids})
+   {
+     push(@done_ids, 'done('.$id.')');
+   }
+   return join('&&', @done_ids);
 }
 
 sub run {
     my ($self) = @_;
-
+    my @submitted_job_ids;
     for my $command_to_run ( @{ $self->commands_to_run } ) {
-        $self->_submit_job($command_to_run);
+        my $submitted_job = $self->_submit_job($command_to_run);
+        if(defined($submitted_job))
+        {
+          push(@submitted_job_ids, $submitted_job->id);
+        }
     }
-    $self->_job_manager->wait_all_children();
+    my $dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
+    $self->_submit_merge_job($dependancy_params);
     1;
 }
+
+sub _submit_merge_job {
+    my ( $self,$dependancy_params) = @_;
+    $self->_job_manager->submit(
+        -o => ".merge.o",
+        -e => ".merge.e",
+        -M => $self->memory_in_mb,
+        -R => $self->_generate_memory_parameter,
+        -w => $dependancy_params,
+        'true'
+    );
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
