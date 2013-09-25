@@ -80,6 +80,7 @@ sub run {
     
     my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
       input_files   => $self->fasta_files,
+      job_runner    => $self->job_runner
     );
     
     my $pan_genome_obj = Bio::PanGenome->new(
