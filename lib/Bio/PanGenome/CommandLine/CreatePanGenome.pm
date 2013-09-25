@@ -25,7 +25,7 @@ has 'makeblastdb_exec'  => ( is => 'rw', isa => 'Str', default => 'makeblastdb' 
 has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
 has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' );
 has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
-
+has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'              => ( is => 'rw', isa => 'Int', default => 1 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
@@ -33,7 +33,7 @@ has '_error_message'    => ( is => 'rw', isa => 'Str' );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $cpus, $help );
+    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -44,6 +44,7 @@ sub BUILD {
         'd|mcxdeblast_exec=s'    => \$mcxdeblast_exec,
         'c|mcl_exec=s'           => \$mcl_exec, 
         'p|processors=i'       => \$cpus,
+        'apply_unknowns_filter=i' => \$apply_unknowns_filter,
         'h|help'               => \$help,
     );
     
@@ -58,6 +59,7 @@ sub BUILD {
     $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
     $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
     $self->cpus($cpus)                         if ( defined($cpus) );
+    $self->apply_unknowns_filter($apply_unknowns_filter) if ( defined($apply_unknowns_filter) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -79,8 +81,9 @@ sub run {
     }
     
     my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
-      input_files   => $self->fasta_files,
-      job_runner    => $self->job_runner
+      input_files           => $self->fasta_files,
+      job_runner            => $self->job_runner,
+      apply_unknowns_filter => $self->apply_unknowns_filter
     );
     
     my $pan_genome_obj = Bio::PanGenome->new(

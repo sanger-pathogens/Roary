@@ -160,7 +160,7 @@ sub run {
       
       for my $differences_group_filename(($difference_between_sets->groups_set_one_unique_filename,$difference_between_sets->groups_set_two_unique_filename,$difference_between_sets->groups_in_common_filename))
       {
-        $self->create_spreadsheets($differences_group_filename, $prepare_input_files->fasta_files, $self->input_files);
+        $self->create_spreadsheets($differences_group_filename, $prepare_input_files->fasta_files, $prepare_input_files->fasta_files);
       }
 
     }
