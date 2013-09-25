@@ -20,6 +20,7 @@ use Bio::PanGenome::ExtractProteomeFromGFFs;
 use Cwd;
 
 has 'input_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'job_runner'              => ( is => 'ro', isa => 'Str',      default  => 'Local' );
 has '_input_gff_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__input_gff_files' );
 has '_input_fasta_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__input_fasta_files' );
 has '_derived_fasta_files' =>
@@ -41,7 +42,7 @@ sub _build__input_fasta_files {
 
 sub _build__extract_proteome_obj {
     my ($self) = @_;
-    return Bio::PanGenome::ExtractProteomeFromGFFs->new( gff_files => $self->_input_gff_files );
+    return Bio::PanGenome::ExtractProteomeFromGFFs->new( gff_files => $self->_input_gff_files, job_runner => $self->job_runner );
 }
 
 sub _build__derived_fasta_files {
