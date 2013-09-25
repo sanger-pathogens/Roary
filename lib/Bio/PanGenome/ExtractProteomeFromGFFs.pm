@@ -27,7 +27,7 @@ has 'job_runner'              => ( is => 'ro', isa => 'Str',      default  => 'L
 
 has '_job_runner_class'       => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__job_runner_class' );
 has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  default => '1000' );
-
+has '_queue'                  => ( is => 'ro', isa => 'Str',  default => 'small' );
 
 sub _build__job_runner_class {
     my ($self) = @_;
@@ -71,7 +71,7 @@ sub _build_fasta_files_to_gff_files {
         push(@commands_to_run, "extract_proteome_from_gff -o $output_suffix $filename");
     }
     # Farm out the computation and block until its ready
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb );
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue);
     $job_runner_obj->run();
     
     return \%fasta_files;
