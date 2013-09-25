@@ -26,7 +26,7 @@ has 'fasta_files_to_gff_files' =>
 has 'job_runner'              => ( is => 'ro', isa => 'Str',      default  => 'Local' );
 
 has '_job_runner_class'       => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__job_runner_class' );
-has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  default => '1000' );
+has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  default => '200' );
 has '_queue'                  => ( is => 'ro', isa => 'Str',  default => 'small' );
 
 sub _build__job_runner_class {
