@@ -15,19 +15,24 @@ Take in GFF files and create protein sequences in FASTA format
 =cut
 
 use Moose;
+use Bio::SeqIO;
 use Cwd;
 use Bio::PanGenome::Exceptions;
 use File::Basename;
 use File::Temp;
+use File::Copy;
 
 has 'gff_file' => ( is => 'ro', isa => 'Str', required => 1 );
+has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'maximum_percentage_of_unknowns' => ( is => 'ro', isa => 'Num',      default  => 5 );
+
 has 'fasta_file' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_file' );
+has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
 
 has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
 
-has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
 
 sub _build_fasta_file
 {
@@ -35,6 +40,7 @@ sub _build_fasta_file
   $self->_extract_nucleotide_regions;
   $self->_convert_nucleotide_to_protein;
   $self->_cleanup_intermediate_files;
+  $self->_filter_fasta_sequences($self->output_filename);
   return $self->output_filename;
 }
 
@@ -130,6 +136,47 @@ sub _convert_nucleotide_to_protein
   unlink($self->_extracted_nucleotide_fasta_file_from_bed_filename);
   system($cmd);
 }
+
+
+
+sub _does_sequence_contain_too_many_unknowns
+{
+  my ($self, $sequence_obj) = @_;
+  my $maximum_number_of_Xs = int(($sequence_obj->length()*$self->maximum_percentage_of_unknowns)/100);
+  my $number_of_Xs_found = () = $sequence_obj->seq() =~ /X/g;
+  if($number_of_Xs_found  > $maximum_number_of_Xs)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+
+sub _filter_fasta_sequences
+{
+  my ($self, $filename) = @_;
+  my $temp_output_file = $filename.'.tmp.filtered.fa';
+  my $out_fasta_obj = Bio::SeqIO->new( -file => ">".$temp_output_file, -format => 'Fasta');
+  my $fasta_obj     = Bio::SeqIO->new( -file => $filename, -format => 'Fasta');
+
+  while(my $seq = $fasta_obj->next_seq())
+  {
+    if($self->_does_sequence_contain_too_many_unknowns($seq))
+    {
+      next; 
+    }
+    # strip out extra details put in by fastatranslate
+    $seq->description(undef);
+    $out_fasta_obj->write_seq($seq);
+  }
+  # Replace the original file.
+  move($temp_output_file, $filename);
+  return 1;
+}
+
 
 
 no Moose;

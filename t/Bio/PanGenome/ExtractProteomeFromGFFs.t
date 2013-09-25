@@ -40,5 +40,4 @@ is(
 unlink('example_annotation.gff.proteome.faa');
 unlink('example_annotation_2.gff.proteome.faa');
 
-
 done_testing();
