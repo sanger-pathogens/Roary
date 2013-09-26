@@ -24,6 +24,7 @@ Returns the path to the temporary blast database files
 use Moose;
 use File::Temp;
 use Cwd;
+with 'Bio::PanGenome::JobRunner::Role';
 
 has 'fasta_file'         => ( is => 'ro', isa => 'Str', required => 1 );
 has 'mask_data'          => ( is => 'ro', isa => 'Str', required => 1  );
@@ -32,6 +33,9 @@ has '_working_directory' => ( is => 'ro', isa => 'File::Temp::Dir', default  => 
 has '_dbtype'            => ( is => 'ro', isa => 'Str', default  => 'prot' );
 has '_logfile'           => ( is => 'ro', isa => 'Str', default  => '/dev/null' );
 has 'output_database'    => ( is => 'ro', isa => 'Str', lazy     => 1, builder => '_build_output_database' );
+
+# Overload Role
+has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int', default => 3000);
 
 sub _build_output_database {
     my ($self) = @_;
@@ -55,9 +59,14 @@ sub _command_to_run {
 }
 
 sub run {
-    my ($self) = @_;
-    system( $self->_command_to_run );
-    1;
+  my ($self) = @_;
+  my @commands_to_run;
+  push(@commands_to_run, $self->_command_to_run );
+  
+  my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue );
+  $job_runner_obj->run();
+  
+  1;
 }
 
 no Moose;
