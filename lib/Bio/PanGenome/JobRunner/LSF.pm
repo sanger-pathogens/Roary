@@ -45,44 +45,14 @@ sub _submit_job {
     );
 }
 
-sub _construct_dependancy_params
-{
-   my ($self, $ids) = @_;
-   return '' if((! defined($ids)) || @{$ids} == 0);
-   
-   my @done_ids;
-   for my $id ( @{$ids})
-   {
-     push(@done_ids, 'done('.$id.')');
-   }
-   return join('&&', @done_ids);
-}
 
 sub run {
     my ($self) = @_;
-    my @submitted_job_ids;
     for my $command_to_run ( @{ $self->commands_to_run } ) {
-        my $submitted_job = $self->_submit_job($command_to_run);
-        if(defined($submitted_job))
-        {
-          push(@submitted_job_ids, $submitted_job->id);
-        }
+        $self->_submit_job($command_to_run);
     }
-    my $dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
-    $self->_submit_merge_job($dependancy_params);
+    $self->_job_manager->wait_all_children(history => 0);
     1;
-}
-
-sub _submit_merge_job {
-    my ( $self,$dependancy_params) = @_;
-    $self->_job_manager->submit(
-        -o => ".merge.o",
-        -e => ".merge.e",
-        -M => $self->memory_in_mb,
-        -R => $self->_generate_memory_parameter,
-        -w => $dependancy_params,
-        'true'
-    );
 }
 
 no Moose;
