@@ -21,6 +21,7 @@ use Bio::PanGenome::Exceptions;
 use File::Basename;
 use File::Temp;
 use File::Copy;
+with 'Bio::PanGenome::JobRunner::Role';
 
 has 'gff_file' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );

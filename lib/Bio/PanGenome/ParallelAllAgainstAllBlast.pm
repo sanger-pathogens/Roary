@@ -23,9 +23,9 @@ use Bio::PanGenome::External::Segmasker;
 use Cwd;
 use File::Temp;
 use File::Basename;
+with 'Bio::PanGenome::JobRunner::Role';
 
 has 'fasta_file'              => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'job_runner'              => ( is => 'ro', isa => 'Str',      default  => 'Local' );
 has 'blast_results_file_name' => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build_blast_results_file_name' );
 has 'makeblastdb_exec'        => ( is => 'ro', isa => 'Str',      default => 'makeblastdb' );
 has 'blastp_exec'             => ( is => 'ro', isa => 'Str',      default => 'blastp' );
@@ -35,19 +35,12 @@ has '_sequence_file_names'    => ( is => 'ro', isa => 'ArrayRef', lazy => 1, bui
 has '_makeblastdb_obj'        => ( is => 'ro', isa => 'Bio::PanGenome::External::Makeblastdb', lazy => 1, builder => '_build__makeblastdb_obj' );
 has '_segmasker_obj'          => ( is => 'ro', isa => 'Bio::PanGenome::External::Segmasker', lazy => 1, builder => '_build__segmasker_obj' );
 has '_blast_database'         => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__blast_database' );
-has '_job_runner_class'       => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__job_runner_class' );
+
 has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
 
-has '_memory_required_in_mb'       => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
-
-sub _build__job_runner_class {
-    my ($self) = @_;
-    my $job_runner_class = "Bio::PanGenome::JobRunner::" . $self->job_runner;
-    eval "require $job_runner_class";
-    return $job_runner_class;
-}
+has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
 
 sub _build__blast_database {
     my ($self) = @_;
@@ -57,7 +50,7 @@ sub _build__blast_database {
 sub _build__segmasker_obj {
     my ($self) = @_;
     my $segmasker =
-      Bio::PanGenome::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec );
+      Bio::PanGenome::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec, job_runner => $self->job_runner );
     $segmasker->run();
     return $segmasker;
 }
@@ -65,7 +58,7 @@ sub _build__segmasker_obj {
 sub _build__makeblastdb_obj {
     my ($self) = @_;
     my $blast_database =
-      Bio::PanGenome::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file );
+      Bio::PanGenome::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file, job_runner => $self->job_runner  );
     $blast_database->run();
     return $blast_database;
 }
@@ -135,7 +128,7 @@ sub run {
         push( @expected_output_files, $output_seq_results_file );
         push( @commands_to_run,       $blast_database->_command_to_run() );
     }
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb );
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue );
     $job_runner_obj->run();
     $self->_combine_blast_results(\@expected_output_files);
     return 1;

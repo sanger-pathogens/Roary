@@ -18,24 +18,14 @@ use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::ExtractProteomeFromGFF;
 use File::Basename;
+with 'Bio::PanGenome::JobRunner::Role';
 
-has 'gff_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_fasta_files' );
+has 'gff_files'                => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'fasta_files'              => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_fasta_files' );
 has 'fasta_files_to_gff_files' =>
   ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_fasta_files_to_gff_files' );
-has 'job_runner'              => ( is => 'ro', isa => 'Str',      default  => 'Local' );
-has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
-
-has '_job_runner_class'       => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__job_runner_class' );
-has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  default => '200' );
-has '_queue'                  => ( is => 'ro', isa => 'Str',  default => 'small' );
-
-sub _build__job_runner_class {
-    my ($self) = @_;
-    my $job_runner_class = "Bio::PanGenome::JobRunner::" . $self->job_runner;
-    eval "require $job_runner_class";
-    return $job_runner_class;
-}
+has 'apply_unknowns_filter'    => ( is => 'rw', isa => 'Bool', default => 1 );
+has '_queue'                  => ( is => 'rw', isa => 'Str',  default => 'small' );
 
 sub _build__extract_proteome_objects
 {
