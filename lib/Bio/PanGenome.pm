@@ -49,6 +49,7 @@ sub run {
 
     my $cdhit_obj = Bio::PanGenome::External::Cdhit->new(
         input_file  => $output_combined_filename,
+        job_runner  => $self->job_runner,
         output_base => $output_cd_hit_filename
     );
     $cdhit_obj->run();
@@ -66,6 +67,7 @@ sub run {
         blast_results   => $output_blast_results_filename,
         mcxdeblast_exec => $self->mcxdeblast_exec,
         mcl_exec        => $self->mcl_exec,
+        job_runner      => $self->job_runner,
         output_file     => $output_mcl_filename
     );
     $mcl->run();

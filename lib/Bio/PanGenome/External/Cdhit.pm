@@ -17,16 +17,45 @@ Wrapper to run cd-hit
 =cut
 
 use Moose;
+with 'Bio::PanGenome::JobRunner::Role';
 
 has 'input_file'                   => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'output_base'                  => ( is => 'ro', isa => 'Str',  default  => 'output' );
 has 'exec'                         => ( is => 'ro', isa => 'Str',  default  => 'cd-hit' );
 has '_number_of_threads'           => ( is => 'ro', isa => 'Int',  default  => 1 );
-has '_max_available_memory_in_mb'  => ( is => 'ro', isa => 'Int',  default  => 3000 );
+has '_max_available_memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__max_available_memory_in_mb' );
 has '_use_most_similar_clustering' => ( is => 'ro', isa => 'Bool', default  => 1 );
 has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
+
+# Overload Role
+has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
+
+sub _build__memory_required_in_mb
+{
+  my ($self) = @_;
+  my $filename = $self->input_file;
+  my $memory_required = 1000;
+  if(-e $filename)
+  {
+    $memory_required = -s $filename;
+    # Convert to mb
+    $memory_required = int($memory_required/1000000);
+    # Triple memory for worst case senario
+    $memory_required *= 3;
+    $memory_required = 1000 if($memory_required < 1000);
+  }
+
+  return $memory_required;
+}
+
+sub _build__max_available_memory_in_mb
+{
+  my ($self) = @_;
+  my $memory_to_cdhit = int($self->_memory_required_in_mb *0.9);
+  return $memory_to_cdhit;
+}
 
 sub clusters_filename
 {
@@ -50,8 +79,12 @@ sub _command_to_run {
 
 sub run {
     my ($self) = @_;
-    system( $self->_command_to_run );
-    # cleanup output files
+    my @commands_to_run;
+    push(@commands_to_run, $self->_command_to_run );
+    
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue );
+    $job_runner_obj->run();
+    
     1;
 }
 
