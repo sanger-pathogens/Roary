@@ -18,6 +18,7 @@ Take in a GFF files and a groups file and output one multifasta file per group w
 use Moose;
 use Bio::SeqIO;
 use File::Path qw(make_path);
+use File::Basename;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::AnalyseGroups;
 
@@ -29,6 +30,16 @@ has 'output_directory' => ( is => 'ro', isa => 'Str',                           
 
 has 'fasta_file'   => ( is => 'ro', isa => 'Str',        lazy => 1, builder => '_build_fasta_file' );
 has '_input_seqio' => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__input_seqio' );
+
+has '_output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__output_filename' );
+
+
+sub _build__output_filename
+{
+  my ($self) = @_;
+  my ( $filename, $directories, $suffix ) = fileparse($self->gff_file);
+  return join('/',($self->output_directory, $filename.'.tmp_nuc_sequences.fa' ));
+}
 
 sub _build__input_seqio {
     my ($self) = @_;
@@ -44,7 +55,8 @@ sub populate_files {
         {
           my $current_group =  $self->analyse_groups->_genes_to_groups->{$input_seq->display_id};
 
-          my $output_seq = $self->_group_seq_io_obj($current_group,@{$self->analyse_groups->_groups_to_gene{$current_group}});
+          my $number_of_genes = @{$self->analyse_groups->_groups_to_genes->{$current_group}};
+          my $output_seq = $self->_group_seq_io_obj($current_group,$number_of_genes);
           $output_seq->write_seq($input_seq);
         }
     }
@@ -72,7 +84,7 @@ sub _group_seq_io_obj
 
 sub _extracted_nucleotide_fasta_file_from_bed_filename {
     my ($self) = @_;
-    return join( '.', ( $self->output_filename, 'intermediate.extracted.fa' ) );
+    return join( '.', ( $self->_output_filename, 'intermediate.extracted.fa' ) );
 }
 
 sub _create_bed_file_from_gff {
@@ -97,7 +109,12 @@ sub _create_nucleotide_fasta_file_from_gff {
 
 sub _nucleotide_fasta_file_from_gff_filename {
     my ($self) = @_;
-    return join( '.', ( $self->output_filename, 'intermediate.fa' ) );
+    return join( '.', ( $self->_output_filename, 'intermediate.fa' ) );
+}
+
+sub _bed_output_filename {
+    my ($self) = @_;
+    return join( '.', ( $self->_output_filename, 'intermediate.bed' ) );
 }
 
 sub _extract_nucleotide_regions {
@@ -117,12 +134,12 @@ sub _extract_nucleotide_regions {
     unlink( $self->_nucleotide_fasta_file_from_gff_filename );
     unlink( $self->_bed_output_filename );
     unlink( $self->_nucleotide_fasta_file_from_gff_filename . '.fai' );
+    return $self->_extracted_nucleotide_fasta_file_from_bed_filename;
 }
 
 sub _build_fasta_file {
     my ($self) = @_;
-    $self->_extract_nucleotide_regions;
-    return $self->output_filename;
+    return $self->_extract_nucleotide_regions;
 }
 
 no Moose;

@@ -27,7 +27,7 @@ has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' )
 has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'              => ( is => 'rw', isa => 'Int', default => 1 );
-has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
+has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 

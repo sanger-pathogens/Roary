@@ -27,7 +27,7 @@ ok(
 ok( $obj->create_files(), 'Create multiple fasta files' );
 
 # Check that the files have been created
-ok( -e $obj->output_multifasta_filesoutput_filename_base . '_group_2.fa', 'group created' );
+ok( -e $obj->output_filename_base . '_group_2.fa', 'group created' );
 ok( -e $obj->output_filename_base . '_group_5.fa', 'group created' );
 
 is(
@@ -41,7 +41,7 @@ is(
     'group 5 contect as expected'
 );
 
-#unlink( $obj->output_filename_base . '_group_2.fa' );
-#unlink( $obj->output_filename_base . '_group_5.fa' );
+unlink( $obj->output_filename_base . '_group_2.fa' );
+unlink( $obj->output_filename_base . '_group_5.fa' );
 
 done_testing();

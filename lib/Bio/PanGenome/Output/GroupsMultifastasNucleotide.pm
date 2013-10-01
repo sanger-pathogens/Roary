@@ -20,7 +20,7 @@ use Moose;
 use File::Path qw(make_path);
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
+use Bio::PanGenome::Output::GroupsMultifastaNucleotide;
 
 has 'gff_files'        => ( is => 'ro', isa => 'ArrayRef',                      required => 1 );
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
@@ -42,7 +42,7 @@ sub create_files {
     
     for my $gff_file ( @{ $self->gff_files } ) 
     {
-      my $gff_multifasta = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+      my $gff_multifasta = Bio::PanGenome::Output::GroupsMultifastaNucleotide->new(
           gff_file             => $gff_file,
           analyse_groups       => $self->analyse_groups,
           group_names          => $self->group_names,
