@@ -19,6 +19,7 @@ use Bio::PanGenome::GroupLabels;
 use Bio::PanGenome::AnnotateGroups;
 use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::GroupStatistics;
+use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -30,6 +31,8 @@ has 'makeblastdb_exec'            => ( is => 'rw', isa => 'Str',      default  =
 has 'blastp_exec'                 => ( is => 'rw', isa => 'Str',      default  => 'blastp' );
 has 'mcxdeblast_exec'             => ( is => 'ro', isa => 'Str',      default  => 'mcxdeblast' );
 has 'mcl_exec'                    => ( is => 'ro', isa => 'Str',      default  => 'mcl' );
+
+has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 sub run {
     my ($self) = @_;
@@ -110,6 +113,16 @@ sub run {
         output_filename => $self->output_pan_geneome_filename
     );
     $one_gene_per_fasta->create_file();
+    
+    if($self->output_multifasta_files)
+    {
+      my $group_multifastas_nucleotides = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+          gff_files       => $self->input_files,
+          analyse_groups  => $analyse_groups_obj,
+          group_names     => $analyse_groups_obj->_groups
+        );
+      $group_multifastas_nucleotides->create_files();
+    }
 
     unlink($output_blast_results_filename);
     unlink($output_combined_filename);
