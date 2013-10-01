@@ -20,20 +20,20 @@ use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::Plot::FreqOfGenes;
 
-has 'fasta_files'     => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'groups_filename' => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'output_filename' => ( is => 'ro', isa => 'Str',      default  => 'summary_of_groups' );
+has 'fasta_files'          => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'groups_filename'      => ( is => 'ro', isa => 'Str',      required => 1 );
+has 'output_filename'      => ( is => 'ro', isa => 'Str',      default  => 'summary_of_groups' );
 has 'output_plot_filename' => ( is => 'ro', isa => 'Str',      default  => 'freq_of_genes.png' );
 
-has '_number_of_isolates' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_builder__number_of_isolates' );
+has '_number_of_isolates'  => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_builder__number_of_isolates' );
 has '_number_of_genes_per_file' =>
   ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__number_of_genes_per_file' );
-has '_genes_to_file'  => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__genes_to_file' );
-has '_files_to_genes' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__files_to_genes' );
+has '_genes_to_file'       => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__genes_to_file' );
+has '_files_to_genes'      => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__files_to_genes' );
 has '_freq_groups_per_genome' =>
   ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_builder__freq_groups_per_genome' );
-has '_groups_to_genes' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_genes' );
-has '_genes_to_groups' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__genes_to_groups' );
+has '_groups_to_genes'     => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_genes' );
+has '_genes_to_groups'     => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__genes_to_groups' );
 
 has '_groups' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_builder__groups' );
 

@@ -27,13 +27,14 @@ has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' )
 has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'              => ( is => 'rw', isa => 'Int', default => 1 );
+has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus, $help );
+    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -45,6 +46,7 @@ sub BUILD {
         'c|mcl_exec=s'           => \$mcl_exec, 
         'p|processors=i'       => \$cpus,
         'apply_unknowns_filter=i' => \$apply_unknowns_filter,
+        'e|output_multifasta_files' => \$output_multifasta_files,
         'h|help'               => \$help,
     );
     
@@ -59,7 +61,8 @@ sub BUILD {
     $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
     $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
     $self->cpus($cpus)                         if ( defined($cpus) );
-    $self->apply_unknowns_filter($apply_unknowns_filter) if ( defined($apply_unknowns_filter) );
+    $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
+    $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -92,7 +95,8 @@ sub run {
         output_filename  => $self->output_filename,
         job_runner       => $self->job_runner,
         makeblastdb_exec => $self->makeblastdb_exec,
-        blastp_exec      => $self->blastp_exec
+        blastp_exec      => $self->blastp_exec,
+        output_multifasta_files => $self->output_multifasta_files
       );
     $pan_genome_obj->run();
 }
@@ -109,6 +113,9 @@ sub usage_text {
     
     # Provide an output filename
     create_pan_geneome -o results *.gff
+    
+    # Create a multifasta file for each group of sequences (Warning: thousands of files created)
+    create_pan_geneome --output_multifasta_files *.gff
 
     # This help message
     create_pan_geneome -h

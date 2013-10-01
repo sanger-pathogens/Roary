@@ -41,7 +41,7 @@ is(
     'group 5 contect as expected'
 );
 
-#unlink( $obj->output_filename_base . '_group_2.fa' );
-#unlink( $obj->output_filename_base . '_group_5.fa' );
+unlink( $obj->output_filename_base . '_group_2.fa' );
+unlink( $obj->output_filename_base . '_group_5.fa' );
 
 done_testing();
