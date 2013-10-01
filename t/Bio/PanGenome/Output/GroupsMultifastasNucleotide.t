@@ -10,9 +10,21 @@ BEGIN { unshift( @INC, './lib' ) }
 BEGIN {
     use Test::Most;
     use_ok('Bio::PanGenome::Output::GroupsMultifastasNucleotide');
+    use Bio::PanGenome::AnnotateGroups;
+    use Bio::PanGenome::AnalyseGroups;
+    
 }
 
 my $gff_files = [ 't/data/query_1.gff', 't/data/query_2.gff','t/data/query_3.gff' ];
+
+
+my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
+  gff_files       => $gff_files,
+  groups_filename => 't/data/query_groups',
+);
+
+$annotate_groups->reannotate;
+
 
 my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
     fasta_files     => $gff_files,
@@ -23,19 +35,20 @@ ok(
     my $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
         group_names    => [ 'group_2', 'group_5' ],
         gff_files      => $gff_files,
-        analyse_groups => $plot_groups_obj
+        analyse_groups => $plot_groups_obj,
+        annotate_groups => $annotate_groups
     ),
     'initialise creating multiple fastas'
 );
 
 ok( $obj->create_files(), 'Create multiple fasta files' );
 
-is(read_file('pan_genome_sequences/3-group_1.fa'), read_file('t/data/pan_genome_sequences/3-group_1.fa' ), 'Check multifasta content is correct for 3-group_1.fa ');
-is(read_file('pan_genome_sequences/2-group_3.fa'), read_file('t/data/pan_genome_sequences/2-group_3.fa' ), 'Check multifasta content is correct for 2-group_3.fa ');
-is(read_file('pan_genome_sequences/2-group_2.fa'), read_file('t/data/pan_genome_sequences/2-group_2.fa' ), 'Check multifasta content is correct for 2-group_2.fa ');
+is(read_file('pan_genome_sequences/3-hly.fa'), read_file('t/data/pan_genome_sequences/3-hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
+is(read_file('pan_genome_sequences/2-speH.fa'), read_file('t/data/pan_genome_sequences/2-speH.fa' ), 'Check multifasta content is correct for 2-speH.fa ');
+is(read_file('pan_genome_sequences/2-argF.fa'), read_file('t/data/pan_genome_sequences/2-argF.fa' ), 'Check multifasta content is correct for 2-argF.fa ');
 is(read_file('pan_genome_sequences/1-group_7.fa'), read_file('t/data/pan_genome_sequences/1-group_7.fa' ), 'Check multifasta content is correct for 1-group_7.fa ');
 is(read_file('pan_genome_sequences/1-group_6.fa'), read_file('t/data/pan_genome_sequences/1-group_6.fa' ), 'Check multifasta content is correct for 1-group_6.fa ');
-is(read_file('pan_genome_sequences/1-group_5.fa'), read_file('t/data/pan_genome_sequences/1-group_5.fa' ), 'Check multifasta content is correct for 1-group_5.fa ');
+is(read_file('pan_genome_sequences/1-yfnB.fa'), read_file('t/data/pan_genome_sequences/1-yfnB.fa' ), 'Check multifasta content is correct for 1-yfnB.fa ');
 
 remove_tree('pan_genome_sequences');
 

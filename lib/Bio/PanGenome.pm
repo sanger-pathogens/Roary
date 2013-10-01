@@ -119,6 +119,7 @@ sub run {
       my $group_multifastas_nucleotides = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
           gff_files       => $self->input_files,
           analyse_groups  => $analyse_groups_obj,
+          annotate_groups => $annotate_groups,
           group_names     => $analyse_groups_obj->_groups
         );
       $group_multifastas_nucleotides->create_files();
