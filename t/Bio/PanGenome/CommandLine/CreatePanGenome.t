@@ -17,7 +17,7 @@ my $cwd = getcwd();
 
 
 my %scripts_and_expected_files = (
-      ' -j Local t/data/example_1.faa t/data/example_2.faa t/data/example_3.faa' =>
+      ' -j Local t/data/example_1.faa t/data/example_2.faa t/data/example_3.faa ' =>
         [ 'clustered_proteins', 't/data/expected_clustered_proteins' ],
       ' -j Local t/data/example_1.faa t/data/example_2.faa t/data/example_3.faa ' =>
           [ 'pan_genome.fa', 't/data/expected_create_pan_genome.fa' ],
