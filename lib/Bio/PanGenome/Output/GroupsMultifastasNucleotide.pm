@@ -25,7 +25,8 @@ use Bio::PanGenome::Output::GroupsMultifastaNucleotide;
 has 'gff_files'        => ( is => 'ro', isa => 'ArrayRef',                      required => 1 );
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
 has 'analyse_groups'   => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups', required => 1 );
-                       
+has 'annotate_groups' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
+
 has 'output_directory' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_directory');
 
 sub _build_output_directory
@@ -46,7 +47,8 @@ sub create_files {
           gff_file             => $gff_file,
           analyse_groups       => $self->analyse_groups,
           group_names          => $self->group_names,
-          output_directory     => $self->output_directory
+          output_directory     => $self->output_directory,
+          annotate_groups      => $self->annotate_groups
       );
       $gff_multifasta->populate_files;
     }
