@@ -27,6 +27,7 @@ has 'gff_file'         => ( is => 'ro', isa => 'Str',                           
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
 has 'analyse_groups'   => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups', required => 1 );
 has 'output_directory' => ( is => 'ro', isa => 'Str',                           required => 1 );
+has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
 
 has 'fasta_file'   => ( is => 'ro', isa => 'Str',        lazy => 1, builder => '_build_fasta_file' );
 has '_input_seqio' => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__input_seqio' );
@@ -68,8 +69,10 @@ sub populate_files {
 sub _group_file_name
 { 
   my ($self,$group_name,$num_group_genes) = @_;
-  $group_name =~ s!\W!_!gi;
-  my $filename = join('-', ($num_group_genes,$group_name)).'.fa';
+  my $annotated_group_name = $self->annotate_groups->_groups_to_consensus_gene_names->{$group_name};
+  
+  $annotated_group_name =~ s!\W!_!gi;
+  my $filename = join('-', ($num_group_genes,$annotated_group_name)).'.fa';
   my $group_file_name = join('/',($self->output_directory, $filename ));
   return $group_file_name;
 }
