@@ -16,12 +16,11 @@ BEGIN {
 my $script_name = 'Bio::PanGenome::CommandLine::CreatePanGenome';
 my $cwd = getcwd();
 
+local $ENV{PATH} = "$ENV{PATH}:./bin";
 
 my %scripts_and_expected_files = (
-      ' -j Local t/data/example_1.faa t/data/example_2.faa t/data/example_3.faa ' =>
-        [ 'clustered_proteins', 't/data/expected_clustered_proteins' ],
-      ' -j Local t/data/example_1.faa t/data/example_2.faa t/data/example_3.faa  ' =>
-        [ 'pan_genome.fa', 't/data/expected_create_pan_genome.fa' ],
+       ' -j Local t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff ' =>
+       [ 'pan_genome_sequences/3-group_9.fa', 't/data/3-group_9.fa' ],
       ' -j Local --output_multifasta_files t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff ' =>
         [ 'pan_genome_sequences/3-group_9.fa', 't/data/3-group_9.fa' ],
               

@@ -51,7 +51,11 @@ sub run {
     for my $command_to_run ( @{ $self->commands_to_run } ) {
         $self->_submit_job($command_to_run);
     }
-    $self->_job_manager->wait_all_children(history => 0);
+    
+    if(!(defined($self->dont_wait) && $self->dont_wait == 1 ))
+    {
+      $self->_job_manager->wait_all_children(history => 0);
+    }
     1;
 }
 

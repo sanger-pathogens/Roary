@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::PanGenome::Main::PanGenomePostAnalysis;
+
+# ABSTRACT: Perform the post analysis on the pan genome
+# PODNAME: pan_genome_post_analysis
+
+=head1 SYNOPSIS
+
+Perform the post analysis on the pan genome
+
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+use Bio::PanGenome::CommandLine::PanGenomePostAnalysis;
+
+Bio::PanGenome::CommandLine::PanGenomePostAnalysis->new(args => \@ARGV, script_name => $0)->run;
