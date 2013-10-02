@@ -66,9 +66,8 @@ sub create_file {
 
     my %filenames_to_genes;
     for my $group ( @{ $self->_groups } ) {
-        my $gene = $self->analyse_groups->_groups_to_genes->{$group}->[0];
-        
-        push(@{$filenames_to_genes{ $self->analyse_groups->_genes_to_file->{$gene}}},$gene);
+        my @sorted_genes = sort @{$self->analyse_groups->_groups_to_genes->{$group}};
+        push(@{$filenames_to_genes{ $self->analyse_groups->_genes_to_file->{$sorted_genes[0]}}},$sorted_genes[0]);
     }
     
     for my $filename (keys %filenames_to_genes)
