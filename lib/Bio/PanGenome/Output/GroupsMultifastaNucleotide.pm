@@ -127,7 +127,7 @@ sub _extract_nucleotide_regions {
     $self->_create_bed_file_from_gff;
 
     my $cmd =
-        'bedtools getfasta -fi '
+        'bedtools getfasta -s -fi '
       . $self->_nucleotide_fasta_file_from_gff_filename
       . ' -bed '
       . $self->_bed_output_filename . ' -fo '

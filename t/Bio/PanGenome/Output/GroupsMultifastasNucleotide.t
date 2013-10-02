@@ -50,6 +50,6 @@ is(read_file('pan_genome_sequences/00001-group_7.fa'), read_file('t/data/pan_gen
 is(read_file('pan_genome_sequences/00001-group_6.fa'), read_file('t/data/pan_genome_sequences/00001-group_6.fa' ), 'Check multifasta content is correct for 1-group_6.fa ');
 is(read_file('pan_genome_sequences/00001-yfnB.fa'),    read_file('t/data/pan_genome_sequences/00001-yfnB.fa' ), 'Check multifasta content is correct for 1-yfnB.fa ');
 
-remove_tree('pan_genome_sequences');
+#remove_tree('pan_genome_sequences');
 
 done_testing();
