@@ -86,6 +86,7 @@ sub run {
         output_statistics_filename  => $self->output_statistics_filename,
         clusters_filename           => $cdhit_obj->clusters_filename,
         dont_wait                   => 1,
+        output_multifasta_files     => $self->output_multifasta_files,
     );
     $post_analysis->run();
 

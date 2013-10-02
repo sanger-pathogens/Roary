@@ -20,9 +20,9 @@ local $ENV{PATH} = "$ENV{PATH}:./bin";
 
 my %scripts_and_expected_files = (
        ' -j Local t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff ' =>
-       [ 'pan_genome_sequences/3-group_9.fa', 't/data/3-group_9.fa' ],
+       [ 'clustered_proteins', 't/data/clustered_proteins' ],
       ' -j Local --output_multifasta_files t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff ' =>
-        [ 'pan_genome_sequences/3-group_9.fa', 't/data/3-group_9.fa' ],
+        [ 'pan_genome_sequences/00003-group_9.fa', 't/data/00003-group_9.fa' ],
               
 );
 

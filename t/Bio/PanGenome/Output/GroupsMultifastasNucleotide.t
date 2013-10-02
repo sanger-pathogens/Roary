@@ -43,12 +43,12 @@ ok(
 
 ok( $obj->create_files(), 'Create multiple fasta files' );
 
-is(read_file('pan_genome_sequences/3-hly.fa'), read_file('t/data/pan_genome_sequences/3-hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
-is(read_file('pan_genome_sequences/2-speH.fa'), read_file('t/data/pan_genome_sequences/2-speH.fa' ), 'Check multifasta content is correct for 2-speH.fa ');
-is(read_file('pan_genome_sequences/2-argF.fa'), read_file('t/data/pan_genome_sequences/2-argF.fa' ), 'Check multifasta content is correct for 2-argF.fa ');
-is(read_file('pan_genome_sequences/1-group_7.fa'), read_file('t/data/pan_genome_sequences/1-group_7.fa' ), 'Check multifasta content is correct for 1-group_7.fa ');
-is(read_file('pan_genome_sequences/1-group_6.fa'), read_file('t/data/pan_genome_sequences/1-group_6.fa' ), 'Check multifasta content is correct for 1-group_6.fa ');
-is(read_file('pan_genome_sequences/1-yfnB.fa'), read_file('t/data/pan_genome_sequences/1-yfnB.fa' ), 'Check multifasta content is correct for 1-yfnB.fa ');
+is(read_file('pan_genome_sequences/00003-hly.fa'),     read_file('t/data/pan_genome_sequences/00003-hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
+is(read_file('pan_genome_sequences/00002-speH.fa'),    read_file('t/data/pan_genome_sequences/00002-speH.fa' ), 'Check multifasta content is correct for 2-speH.fa ');
+is(read_file('pan_genome_sequences/00002-argF.fa'),    read_file('t/data/pan_genome_sequences/00002-argF.fa' ), 'Check multifasta content is correct for 2-argF.fa ');
+is(read_file('pan_genome_sequences/00001-group_7.fa'), read_file('t/data/pan_genome_sequences/00001-group_7.fa' ), 'Check multifasta content is correct for 1-group_7.fa ');
+is(read_file('pan_genome_sequences/00001-group_6.fa'), read_file('t/data/pan_genome_sequences/00001-group_6.fa' ), 'Check multifasta content is correct for 1-group_6.fa ');
+is(read_file('pan_genome_sequences/00001-yfnB.fa'),    read_file('t/data/pan_genome_sequences/00001-yfnB.fa' ), 'Check multifasta content is correct for 1-yfnB.fa ');
 
 remove_tree('pan_genome_sequences');
 
