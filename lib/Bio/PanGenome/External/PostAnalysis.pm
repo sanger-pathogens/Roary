@@ -26,6 +26,7 @@ has 'output_filename'             => ( is => 'ro', isa => 'Str', required => 1 )
 has 'output_pan_geneome_filename' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_statistics_filename'  => ( is => 'ro', isa => 'Str', required => 1 );
 has 'clusters_filename'           => ( is => 'ro', isa => 'Str', required => 1 );
+has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool', required => 1 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
@@ -53,6 +54,9 @@ sub _command_to_run {
     my $input_files_param = join(' -i ',@{$self->input_files});
     $input_files_param =  ' -i '.$input_files_param;
     
+    my $output_multifasta_files_flag = '';
+    $output_multifasta_files_flag = '--output_multifasta_files' if(defined($self->output_multifasta_files) && $self->output_multifasta_files == 1);
+    
     return join(
         " ",
         (
@@ -61,7 +65,7 @@ sub _command_to_run {
             '-p', $self->output_pan_geneome_filename,
             '-s', $self->output_statistics_filename,
             '-c', $self->clusters_filename,
-            '--output_multifasta_files',
+            $output_multifasta_files_flag,
             $fasta_files_param,
             $input_files_param
         )

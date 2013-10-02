@@ -70,9 +70,9 @@ sub _group_file_name
 { 
   my ($self,$group_name,$num_group_genes) = @_;
   my $annotated_group_name = $self->annotate_groups->_groups_to_consensus_gene_names->{$group_name};
-  
+  my $num_group_genes_leading_zeros = sprintf("%05d", $num_group_genes);
   $annotated_group_name =~ s!\W!_!gi;
-  my $filename = join('-', ($num_group_genes,$annotated_group_name)).'.fa';
+  my $filename = join('-', ($num_group_genes_leading_zeros,$annotated_group_name)).'.fa';
   my $group_file_name = join('/',($self->output_directory, $filename ));
   return $group_file_name;
 }
