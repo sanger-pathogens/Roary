@@ -20,23 +20,24 @@ use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::GeneNamesFromGFF;
 
-has 'gff_files'          => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'output_filename'    => ( is => 'ro', isa => 'Str',      default  => 'reannotated_groups_file' );
-has 'groups_filename'    => ( is => 'ro', isa => 'Str',      required => 1 );
-has '_ids_to_gene_names' => ( is => 'ro', isa => 'HashRef',  lazy     => 1, builder => '_build__ids_to_gene_names' );
-has '_ids_to_product' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
-has '_groups_to_id_names' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_id_names' );
-has '_output_fh' => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
+has 'gff_files'           => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'output_filename'     => ( is => 'ro', isa => 'Str',      default  => 'reannotated_groups_file' );
+has 'groups_filename'     => ( is => 'ro', isa => 'Str',      required => 1 );
+has '_ids_to_gene_names'  => ( is => 'ro', isa => 'HashRef',  lazy     => 1, builder => '_build__ids_to_gene_names' );
+has '_ids_to_product'     => ( is => 'rw', isa => 'HashRef',  default  => sub { {} } );
+has '_groups_to_id_names' => ( is => 'ro', isa => 'HashRef',  lazy     => 1, builder => '_builder__groups_to_id_names' );
+has '_output_fh'          => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
 has '_groups_to_consensus_gene_names' =>
   ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build__groups_to_consensus_gene_names' );
 has '_filtered_gff_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__filtered_gff_files' );
-
+has '_number_of_files'    => ( is => 'ro', isa => 'Int',      lazy => 1, builder => '_build__number_of_files' );
 
 
 sub BUILD {
     my ($self) = @_;
     $self->_ids_to_gene_names;
 }
+
 
 
 sub _build__output_fh {
@@ -89,16 +90,23 @@ sub _builder__groups_to_id_names {
     return \%groups_to_id_names;
 }
 
+sub _ids_grouped_by_gene_name_for_group
+{
+   my ( $self, $group_name ) = @_;
+   my %gene_name_freq;
+   for my $id_name ( @{ $self->_groups_to_id_names->{$group_name} } ) {
+       if ( defined( $self->_ids_to_gene_names->{$id_name} ) && $self->_ids_to_gene_names->{$id_name} ne "" ) {
+           push(@{$gene_name_freq{ $self->_ids_to_gene_names->{$id_name} }},$id_name) ;
+       }
+   }
+   return \%gene_name_freq;
+}
+
 sub _consensus_gene_name_for_group {
     my ( $self, $group_name ) = @_;
-    my %gene_name_freq;
-
-    for my $id_name ( @{ $self->_groups_to_id_names->{$group_name} } ) {
-        if ( defined( $self->_ids_to_gene_names->{$id_name} ) && $self->_ids_to_gene_names->{$id_name} ne "" ) {
-            $gene_name_freq{ $self->_ids_to_gene_names->{$id_name} }++;
-        }
-    }
-    my @sorted_gene_names = sort { $gene_name_freq{$b} <=> $gene_name_freq{$a} } keys %gene_name_freq;
+    my $gene_name_freq = $self->_ids_grouped_by_gene_name_for_group($group_name);
+    
+    my @sorted_gene_names = sort { @{$gene_name_freq->{$b}} <=> @{$gene_name_freq->{$a}} } keys %{$gene_name_freq};
     if ( @sorted_gene_names > 0 ) {
         return shift(@sorted_gene_names);
     }
@@ -126,8 +134,43 @@ sub _build__groups_to_consensus_gene_names {
     return \%groups_to_gene_names;
 }
 
+sub _build__number_of_files
+{
+  my ($self) = @_;
+  return @{$self->gff_files};
+}
+
+sub _split_groups
+{
+  my ($self) = @_;
+  my @groups = keys %{ $self->_groups_to_id_names };
+  for my $group (@groups)
+  {
+    my $size_of_group = @{$self->_groups_to_id_names->{$group}};
+    next if($size_of_group <= $self->_number_of_files);
+    my $ids_grouped_by_gene_name = $self->_ids_grouped_by_gene_name_for_group($group);
+
+    for my $gene_name (keys %{$ids_grouped_by_gene_name})
+    {
+      next if( (!defined($gene_name))  || $gene_name eq '');
+      next if(defined($self->_groups_to_id_names->{$gene_name}));
+      
+      $self->_groups_to_id_names->{$gene_name} = $ids_grouped_by_gene_name->{$gene_name};
+      
+      my @remaining_ids = grep{ not $_ ~~ @{$ids_grouped_by_gene_name->{$gene_name}} } @{$self->_groups_to_id_names->{$group}};
+      $self->_groups_to_id_names->{$group} = \@remaining_ids;
+      if(@{$self->_groups_to_id_names->{$group}} == 0)
+      {
+        delete($self->_groups_to_id_names->{$group});
+      }
+    }
+  }
+}
+
 sub reannotate {
     my ($self) = @_;
+    
+    $self->_split_groups;
 
     my %groups_to_id_names = %{ $self->_groups_to_id_names };
     for
