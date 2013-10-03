@@ -9,7 +9,6 @@ Take in a GFF files and a groups file and output one multifasta file per group w
    
    my $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
        group_names      => ['aaa','bbb'],
-       analyse_groups  => $analyse_groups
      );
    $obj->populate_files();
 
@@ -25,7 +24,6 @@ use Bio::PanGenome::AnalyseGroups;
 has 'gff_file'         => ( is => 'ro', isa => 'Str',                           required => 1 );
 # Not implemented
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
-has 'analyse_groups'   => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups', required => 1 );
 has 'output_directory' => ( is => 'ro', isa => 'Str',                           required => 1 );
 has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
 
@@ -49,14 +47,13 @@ sub _build__input_seqio {
 
 sub populate_files {
     my ($self) = @_;
-
     while ( my $input_seq = $self->_input_seqio->next_seq() ) 
     {
-        if ( $self->analyse_groups->_genes_to_groups->{$input_seq->display_id} ) 
+        if ( $self->annotate_groups->_ids_to_groups->{$input_seq->display_id} ) 
         {
-          my $current_group =  $self->analyse_groups->_genes_to_groups->{$input_seq->display_id};
+          my $current_group =  $self->annotate_groups->_ids_to_groups->{$input_seq->display_id};
 
-          my $number_of_genes = @{$self->analyse_groups->_groups_to_genes->{$current_group}};
+          my $number_of_genes = @{$self->annotate_groups->_groups_to_id_names->{$current_group}};
           my $output_seq = $self->_group_seq_io_obj($current_group,$number_of_genes);
           $output_seq->write_seq($input_seq);
         }

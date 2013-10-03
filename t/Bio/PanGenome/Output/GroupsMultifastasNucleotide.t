@@ -26,16 +26,11 @@ my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
 $annotate_groups->reannotate;
 
 
-my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
-    fasta_files     => $gff_files,
-    groups_filename => 't/data/query_groups'
-);
 
 ok(
     my $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
         group_names    => [ 'group_2', 'group_5' ],
         gff_files      => $gff_files,
-        analyse_groups => $plot_groups_obj,
         annotate_groups => $annotate_groups
     ),
     'initialise creating multiple fastas'
