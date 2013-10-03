@@ -105,6 +105,14 @@ sub _builder__groups_to_id_names {
     return \%groups_to_id_names;
 }
 
+
+sub _groups
+{
+  my ( $self) = @_;
+  my @groups = keys %{$self->_groups_to_id_names};
+  return \@groups;
+}
+
 sub _ids_grouped_by_gene_name_for_group {
     my ( $self, $group_name ) = @_;
     my %gene_name_freq;

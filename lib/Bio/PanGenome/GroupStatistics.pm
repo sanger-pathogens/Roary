@@ -50,7 +50,7 @@ sub _header {
 
 sub _row {
     my ( $self, $group ) = @_;
-    my $genes = $self->analyse_groups_obj->_groups_to_genes->{$group};
+    my $genes = $self->annotate_groups_obj->_groups_to_id_names->{$group};
 
     my $num_isolates_in_group     = $self->analyse_groups_obj->_count_num_files_in_group($genes);
     my $num_sequences_in_group    = $#{$genes} + 1;
@@ -72,10 +72,10 @@ sub create_spreadsheet {
 
     for my $group (
         sort {
-            $self->analyse_groups_obj->_count_num_files_in_group( $self->analyse_groups_obj->_groups_to_genes->{$b} )
+            $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$b} )
               <=> $self->analyse_groups_obj->_count_num_files_in_group(
-                $self->analyse_groups_obj->_groups_to_genes->{$a} )
-        } @{ $self->analyse_groups_obj->_groups }
+                $self->annotate_groups_obj->_groups_to_id_names->{$a} )
+        } @{ $self->annotate_groups_obj->_groups }
       )
     {
         $self->_text_csv_obj->print( $self->_output_fh, $self->_row($group) );
