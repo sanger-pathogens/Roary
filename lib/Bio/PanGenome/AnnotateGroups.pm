@@ -33,9 +33,32 @@ has '_filtered_gff_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder
 has '_number_of_files'    => ( is => 'ro', isa => 'Int',      lazy => 1, builder => '_build__number_of_files' );
 has '_ids_to_groups'      => ( is => 'rw', isa => 'HashRef',  lazy => 1, builder => '_builder__ids_to_groups' );
 
+has '_group_counter'         => ( is => 'rw', isa => 'Int',  lazy => 1, builder => '_builder__group_counter' );
+has '_group_default_prefix'  => ( is => 'rw', isa => 'Str',  default => 'group_' );
+
+
 sub BUILD {
     my ($self) = @_;
     $self->_ids_to_gene_names;
+}
+
+sub _builder__group_counter
+{
+  my ($self) = @_;
+  my $prefix = $self->_group_default_prefix;
+  my $highest_group = 0;
+  for my $group (@{$self->_groups})
+  {
+    if( $group =~/$prefix([\d]+)$/)
+    {
+      my $group_id = $1;
+      if($group_id > $highest_group)
+      {
+        $highest_group = $group_id;
+      }
+    }
+  }
+  return $highest_group+1;
 }
 
 sub _generate__ids_to_groups {

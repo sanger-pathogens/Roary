@@ -15,3 +15,11 @@ META.yml
 MYMETA.yml
 nytprof.out
 pm_to_blib
+_clustered
+_clustered.bak.clstr
+example_1.faa.tmp.filtered.fa
+example_2.faa.tmp.filtered.fa
+pan_genome.fa
+query_1.fa.tmp.filtered.fa
+query_2.fa.tmp.filtered.fa
+query_3.fa.tmp.filtered.fa
