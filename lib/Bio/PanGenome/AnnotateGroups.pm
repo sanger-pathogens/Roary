@@ -199,21 +199,41 @@ sub _split_groups {
 
         for my $gene_name ( keys %{$ids_grouped_by_gene_name} ) {
             next if ( ( !defined($gene_name) ) || $gene_name eq '' );
-            next if ( defined( $self->_groups_to_id_names->{$gene_name} ) );
-
-            $self->_groups_to_id_names->{$gene_name} = $ids_grouped_by_gene_name->{$gene_name};
-
-            my @remaining_ids =
-              grep { not $_ ~~ @{ $ids_grouped_by_gene_name->{$gene_name} } } @{ $self->_groups_to_id_names->{$group} };
-            $self->_groups_to_id_names->{$group} = \@remaining_ids;
-            if ( @{ $self->_groups_to_id_names->{$group} } == 0 ) {
-                delete( $self->_groups_to_id_names->{$group} );
+            next if ($group eq $gene_name);
+            if ( defined( $self->_groups_to_id_names->{$gene_name} ) )
+            {
+              if($group ne $gene_name)
+              {
+                for my $id_to_move (@{$ids_grouped_by_gene_name->{$gene_name}})
+                {
+                  push(@{$self->_groups_to_id_names->{$gene_name}},$id_to_move);
+                }
+                $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name},$group);
+              }
+              
             }
+            else
+            {
+              $self->_groups_to_id_names->{$gene_name} = $ids_grouped_by_gene_name->{$gene_name};
+              $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name},$group);
+          }
         }
     }
 
     $self->_groups_to_consensus_gene_names( $self->_generate_groups_to_consensus_gene_names );
     $self->_ids_to_groups( $self->_generate__ids_to_groups );
+}
+
+sub _remove_ids_from_group
+{
+  my ($self,$ids_to_remove,$group) = @_;
+  
+  my @remaining_ids =
+    grep { not $_ ~~ @{ $ids_to_remove } } @{ $self->_groups_to_id_names->{$group} };
+  $self->_groups_to_id_names->{$group} = \@remaining_ids;
+  if ( @{ $self->_groups_to_id_names->{$group} } == 0 ) {
+      delete( $self->_groups_to_id_names->{$group} );
+  }
 }
 
 sub reannotate {
