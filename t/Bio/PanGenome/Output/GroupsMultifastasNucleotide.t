@@ -43,8 +43,6 @@ is(read_file('pan_genome_sequences/00001-group_6.fa'), read_file('t/data/pan_gen
 is(read_file('pan_genome_sequences/00001-yfnB.fa'),    read_file('t/data/pan_genome_sequences/00001-yfnB.fa' ), 'Check multifasta content is correct for 1-yfnB.fa ');
 remove_tree('pan_genome_sequences');
 
-
-
 my $annotate_groups_all_merged = Bio::PanGenome::AnnotateGroups->new(
   gff_files       => $gff_files,
   groups_filename => 't/data/query_groups_all_merged',
@@ -61,12 +59,11 @@ ok(
 );
 ok( $obj_all_merged->create_files(), 'Split out the annotation into separate group files' );
 
-is(read_file('pan_genome_sequences/00004-group_1.fa'),  read_file('t/data/split_pan_genome_sequences/00004-group_1.fa'),       'Check multifasta content correct for group_1.fa'   );
+
+is(read_file('pan_genome_sequences/00006-different.fa'),  read_file('t/data/split_pan_genome_sequences/00006-different.fa'),       'Check multifasta content correct for 00006-different.fa'   );
 is(read_file('pan_genome_sequences/00002-speH.fa'),     read_file('t/data/split_pan_genome_sequences/00002-speH.fa'),          'Check multifasta content correct for speH.fa  '    );
 is(read_file('pan_genome_sequences/00002-hly.fa'),      read_file('t/data/split_pan_genome_sequences/00002-hly.fa'),           'Check multifasta content correct for hly.fa   '    );
 is(read_file('pan_genome_sequences/00002-argF.fa'),     read_file('t/data/split_pan_genome_sequences/00002-argF.fa'),          'Check multifasta content correct for argF.fa '     );
-is(read_file('pan_genome_sequences/00001-yfnB.fa'),     read_file('t/data/split_pan_genome_sequences/00001-yfnB.fa'),          'Check multifasta content correct for yfnB.fa '     );
-is(read_file('pan_genome_sequences/00001-different.fa'),read_file('t/data/split_pan_genome_sequences/00001-different.fa'),     'Check multifasta content correct for different.fa' );
 is(read_file('reannotated_groups_file'),                read_file('t/data/split_pan_genome_sequences/reannotated_groups_file'),'Check multifasta content correct for reannotated_groups_file' );
 
 remove_tree('pan_genome_sequences');

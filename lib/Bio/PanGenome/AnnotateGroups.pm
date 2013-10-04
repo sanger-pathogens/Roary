@@ -208,18 +208,15 @@ sub _split_groups {
         my $ids_grouped_by_gene_name = $self->_ids_grouped_by_gene_name_for_group($group);
 
         for my $gene_name ( keys %{$ids_grouped_by_gene_name} ) {
+            next if( @{$ids_grouped_by_gene_name->{$gene_name}} == 1 );
             next if ( ( !defined($gene_name) ) || $gene_name eq '' );
             next if ($group eq $gene_name);
             if ( defined( $self->_groups_to_id_names->{$gene_name} ) )
             {
-              if($group ne $gene_name)
-              {
-                my $new_group_name = $self->_group_default_prefix.$self->_group_counter;
-                $self->_group_counter(($self->_group_counter +1));
-                $self->_groups_to_id_names->{$new_group_name} = $ids_grouped_by_gene_name->{$gene_name};
-                $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name}, $group);
-              }
-              
+              my $new_group_name = $self->_group_default_prefix.$self->_group_counter;
+              $self->_group_counter(($self->_group_counter +1));
+              $self->_groups_to_id_names->{$new_group_name} = $ids_grouped_by_gene_name->{$gene_name};
+              $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name}, $group);
             }
             else
             {
