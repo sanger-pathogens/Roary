@@ -204,11 +204,9 @@ sub _split_groups {
             {
               if($group ne $gene_name)
               {
-                for my $id_to_move (@{$ids_grouped_by_gene_name->{$gene_name}})
-                {
-                  push(@{$self->_groups_to_id_names->{$gene_name}},$id_to_move);
-                }
-                $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name},$group);
+                my $new_group_name = $self->_group_default_prefix.$self->_group_counter;
+                $self->_groups_to_id_names->{$new_group_name} = $ids_grouped_by_gene_name->{$gene_name};
+                $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name}, $group);
               }
               
             }
