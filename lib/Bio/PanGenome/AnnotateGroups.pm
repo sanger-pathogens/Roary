@@ -164,17 +164,27 @@ sub _generate_groups_to_consensus_gene_names {
     my ($self) = @_;
     my %groups_to_gene_names;
     my %gene_name_freq;
-
-    for my $group_name ( keys %{ $self->_groups_to_id_names } ) {
+    my $group_prefix = $self->_group_default_prefix;
+    
+    # These are already annotated
+    for my $group_name ( sort { @{ $self->_groups_to_id_names->{$b} } <=> @{ $self->_groups_to_id_names->{$a} } } keys %{ $self->_groups_to_id_names }  ) {
+      next if($group_name =~ /$group_prefix/);
+      $groups_to_gene_names{$group_name} = $group_name;
+    }
+    
+    for my $group_name ( sort { @{ $self->_groups_to_id_names->{$b} } <=> @{ $self->_groups_to_id_names->{$a} } } keys %{ $self->_groups_to_id_names }  ) {
+        next unless($group_name =~ /$group_prefix/);
+      
         my $consensus_gene_name = $self->_consensus_gene_name_for_group($group_name);
 
-        if ( defined( $gene_name_freq{$consensus_gene_name} ) ) {
+        if ( defined( $groups_to_gene_names{$consensus_gene_name}  ) ) {
             $groups_to_gene_names{$group_name} = $group_name;
+
         }
         else {
             $groups_to_gene_names{$group_name} = $consensus_gene_name;
+
         }
-        $gene_name_freq{$consensus_gene_name}++;
     }
     return \%groups_to_gene_names;
 }
@@ -221,6 +231,7 @@ sub _split_groups {
 
     $self->_groups_to_consensus_gene_names( $self->_generate_groups_to_consensus_gene_names );
     $self->_ids_to_groups( $self->_generate__ids_to_groups );
+    
 }
 
 sub _remove_ids_from_group
