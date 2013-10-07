@@ -27,8 +27,10 @@ has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroup
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
 has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'group_statitics.csv' );
 
-has '_output_fh' => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
-has '_text_csv_obj' => ( is => 'ro', isa => 'Text::CSV', lazy => 1, builder => '_build__text_csv_obj' );
+has '_output_fh'          => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
+has '_text_csv_obj'       => ( is => 'ro', isa => 'Text::CSV', lazy => 1, builder => '_build__text_csv_obj' );
+has '_sorted_file_names'  => ( is => 'ro', isa => 'ArrayRef',  lazy => 1, builder => '_build__sorted_file_names' );
+
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -45,7 +47,17 @@ sub _build__text_csv_obj {
 
 sub _header {
     my ($self) = @_;
-    return [ 'Gene', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Gene IDs' ];
+    my @header = ( 'Gene', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate');
+    push(@header,@{$self->_sorted_file_names} );
+    
+    return \@header;
+}
+
+sub _build__sorted_file_names
+{
+  my ( $self) = @_;
+  my @sorted_file_names = sort(@{$self->analyse_groups_obj->fasta_files});
+  return \@sorted_file_names;
 }
 
 sub _row {
@@ -58,11 +70,30 @@ sub _row {
 
     my $annotation           = $self->annotate_groups_obj->_ids_to_product->{ $genes->[0] };
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
-
-    return [
+    my @row = (
         $annotated_group_name,   $annotation,                $num_isolates_in_group,
-        $num_sequences_in_group, $avg_sequences_per_isolate, @{$genes}
-    ];
+        $num_sequences_in_group, $avg_sequences_per_isolate);
+        
+    for my $filename (@{$self->_sorted_file_names})
+    {
+      my $found = 0;
+      for my $gene_name (@{$genes})
+      {
+        if(defined($self->analyse_groups_obj->_genes_to_file->{$gene_name}) &&  $self->analyse_groups_obj->_genes_to_file->{$gene_name} eq $filename)
+        {
+          $found = 1;
+          push(@row,'P');
+          last;
+        }
+      }
+      
+      if($found == 0)
+      {
+         push(@row,'');
+      }
+    }
+        
+    return \@row;
 }
 
 sub create_spreadsheet {

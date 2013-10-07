@@ -1,4 +1,4 @@
-"Gene","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Gene IDs"
-"group_1",,"3","3","1","1_1","2_1","3_1"
-"group_3",,"2","2","1","1_3","3_3"
-"group_2",,"2","2","1","1_2","2_2"
+"Gene","Annotation","No. isolates","No. sequences","Avg sequences per isolate","query_1.fa.tmp.filtered.fa","query_2.fa.tmp.filtered.fa","query_3.fa.tmp.filtered.fa"
+"group_1",,"3","3","1","P","P","P"
+"group_3",,"2","2","1","P","","P"
+"group_2",,"2","2","1","P","P",""
