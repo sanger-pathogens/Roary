@@ -51,7 +51,7 @@ my %scripts_and_expected_files = (
     '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa ' => [
         'set_difference_unique_set_two_statistics.csv', 't/data/expected_set_difference_unique_set_two_statistics.csv'
     ],
-    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa   ' => [
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa     ' => [
         'set_difference_unique_set_one_statistics.csv', 't/data/expected_set_difference_unique_set_one_statistics.csv'
     ],
     '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa   ' =>

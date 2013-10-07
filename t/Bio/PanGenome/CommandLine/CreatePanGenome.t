@@ -23,6 +23,9 @@ my %scripts_and_expected_files = (
        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Local --output_multifasta_files t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff ' =>
         [ 'pan_genome_sequences/00003-group_9.fa', 't/data/00003-group_9.fa' ],
+        
+      ' -j Local t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff     ' =>
+          [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
               
 );
 
