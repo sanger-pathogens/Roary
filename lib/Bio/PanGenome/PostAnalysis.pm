@@ -32,6 +32,7 @@ sub run {
     my $output_mcl_filename              = '_uninflated_mcl_groups';
     my $output_inflate_clusters_filename = '_inflated_mcl_groups';
     my $output_group_labels_filename     = '_labeled_mcl_groups';
+    my $output_combined_filename         = '_combined_files';
 
     my $inflate_clusters = Bio::PanGenome::InflateClusters->new(
         clusters_filename => $self->clusters_filename,
@@ -46,9 +47,16 @@ sub run {
     );
     $group_labels->add_labels();
 
+    my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
+        gff_files       => $self->input_files,
+        output_filename => $self->output_filename,
+        groups_filename => $output_group_labels_filename,
+    );
+    $annotate_groups->reannotate;
+
     my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
         fasta_files     => $self->fasta_files,
-        groups_filename => $output_group_labels_filename
+        groups_filename => $self->output_filename
     );
     $analyse_groups_obj->create_plots();
     
@@ -58,15 +66,6 @@ sub run {
         output_filename => $self->output_pan_geneome_filename
     );
     $one_gene_per_fasta->create_file();
-    
-
-    my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
-        gff_files       => $self->input_files,
-        output_filename => $self->output_filename,
-        groups_filename => $output_group_labels_filename,
-    );
-    $annotate_groups->reannotate;
-
 
     my $group_statistics = Bio::PanGenome::GroupStatistics->new(
         output_filename     => $self->output_statistics_filename,
@@ -79,7 +78,6 @@ sub run {
     {
       my $group_multifastas_nucleotides = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
           gff_files       => $self->input_files,
-          analyse_groups  => $analyse_groups_obj,
           annotate_groups => $annotate_groups,
           group_names     => $analyse_groups_obj->_groups
         );
@@ -89,6 +87,7 @@ sub run {
     unlink($output_mcl_filename);
     unlink($output_inflate_clusters_filename);
     unlink($output_group_labels_filename);
+    unlink($output_combined_filename);
     unlink( $self->clusters_filename);
     unlink( $self->clusters_filename . '.clstr' );
     unlink( $self->clusters_filename . '.bak.clstr' );
