@@ -75,7 +75,7 @@ sub run {
     $mcl->run();
 
     unlink($output_blast_results_filename);
-    unlink($output_combined_filename);
+    
 
     my $post_analysis = Bio::PanGenome::External::PostAnalysis->new(
         job_runner                  => $self->job_runner,
