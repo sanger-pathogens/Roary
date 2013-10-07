@@ -33,32 +33,27 @@ has '_filtered_gff_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder
 has '_number_of_files'    => ( is => 'ro', isa => 'Int',      lazy => 1, builder => '_build__number_of_files' );
 has '_ids_to_groups'      => ( is => 'rw', isa => 'HashRef',  lazy => 1, builder => '_builder__ids_to_groups' );
 
-has '_group_counter'         => ( is => 'rw', isa => 'Int',  lazy => 1, builder => '_builder__group_counter' );
-has '_group_default_prefix'  => ( is => 'rw', isa => 'Str',  default => 'group_' );
-
+has '_group_counter' => ( is => 'rw', isa => 'Int', lazy => 1, builder => '_builder__group_counter' );
+has '_group_default_prefix' => ( is => 'rw', isa => 'Str', default => 'group_' );
 
 sub BUILD {
     my ($self) = @_;
     $self->_ids_to_gene_names;
 }
 
-sub _builder__group_counter
-{
-  my ($self) = @_;
-  my $prefix = $self->_group_default_prefix;
-  my $highest_group = 0;
-  for my $group (@{$self->_groups})
-  {
-    if( $group =~/$prefix([\d]+)$/)
-    {
-      my $group_id = $1;
-      if($group_id > $highest_group)
-      {
-        $highest_group = $group_id;
-      }
+sub _builder__group_counter {
+    my ($self)        = @_;
+    my $prefix        = $self->_group_default_prefix;
+    my $highest_group = 0;
+    for my $group ( @{ $self->_groups } ) {
+        if ( $group =~ /$prefix([\d]+)$/ ) {
+            my $group_id = $1;
+            if ( $group_id > $highest_group ) {
+                $highest_group = $group_id;
+            }
+        }
     }
-  }
-  return $highest_group+1;
+    return $highest_group + 1;
 }
 
 sub _generate__ids_to_groups {
@@ -66,7 +61,7 @@ sub _generate__ids_to_groups {
     my %ids_to_groups;
 
     for my $group ( keys %{ $self->_groups_to_id_names } ) {
-        for my $id_name ( @{$self->_groups_to_id_names->{$group}} ) {
+        for my $id_name ( @{ $self->_groups_to_id_names->{$group} } ) {
             $ids_to_groups{$id_name} = $group;
         }
     }
@@ -109,6 +104,24 @@ sub _build__ids_to_gene_names {
     return \%ids_to_gene_names;
 }
 
+sub consensus_product_for_id_names {
+    my ( $self, $id_names ) = @_;
+    my %product_freq;
+    for my $id_name ( @{$id_names} ) {
+        next unless ( defined( $self->_ids_to_product->{$id_name} ) );
+        $product_freq{ $self->_ids_to_product->{$id_name} }++;
+    }
+
+    my @sorted_product_keys = sort { $product_freq{$b} <=> $product_freq{$a} } keys(%product_freq);
+
+    if ( @sorted_product_keys > 0 ) {
+        return $sorted_product_keys[0];
+    }
+    else {
+        return '';
+    }
+}
+
 sub _builder__groups_to_id_names {
     my ($self) = @_;
     my %groups_to_id_names;
@@ -128,12 +141,10 @@ sub _builder__groups_to_id_names {
     return \%groups_to_id_names;
 }
 
-
-sub _groups
-{
-  my ( $self) = @_;
-  my @groups = keys %{$self->_groups_to_id_names};
-  return \@groups;
+sub _groups {
+    my ($self) = @_;
+    my @groups = keys %{ $self->_groups_to_id_names };
+    return \@groups;
 }
 
 sub _ids_grouped_by_gene_name_for_group {
@@ -165,19 +176,23 @@ sub _generate_groups_to_consensus_gene_names {
     my %groups_to_gene_names;
     my %gene_name_freq;
     my $group_prefix = $self->_group_default_prefix;
-    
+
     # These are already annotated
-    for my $group_name ( sort { @{ $self->_groups_to_id_names->{$b} } <=> @{ $self->_groups_to_id_names->{$a} } } keys %{ $self->_groups_to_id_names }  ) {
-      next if($group_name =~ /$group_prefix/);
-      $groups_to_gene_names{$group_name} = $group_name;
+    for my $group_name ( sort { @{ $self->_groups_to_id_names->{$b} } <=> @{ $self->_groups_to_id_names->{$a} } }
+        keys %{ $self->_groups_to_id_names } )
+    {
+        next if ( $group_name =~ /$group_prefix/ );
+        $groups_to_gene_names{$group_name} = $group_name;
     }
-    
-    for my $group_name ( sort { @{ $self->_groups_to_id_names->{$b} } <=> @{ $self->_groups_to_id_names->{$a} } } keys %{ $self->_groups_to_id_names }  ) {
-        next unless($group_name =~ /$group_prefix/);
-      
+
+    for my $group_name ( sort { @{ $self->_groups_to_id_names->{$b} } <=> @{ $self->_groups_to_id_names->{$a} } }
+        keys %{ $self->_groups_to_id_names } )
+    {
+        next unless ( $group_name =~ /$group_prefix/ );
+
         my $consensus_gene_name = $self->_consensus_gene_name_for_group($group_name);
 
-        if ( defined( $groups_to_gene_names{$consensus_gene_name}  ) ) {
+        if ( defined( $groups_to_gene_names{$consensus_gene_name} ) ) {
             $groups_to_gene_names{$group_name} = $group_name;
 
         }
@@ -199,8 +214,8 @@ sub _build__number_of_files {
     return @{ $self->gff_files };
 }
 
-sub _split_groups {
-    my ($self) = @_;
+sub _split_groups_with_min_sub_group_size {
+    my ( $self, $min_sub_group_size ) = @_;
     my @groups = keys %{ $self->_groups_to_id_names };
     for my $group (@groups) {
         my $size_of_group = @{ $self->_groups_to_id_names->{$group} };
@@ -208,39 +223,44 @@ sub _split_groups {
         my $ids_grouped_by_gene_name = $self->_ids_grouped_by_gene_name_for_group($group);
 
         for my $gene_name ( keys %{$ids_grouped_by_gene_name} ) {
-            next if( @{$ids_grouped_by_gene_name->{$gene_name}} == 1 );
+            next if ( @{ $ids_grouped_by_gene_name->{$gene_name} } <= $min_sub_group_size );
             next if ( ( !defined($gene_name) ) || $gene_name eq '' );
-            next if ($group eq $gene_name);
-            if ( defined( $self->_groups_to_id_names->{$gene_name} ) )
-            {
-              my $new_group_name = $self->_group_default_prefix.$self->_group_counter;
-              $self->_group_counter(($self->_group_counter +1));
-              $self->_groups_to_id_names->{$new_group_name} = $ids_grouped_by_gene_name->{$gene_name};
-              $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name}, $group);
+            next if ( $group eq $gene_name );
+            if ( defined( $self->_groups_to_id_names->{$gene_name} ) ) {
+                my $new_group_name = $self->_group_default_prefix . $self->_group_counter;
+                $self->_group_counter( ( $self->_group_counter + 1 ) );
+                $self->_groups_to_id_names->{$new_group_name} = $ids_grouped_by_gene_name->{$gene_name};
+                $self->_remove_ids_from_group( $ids_grouped_by_gene_name->{$gene_name}, $group );
             }
-            else
-            {
-              $self->_groups_to_id_names->{$gene_name} = $ids_grouped_by_gene_name->{$gene_name};
-              $self->_remove_ids_from_group($ids_grouped_by_gene_name->{$gene_name},$group);
-          }
+            else {
+                $self->_groups_to_id_names->{$gene_name} = $ids_grouped_by_gene_name->{$gene_name};
+                $self->_remove_ids_from_group( $ids_grouped_by_gene_name->{$gene_name}, $group );
+            }
         }
+    }
+}
+
+sub _split_groups {
+    my ($self) = @_;
+
+    # Split off the largest groups first
+    for ( my $i = $self->_number_of_files ; $i > 0 ; $i-- ) {
+        $self->_split_groups_with_min_sub_group_size($i);
     }
 
     $self->_groups_to_consensus_gene_names( $self->_generate_groups_to_consensus_gene_names );
     $self->_ids_to_groups( $self->_generate__ids_to_groups );
-    
 }
 
-sub _remove_ids_from_group
-{
-  my ($self,$ids_to_remove,$group) = @_;
-  
-  my @remaining_ids =
-    grep { not $_ ~~ @{ $ids_to_remove } } @{ $self->_groups_to_id_names->{$group} };
-  $self->_groups_to_id_names->{$group} = \@remaining_ids;
-  if ( @{ $self->_groups_to_id_names->{$group} } == 0 ) {
-      delete( $self->_groups_to_id_names->{$group} );
-  }
+sub _remove_ids_from_group {
+    my ( $self, $ids_to_remove, $group ) = @_;
+
+    my @remaining_ids =
+      grep { not $_ ~~ @{$ids_to_remove} } @{ $self->_groups_to_id_names->{$group} };
+    $self->_groups_to_id_names->{$group} = \@remaining_ids;
+    if ( @{ $self->_groups_to_id_names->{$group} } == 0 ) {
+        delete( $self->_groups_to_id_names->{$group} );
+    }
 }
 
 sub reannotate {

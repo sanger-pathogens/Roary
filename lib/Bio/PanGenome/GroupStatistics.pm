@@ -89,7 +89,7 @@ sub _row {
     my $num_sequences_in_group    = $#{$genes} + 1;
     my $avg_sequences_per_isolate = ceil( ( $num_sequences_in_group / $num_isolates_in_group ) * 100 ) / 100;
 
-    my $annotation           = $self->annotate_groups_obj->_ids_to_product->{ $genes->[0] };
+    my $annotation           = $self->annotate_groups_obj->consensus_product_for_id_names($genes);
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
     
     my $duplicate_gene_name = $self->_non_unique_name_for_group($annotated_group_name);
