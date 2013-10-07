@@ -51,8 +51,9 @@ sub _header {
   
     for my $filename (@{$self->_sorted_file_names})
     {
-      $filename =~ s!\.gff\.proteome\.faa!!;
-      push(@header,$filename);
+      my $filename_cpy = $filename;
+      $filename_cpy =~ s!\.gff\.proteome\.faa!!;
+      push(@header,$filename_cpy);
     }
     
     return \@header;
