@@ -1,4 +1,4 @@
-"Gene","Annotation","No. isolates","No. sequences","Avg sequences per isolate","query_1.fa.tmp.filtered.fa","query_2.fa.tmp.filtered.fa","query_3.fa.tmp.filtered.fa"
-"group_4",,"2","2","1","","P","P"
-"group_5",,"1","1","1","","","P"
-"group_7",,"1","1","1","","P",""
+"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","query_1.fa.tmp.filtered.fa","query_2.fa.tmp.filtered.fa","query_3.fa.tmp.filtered.fa"
+"group_4","",,"2","2","1","","P","P"
+"group_5","",,"1","1","1","","","P"
+"group_7","",,"1","1","1","","P",""

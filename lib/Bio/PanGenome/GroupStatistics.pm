@@ -47,8 +47,13 @@ sub _build__text_csv_obj {
 
 sub _header {
     my ($self) = @_;
-    my @header = ( 'Gene', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate');
-    push(@header,@{$self->_sorted_file_names} );
+    my @header = ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate');
+  
+    for my $filename (@{$self->_sorted_file_names})
+    {
+      $filename =~ s!\.gff\.proteome\.faa!!;
+      push(@header,$filename);
+    }
     
     return \@header;
 }
@@ -58,6 +63,22 @@ sub _build__sorted_file_names
   my ( $self) = @_;
   my @sorted_file_names = sort(@{$self->analyse_groups_obj->fasta_files});
   return \@sorted_file_names;
+}
+
+sub _non_unique_name_for_group
+{
+  my ( $self,$annotated_group_name) = @_;
+  my $duplicate_gene_name = '';
+  my $prefix = $self->annotate_groups_obj->_group_default_prefix;
+  if($annotated_group_name =~ /$prefix/)
+  {
+    my $non_unique_name_for_group =  $self->annotate_groups_obj->_consensus_gene_name_for_group($annotated_group_name);
+    if(!($non_unique_name_for_group =~ /$prefix/))
+    {
+      $duplicate_gene_name = $non_unique_name_for_group;
+    }
+  }
+  return $duplicate_gene_name;
 }
 
 sub _row {
@@ -70,8 +91,11 @@ sub _row {
 
     my $annotation           = $self->annotate_groups_obj->_ids_to_product->{ $genes->[0] };
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
+    
+    my $duplicate_gene_name = $self->_non_unique_name_for_group($annotated_group_name);
+    
     my @row = (
-        $annotated_group_name,   $annotation,                $num_isolates_in_group,
+        $annotated_group_name, $duplicate_gene_name,  $annotation,  $num_isolates_in_group,
         $num_sequences_in_group, $avg_sequences_per_isolate);
         
     for my $filename (@{$self->_sorted_file_names})
