@@ -31,7 +31,7 @@ has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool', required => 1 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
 has '_minimum_memory_mb'    => ( is => 'ro', isa => 'Int', default => 1000 );
-has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 30 );
+has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 10 );
 
 sub _build__memory_required_in_mb {
     my ($self) = @_;

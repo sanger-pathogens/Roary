@@ -68,16 +68,6 @@ sub _builder__number_of_genes_per_file {
     return \%gene_count;
 }
 
-sub _freq_dist_of_genes {
-    my ($self) = @_;
-    my @gene_counts = values %{ $self->_number_of_genes_per_file };
-    my %gene_freq;
-    for my $gene_count (@gene_counts) {
-        $gene_freq{$gene_count}++;
-    }
-    return \%gene_freq;
-}
-
 sub _builder__genes_to_file {
     my ($self) = @_;
     my %genes_to_file;
