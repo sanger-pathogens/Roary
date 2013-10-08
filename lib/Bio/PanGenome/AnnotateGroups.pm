@@ -244,7 +244,7 @@ sub _split_groups {
     my ($self) = @_;
 
     # Split off the largest groups first
-    for ( my $i = $self->_number_of_files ; $i > 0 ; $i-- ) {
+    for ( my $i = $self->_number_of_files ; $i >= (($self->_number_of_files / 32)) && $i >= 1 ; $i /= 2 ) {
         $self->_split_groups_with_min_sub_group_size($i);
     }
 

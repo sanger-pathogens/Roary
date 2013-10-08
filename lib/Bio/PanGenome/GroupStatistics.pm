@@ -30,7 +30,7 @@ has 'output_filename'     => ( is => 'ro', isa => 'Str',                        
 has '_output_fh'          => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
 has '_text_csv_obj'       => ( is => 'ro', isa => 'Text::CSV', lazy => 1, builder => '_build__text_csv_obj' );
 has '_sorted_file_names'  => ( is => 'ro', isa => 'ArrayRef',  lazy => 1, builder => '_build__sorted_file_names' );
-
+has '_groups_to_files'    => ( is => 'ro', isa => 'HashRef',   lazy => 1, builder => '_build__groups_to_files' );
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -82,6 +82,25 @@ sub _non_unique_name_for_group
   return $duplicate_gene_name;
 }
 
+sub _build__groups_to_files
+{
+  my ( $self ) = @_;
+  my %groups_to_files;
+  for my $group ( @{ $self->annotate_groups_obj->_groups } )
+  {
+    my $genes = $self->annotate_groups_obj->_groups_to_id_names->{$group};
+    my %filenames;
+    for my $gene_name (@{$genes})
+    {
+      my $filename = $self->analyse_groups_obj->_genes_to_file->{$gene_name};
+      $filenames{$filename}++;
+    }
+    $groups_to_files{$group} = \%filenames;
+  }
+  return \%groups_to_files;
+}
+
+
 sub _row {
     my ( $self, $group ) = @_;
     my $genes = $self->annotate_groups_obj->_groups_to_id_names->{$group};
@@ -101,10 +120,12 @@ sub _row {
         
     for my $filename (@{$self->_sorted_file_names})
     {
+      my $group_to_file_freq = $self->_groups_to_files->{$group}->{$filename};
+            
       my $found = 0;
       for my $gene_name (@{$genes})
       {
-        if(defined($self->analyse_groups_obj->_genes_to_file->{$gene_name}) &&  $self->analyse_groups_obj->_genes_to_file->{$gene_name} eq $filename)
+        if(defined($group_to_file_freq) &&  $group_to_file_freq >0 )
         {
           $found = 1;
           push(@row,'P');
