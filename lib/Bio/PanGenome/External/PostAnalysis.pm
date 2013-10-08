@@ -31,7 +31,7 @@ has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool', required => 1 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
 has '_minimum_memory_mb'    => ( is => 'ro', isa => 'Int', default => 1000 );
-has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 100 );
+has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 10 );
 
 sub _build__memory_required_in_mb {
     my ($self) = @_;
@@ -45,14 +45,34 @@ sub _build__memory_required_in_mb {
     return $memory_required;
 }
 
+
+sub _output_gff_files
+{
+  my ($self) = @_;
+  open(my $out_fh, '>', '_gff_files');
+  for my $filename (@{$self->input_files})
+  {
+    print {$out_fh} $filename."\n";
+  }
+  close($out_fh);
+}
+
+sub _output_fasta_files
+{
+  my ($self) = @_;
+  open(my $out_fh, '>', '_fasta_files');
+  for my $filename (@{$self->fasta_files})
+  {
+    print {$out_fh} $filename."\n";
+  }
+  close($out_fh);
+}
+
 sub _command_to_run {
     my ($self) = @_;
     
-    my $fasta_files_param = join(' -f ',@{$self->fasta_files});
-    $fasta_files_param =  ' -f '.$fasta_files_param;
-    
-    my $input_files_param = join(' -i ',@{$self->input_files});
-    $input_files_param =  ' -i '.$input_files_param;
+    $self->_output_fasta_files;
+    $self->_output_gff_files;
     
     my $output_multifasta_files_flag = '';
     $output_multifasta_files_flag = '--output_multifasta_files' if(defined($self->output_multifasta_files) && $self->output_multifasta_files == 1);
@@ -66,8 +86,8 @@ sub _command_to_run {
             '-s', $self->output_statistics_filename,
             '-c', $self->clusters_filename,
             $output_multifasta_files_flag,
-            $fasta_files_param,
-            $input_files_param
+            '-i', '_gff_files',
+            '-f', '_fasta_files'
         )
     );
 }

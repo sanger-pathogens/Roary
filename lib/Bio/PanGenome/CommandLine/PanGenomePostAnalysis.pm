@@ -18,8 +18,8 @@ has 'script_name'                 => ( is => 'ro', isa => 'Str',      required =
 has 'help'                        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has '_error_message'              => ( is => 'rw', isa => 'Str' );
 
-has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef' );
-has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef');
+has 'fasta_files'                 => ( is => 'rw', isa => 'Str' );
+has 'input_files'                 => ( is => 'rw', isa => 'Str');
 has 'output_filename'             => ( is => 'rw', isa => 'Str',  default  => 'clustered_proteins' );
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',  default  => 'pan_genome.fa' );
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',  default  => 'group_statisics.csv' );
@@ -40,8 +40,8 @@ sub BUILD {
         'p=s'                     => \$output_pan_geneome_filename,
         's=s'                     => \$output_statistics_filename,
         'c=s'                     => \$clusters_filename,
-        'f=s@'                    => \$fasta_files,
-        'i=s@'                    => \$input_files,
+        'f=s'                    => \$fasta_files,
+        'i=s'                    => \$input_files,
         'h|help'                  => \$help,
     );
     
@@ -66,8 +66,8 @@ sub run {
     }
 
     my $obj = Bio::PanGenome::PostAnalysis->new(
-      fasta_files                     =>  $self->fasta_files                ,
-      input_files                     =>  $self->input_files                ,
+      fasta_files                     =>  $self->_read_file_into_array($self->fasta_files) ,
+      input_files                     =>  $self->_read_file_into_array($self->input_files) ,
       output_filename                 =>  $self->output_filename            ,
       output_pan_geneome_filename     =>  $self->output_pan_geneome_filename,
       output_statistics_filename      =>  $self->output_statistics_filename ,
@@ -75,6 +75,20 @@ sub run {
       clusters_filename               =>  $self->clusters_filename          ,
       );                                                             
     $obj->run();
+}
+
+sub _read_file_into_array
+{
+  my ($self, $filename) = @_;
+  open(my $in_fh, $filename);
+  
+  my @filenames;
+  while(<$in_fh>){
+    chomp;
+    my $line = $_;
+    push(@filenames, $line);
+  }
+  return \@filenames;
 }
 
 sub usage_text {
@@ -90,11 +104,8 @@ sub usage_text {
       -p output_pan_genome_filename  /
       -s output_stats_filename       /
       -c output_clusters_filename    /
-      -f proteins1.faa               /
-      -f proteins2.faa               /
-      -f proteins3.faa               /
-      -i annotation1.gff             /
-      -i annotation2.gff             /
+      -f file_of_proteins               /
+      -i file_of_gffs             
 
     # This help message
     pan_genome_post_analysis -h
