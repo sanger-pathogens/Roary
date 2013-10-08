@@ -20,11 +20,6 @@ ok(
 );
 
 is( $plot_groups_obj->_number_of_isolates, 2, 'Number of isolates' );
-is_deeply(
-    $plot_groups_obj->_number_of_genes_per_file,
-    { 't/data/example_1.faa' => 6, 't/data/example_2.faa' => 3 },
-    'Number of genes per file'
-);
 
 is_deeply(
     $plot_groups_obj->_genes_to_file,
