@@ -37,7 +37,7 @@ sub _build__memory_required_in_mb
   my ($self) = @_;
   # Todo: implement this equation for memory estimation if this hardcoded value proves too unstable.
   # http://micans.org/mcl/man/mcl.html#opt-how-much-ram
-  return 2000;
+  return 1000;
 }
 
 

@@ -91,6 +91,8 @@ sub run {
     unlink( $self->clusters_filename);
     unlink( $self->clusters_filename . '.clstr' );
     unlink( $self->clusters_filename . '.bak.clstr' );
+    unlink('_gff_files');
+    unlink('_fasta_files');
 
 }
 
