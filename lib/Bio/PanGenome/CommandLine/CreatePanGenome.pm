@@ -105,20 +105,20 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: create_pan_geneome [options]
+    Usage: create_pan_genome [options]
     Take in GFF files and cluster the genes
     
     # Take in GFF files and cluster the genes
-    create_pan_geneome example.gff
+    create_pan_genome example.gff
     
     # Provide an output filename
-    create_pan_geneome -o results *.gff
+    create_pan_genome -o results *.gff
     
     # Create a multifasta file for each group of sequences (Warning: thousands of files created)
-    create_pan_geneome --output_multifasta_files *.gff
+    create_pan_genome -e *.gff
 
     # This help message
-    create_pan_geneome -h
+    create_pan_genome -h
 
 USAGE
 }
