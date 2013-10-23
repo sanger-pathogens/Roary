@@ -11,6 +11,7 @@ Perform the post analysis on the pan genome
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::PostAnalysis;
+use Bio::PanGenome::External::Muscle;
 
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -75,6 +76,14 @@ sub run {
       clusters_filename               =>  $self->clusters_filename          ,
       );                                                             
     $obj->run();
+    
+    my @output_gene_files = glob q("pan_genome_sequences/*.fa");
+    my $seg= Bio::PanGenome::External::Muscle->new(
+      fasta_files => \@output_gene_files,
+      job_runner  => $self->job_runner
+    );
+
+    $seg->run();
 }
 
 sub _read_file_into_array

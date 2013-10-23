@@ -87,7 +87,8 @@ sub _command_to_run {
             '-c', $self->clusters_filename,
             $output_multifasta_files_flag,
             '-i', '_gff_files',
-            '-f', '_fasta_files'
+            '-f', '_fasta_files',
+            '-j', $self->job_runner
         )
     );
 }

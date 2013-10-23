@@ -37,7 +37,22 @@ sub _build__memory_required_in_mb
   my ($self) = @_;
   # Todo: implement this equation for memory estimation if this hardcoded value proves too unstable.
   # http://micans.org/mcl/man/mcl.html#opt-how-much-ram
-  return 1000;
+  
+  my $filename = $self->blast_results;
+  my $memory_required = 1000;
+  if(-e $filename)
+  {
+    $memory_required = -s $filename;
+    # Convert to mb
+    $memory_required = int($memory_required/1000000);
+    # increase memory for worst case senario
+    $memory_required *= 3;
+    $memory_required += 1000;
+  }
+  
+  
+  
+  return  $memory_required;
 }
 
 
