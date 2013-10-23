@@ -45,9 +45,16 @@ sub _build__text_csv_obj {
     return Text::CSV->new( { binary => 1, always_quote => 1, eol => "\r\n" } );
 }
 
+sub fixed_headers
+{
+  my ($self) = @_;
+  my @header = ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate');
+  return \@header;
+}
+
 sub _header {
     my ($self) = @_;
-    my @header = ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate');
+    my @header = @{$self->fixed_headers};
   
     for my $filename (@{$self->_sorted_file_names})
     {
