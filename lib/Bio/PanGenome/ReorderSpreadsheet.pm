@@ -23,18 +23,15 @@ use Bio::PanGenome::GroupStatistics;
 has 'tree_file'   => ( is => 'ro', isa => 'Str', required => 1 );
 has 'spreadsheet' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'tree_format' => ( is => 'ro', isa => 'Str', default  => 'newick' );
-
 has 'output_filename'        => ( is => 'ro', isa  => 'Str',      default => 'reordered_groups_stats.csv' );
+
 has '_sample_order'          => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__sample_order' );
 has '_input_spreadsheet_fh'  => ( is => 'ro', lazy => 1,          builder => '_build__input_spreadsheet_fh' );
 has '_output_spreadsheet_fh' => ( is => 'ro', lazy => 1,          builder => '_build__output_spreadsheet_fh' );
 has '_column_mappings'       => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__column_mappings' );
-
-has '_column_offset' => ( is => 'ro', isa => 'Int', default  => 6 );
-
-has '_fixed_headers'       => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__fixed_headers' );
-has '_num_fixed_headers'   => ( is => 'ro', isa  => 'Int',      lazy    => 1, builder => '_build__num_fixed_headers' );
-has '_csv_parser'          => ( is => 'ro', isa  => 'Text::CSV',lazy    => 1, builder => '_build__csv_parser' );
+has '_fixed_headers'         => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__fixed_headers' );
+has '_num_fixed_headers'     => ( is => 'ro', isa  => 'Int',      lazy    => 1, builder => '_build__num_fixed_headers' );
+has '_csv_parser'            => ( is => 'ro', isa  => 'Text::CSV',lazy    => 1, builder => '_build__csv_parser' );
 
 sub BUILD {
   my ($self) = @_;
