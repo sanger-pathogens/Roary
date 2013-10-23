@@ -27,10 +27,10 @@ has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroup
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
 has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'group_statitics.csv' );
 
-has '_output_fh'          => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
-has '_text_csv_obj'       => ( is => 'ro', isa => 'Text::CSV', lazy => 1, builder => '_build__text_csv_obj' );
-has '_sorted_file_names'  => ( is => 'ro', isa => 'ArrayRef',  lazy => 1, builder => '_build__sorted_file_names' );
-has '_groups_to_files'    => ( is => 'ro', isa => 'HashRef',   lazy => 1, builder => '_build__groups_to_files' );
+has '_output_fh'         => ( is => 'ro', lazy => 1,           builder => '_build__output_fh' );
+has '_text_csv_obj'      => ( is => 'ro', isa  => 'Text::CSV', lazy    => 1, builder => '_build__text_csv_obj' );
+has '_sorted_file_names' => ( is => 'ro', isa  => 'ArrayRef',  lazy    => 1, builder => '_build__sorted_file_names' );
+has '_groups_to_files'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__groups_to_files' );
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -45,68 +45,60 @@ sub _build__text_csv_obj {
     return Text::CSV->new( { binary => 1, always_quote => 1, eol => "\r\n" } );
 }
 
-sub fixed_headers
-{
-  my ($self) = @_;
-  my @header = ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate');
-  return \@header;
+sub fixed_headers {
+    my ($self) = @_;
+    my @header =
+      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate' );
+    return \@header;
 }
 
 sub _header {
     my ($self) = @_;
-    my @header = @{$self->fixed_headers};
-  
-    for my $filename (@{$self->_sorted_file_names})
-    {
-      my $filename_cpy = $filename;
-      $filename_cpy =~ s!\.gff\.proteome\.faa!!;
-      push(@header,$filename_cpy);
+    my @header = @{ $self->fixed_headers };
+
+    for my $filename ( @{ $self->_sorted_file_names } ) {
+        my $filename_cpy = $filename;
+        $filename_cpy =~ s!\.gff\.proteome\.faa!!;
+        push( @header, $filename_cpy );
     }
-    
+
     return \@header;
 }
 
-sub _build__sorted_file_names
-{
-  my ( $self) = @_;
-  my @sorted_file_names = sort(@{$self->analyse_groups_obj->fasta_files});
-  return \@sorted_file_names;
+sub _build__sorted_file_names {
+    my ($self) = @_;
+    my @sorted_file_names = sort( @{ $self->analyse_groups_obj->fasta_files } );
+    return \@sorted_file_names;
 }
 
-sub _non_unique_name_for_group
-{
-  my ( $self,$annotated_group_name) = @_;
-  my $duplicate_gene_name = '';
-  my $prefix = $self->annotate_groups_obj->_group_default_prefix;
-  if($annotated_group_name =~ /$prefix/)
-  {
-    my $non_unique_name_for_group =  $self->annotate_groups_obj->_consensus_gene_name_for_group($annotated_group_name);
-    if(!($non_unique_name_for_group =~ /$prefix/))
-    {
-      $duplicate_gene_name = $non_unique_name_for_group;
+sub _non_unique_name_for_group {
+    my ( $self, $annotated_group_name ) = @_;
+    my $duplicate_gene_name = '';
+    my $prefix              = $self->annotate_groups_obj->_group_default_prefix;
+    if ( $annotated_group_name =~ /$prefix/ ) {
+        my $non_unique_name_for_group =
+          $self->annotate_groups_obj->_consensus_gene_name_for_group($annotated_group_name);
+        if ( !( $non_unique_name_for_group =~ /$prefix/ ) ) {
+            $duplicate_gene_name = $non_unique_name_for_group;
+        }
     }
-  }
-  return $duplicate_gene_name;
+    return $duplicate_gene_name;
 }
 
-sub _build__groups_to_files
-{
-  my ( $self ) = @_;
-  my %groups_to_files;
-  for my $group ( @{ $self->annotate_groups_obj->_groups } )
-  {
-    my $genes = $self->annotate_groups_obj->_groups_to_id_names->{$group};
-    my %filenames;
-    for my $gene_name (@{$genes})
-    {
-      my $filename = $self->analyse_groups_obj->_genes_to_file->{$gene_name};
-      $filenames{$filename}++;
+sub _build__groups_to_files {
+    my ($self) = @_;
+    my %groups_to_files;
+    for my $group ( @{ $self->annotate_groups_obj->_groups } ) {
+        my $genes = $self->annotate_groups_obj->_groups_to_id_names->{$group};
+        my %filenames;
+        for my $gene_name ( @{$genes} ) {
+            my $filename = $self->analyse_groups_obj->_genes_to_file->{$gene_name};
+            push( @{ $filenames{$filename} }, $gene_name );
+        }
+        $groups_to_files{$group} = \%filenames;
     }
-    $groups_to_files{$group} = \%filenames;
-  }
-  return \%groups_to_files;
+    return \%groups_to_files;
 }
-
 
 sub _row {
     my ( $self, $group ) = @_;
@@ -118,34 +110,27 @@ sub _row {
 
     my $annotation           = $self->annotate_groups_obj->consensus_product_for_id_names($genes);
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
-    
+
     my $duplicate_gene_name = $self->_non_unique_name_for_group($annotated_group_name);
-    
+
     my @row = (
-        $annotated_group_name, $duplicate_gene_name,  $annotation,  $num_isolates_in_group,
-        $num_sequences_in_group, $avg_sequences_per_isolate);
-        
-    for my $filename (@{$self->_sorted_file_names})
-    {
-      my $group_to_file_freq = $self->_groups_to_files->{$group}->{$filename};
-            
-      my $found = 0;
-      for my $gene_name (@{$genes})
-      {
-        if(defined($group_to_file_freq) &&  $group_to_file_freq >0 )
-        {
-          $found = 1;
-          push(@row,'P');
-          last;
+        $annotated_group_name,  $duplicate_gene_name,    $annotation,
+        $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate
+    );
+
+    for my $filename ( @{ $self->_sorted_file_names } ) {
+        my $group_to_file_genes = $self->_groups_to_files->{$group}->{$filename};
+
+        if ( defined($group_to_file_genes) && @{$group_to_file_genes} > 0 ) {
+
+            push( @row, join( "\t", @{$group_to_file_genes} ) );
+            next;
         }
-      }
-      
-      if($found == 0)
-      {
-         push(@row,'');
-      }
+        else {
+            push( @row, '' );
+        }
     }
-        
+
     return \@row;
 }
 
@@ -156,7 +141,8 @@ sub create_spreadsheet {
 
     for my $group (
         sort {
-            $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$b} )
+            $self->analyse_groups_obj->_count_num_files_in_group(
+                $self->annotate_groups_obj->_groups_to_id_names->{$b} )
               <=> $self->analyse_groups_obj->_count_num_files_in_group(
                 $self->annotate_groups_obj->_groups_to_id_names->{$a} )
         } @{ $self->annotate_groups_obj->_groups }

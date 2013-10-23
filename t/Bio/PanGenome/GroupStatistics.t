@@ -33,6 +33,7 @@ is(read_file('group_statitics.csv'),read_file('t/data/expected_group_statitics.c
 
 unlink('group_statitics.csv');
 
+
 ############################
 
 my $annotate_groups_2 = Bio::PanGenome::AnnotateGroups->new(
