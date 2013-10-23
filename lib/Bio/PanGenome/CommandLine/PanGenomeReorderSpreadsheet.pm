@@ -45,7 +45,7 @@ sub BUILD {
 sub run {
     my ($self) = @_;
 
-    ( ( -e $self->spreadsheet_filename ) && ( -e $self->tree_file ) && ( !$self->help ) ) or die $self->usage_text;
+    ( defined($self->spreadsheet_filename) && defined($self->tree_file) && ( -e $self->spreadsheet_filename ) && ( -e $self->tree_file ) && ( !$self->help ) ) or die $self->usage_text;
 
     my $obj = Bio::PanGenome::ReorderSpreadsheet->new(
         tree_file       => $self->tree_file,

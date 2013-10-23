@@ -32,6 +32,7 @@ has '_column_mappings'       => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, 
 has '_fixed_headers'         => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__fixed_headers' );
 has '_num_fixed_headers'     => ( is => 'ro', isa  => 'Int',      lazy    => 1, builder => '_build__num_fixed_headers' );
 has '_csv_parser'            => ( is => 'ro', isa  => 'Text::CSV',lazy    => 1, builder => '_build__csv_parser' );
+has '_csv_output'            => ( is => 'ro', isa  => 'Text::CSV',lazy    => 1, builder => '_build__csv_output' );
 
 sub BUILD {
   my ($self) = @_;
@@ -47,7 +48,7 @@ sub reorder_spreadsheet {
     seek($self->_input_spreadsheet_fh  ,0,0);
     while ( my $row = $self->_csv_parser->getline( $self->_input_spreadsheet_fh ) ) 
     {
-      $self->_csv_parser->print($self->_output_spreadsheet_fh, $self->_remap_columns($row));
+      $self->_csv_output->print($self->_output_spreadsheet_fh, $self->_remap_columns($row));
     }
     
     close($self->_output_spreadsheet_fh);
@@ -132,7 +133,13 @@ sub _build__fixed_headers
 sub _build__csv_parser
 {
   my ($self) = @_;
-  return Text::CSV->new( { binary => 1, always_quote => 1, eol => $/} );
+  return Text::CSV->new( { binary => 1, always_quote => 1} );
+}
+
+sub _build__csv_output
+{
+  my ($self) = @_;
+  return Text::CSV->new( { binary => 1, always_quote => 1, eol => "\r\n"} );
 }
 
 sub _build__input_spreadsheet_fh {
