@@ -31,6 +31,7 @@ has '_output_fh'         => ( is => 'ro', lazy => 1,           builder => '_buil
 has '_text_csv_obj'      => ( is => 'ro', isa  => 'Text::CSV', lazy    => 1, builder => '_build__text_csv_obj' );
 has '_sorted_file_names' => ( is => 'ro', isa  => 'ArrayRef',  lazy    => 1, builder => '_build__sorted_file_names' );
 has '_groups_to_files'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__groups_to_files' );
+has '_files_to_groups'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__files_to_groups' );
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -99,6 +100,23 @@ sub _build__groups_to_files {
     }
     return \%groups_to_files;
 }
+
+sub _build__files_to_groups
+{
+  my ($self) = @_;
+  my %files_to_groups;
+  
+  for my $group (keys %{$self->_groups_to_files})
+  {
+    for my $filename (keys %{$self->_groups_to_files->{$group}})
+    {
+      push(@{$files_to_groups{$filename}}, $group);
+    }
+  }
+  
+  return \%files_to_groups;
+}
+
 
 sub _row {
     my ( $self, $group ) = @_;
