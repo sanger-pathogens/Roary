@@ -35,7 +35,7 @@ ok(my $obj = Bio::PanGenome::GenePoolExpansion->new(
   group_statistics_obj => $group_statistics
   ),'initialise object');
 
-is(@{$obj->gene_pool_expansion()},$obj->number_of_iterations, 'gene results from 10 iterations'); 
+is(@{$obj->gene_pool_expansion()->[0]},$obj->number_of_iterations, 'gene results from 10 iterations'); 
 
 is_deeply($group_statistics->_sorted_file_names,[
           't/data/query_1.fa',

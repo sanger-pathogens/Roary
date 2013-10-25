@@ -27,7 +27,7 @@ my @sorted_expected_files = sort((
 
 is_deeply(
     \@sorted_fasta_files,
-\@sorted_expected_files,
+    \@sorted_expected_files,
     'one file created'
 );
 

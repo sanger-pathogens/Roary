@@ -24,6 +24,8 @@ has 'number_of_iterations'      => ( is => 'ro', isa => 'Int', default => 10 );
 has 'gene_pool_expansion'       => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_gene_pool_expansion' );
 has 'output_filename'       => ( is => 'ro', isa => 'Str', default => 'gene_count.png' );
 
+has '_mean_objects'       => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__mean_objects' );
+
 sub create_plot
 {
   my($self) = @_;
@@ -65,7 +67,7 @@ sub high_values
 
   for my $iteration_values ( @{$self->gene_pool_expansion} )
   {
-    push(@high_values, "".max(@{$iteration_values}));
+    push(@high_values, max(@{$iteration_values}));
   }
   
   return \@high_values;
@@ -78,23 +80,53 @@ sub low_values
   
   for my $iteration_values ( @{$self->gene_pool_expansion} )
   {
-    push(@low_values, "".min(@{$iteration_values}));
+    push(@low_values, min(@{$iteration_values}));
   }
   
   return \@low_values;
 }
 
-sub mean_values
+
+sub _build__mean_objects
 {
   my($self) = @_;
-  my @low_values;
   
+  my @values;
   for my $iteration_values ( @{$self->gene_pool_expansion} )
   {
-    push(@low_values, "".mean(@{$iteration_values}));
+    my $mean_obj   = mean(@{$iteration_values});
+    push(@values, $mean_obj );
   }
   
-  return \@low_values;
+  return \@values;
+}
+
+sub high_std_dev_values
+{
+  my($self) = @_;
+  
+  my @values;
+  for my $mean_obj ( @{$self->_mean_objects} )
+  {
+    my $stddev_obj = stddev($mean_obj->query_vector );
+    push(@values,  $mean_obj->query + $stddev_obj->query );
+  }
+  
+  return \@values;
+}
+
+sub low_std_dev_values
+{
+  my($self) = @_;
+  
+  my @values;
+  for my $mean_obj ( @{$self->_mean_objects} )
+  {
+    my $stddev_obj = stddev($mean_obj->query_vector );
+    push(@values, $mean_obj->query - $stddev_obj->query);
+  }
+  
+  return \@values;
 }
 
 sub key_values
@@ -104,7 +136,7 @@ sub key_values
 
   for(my $i = 0; $i<  @{$self->gene_pool_expansion} ; $i++)
   {
-    push(@key_values, "".($i+1));
+    push(@key_values, ($i+1));
   }
   
   return \@key_values;

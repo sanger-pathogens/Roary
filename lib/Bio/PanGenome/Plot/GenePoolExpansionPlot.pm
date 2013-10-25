@@ -41,12 +41,13 @@ sub create_plot {
     my $cc = Chart::Clicker->new( width => $self->_plot_width, height => $self->_plot_height );
 
     my $series1 = Chart::Clicker::Data::Series::HighLow->new(
-        keys    => [@{$self->gene_pool_expansion->key_values }],
-        highs   => [@{$self->gene_pool_expansion->high_values}],
-        lows    => [@{$self->gene_pool_expansion->low_values }],
-        opens   => [@{$self->gene_pool_expansion->mean_values}],
-        values  => [@{$self->gene_pool_expansion->mean_values}]
-        
+    {
+        keys    => $self->gene_pool_expansion->key_values ,
+        highs   => $self->gene_pool_expansion->high_values,
+        lows    => $self->gene_pool_expansion->low_values ,
+        opens   => $self->gene_pool_expansion->low_std_dev_values,
+        values  => $self->gene_pool_expansion->high_std_dev_values
+      }
     );
 
     $cc->title->text( $self->_plot_title );
@@ -56,11 +57,9 @@ sub create_plot {
     $cc->add_to_datasets($ds);
 
     my $def = $cc->get_context('default');
-    $def->range_axis->format('%d');
     $def->range_axis->baseline(0);
-    $def->range_axis->label('Number of genes added');
+    $def->range_axis->label('genes');
     $def->range_axis->fudge_amount(.2);
-    $def->domain_axis->format('%d');
     $def->domain_axis->label('Number of samples');
     $def->domain_axis->fudge_amount(.06);
     
