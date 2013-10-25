@@ -44,6 +44,13 @@ is_deeply($group_statistics->_sorted_file_names,[
 
 ok($obj->create_plot, 'create the plot');
 ok(-e 'gene_count.png', 'plot created');
+
+ok($obj->create_raw_output_file, 'create the raw output file');
+ok(-e 'gene_count.tab', 'check raw output file created');
+
+is(read_file('t/data/expected_gene_count.tab'), read_file('gene_count.tab'), '');
+
+unlink('gene_count.tab');
 unlink('gene_count.png');
 unlink('group_statitics.csv');
 

@@ -79,6 +79,7 @@ sub run {
       group_statistics_obj => $group_statistics
     );
     $gene_pool_expansion->create_plot;
+    $gene_pool_expansion->create_raw_output_file;
 
     if($self->output_multifasta_files)
     {

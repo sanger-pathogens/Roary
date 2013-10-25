@@ -20,11 +20,24 @@ use Statistics::Basic qw(:all);
 use Bio::PanGenome::Plot::GenePoolExpansionPlot;
 
 has 'group_statistics_obj'      => ( is => 'ro', isa => 'Bio::PanGenome::GroupStatistics',        required => 1 );
-has 'number_of_iterations'      => ( is => 'ro', isa => 'Int', default => 10 );
+has 'number_of_iterations'      => ( is => 'ro', isa => 'Int', default => 100 );
 has 'gene_pool_expansion'       => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_gene_pool_expansion' );
-has 'output_filename'       => ( is => 'ro', isa => 'Str', default => 'gene_count.png' );
+has 'output_filename'           => ( is => 'ro', isa => 'Str', default => 'gene_count.png' );
+has 'output_raw_filename'       => ( is => 'ro', isa => 'Str', default => 'gene_count.tab' );
 
 has '_mean_objects'       => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__mean_objects' );
+
+sub create_raw_output_file
+{
+  my($self) = @_;
+  open(my $fh, '>', $self->output_raw_filename);
+  for my $iterations (@{$self->gene_pool_expansion})
+  {
+    print {$fh} join("\t",@{$iterations});
+    print {$fh} "\n";
+  }
+  close($fh);
+}
 
 sub create_plot
 {
