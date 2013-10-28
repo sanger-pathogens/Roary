@@ -19,7 +19,7 @@ use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::NumberNewGroups;
 use Bio::PanGenome::Output::NumberUniqueGroups;
 use Bio::PanGenome::Output::NumberTotalGroups;
-
+use Bio::PanGenome::Output::NumberConservedGroups;
 
 has 'group_statistics_obj'      => ( is => 'ro', isa => 'Bio::PanGenome::GroupStatistics',        required => 1 );
 
@@ -39,8 +39,11 @@ sub create_output_files
     group_statistics_obj => $self->group_statistics_obj  
     )->create_raw_output_file();
 
-}
+  Bio::PanGenome::Output::NumberConservedGroups->new( 
+    group_statistics_obj => $self->group_statistics_obj  
+    )->create_raw_output_file();
 
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
