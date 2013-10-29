@@ -16,7 +16,7 @@ use Bio::PanGenome::AnnotateGroups;
 use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
-use Bio::PanGenome::Output::GroupTabFiles;
+use Bio::PanGenome::Output::NumberOfGroups;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -75,7 +75,7 @@ sub run {
     );
     $group_statistics->create_spreadsheet;
     
-    my $gene_pool_expansion = Bio::PanGenome::Output::GroupTabFiles->new(
+    my $gene_pool_expansion = Bio::PanGenome::Output::NumberOfGroups->new(
       group_statistics_obj => $group_statistics
     );
     $gene_pool_expansion->create_output_files;
