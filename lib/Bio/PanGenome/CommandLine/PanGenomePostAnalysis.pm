@@ -12,6 +12,7 @@ use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::PostAnalysis;
 use Bio::PanGenome::External::Muscle;
+use File::Find::Rule;
 
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -77,13 +78,22 @@ sub run {
       );                                                             
     $obj->run();
     
-    my @output_gene_files = glob q("pan_genome_sequences/*.fa");
+    my $output_gene_files = $self->_find_input_files;
     my $seg= Bio::PanGenome::External::Muscle->new(
-      fasta_files => \@output_gene_files,
+      fasta_files => $output_gene_files,
       job_runner  => $self->job_runner
     );
 
     $seg->run();
+}
+
+sub _find_input_files
+{
+   my ($self) = @_;
+   my @files = File::Find::Rule->file()
+                               ->name( '*.fa' )
+                               ->in('pan_genome_sequences' );
+   return \@files;
 }
 
 sub _read_file_into_array
