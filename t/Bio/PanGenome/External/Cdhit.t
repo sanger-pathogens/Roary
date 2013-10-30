@@ -20,7 +20,7 @@ ok($obj = Bio::PanGenome::External::Cdhit->new(
   exec         =>  $cwd.'/t/bin/dummy_cd-hit',
 ),'initialise object');
 
-is($obj->_command_to_run, $cwd.'/t/bin/dummy_cd-hit -i t/data/some_fasta_file.fa -o output -T 1 -M 900 -g 1 -s 1 -c 1 2> /dev/null', 'Command constructed as expected');
+is($obj->_command_to_run, $cwd.'/t/bin/dummy_cd-hit -i t/data/some_fasta_file.fa -o output -T 1 -M 900 -g 1 -s 1 -d 256 -c 1 2> /dev/null', 'Command constructed as expected');
 ok($obj->run(), 'run dummy command');
 unlink('output');
 unlink('output.clstr');

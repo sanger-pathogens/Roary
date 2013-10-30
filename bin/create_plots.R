@@ -1,4 +1,6 @@
 #!/software/pathogen/external/apps/usr/local/bin/Rscript
+# ABSTRACT: Create R plots
+# PODNAME: create_plots.R
 
 # Take the output files from the pan genome pipeline and create nice plots.
 
