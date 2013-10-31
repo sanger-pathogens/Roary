@@ -243,11 +243,6 @@ sub _split_groups_with_min_sub_group_size {
 sub _split_groups {
     my ($self) = @_;
 
-    # Split off the largest groups first
-    for ( my $i = $self->_number_of_files ; $i >= (($self->_number_of_files / 32)) && $i >= 1 ; $i /= 2 ) {
-        $self->_split_groups_with_min_sub_group_size($i);
-    }
-
     $self->_groups_to_consensus_gene_names( $self->_generate_groups_to_consensus_gene_names );
     $self->_ids_to_groups( $self->_generate__ids_to_groups );
 }

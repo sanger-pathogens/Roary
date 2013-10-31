@@ -28,12 +28,6 @@ my %scripts_and_expected_files = (
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 cleanup_files();
 
-%scripts_and_expected_files = (
-      ' -j Local --output_multifasta_files t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff            ' =>
-          [ 'pan_genome_sequences/00006-group_1.fa.aln', 't/data/00006-group_1.fa.aln' ],
-);
-mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
-cleanup_files();
 
 %scripts_and_expected_files = (
   ' -j Local --output_multifasta_files t/data/query_1.gff t/data/query_2.gff t/data/query_3.gff ' =>
