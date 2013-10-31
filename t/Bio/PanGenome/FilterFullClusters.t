@@ -14,7 +14,7 @@ BEGIN {
 ok(my $filter_clusters = Bio::PanGenome::FilterFullClusters->new(
     clusters_filename        => 't/data/clusters_to_inflate',
     fasta_file           =>  't/data/clusters_input.fa',
-    number_of_input_files => 5,
+    number_of_input_files => 6,
     output_file => 'output_filtered.fa'
   ),'initialise object');
 ok($filter_clusters->filter_full_clusters_from_fasta(),'filter the clusters');

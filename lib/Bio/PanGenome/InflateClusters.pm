@@ -77,7 +77,7 @@ sub inflate
   for my $gene_name(keys %{$self->_clustered_genes})
   {
     next unless(defined($self->_clustered_genes->{$gene_name}));
-    print { $self->_output_fh } join("\t",@{$self->_clustered_genes->{$gene_name}})."\n";
+    print { $self->_output_fh } $gene_name."\t". join("\t",@{$self->_clustered_genes->{$gene_name}})."\n";
   }
   
   close($self->_output_fh);
