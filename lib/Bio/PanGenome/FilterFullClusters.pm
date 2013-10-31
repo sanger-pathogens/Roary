@@ -29,8 +29,6 @@ has '_full_cluster_gene_names'    => ( is => 'ro', isa => 'HashRef', lazy => 1, 
 has '_input_seqio'  => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__input_seqio' );
 has '_output_seqio' => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__output_seqio' );
 
-
-
 sub _build__full_cluster_gene_names
 {
   my($self) = @_;
@@ -39,7 +37,7 @@ sub _build__full_cluster_gene_names
   
   for my $gene_name (keys %{$self->_clustered_genes})
   {
-    if(defined($self->_clustered_genes->{$gene_name}) && @{$self->_clustered_genes->{$gene_name}} == $self->number_of_input_files)
+    if(defined($self->_clustered_genes->{$gene_name}) && @{$self->_clustered_genes->{$gene_name}} == ($self->number_of_input_files -1))
     {
       $full_cluster_gene_names{$gene_name}++;
     }
