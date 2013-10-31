@@ -219,7 +219,7 @@ sub _split_groups_with_min_sub_group_size {
     my @groups = keys %{ $self->_groups_to_id_names };
     for my $group (@groups) {
         my $size_of_group = @{ $self->_groups_to_id_names->{$group} };
-        next if ( $size_of_group <= $self->_number_of_files );
+        next if ( $size_of_group <= ($self->_number_of_files) * 2);
         my $ids_grouped_by_gene_name = $self->_ids_grouped_by_gene_name_for_group($group);
 
         for my $gene_name ( keys %{$ids_grouped_by_gene_name} ) {
@@ -242,6 +242,8 @@ sub _split_groups_with_min_sub_group_size {
 
 sub _split_groups {
     my ($self) = @_;
+    
+    $self->_split_groups_with_min_sub_group_size($self->_number_of_files);
 
     $self->_groups_to_consensus_gene_names( $self->_generate_groups_to_consensus_gene_names );
     $self->_ids_to_groups( $self->_generate__ids_to_groups );
