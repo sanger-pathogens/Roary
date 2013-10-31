@@ -35,6 +35,7 @@ sub run {
     my $output_group_labels_filename     = '_labeled_mcl_groups';
     my $output_combined_filename         = '_combined_files';
 
+
     my $inflate_clusters = Bio::PanGenome::InflateClusters->new(
         clusters_filename => $self->clusters_filename,
         mcl_filename      => $output_mcl_filename,
@@ -99,6 +100,7 @@ sub run {
     unlink( $self->clusters_filename . '.bak.clstr' );
     unlink('_gff_files');
     unlink('_fasta_files');
+    unlink('_clustered_filtered.fa');
 
 }
 

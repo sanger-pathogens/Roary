@@ -21,6 +21,7 @@ use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::External::PostAnalysis;
+use Bio::PanGenome::FilterFullClusters;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -42,6 +43,7 @@ sub run {
     my $output_cd_hit_filename        = '_clustered';
     my $output_blast_results_filename = '_blast_results';
     my $output_mcl_filename           = '_uninflated_mcl_groups';
+    my $output_filtered_clustered_fasta  = '_clustered_filtered.fa';
 
     my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
         proteome_files  => $self->fasta_files,
@@ -55,9 +57,19 @@ sub run {
         output_base => $output_cd_hit_filename
     );
     $cdhit_obj->run();
+    
+    my $number_of_input_files = @{$self->input_files};
+    my $filter_clusters = Bio::PanGenome::FilterFullClusters->new(
+        clusters_filename        => $cdhit_obj->clusters_filename,
+        fasta_file               =>  $output_cd_hit_filename,
+        number_of_input_files    => $number_of_input_files,
+        output_file => $output_filtered_clustered_fasta
+      );
+    $filter_clusters->filter_full_clusters_from_fasta();
+    
 
     my $blast_obj = Bio::PanGenome::ParallelAllAgainstAllBlast->new(
-        fasta_file              => $output_cd_hit_filename,
+        fasta_file              => $output_filtered_clustered_fasta,
         blast_results_file_name => $output_blast_results_filename,
         job_runner              => $self->job_runner,
         makeblastdb_exec        => $self->makeblastdb_exec,
