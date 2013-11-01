@@ -30,7 +30,7 @@ has 'blast_database'    => ( is => 'ro', isa => 'Str', required => 1 );
 has 'exec'              => ( is => 'ro', isa => 'Str', default  => 'blastp' );
 has '_evalue'           => ( is => 'ro', isa => 'Num', default  => 1E-6 );
 has '_num_threads'      => ( is => 'ro', isa => 'Int', default  => 1 );
-has '_max_target_seqs'  => ( is => 'ro', isa => 'Int', default  => 100 );
+has '_max_target_seqs'  => ( is => 'ro', isa => 'Int', default  => 5000 );
 has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 has 'output_file'       => ( is => 'ro', isa => 'Str', default  => 'results.out' );
 
