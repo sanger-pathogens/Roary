@@ -31,6 +31,7 @@ has 'exec'              => ( is => 'ro', isa => 'Str', default  => 'blastp' );
 has '_evalue'           => ( is => 'ro', isa => 'Num', default  => 1E-6 );
 has '_num_threads'      => ( is => 'ro', isa => 'Int', default  => 1 );
 has '_max_target_seqs'  => ( is => 'ro', isa => 'Int', default  => 5000 );
+has '_perc_identity'    => ( is => 'ro', isa => 'Num', default  => 95 );
 has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 has 'output_file'       => ( is => 'ro', isa => 'Str', default  => 'results.out' );
 
@@ -44,10 +45,10 @@ sub _command_to_run {
             '-db', $self->blast_database, 
             '-evalue', $self->_evalue,
             '-num_threads', $self->_num_threads,
-            '-out', $self->output_file,
             '-outfmt 6',
             '-max_target_seqs', $self->_max_target_seqs,
-            $self->_logging
+            ' | awk \'{ if ($3 > '.$self->_perc_identity.') print $0;}\'',  
+            $self->_logging, '1> ', $self->output_file,
         )
     );
 }
