@@ -24,6 +24,7 @@ has 'mcl_filename'      => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_file'       => ( is => 'ro', isa => 'Str', default  => 'inflated_results' );
 has '_mcl_fh'           => ( is => 'ro',lazy => 1, builder => '_build__mcl_fh' );
 has '_output_fh'        => ( is => 'ro',lazy => 1, builder => '_build__output_fh' );
+has 'cdhit_groups_filename'  => ( is => 'ro', isa => 'Maybe[Str]' );
 
 sub _build__output_fh
 {
@@ -68,16 +69,29 @@ sub inflate
 {
   my($self) = @_;
   my $mcl_fh = $self->_mcl_fh;
+  
+  # Inflate genes from cdhit which were sent to mcl
   while(<$mcl_fh>)
   {
     my $line = $_;
     print { $self->_output_fh } $self->_inflate_line($line) . "\n";
   }
   
+  # Inflate any clusters that were in the clusters file but not sent to mcl
   for my $gene_name(keys %{$self->_clustered_genes})
   {
     next unless(defined($self->_clustered_genes->{$gene_name}));
     print { $self->_output_fh } $gene_name."\t". join("\t",@{$self->_clustered_genes->{$gene_name}})."\n";
+  }
+  
+  if(defined($self->cdhit_groups_filename))
+  {
+    # Add clusters which were excluded because the groups were full at the cdhit stage
+    open(my $cdhit_fh, $self->cdhit_groups_filename);
+    while(<$cdhit_fh>)
+    {
+      print { $self->_output_fh } $_;
+    }
   }
   
   close($self->_output_fh);

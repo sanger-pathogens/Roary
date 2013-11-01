@@ -46,6 +46,7 @@ sub run {
     my $output_mcl_filename           = '_uninflated_mcl_groups';
     my $output_filtered_clustered_fasta  = '_clustered_filtered.fa';
     my $cdhit_groups = $output_combined_filename.'.groups';
+    unlink($cdhit_groups);
 
     my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
         proteome_files  => $self->fasta_files,
@@ -77,7 +78,6 @@ sub run {
         blastp_exec             => $self->blastp_exec
     );
     $blast_obj->run();
-    exit();
 
     my $mcl = Bio::PanGenome::External::Mcl->new(
         blast_results   => $output_blast_results_filename,
