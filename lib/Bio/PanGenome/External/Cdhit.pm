@@ -25,8 +25,8 @@ has 'exec'                         => ( is => 'ro', isa => 'Str',  default  => '
 has '_number_of_threads'           => ( is => 'ro', isa => 'Int',  default  => 1 );
 has '_max_available_memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__max_available_memory_in_mb' );
 has '_use_most_similar_clustering' => ( is => 'ro', isa => 'Bool', default  => 1 );
-has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 0.99 );
-has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 0.99 );
+has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 1 );
+has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_description_length'          => ( is => 'ro', isa => 'Int',  default  => 256 );
 has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 

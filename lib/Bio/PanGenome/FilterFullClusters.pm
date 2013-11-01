@@ -37,7 +37,8 @@ sub _build__full_cluster_gene_names
   
   for my $gene_name (keys %{$self->_clustered_genes})
   {
-    if(defined($self->_clustered_genes->{$gene_name}) && @{$self->_clustered_genes->{$gene_name}} == ($self->number_of_input_files -1))
+  
+    if(defined($self->_clustered_genes->{$gene_name}) && @{$self->_clustered_genes->{$gene_name}} >= ($self->number_of_input_files -1))
     {
       $full_cluster_gene_names{$gene_name}++;
     }
