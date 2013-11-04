@@ -47,7 +47,7 @@ sub _command_to_run {
             '-outfmt 6',
             '-out', $self->output_file,
             '-max_target_seqs', $self->_max_target_seqs,
-            $self->_logging, '1> ', 
+            $self->_logging,
         )
     );
 }
