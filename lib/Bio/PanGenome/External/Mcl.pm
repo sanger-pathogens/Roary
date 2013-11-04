@@ -63,7 +63,7 @@ sub _command_to_run {
     return join(
         " ",
         (
-            $self->mcxdeblast_exec, '-m9', '--score=',$self->_score,
+            $self->mcxdeblast_exec, '-m9', '--score='.$self->_score,
             '--line-mode=abc', $self->blast_results, 
             '|', $self->mcl_exec, '-', '--abc',
             '-I', $self->_inflation_value, '-o', $self->output_file, 
