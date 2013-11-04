@@ -35,7 +35,5 @@ ok($obj->inflate,'inflate the results');
 is(read_file('example.output'),read_file('t/data/expected_clusters_to_inflate'), 'inflated results as expected');
 unlink('example.output');
 
-
-
 done_testing();
 

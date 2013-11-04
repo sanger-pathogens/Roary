@@ -18,60 +18,13 @@ Take the clusters file from cd-hit and use it to inflate the output of MCL
 
 use Moose;
 use Bio::PanGenome::Exceptions;
+with 'Bio::PanGenome::ClustersRole';
 
-has 'clusters_filename' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'mcl_filename'      => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_file'       => ( is => 'ro', isa => 'Str', default  => 'inflated_results' );
-
-has '_clusters_fh'      => ( is => 'ro',lazy => 1, builder => '_build__clusters_fh' );
 has '_mcl_fh'           => ( is => 'ro',lazy => 1, builder => '_build__mcl_fh' );
 has '_output_fh'        => ( is => 'ro',lazy => 1, builder => '_build__output_fh' );
-has '_clustered_genes'  => ( is => 'ro',lazy => 1, builder => '_build__clustered_genes' );
-
-sub _build__clustered_genes
-{
-  my($self) = @_;
-  my $fh = $self->_clusters_fh;
-  my %clustered_genes ;
-
-  my %raw_clusters;
-  my $current_cluster_name;
-  while(<$fh>)
-  {
-    my $line = $_;
-    if($line =~ /^>(.+)$/)
-    {
-      $current_cluster_name = $1;
-    }
-    
-    #>Cluster 5
-    #0	4201aa, >6630_4#9_00008... *
-    #1	4201aa, >6631_1#23_00379... at 100.00%    
-        
-    if($line =~ /[\d]+\t[\w]+, >(.+)\.\.\. (.+)$/)
-    {
-      my $gene_name = $1;
-      my $identity  = $2;
-      
-      if($identity eq '*')
-      {
-        $raw_clusters{$current_cluster_name}{representative_gene_name} = $gene_name;
-      }
-      else
-      {
-        push(@{$raw_clusters{$current_cluster_name}{gene_names}}, $gene_name);
-      }
-    }
-  }
-  
-  # iterate over the raw clusters and convert to a simple hash
-  for my $cluster_name (keys %raw_clusters)
-  {
-    $clustered_genes{$raw_clusters{$cluster_name}{representative_gene_name}} = $raw_clusters{$cluster_name}{gene_names};
-  }
-  
-  return \%clustered_genes;
-}
+has 'cdhit_groups_filename'  => ( is => 'ro', isa => 'Maybe[Str]' );
 
 sub _build__output_fh
 {
@@ -85,13 +38,6 @@ sub _build__mcl_fh
    my($self) = @_;
    open(my $fh, $self->mcl_filename) or Bio::PanGenome::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $self->mcl_filename );
    return $fh;
-}
-
-sub _build__clusters_fh
-{
-  my($self) = @_;
-  open(my $fh, $self->clusters_filename) or Bio::PanGenome::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $self->clusters_filename );
-  return $fh;
 }
 
 sub _inflate_line
@@ -113,7 +59,8 @@ sub _inflate_gene
    my $inflated_gene = $gene_name;
    if(defined($self->_clustered_genes->{$gene_name}))
    {
-     $inflated_gene = $inflated_gene."\t". join("\t",@{$self->_clustered_genes->{$gene_name}});
+     $inflated_gene = $inflated_gene."\t". join("\t",@{$self->_clustered_genes->{$gene_name}});     
+     delete($self->_clustered_genes->{$gene_name});
    }
    return $inflated_gene;
 }
@@ -122,11 +69,31 @@ sub inflate
 {
   my($self) = @_;
   my $mcl_fh = $self->_mcl_fh;
+  
+  # Inflate genes from cdhit which were sent to mcl
   while(<$mcl_fh>)
   {
     my $line = $_;
     print { $self->_output_fh } $self->_inflate_line($line) . "\n";
   }
+  
+  # Inflate any clusters that were in the clusters file but not sent to mcl
+  for my $gene_name(keys %{$self->_clustered_genes})
+  {
+    next unless(defined($self->_clustered_genes->{$gene_name}));
+    print { $self->_output_fh } $gene_name."\t". join("\t",@{$self->_clustered_genes->{$gene_name}})."\n";
+  }
+  
+  if(defined($self->cdhit_groups_filename))
+  {
+    # Add clusters which were excluded because the groups were full at the cdhit stage
+    open(my $cdhit_fh, $self->cdhit_groups_filename);
+    while(<$cdhit_fh>)
+    {
+      print { $self->_output_fh } $_;
+    }
+  }
+  
   close($self->_output_fh);
   1;
 }

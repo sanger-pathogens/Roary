@@ -21,7 +21,7 @@ ok($obj = Bio::PanGenome::External::Blastp->new(
   exec            => $cwd.'/t/bin/dummy_blastp',
 ),'initialise object');
 
-is($obj->_command_to_run, $cwd.'/t/bin/dummy_blastp -query t/data/some_fasta_file.fa -db some_blast_database -evalue 1e-06 -num_threads 1 -out results.out -outfmt 6 -max_target_seqs 100 2> /dev/null', 'Command constructed as expected');
+is($obj->_command_to_run, $cwd.'/t/bin/dummy_blastp -query t/data/some_fasta_file.fa -db some_blast_database -evalue 1e-06 -num_threads 1 -outfmt 6 -max_target_seqs 5000  | awk \'{ if ($3 > 90) print $0;}\' 2> /dev/null 1>  results.out', 'Command constructed as expected');
 ok($obj->run(), 'run dummy command');
 unlink('results.out');
 
