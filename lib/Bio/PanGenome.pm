@@ -57,7 +57,7 @@ sub run {
     my $number_of_input_files = @{$self->input_files};
     $self->filter_complete_clusters($output_cd_hit_filename,1,    $output_combined_filename,$number_of_input_files,$output_filtered_clustered_fasta,1);
     
-    for( my $percent_match = 0.995; $percent_match > 90; $percent_match -= 0.005)
+    for( my $percent_match = 0.995; $percent_match > 0.90; $percent_match -= 0.005)
     {
       $self->filter_complete_clusters($output_cd_hit_filename,$percent_match,$output_combined_filename,$number_of_input_files,$output_filtered_clustered_fasta,0);
     }
