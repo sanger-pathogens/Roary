@@ -27,6 +27,8 @@ has 'mcxdeblast_exec' => ( is => 'ro', isa => 'Str', default  => 'mcxdeblast' );
 has 'mcl_exec'        => ( is => 'ro', isa => 'Str', default  => 'mcl' );
 has 'output_file'     => ( is => 'ro', isa => 'Str', default  => 'output_groups' );
 
+has '_score'     => ( is => 'ro', isa => 'Str', default  => 'r' );
+
 has '_inflation_value' => ( is => 'ro', isa => 'Num', default => 1.5 );
 has '_logging'         => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 
@@ -61,7 +63,7 @@ sub _command_to_run {
     return join(
         " ",
         (
-            $self->mcxdeblast_exec, '-m9', 
+            $self->mcxdeblast_exec, '-m9', '--score=',$self->_score,
             '--line-mode=abc', $self->blast_results, 
             '|', $self->mcl_exec, '-', '--abc',
             '-I', $self->_inflation_value, '-o', $self->output_file, 
