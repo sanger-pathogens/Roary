@@ -1,15 +1,17 @@
 #!/usr/bin/env perl
 use Moose;
 use Getopt::Long;
-my ($output_filename) ;
+my ($output_filename,$query,$db,$evalue,$num_threads,$outfmt,$max_target_seqs) ;
 GetOptions(
-    'query=s'    => \$output_filename,
-    'db=s'    => \$output_filename,
-    'evalue=s'    => \$output_filename,
-    'num_threads=s'    => \$output_filename,
-    'outfmt=s'    => \$output_filename,
-    'max_target_seqs=s'    => \$output_filename,
+    'query=s'    => \$query,
+    'db=s'    => \$db,
+    'evalue=s'    => \$evalue,
+    'num_threads=s'    => \$num_threads,
+    'outfmt=s'    => \$outfmt,
+    'max_target_seqs=s'    => \$max_target_seqs,
+    'out=s'   => \$output_filename,
     
 );
 system("touch _blast_results");
+system("touch $output_filename");
 1;
