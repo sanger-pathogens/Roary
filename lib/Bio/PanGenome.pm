@@ -9,6 +9,7 @@ Create a pan genome
 =cut
 
 use Moose;
+use File::Copy;
 use Bio::PanGenome::ParallelAllAgainstAllBlast;
 use Bio::PanGenome::CombinedProteome;
 use Bio::PanGenome::External::Cdhit;
@@ -22,6 +23,7 @@ use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::External::PostAnalysis;
 use Bio::PanGenome::FilterFullClusters;
+use Bio::PanGenome::External::IterativeCdhit;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -44,6 +46,8 @@ sub run {
     my $output_blast_results_filename = '_blast_results';
     my $output_mcl_filename           = '_uninflated_mcl_groups';
     my $output_filtered_clustered_fasta  = '_clustered_filtered.fa';
+    my $cdhit_groups = $output_combined_filename.'.groups';
+    unlink($cdhit_groups);
 
     my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
         proteome_files  => $self->fasta_files,
@@ -51,25 +55,19 @@ sub run {
     );
     $combine_fasta_files->create_combined_proteome_file;
 
-    my $cdhit_obj = Bio::PanGenome::External::Cdhit->new(
-        input_file  => $output_combined_filename,
-        job_runner  => $self->job_runner,
-        output_base => $output_cd_hit_filename
-    );
-    $cdhit_obj->run();
-    
     my $number_of_input_files = @{$self->input_files};
-    my $filter_clusters = Bio::PanGenome::FilterFullClusters->new(
-        clusters_filename        => $cdhit_obj->clusters_filename,
-        fasta_file               =>  $output_cd_hit_filename,
-        number_of_input_files    => $number_of_input_files,
-        output_file => $output_filtered_clustered_fasta
-      );
-    $filter_clusters->filter_full_clusters_from_fasta();
+
+    my $iterative_cdhit= Bio::PanGenome::External::IterativeCdhit->new(
+      output_cd_hit_filename           => $output_cd_hit_filename,
+      output_combined_filename         => $output_combined_filename,
+      number_of_input_files            => $number_of_input_files, 
+      output_filtered_clustered_fasta  => $output_filtered_clustered_fasta,
+    );
     
+    $iterative_cdhit->run();
 
     my $blast_obj = Bio::PanGenome::ParallelAllAgainstAllBlast->new(
-        fasta_file              => $output_filtered_clustered_fasta,
+        fasta_file              => $output_cd_hit_filename,
         blast_results_file_name => $output_blast_results_filename,
         job_runner              => $self->job_runner,
         makeblastdb_exec        => $self->makeblastdb_exec,
@@ -96,13 +94,14 @@ sub run {
         output_filename             => $self->output_filename,
         output_pan_geneome_filename => $self->output_pan_geneome_filename,
         output_statistics_filename  => $self->output_statistics_filename,
-        clusters_filename           => $cdhit_obj->clusters_filename,
+        clusters_filename           => $output_cd_hit_filename.'.clstr',
         dont_wait                   => 1,
         output_multifasta_files     => $self->output_multifasta_files,
     );
     $post_analysis->run();
 
 }
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
