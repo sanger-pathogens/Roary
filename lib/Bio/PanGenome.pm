@@ -62,6 +62,7 @@ sub run {
       output_combined_filename         => $output_combined_filename,
       number_of_input_files            => $number_of_input_files, 
       output_filtered_clustered_fasta  => $output_filtered_clustered_fasta,
+      job_runner                       => $self->job_runner,
     );
     
     $iterative_cdhit->run();
