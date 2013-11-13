@@ -17,6 +17,7 @@ use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::Output::NumberOfGroups;
+use Bio::PanGenome::OrderGenes;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -63,6 +64,12 @@ sub run {
         groups_filename => $self->output_filename
     );
     $analyse_groups_obj->create_plots();
+    
+    my $order_genes_obj = Bio::PanGenome::OrderGenes->new(
+      analyse_groups_obj => $analyse_groups_obj,
+      gff_files => $self->input_files,
+    );
+    $order_genes_obj->group_order;
     
 
     my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
