@@ -69,7 +69,7 @@ sub run {
       analyse_groups_obj => $analyse_groups_obj,
       gff_files => $self->input_files,
     );
-    $order_genes_obj->group_order;
+   $order_genes_obj->groups_to_contigs;
     
 
     my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
@@ -81,7 +81,8 @@ sub run {
     my $group_statistics = Bio::PanGenome::GroupStatistics->new(
         output_filename     => $self->output_statistics_filename,
         annotate_groups_obj => $annotate_groups,
-        analyse_groups_obj  => $analyse_groups_obj
+        analyse_groups_obj  => $analyse_groups_obj,
+        groups_to_contigs   => $order_genes_obj->groups_to_contigs
     );
     $group_statistics->create_spreadsheet;
     
@@ -100,17 +101,17 @@ sub run {
       $group_multifastas_nucleotides->create_files();
     }
 
-    unlink($output_mcl_filename);
-    unlink($output_inflate_clusters_filename);
-    unlink($output_group_labels_filename);
-    unlink($output_combined_filename);
-    unlink( $self->clusters_filename);
-    unlink( $self->clusters_filename . '.clstr' );
-    unlink( $self->clusters_filename . '.bak.clstr' );
-    unlink('_gff_files');
-    unlink('_fasta_files');
-    unlink('_clustered_filtered.fa');
-    unlink($input_cd_hit_groups_file);
+   # unlink($output_mcl_filename);
+   # unlink($output_inflate_clusters_filename);
+   # unlink($output_group_labels_filename);
+   # unlink($output_combined_filename);
+   # unlink( $self->clusters_filename);
+   # unlink( $self->clusters_filename . '.clstr' );
+   # unlink( $self->clusters_filename . '.bak.clstr' );
+   # unlink('_gff_files');
+   # unlink('_fasta_files');
+   # unlink('_clustered_filtered.fa');
+   # unlink($input_cd_hit_groups_file);
 
 }
 

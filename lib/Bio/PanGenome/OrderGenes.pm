@@ -11,7 +11,7 @@ Take in the analyse groups and create a matrix of what genes are beside what oth
      analyse_groups_obj => $analyse_groups_obj,
      gff_files => ['file1.gff','file2.gff']
    );
-   $obj->create_matrix;
+   $obj->groups_to_contigs;
 
 =cut
 
@@ -19,10 +19,26 @@ use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::ContigsToGeneIDsFromGFF;
+use Boost::Graph;
 
 has 'gff_files'           => ( is => 'ro', isa => 'ArrayRef',  required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
 has 'group_order'         => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_group_order');
+has 'group_graphs'        => ( is => 'ro', isa => 'Boost::Graph',  lazy => 1, builder => '_build_group_graphs');
+has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups_to_contigs');
+
+has '_groups'             => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups');
+
+sub _build_groups
+{
+  my ($self) = @_;
+  my %groups;
+  for my $group_name (@{$self->analyse_groups_obj->_groups})
+  {
+    $groups{$group_name}++;
+  }
+  return \%groups;
+}
 
 sub _build_group_order
 {
@@ -57,13 +73,82 @@ sub _build_group_order
       }
     }
   }
+
   return \%group_order;
 }
 
-sub create_matrix
+sub _build_group_graphs
 {
-  my ($self) = @_;
+  my($self) = @_;
+  return  Boost::Graph->new(directed=>0);
 }
+
+
+sub _add_groups_to_graph
+{
+  my($self) = @_;
+
+  for my $current_group (keys %{$self->group_order()})
+  {
+    for my $group_to (keys %{$self->group_order->{$current_group}})
+    {
+      my $weight = 1.0/ ($self->group_order->{$current_group}->{$group_to}) ;
+      $self->group_graphs->add_edge(node1=>$current_group, node2=>$group_to, weight=>$weight);
+    }
+  }
+
+}
+
+
+sub _get_connected_nodes
+{
+  my($self) = @_;
+  
+  my @all_groups = keys %{$self->_groups};
+  my $search_group = $all_groups[0];
+  
+  my $connected_groups = $self->group_graphs->breadth_first_search($search_group);
+  for my $group_name (@{$connected_groups })
+  {
+    delete($self->_groups->{$group_name});
+  }
+  if(defined($self->_groups->{$search_group}))
+  {
+    delete($self->_groups->{$search_group});
+    push(@{$connected_groups},$search_group );
+  }
+
+  return  $connected_groups;
+}
+
+sub _build_groups_to_contigs
+{
+  my($self) = @_;
+  $self->_add_groups_to_graph;
+
+  my %groups_to_contigs;
+  my $counter = 1;
+  while((keys %{$self->_groups} ) > 0)
+  {
+    my $contig_groups = $self->_get_connected_nodes;
+    for my $group_name (@{$contig_groups})
+    {
+      $groups_to_contigs{$group_name}{label} = $counter;
+      $groups_to_contigs{$group_name}{comment} = '';
+      if(@{$contig_groups} == 1)
+      {
+        $groups_to_contigs{$group_name}{comment} = 'Contamination';
+      }
+    }
+    $counter++;
+  }
+  
+  $self->group_graphs->connected_components;
+
+
+  return \%groups_to_contigs;
+}
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

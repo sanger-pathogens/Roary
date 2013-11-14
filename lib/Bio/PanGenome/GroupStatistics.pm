@@ -26,6 +26,7 @@ use Bio::PanGenome::AnnotateGroups;
 has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
 has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'group_statitics.csv' );
+has 'groups_to_contigs'   => ( is => 'ro', isa => 'Maybe[HashRef]');
 
 has '_output_fh'         => ( is => 'ro', lazy => 1,           builder => '_build__output_fh' );
 has '_text_csv_obj'      => ( is => 'ro', isa  => 'Text::CSV', lazy    => 1, builder => '_build__text_csv_obj' );
@@ -49,7 +50,7 @@ sub _build__text_csv_obj {
 sub fixed_headers {
     my ($self) = @_;
     my @header =
-      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate' );
+      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Genome', 'QC' );
     return \@header;
 }
 
@@ -130,10 +131,18 @@ sub _row {
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
 
     my $duplicate_gene_name = $self->_non_unique_name_for_group($annotated_group_name);
-
+    
+    my $genome_number = '';
+    my $qc_comment = '';
+    if(defined($self->groups_to_contigs) && defined($self->groups_to_contigs->{$annotated_group_name}))
+    {
+      $genome_number = $self->groups_to_contigs->{$annotated_group_name}->{label};
+      $qc_comment = $self->groups_to_contigs->{$annotated_group_name}->{comment};
+    }
+    
     my @row = (
         $annotated_group_name,  $duplicate_gene_name,    $annotation,
-        $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate
+        $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate,$genome_number,$qc_comment
     );
 
     for my $filename ( @{ $self->_sorted_file_names } ) {
