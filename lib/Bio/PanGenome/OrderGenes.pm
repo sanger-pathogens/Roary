@@ -19,17 +19,24 @@ use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::ContigsToGeneIDsFromGFF;
-use Boost::Graph;
-use Data::Dumper;
+use Graph;
 
 has 'gff_files'           => ( is => 'ro', isa => 'ArrayRef',  required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
 has 'group_order'         => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_group_order');
-has 'group_graphs'        => ( is => 'ro', isa => 'Boost::Graph',  lazy => 1, builder => '_build_group_graphs');
+has 'group_graphs'        => ( is => 'ro', isa => 'Graph',  lazy => 1, builder => '_build_group_graphs');
 has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups_to_contigs');
 has '_groups_to_file_contigs'  => ( is => 'ro', isa => 'ArrayRef',  lazy => 1, builder => '_build__groups_to_file_contigs');
 
 has '_groups'             => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups');
+has 'number_of_files'     =>  => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_number_of_files');
+
+
+sub _build_number_of_files
+{
+  my ($self) = @_;
+  return @{$self->gff_files};
+}
 
 sub _build_groups
 {
@@ -102,7 +109,7 @@ sub _build_group_order
 sub _build_group_graphs
 {
   my($self) = @_;
-  return  Boost::Graph->new(directed=>0);
+  return Graph->new(undirected => 1);
 }
 
 
@@ -115,12 +122,55 @@ sub _add_groups_to_graph
     for my $group_to (keys %{$self->group_order->{$current_group}})
     {
       my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
-      $self->group_graphs->add_edge(node1=>$current_group, node2=>$group_to, weight=>$weight);
+      $self->group_graphs->add_weighted_edge($current_group,$group_to, $weight);
     }
   }
 
 }
 
+
+sub _reorder_connected_components
+{
+   my($self, $graph_groups) = @_;
+   
+   my @ordered_graph_groups;
+   
+   for my $graph_group( @{$graph_groups})
+   {
+     if(@{$graph_group} < 3)
+     {
+       push( @ordered_graph_groups,$graph_group );
+       next;
+     }
+     
+     my $graph = Graph->new(undirected => 1);
+     my %groups;
+     $groups{$_}++ for (@{$graph_group});
+     
+     for my $current_group (keys %groups)
+     {
+       for my $group_to (keys %{$self->group_order->{$current_group}})
+       {
+         next if(! defined($groups{$group_to}));
+         next if($graph->has_edge($group_to,$current_group));
+         my $current_weight = $self->group_order->{$current_group}->{$group_to} ;
+         $current_weight = $self->number_of_files if($current_weight > $self->number_of_files);
+         my $weight = ($self->number_of_files - $current_weight) +1;
+
+         $graph->add_weighted_edge($current_group,$group_to, $weight);
+       }
+     }
+
+     my $minimum_spanning_tree = $graph->minimum_spanning_tree;
+     my $dfs_obj = Graph::Traversal::DFS->new($minimum_spanning_tree);
+
+     my @reordered_dfs_groups = $dfs_obj->dfs;
+     
+     push(@ordered_graph_groups, \@reordered_dfs_groups);
+     
+   }
+   return \@ordered_graph_groups;
+}
 
 sub _build_groups_to_contigs
 {
@@ -130,83 +180,86 @@ sub _build_groups_to_contigs
   my %groups_to_contigs;
   my $counter = 1;
   
-  # connected_components seg faults if you dont run breadth_first_search first
-  my @all_groups = keys %{$self->_groups};
-  $self->group_graphs->breadth_first_search($all_groups[0]);
-  my $groups_to_contigs = $self->group_graphs->connected_components;
+  # Accessory
+  my $accessory_graph = $self->_create_accessory_graph;
+  my @group_graphs = $accessory_graph->connected_components();
+  my $reordered_graphs = $self->_reorder_connected_components(\@group_graphs);
   
-  for my $groups_to_contig (@{ $groups_to_contigs})
+  for my $contig_groups (@{$reordered_graphs})
   {
-    my $contig_groups = $groups_to_contig;
     my $order_counter = 1;
-    my $reordered_group = $self->_reorder_contig($contig_groups);
-    
-    for my $group_name (@{$reordered_group})
+  
+    for my $group_name (@{$contig_groups})
+    {
+      $groups_to_contigs{$group_name}{accessory_label} = $counter;
+      $groups_to_contigs{$group_name}{accessory_order} = $order_counter;
+      $order_counter++;
+    }
+    $counter++;
+  }
+  
+  # Core + accessory
+  my @group_graphs_all = $self->group_graphs->connected_components();
+  my $reordered_graphs_all = $self->_reorder_connected_components(\@group_graphs_all);
+  
+  $counter = 1;
+  for my $contig_groups (@{$reordered_graphs_all})
+  {
+    my $order_counter = 1;
+  
+    for my $group_name (@{$contig_groups})
     {
       $groups_to_contigs{$group_name}{label} = $counter;
       $groups_to_contigs{$group_name}{comment} = '';
       $groups_to_contigs{$group_name}{order} = $order_counter;
-      if(@{$contig_groups} <= 4)
+      if(@{$contig_groups} <= 2)
       {
-        $groups_to_contigs{$group_name}{comment} = 'Contamination';
+        $groups_to_contigs{$group_name}{comment} = 'Investigate';
       }
       $order_counter++;
     }
     $counter++;
   }
+  
 
   return \%groups_to_contigs;
 }
 
-
-sub _reorder_contig
+sub _create_accessory_graph
 {
-  my($self,$groups_to_contigs) = @_;
-
-  my $longest_path ;  
-  my %current_groups_to_contigs;
+  my($self) = @_;
+  my $graph = Graph->new(undirected => 1);
   
-  for my $group (@{$groups_to_contigs})
+  my %core_groups;
+  
+  for my $current_group (keys %{$self->group_order()})
   {
-    $current_groups_to_contigs{$group}++;
+    my $sum_of_weights = 0;
+    for my $group_to (keys %{$self->group_order->{$current_group}})
+    {
+      $sum_of_weights += $self->group_order->{$current_group}->{$group_to};
+    }
+    if($sum_of_weights >= $self->number_of_files )
+    {
+      $core_groups{$current_group}++;
+    }
   }
   
-  my @elements = keys(%current_groups_to_contigs);
-  my $starting_node  = $elements[rand @elements];
-  
-  for(my $i = 0; ($i < 1000 && $i < @elements) ; $i++)
+  for my $current_group (keys %{$self->group_order()})
   {
-    my $ending_node    = $elements[rand @elements];
-    my $current_path   = $self->group_graphs->dijkstra_shortest_path($starting_node, $ending_node);
-    next if(! defined($current_path));
-
-    if(!defined($longest_path))
+    next if(defined($core_groups{$current_group}));
+    for my $group_to (keys %{$self->group_order->{$current_group}})
     {
-      $longest_path = $current_path;
-    } 
-
-    
-    if(@{$current_path->{path}} > @{$longest_path->{path}})
-    {
-       $longest_path = $current_path;
+      next if(defined($core_groups{$group_to}));
+      my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
+      $graph->add_weighted_edge($current_group,$group_to, $weight);
     }
-    print Dumper "$i ".@{$longest_path->{path}}."";
-    
-   }
-   
-   
-   my @output_order;
-   for my $group(@{$longest_path->{path}})
-   {
-     push( @output_order,$group);
-   }
-   for my $group (keys(%current_groups_to_contigs))
-   {
-      push( @output_order,$group);
-   }
-  return \@output_order;
-
+  }
+  
+  return $graph;
 }
+
+
 
 
 no Moose;
