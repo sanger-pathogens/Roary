@@ -20,12 +20,14 @@ use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::ContigsToGeneIDsFromGFF;
 use Boost::Graph;
+use Data::Dumper;
 
 has 'gff_files'           => ( is => 'ro', isa => 'ArrayRef',  required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
 has 'group_order'         => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_group_order');
 has 'group_graphs'        => ( is => 'ro', isa => 'Boost::Graph',  lazy => 1, builder => '_build_group_graphs');
 has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups_to_contigs');
+has '_groups_to_file_contigs'  => ( is => 'ro', isa => 'ArrayRef',  lazy => 1, builder => '_build__groups_to_file_contigs');
 
 has '_groups'             => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups');
 
@@ -40,10 +42,11 @@ sub _build_groups
   return \%groups;
 }
 
-sub _build_group_order
+
+sub _build__groups_to_file_contigs
 {
   my ($self) = @_;
-  my %group_order;
+  my @groups_to_contigs;
   
   # Open each GFF file
   for my $filename (@{$self->gff_files})
@@ -62,15 +65,34 @@ sub _build_group_order
         next unless(defined($group_name));
         push(@groups_on_contig, $group_name);
       }
+      push(@groups_to_contigs,\@groups_on_contig);
+    }
+  }
       
-      for(my $i = 1; $i < @groups_on_contig; $i++)
-      {
-        my $group_from = $groups_on_contig[$i -1];
-        my $group_to = $groups_on_contig[$i];
-        $group_order{$group_from}{$group_to}++;
-        # TODO: remove because you only need half the matix
-        $group_order{$group_to}{$group_from}++;
-      }
+  return \@groups_to_contigs;
+  
+}
+
+sub _build_group_order
+{
+  my ($self) = @_;
+  my %group_order;
+  
+  for my $groups_on_contig (@{$self->_groups_to_file_contigs})
+  {
+    for(my $i = 1; $i < @{$groups_on_contig}; $i++)
+    {
+      my $group_from = $groups_on_contig->[$i -1];
+      my $group_to = $groups_on_contig->[$i];
+      $group_order{$group_from}{$group_to}++;
+      # TODO: remove because you only need half the matix
+      $group_order{$group_to}{$group_from}++;
+    }
+    if(@{$groups_on_contig} == 1)
+    {
+       my $group_from = $groups_on_contig->[0];
+       my $group_to = $groups_on_contig->[0];
+       $group_order{$group_from}{$group_to}++;
     }
   }
 
@@ -92,34 +114,13 @@ sub _add_groups_to_graph
   {
     for my $group_to (keys %{$self->group_order->{$current_group}})
     {
-      my $weight = 1.0/ ($self->group_order->{$current_group}->{$group_to}) ;
+      my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
       $self->group_graphs->add_edge(node1=>$current_group, node2=>$group_to, weight=>$weight);
     }
   }
 
 }
 
-
-sub _get_connected_nodes
-{
-  my($self) = @_;
-  
-  my @all_groups = keys %{$self->_groups};
-  my $search_group = $all_groups[0];
-  
-  my $connected_groups = $self->group_graphs->breadth_first_search($search_group);
-  for my $group_name (@{$connected_groups })
-  {
-    delete($self->_groups->{$group_name});
-  }
-  if(defined($self->_groups->{$search_group}))
-  {
-    delete($self->_groups->{$search_group});
-    push(@{$connected_groups},$search_group );
-  }
-
-  return  $connected_groups;
-}
 
 sub _build_groups_to_contigs
 {
@@ -128,25 +129,83 @@ sub _build_groups_to_contigs
 
   my %groups_to_contigs;
   my $counter = 1;
-  while((keys %{$self->_groups} ) > 0)
+  
+  # connected_components seg faults if you dont run breadth_first_search first
+  my @all_groups = keys %{$self->_groups};
+  $self->group_graphs->breadth_first_search($all_groups[0]);
+  my $groups_to_contigs = $self->group_graphs->connected_components;
+  
+  for my $groups_to_contig (@{ $groups_to_contigs})
   {
-    my $contig_groups = $self->_get_connected_nodes;
-    for my $group_name (@{$contig_groups})
+    my $contig_groups = $groups_to_contig;
+    my $order_counter = 1;
+    my $reordered_group = $self->_reorder_contig($contig_groups);
+    
+    for my $group_name (@{$reordered_group})
     {
       $groups_to_contigs{$group_name}{label} = $counter;
       $groups_to_contigs{$group_name}{comment} = '';
-      if(@{$contig_groups} == 1)
+      $groups_to_contigs{$group_name}{order} = $order_counter;
+      if(@{$contig_groups} <= 4)
       {
         $groups_to_contigs{$group_name}{comment} = 'Contamination';
       }
+      $order_counter++;
     }
     $counter++;
   }
-  
-  $self->group_graphs->connected_components;
-
 
   return \%groups_to_contigs;
+}
+
+
+sub _reorder_contig
+{
+  my($self,$groups_to_contigs) = @_;
+
+  my $longest_path ;  
+  my %current_groups_to_contigs;
+  
+  for my $group (@{$groups_to_contigs})
+  {
+    $current_groups_to_contigs{$group}++;
+  }
+  
+  my @elements = keys(%current_groups_to_contigs);
+  my $starting_node  = $elements[rand @elements];
+  
+  for(my $i = 0; ($i < 1000 && $i < @elements) ; $i++)
+  {
+    my $ending_node    = $elements[rand @elements];
+    my $current_path   = $self->group_graphs->dijkstra_shortest_path($starting_node, $ending_node);
+    next if(! defined($current_path));
+
+    if(!defined($longest_path))
+    {
+      $longest_path = $current_path;
+    } 
+
+    
+    if(@{$current_path->{path}} > @{$longest_path->{path}})
+    {
+       $longest_path = $current_path;
+    }
+    print Dumper "$i ".@{$longest_path->{path}}."";
+    
+   }
+   
+   
+   my @output_order;
+   for my $group(@{$longest_path->{path}})
+   {
+     push( @output_order,$group);
+   }
+   for my $group (keys(%current_groups_to_contigs))
+   {
+      push( @output_order,$group);
+   }
+  return \@output_order;
+
 }
 
 

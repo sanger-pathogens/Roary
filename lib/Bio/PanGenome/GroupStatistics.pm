@@ -50,7 +50,7 @@ sub _build__text_csv_obj {
 sub fixed_headers {
     my ($self) = @_;
     my @header =
-      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Genome', 'QC' );
+      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Genome Fragment','Order within Fragment', 'QC' );
     return \@header;
 }
 
@@ -134,15 +134,17 @@ sub _row {
     
     my $genome_number = '';
     my $qc_comment = '';
+    my $order_within_fragement = '';
     if(defined($self->groups_to_contigs) && defined($self->groups_to_contigs->{$annotated_group_name}))
     {
       $genome_number = $self->groups_to_contigs->{$annotated_group_name}->{label};
       $qc_comment = $self->groups_to_contigs->{$annotated_group_name}->{comment};
+      $order_within_fragement = $self->groups_to_contigs->{$annotated_group_name}->{order};
     }
     
     my @row = (
         $annotated_group_name,  $duplicate_gene_name,    $annotation,
-        $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate,$genome_number,$qc_comment
+        $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate,$genome_number,$order_within_fragement,$qc_comment
     );
 
     for my $filename ( @{ $self->_sorted_file_names } ) {
