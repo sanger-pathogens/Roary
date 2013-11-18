@@ -179,13 +179,14 @@ sub _build_groups_to_contigs
 
   my %groups_to_contigs;
   my $counter = 1;
+  my $overall_counter = 1 ;
   
   # Accessory
   my $accessory_graph = $self->_create_accessory_graph;
   my @group_graphs = $accessory_graph->connected_components();
   my $reordered_graphs = $self->_reorder_connected_components(\@group_graphs);
   
-  for my $contig_groups (@{$reordered_graphs})
+  for my $contig_groups (sort { @{$b} <=> @{$a} }  @{$reordered_graphs})
   {
     my $order_counter = 1;
   
@@ -193,7 +194,10 @@ sub _build_groups_to_contigs
     {
       $groups_to_contigs{$group_name}{accessory_label} = $counter;
       $groups_to_contigs{$group_name}{accessory_order} = $order_counter;
+      $groups_to_contigs{$group_name}{'accessory_overall_order'} = $overall_counter;
+      
       $order_counter++;
+      $overall_counter++;
     }
     $counter++;
   }
@@ -202,8 +206,9 @@ sub _build_groups_to_contigs
   my @group_graphs_all = $self->group_graphs->connected_components();
   my $reordered_graphs_all = $self->_reorder_connected_components(\@group_graphs_all);
   
+  $overall_counter = 1;
   $counter = 1;
-  for my $contig_groups (@{$reordered_graphs_all})
+  for my $contig_groups (sort {@{$b} <=> @{$a} } @{$reordered_graphs_all})
   {
     my $order_counter = 1;
   
@@ -212,11 +217,13 @@ sub _build_groups_to_contigs
       $groups_to_contigs{$group_name}{label} = $counter;
       $groups_to_contigs{$group_name}{comment} = '';
       $groups_to_contigs{$group_name}{order} = $order_counter;
+      $groups_to_contigs{$group_name}{'core_accessory_overall_order'} = $overall_counter;
       if(@{$contig_groups} <= 2)
       {
         $groups_to_contigs{$group_name}{comment} = 'Investigate';
       }
       $order_counter++;
+      $overall_counter++;
     }
     $counter++;
   }

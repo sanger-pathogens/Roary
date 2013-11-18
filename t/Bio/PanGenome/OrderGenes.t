@@ -22,6 +22,5 @@ ok(my $obj = Bio::PanGenome::OrderGenes->new(
   gff_files   => ['t/data/query_1.gff','t/data/query_2.gff','t/data/query_3.gff'],
 ),'Initialise order genes object');
 
-print Dumper $obj->group_order;
 
 done_testing();

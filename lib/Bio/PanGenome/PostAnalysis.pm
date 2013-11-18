@@ -18,6 +18,7 @@ use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::Output::NumberOfGroups;
 use Bio::PanGenome::OrderGenes;
+use Bio::PanGenome::Output::EmblGroups;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -69,9 +70,8 @@ sub run {
       analyse_groups_obj => $analyse_groups_obj,
       gff_files => $self->input_files,
     );
-   $order_genes_obj->groups_to_contigs;
-    
-
+    $order_genes_obj->groups_to_contigs;
+  
     my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
         analyse_groups  => $analyse_groups_obj,
         output_filename => $self->output_pan_geneome_filename
@@ -90,6 +90,24 @@ sub run {
       group_statistics_obj => $group_statistics
     );
     $gene_pool_expansion->create_output_files;
+    
+    my $core_accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+      output_filename     => 'core_accessory.tab',
+      annotate_groups_obj => $annotate_groups,
+      analyse_groups_obj  => $analyse_groups_obj,
+      ordering_key        => 'core_accessory_overall_order',
+      groups_to_contigs   => $order_genes_obj->groups_to_contigs
+    );
+    $core_accessory_tab_obj->create_file;
+    
+    my $accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+      output_filename     => 'accessory.tab',
+      annotate_groups_obj => $annotate_groups,
+      analyse_groups_obj  => $analyse_groups_obj,
+      ordering_key        => 'accessory_overall_order',
+      groups_to_contigs   => $order_genes_obj->groups_to_contigs
+    );
+    $accessory_tab_obj->create_file;
 
     if($self->output_multifasta_files)
     {
