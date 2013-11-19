@@ -51,7 +51,7 @@ sub BUILD {
     );
     
     if ( @{ $self->args } == 0 ) {
-        $self->_error_message("Error: You need to provide a FASTA file");
+        $self->_error_message("Error: You need to provide a GFF file");
     }
 
     $self->output_filename($output_filename)   if ( defined($output_filename) );

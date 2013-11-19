@@ -20,10 +20,12 @@ ok(
     'initialise reordering the spreadsheet'
 );
 
-is_deeply($obj->_column_mappings,[0,1,2,3,4,5,6,8,9,7],'Column mappings with fixed in same order and end columns ordered by tree file');
+
+
+        
+is_deeply($obj->_column_mappings,[0,1,2,3,4,5,6,7,8,9,10,11,13,12],'Column mappings with fixed in same order and end columns ordered by tree file');
 ok( $obj->reorder_spreadsheet(), 'run the reorder method' );
 ok( -e $obj->output_filename,    'check the output file exists' );
-
 
 
 is(

@@ -17,6 +17,8 @@ use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::Output::NumberOfGroups;
+use Bio::PanGenome::OrderGenes;
+use Bio::PanGenome::Output::EmblGroups;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -64,7 +66,12 @@ sub run {
     );
     $analyse_groups_obj->create_plots();
     
-
+    my $order_genes_obj = Bio::PanGenome::OrderGenes->new(
+      analyse_groups_obj => $analyse_groups_obj,
+      gff_files => $self->input_files,
+    );
+    $order_genes_obj->groups_to_contigs;
+  
     my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
         analyse_groups  => $analyse_groups_obj,
         output_filename => $self->output_pan_geneome_filename
@@ -74,7 +81,8 @@ sub run {
     my $group_statistics = Bio::PanGenome::GroupStatistics->new(
         output_filename     => $self->output_statistics_filename,
         annotate_groups_obj => $annotate_groups,
-        analyse_groups_obj  => $analyse_groups_obj
+        analyse_groups_obj  => $analyse_groups_obj,
+        groups_to_contigs   => $order_genes_obj->groups_to_contigs
     );
     $group_statistics->create_spreadsheet;
     
@@ -82,6 +90,24 @@ sub run {
       group_statistics_obj => $group_statistics
     );
     $gene_pool_expansion->create_output_files;
+    
+    my $core_accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+      output_filename     => 'core_accessory.tab',
+      annotate_groups_obj => $annotate_groups,
+      analyse_groups_obj  => $analyse_groups_obj,
+      ordering_key        => 'core_accessory_overall_order',
+      groups_to_contigs   => $order_genes_obj->groups_to_contigs
+    );
+    $core_accessory_tab_obj->create_file;
+    
+    my $accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+      output_filename     => 'accessory.tab',
+      annotate_groups_obj => $annotate_groups,
+      analyse_groups_obj  => $analyse_groups_obj,
+      ordering_key        => 'accessory_overall_order',
+      groups_to_contigs   => $order_genes_obj->groups_to_contigs
+    );
+    $accessory_tab_obj->create_file;
 
     if($self->output_multifasta_files)
     {
@@ -93,17 +119,17 @@ sub run {
       $group_multifastas_nucleotides->create_files();
     }
 
-    unlink($output_mcl_filename);
-    unlink($output_inflate_clusters_filename);
-    unlink($output_group_labels_filename);
-    unlink($output_combined_filename);
-    unlink( $self->clusters_filename);
-    unlink( $self->clusters_filename . '.clstr' );
-    unlink( $self->clusters_filename . '.bak.clstr' );
-    unlink('_gff_files');
-    unlink('_fasta_files');
-    unlink('_clustered_filtered.fa');
-    unlink($input_cd_hit_groups_file);
+   # unlink($output_mcl_filename);
+   # unlink($output_inflate_clusters_filename);
+   # unlink($output_group_labels_filename);
+   # unlink($output_combined_filename);
+   # unlink( $self->clusters_filename);
+   # unlink( $self->clusters_filename . '.clstr' );
+   # unlink( $self->clusters_filename . '.bak.clstr' );
+   # unlink('_gff_files');
+   # unlink('_fasta_files');
+   # unlink('_clustered_filtered.fa');
+   # unlink($input_cd_hit_groups_file);
 
 }
 
