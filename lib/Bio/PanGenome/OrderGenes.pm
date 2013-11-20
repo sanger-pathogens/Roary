@@ -186,6 +186,7 @@ sub _build_groups_to_contigs
   my %groups_to_contigs;
   my $counter = 1;
   my $overall_counter = 1 ;
+  my $counter_filtered = 1;
   
   # Accessory
   my $accessory_graph = $self->_create_accessory_graph;
@@ -201,7 +202,6 @@ sub _build_groups_to_contigs
       $groups_to_contigs{$group_name}{accessory_label} = $counter;
       $groups_to_contigs{$group_name}{accessory_order} = $order_counter;
       $groups_to_contigs{$group_name}{'accessory_overall_order'} = $overall_counter;
-      
       $order_counter++;
       $overall_counter++;
     }
@@ -214,6 +214,7 @@ sub _build_groups_to_contigs
   
   $overall_counter = 1;
   $counter = 1;
+  $counter_filtered = 1;
   for my $contig_groups (sort {@{$b} <=> @{$a} } @{$reordered_graphs_all})
   {
     my $order_counter = 1;
@@ -224,6 +225,7 @@ sub _build_groups_to_contigs
       $groups_to_contigs{$group_name}{comment} = '';
       $groups_to_contigs{$group_name}{order} = $order_counter;
       $groups_to_contigs{$group_name}{'core_accessory_overall_order'} = $overall_counter;
+      
       if(@{$contig_groups} <= 2)
       {
         $groups_to_contigs{$group_name}{comment} = 'Investigate';
@@ -232,10 +234,28 @@ sub _build_groups_to_contigs
       {
         $groups_to_contigs{$group_name}{comment} = $self->_groups_qc->{$group_name};
       }
+      else
+      {
+        $groups_to_contigs{$group_name}{'core_accessory_overall_order_filtered'} = $counter_filtered;
+        $counter_filtered++;
+      }
       $order_counter++;
       $overall_counter++;
     }
     $counter++;
+  }
+  
+  $counter_filtered = 1;
+  for my $contig_groups (sort { @{$b} <=> @{$a} }  @{$reordered_graphs})
+  {    
+    for my $group_name (@{$contig_groups})
+    {
+        if( (!defined($groups_to_contigs{$group_name}{comment}))  ||  (defined($groups_to_contigs{$group_name}{comment}) && $groups_to_contigs{$group_name}{comment} eq '') )
+        {
+          $groups_to_contigs{$group_name}{'accessory_overall_order_filtered'} = $counter_filtered;
+          $counter_filtered++;
+        }
+    }
   }
   
 
