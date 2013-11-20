@@ -97,7 +97,6 @@ sub run {
     my ($self) = @_;
     my @commands_to_run;
     push( @commands_to_run, $self->_command_to_run );
-    print $self->_command_to_run."\n";
 
     my $job_runner_obj = $self->_job_runner_class->new(
         commands_to_run => \@commands_to_run,

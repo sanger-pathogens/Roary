@@ -83,7 +83,7 @@ sub _create_bed_file_from_gff {
     my $cmd =
         'sed -n \'/##gff-version 3/,/##FASTA/p\' '
       . $self->gff_file
-      . ' | grep -v \'^#\' | awk \'{if ($5 - $4 >= '.print $self->min_gene_size_in_nucleotides.') print $1"\t"($4-1)"\t"($5)"\t"$9"\t1\t"$7}\' | sed \'s/ID=//\' | sed \'s/;[^\t]*\t/\t/g\' > '
+      . ' | grep -v \'^#\' | awk \'{if ($5 - $4 >= '.$self->min_gene_size_in_nucleotides.') print $1"\t"($4-1)"\t"($5)"\t"$9"\t1\t"$7}\' | sed \'s/ID=//\' | sed \'s/;[^\t]*\t/\t/g\' > '
       . $self->_bed_output_filename;
     system($cmd);
 }
