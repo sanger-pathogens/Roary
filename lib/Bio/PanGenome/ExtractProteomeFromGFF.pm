@@ -26,6 +26,7 @@ with 'Bio::PanGenome::JobRunner::Role';
 has 'gff_file' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'maximum_percentage_of_unknowns' => ( is => 'ro', isa => 'Num',      default  => 5 );
+has 'min_gene_size_in_nucleotides' => ( is => 'ro', isa => 'Int',      default  => 120 );
 
 has 'fasta_file' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_file' );
 has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
@@ -82,7 +83,7 @@ sub _create_bed_file_from_gff {
     my $cmd =
         'sed -n \'/##gff-version 3/,/##FASTA/p\' '
       . $self->gff_file
-      . ' | grep -v \'^#\' | awk \'{print $1"\t"($4-1)"\t"($5)"\t"$9"\t1\t"$7}\' | sed \'s/ID=//\' | sed \'s/;[^\t]*\t/\t/g\' > '
+      . ' | grep -v \'^#\' | awk \'{if ($5 - $4 >= '.print $self->min_gene_size_in_nucleotides.') print $1"\t"($4-1)"\t"($5)"\t"$9"\t1\t"$7}\' | sed \'s/ID=//\' | sed \'s/;[^\t]*\t/\t/g\' > '
       . $self->_bed_output_filename;
     system($cmd);
 }
