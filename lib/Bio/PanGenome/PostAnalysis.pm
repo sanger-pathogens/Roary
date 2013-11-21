@@ -64,7 +64,6 @@ sub run {
         fasta_files     => $self->fasta_files,
         groups_filename => $self->output_filename
     );
-    $analyse_groups_obj->create_plots();
     
     my $order_genes_obj = Bio::PanGenome::OrderGenes->new(
       analyse_groups_obj => $analyse_groups_obj,
@@ -87,7 +86,9 @@ sub run {
     $group_statistics->create_spreadsheet;
     
     my $gene_pool_expansion = Bio::PanGenome::Output::NumberOfGroups->new(
-      group_statistics_obj => $group_statistics
+      group_statistics_obj => $group_statistics,
+      groups_to_contigs    => $order_genes_obj->groups_to_contigs,
+      annotate_groups_obj => $annotate_groups,
     );
     $gene_pool_expansion->create_output_files;
     
@@ -95,19 +96,19 @@ sub run {
       output_filename     => 'core_accessory.tab',
       annotate_groups_obj => $annotate_groups,
       analyse_groups_obj  => $analyse_groups_obj,
-      ordering_key        => 'core_accessory_overall_order',
+      ordering_key        => 'core_accessory_overall_order_filtered',
       groups_to_contigs   => $order_genes_obj->groups_to_contigs
     );
-    $core_accessory_tab_obj->create_file;
+    $core_accessory_tab_obj->create_files;
     
     my $accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
       output_filename     => 'accessory.tab',
       annotate_groups_obj => $annotate_groups,
       analyse_groups_obj  => $analyse_groups_obj,
-      ordering_key        => 'accessory_overall_order',
+      ordering_key        => 'accessory_overall_order_filtered',
       groups_to_contigs   => $order_genes_obj->groups_to_contigs
     );
-    $accessory_tab_obj->create_file;
+    $accessory_tab_obj->create_files;
 
     if($self->output_multifasta_files)
     {
@@ -119,17 +120,17 @@ sub run {
       $group_multifastas_nucleotides->create_files();
     }
 
-   # unlink($output_mcl_filename);
-   # unlink($output_inflate_clusters_filename);
-   # unlink($output_group_labels_filename);
-   # unlink($output_combined_filename);
-   # unlink( $self->clusters_filename);
-   # unlink( $self->clusters_filename . '.clstr' );
-   # unlink( $self->clusters_filename . '.bak.clstr' );
-   # unlink('_gff_files');
-   # unlink('_fasta_files');
-   # unlink('_clustered_filtered.fa');
-   # unlink($input_cd_hit_groups_file);
+    unlink($output_mcl_filename);
+    unlink($output_inflate_clusters_filename);
+    unlink($output_group_labels_filename);
+    unlink($output_combined_filename);
+    unlink( $self->clusters_filename);
+    unlink( $self->clusters_filename . '.clstr' );
+    unlink( $self->clusters_filename . '.bak.clstr' );
+    unlink('_gff_files');
+    unlink('_fasta_files');
+    unlink('_clustered_filtered.fa');
+    unlink($input_cd_hit_groups_file);
 
 }
 

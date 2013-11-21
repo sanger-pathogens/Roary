@@ -31,26 +31,27 @@ my $group_statistics = Bio::PanGenome::GroupStatistics->new(
 );
 
 ok(my $obj = Bio::PanGenome::Output::NumberOfGroups->new(
-  group_statistics_obj => $group_statistics
+  group_statistics_obj => $group_statistics,
+  annotate_groups_obj      => $annotate_groups
   ),'initialise object');
 
 ok($obj->create_output_files, 'create the raw output file');
 
-ok(-e 'number_of_conserved_genes.tab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_conserved_genes.tab'), read_file('number_of_conserved_genes.tab'), 'Content of total groups tab file as expected');
-unlink('number_of_conserved_genes.tab');
+ok(-e 'number_of_conserved_genes.Rtab', 'check raw output file created');
+is(read_file('t/data/expected_number_of_conserved_genes.tab'), read_file('number_of_conserved_genes.Rtab'), 'Content of total groups tab file as expected');
+unlink('number_of_conserved_genes.Rtab');
 
-ok(-e 'number_of_new_genes.tab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_new_genes.tab'), read_file('number_of_new_genes.tab'), '');
-unlink('number_of_new_genes.tab');
+ok(-e 'number_of_new_genes.Rtab', 'check raw output file created');
+is(read_file('t/data/expected_number_of_new_genes.tab'), read_file('number_of_new_genes.Rtab'), '');
+unlink('number_of_new_genes.Rtab');
 
-ok(-e 'number_of_genes_in_pan_genome.tab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_genes_in_pan_genome.tab'), read_file('number_of_genes_in_pan_genome.tab'), 'Content of total groups tab file as expected');
-unlink('number_of_genes_in_pan_genome.tab');
+ok(-e 'number_of_genes_in_pan_genome.Rtab', 'check raw output file created');
+is(read_file('t/data/expected_number_of_genes_in_pan_genome.tab'), read_file('number_of_genes_in_pan_genome.Rtab'), 'Content of total groups tab file as expected');
+unlink('number_of_genes_in_pan_genome.Rtab');
 
-ok(-e 'number_of_unique_genes.tab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_unique_genes.tab'), read_file('number_of_unique_genes.tab'), 'Content of unique groups tab file as expected');
-unlink('number_of_unique_genes.tab');
+ok(-e 'number_of_unique_genes.Rtab', 'check raw output file created');
+is(read_file('t/data/expected_number_of_unique_genes.tab'), read_file('number_of_unique_genes.Rtab'), 'Content of unique groups tab file as expected');
+unlink('number_of_unique_genes.Rtab');
 
 unlink('group_statitics.csv');
 

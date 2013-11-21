@@ -72,9 +72,4 @@ is_deeply(
     'genes to groups hash'
 );
 
-ok( $plot_groups_obj->create_plots, 'Create plots' );
-ok( -e 'freq_of_genes.png',         'plot of freq of genes created' );
-
-unlink('freq_of_genes.png');
-
 done_testing();

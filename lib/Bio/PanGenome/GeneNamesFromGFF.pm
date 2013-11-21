@@ -54,6 +54,11 @@ sub _build_ids_to_gene_name {
               my $product = $1;
               $self->ids_to_product->{$id_name} = $product;
       }
+      if($line =~/product=([^,;]+)$/)
+      {
+              my $product = $1;
+              $self->ids_to_product->{$id_name} = $product;
+      }
       
     }
     close($fh);

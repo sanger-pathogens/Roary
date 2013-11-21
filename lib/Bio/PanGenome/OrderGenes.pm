@@ -29,8 +29,8 @@ has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',  lazy => 1, bu
 has '_groups_to_file_contigs'  => ( is => 'ro', isa => 'ArrayRef',  lazy => 1, builder => '_build__groups_to_file_contigs');
 
 has '_groups'             => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups');
-has 'number_of_files'     =>  => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_number_of_files');
-
+has 'number_of_files'     => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_number_of_files');
+has '_groups_qc'          => ( is => 'ro', isa => 'HashRef', default => sub {{}});
 
 sub _build_number_of_files
 {
@@ -54,6 +54,7 @@ sub _build__groups_to_file_contigs
 {
   my ($self) = @_;
   my @groups_to_contigs;
+  my @overlapping_hypothetical_gene_ids;
   
   # Open each GFF file
   for my $filename (@{$self->gff_files})
@@ -70,6 +71,11 @@ sub _build__groups_to_file_contigs
         # convert to group name
         my $group_name = $self->analyse_groups_obj->_genes_to_groups->{$gene_id};
         next unless(defined($group_name));
+        
+        if($contigs_to_ids_obj->overlapping_hypothetical_protein_ids->{$gene_id})
+        {
+          $self->_groups_qc->{$group_name} = 'Hypothetical protein with no hits to refseq/uniprot/clusters/cdd/tigrfams/pfam overlapping another protein with hits';
+        }
         push(@groups_on_contig, $group_name);
       }
       push(@groups_to_contigs,\@groups_on_contig);
@@ -180,6 +186,7 @@ sub _build_groups_to_contigs
   my %groups_to_contigs;
   my $counter = 1;
   my $overall_counter = 1 ;
+  my $counter_filtered = 1;
   
   # Accessory
   my $accessory_graph = $self->_create_accessory_graph;
@@ -195,7 +202,6 @@ sub _build_groups_to_contigs
       $groups_to_contigs{$group_name}{accessory_label} = $counter;
       $groups_to_contigs{$group_name}{accessory_order} = $order_counter;
       $groups_to_contigs{$group_name}{'accessory_overall_order'} = $overall_counter;
-      
       $order_counter++;
       $overall_counter++;
     }
@@ -208,6 +214,7 @@ sub _build_groups_to_contigs
   
   $overall_counter = 1;
   $counter = 1;
+  $counter_filtered = 1;
   for my $contig_groups (sort {@{$b} <=> @{$a} } @{$reordered_graphs_all})
   {
     my $order_counter = 1;
@@ -218,14 +225,37 @@ sub _build_groups_to_contigs
       $groups_to_contigs{$group_name}{comment} = '';
       $groups_to_contigs{$group_name}{order} = $order_counter;
       $groups_to_contigs{$group_name}{'core_accessory_overall_order'} = $overall_counter;
+      
       if(@{$contig_groups} <= 2)
       {
         $groups_to_contigs{$group_name}{comment} = 'Investigate';
+      }
+      elsif($self->_groups_qc->{$group_name})
+      {
+        $groups_to_contigs{$group_name}{comment} = $self->_groups_qc->{$group_name};
+      }
+      else
+      {
+        $groups_to_contigs{$group_name}{'core_accessory_overall_order_filtered'} = $counter_filtered;
+        $counter_filtered++;
       }
       $order_counter++;
       $overall_counter++;
     }
     $counter++;
+  }
+  
+  $counter_filtered = 1;
+  for my $contig_groups (sort { @{$b} <=> @{$a} }  @{$reordered_graphs})
+  {    
+    for my $group_name (@{$contig_groups})
+    {
+        if( (!defined($groups_to_contigs{$group_name}{comment}))  ||  (defined($groups_to_contigs{$group_name}{comment}) && $groups_to_contigs{$group_name}{comment} eq '') )
+        {
+          $groups_to_contigs{$group_name}{'accessory_overall_order_filtered'} = $counter_filtered;
+          $counter_filtered++;
+        }
+    }
   }
   
 
