@@ -99,7 +99,7 @@ sub run {
       ordering_key        => 'core_accessory_overall_order_filtered',
       groups_to_contigs   => $order_genes_obj->groups_to_contigs
     );
-    $core_accessory_tab_obj->create_file;
+    $core_accessory_tab_obj->create_files;
     
     my $accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
       output_filename     => 'accessory.tab',
@@ -108,7 +108,7 @@ sub run {
       ordering_key        => 'accessory_overall_order_filtered',
       groups_to_contigs   => $order_genes_obj->groups_to_contigs
     );
-    $accessory_tab_obj->create_file;
+    $accessory_tab_obj->create_files;
 
     if($self->output_multifasta_files)
     {

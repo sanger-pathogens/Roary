@@ -64,7 +64,8 @@ sub cleanup_files
   unlink('_clustered');
   unlink('_clustered.bak.clstr');
   unlink('pan_genome.fa');
-  
+  unlink('core_accessory.header.tab');
+  unlink('accessory.header.tab');
   unlink('accessory.tab');
   unlink('core_accessory.tab');
   unlink('number_of_conserved_genes.Rtab');
