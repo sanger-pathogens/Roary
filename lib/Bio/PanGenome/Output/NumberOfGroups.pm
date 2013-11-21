@@ -21,15 +21,13 @@ use Bio::PanGenome::GroupStatistics;
 
 has 'group_statistics_obj' => ( is => 'ro', isa => 'Bio::PanGenome::GroupStatistics', required => 1 );
 has 'number_of_iterations' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_number_of_iterations' );
-has 'groups_to_contigs' => ( is => 'ro', isa => 'Maybe[HashRef]' );
-has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
+has 'groups_to_contigs'    => ( is => 'ro', isa => 'Maybe[HashRef]' );
+has 'annotate_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
 
-
-has 'output_filename'                     => ( is => 'ro', isa => 'Str', default => 'number_of_new_genes.png' );
-has 'output_raw_filename_conserved_genes' => ( is => 'ro', isa => 'Str', default => 'number_of_conserved_genes.tab' );
-has 'output_raw_filename_unique_genes'    => ( is => 'ro', isa => 'Str', default => 'number_of_unique_genes.tab' );
-has 'output_raw_filename_total_genes' => ( is => 'ro', isa => 'Str', default => 'number_of_genes_in_pan_genome.tab' );
-has 'output_raw_filename_new_genes'   => ( is => 'ro', isa => 'Str', default => 'number_of_new_genes.tab' );
+has 'output_raw_filename_conserved_genes' => ( is => 'ro', isa => 'Str', default => 'number_of_conserved_genes.Rtab' );
+has 'output_raw_filename_unique_genes'    => ( is => 'ro', isa => 'Str', default => 'number_of_unique_genes.Rtab' );
+has 'output_raw_filename_total_genes' => ( is => 'ro', isa => 'Str', default => 'number_of_genes_in_pan_genome.Rtab' );
+has 'output_raw_filename_new_genes'   => ( is => 'ro', isa => 'Str', default => 'number_of_new_genes.Rtab' );
 has '_conserved_genes' => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
 has '_unique_genes' => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
 has '_total_genes'  => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );

@@ -65,10 +65,7 @@ unlink('set_difference_common_set')                    if ( -e 'set_difference_c
 unlink('pan_genome_results_group_5.fa')                if ( -e 'pan_genome_results_group_5.fa' );
 unlink('group_statisics.csv')                          if ( -e 'group_statisics.csv' );
 unlink('set_difference_unique_set_two_statistics.csv') if ( -e 'set_difference_unique_set_two_statistics.csv' );
-unlink('set_difference_unique_set_two_plot.png')       if ( -e 'set_difference_unique_set_two_plot.png' );
 unlink('set_difference_unique_set_one_statistics.csv') if ( -e 'set_difference_unique_set_one_statistics.csv' );
-unlink('set_difference_unique_set_one_plot.png')       if ( -e 'set_difference_unique_set_one_plot.png' );
 unlink('set_difference_common_set_statistics.csv')     if ( -e 'set_difference_common_set_statistics.csv' );
-unlink('set_difference_common_set_plot.png')           if ( -e 'set_difference_common_set_plot.png' );
 
 done_testing();

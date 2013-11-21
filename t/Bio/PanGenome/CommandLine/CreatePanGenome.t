@@ -34,6 +34,15 @@ cleanup_files();
     [ 'pan_genome_sequences/00002-speH.fa.aln', 't/data/00002-speH.fa.aln' ],
 );
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+
+ok(-e 'accessory.tab');
+ok(-e 'core_accessory.tab');
+ok(-e 'number_of_conserved_genes.Rtab');
+ok(-e 'number_of_genes_in_pan_genome.Rtab');
+ok(-e 'number_of_new_genes.Rtab');
+ok(-e 'number_of_unique_genes.Rtab');
+
+
 cleanup_files();
 
 
@@ -48,9 +57,20 @@ sub cleanup_files
   unlink('example_1.faa.tmp.filtered.fa');
   unlink('example_2.faa.tmp.filtered.fa');
   unlink('example_3.faa.tmp.filtered.fa');
-  unlink('freq_of_genes.png');
   unlink('group_statisics.csv');
   unlink('query_1.gff.proteome.faa');
   unlink('query_2.gff.proteome.faa');
-  unlink('query_3.gff.proteome.faa'); 
+  unlink('query_3.gff.proteome.faa');
+  unlink('_clustered');
+  unlink('_clustered.bak.clstr');
+  unlink('pan_genome.fa');
+  
+  unlink('accessory.tab');
+  unlink('core_accessory.tab');
+  unlink('number_of_conserved_genes.Rtab');
+  unlink('number_of_genes_in_pan_genome.Rtab');
+  unlink('number_of_new_genes.Rtab');
+  unlink('number_of_unique_genes.Rtab');
+  unlink('query_6.gff.proteome.faa');
+
 }

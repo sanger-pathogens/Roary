@@ -64,7 +64,6 @@ sub run {
         fasta_files     => $self->fasta_files,
         groups_filename => $self->output_filename
     );
-    $analyse_groups_obj->create_plots();
     
     my $order_genes_obj = Bio::PanGenome::OrderGenes->new(
       analyse_groups_obj => $analyse_groups_obj,

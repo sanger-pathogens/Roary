@@ -1,4 +1,4 @@
-#!/software/pathogen/external/apps/usr/local/bin/Rscript
+
 # ABSTRACT: Create R plots
 # PODNAME: create_plots.R
 
@@ -19,5 +19,4 @@ boxplot(mydata, data=mydata, main="Number of genes in the pan-genome",
 mydata = read.table("number_of_unique_genes.tab")
 boxplot(mydata, data=mydata, main="Number of unique genes",
          xlab="Number of genomes", ylab="Number of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
-
 
