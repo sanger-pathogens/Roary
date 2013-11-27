@@ -1,13 +1,12 @@
-
+#!/software/pathogen/external/apps/usr/local/bin/Rscript
 # ABSTRACT: Create R plots
 # PODNAME: create_plots.R
 
 # Take the output files from the pan genome pipeline and create nice plots.
 
-mydata = read.table("number_of_new_genes.Rtab",header=FALSE)
+mydata = read.table("number_of_new_genes.Rtab")
 boxplot(mydata, data=mydata, main="Number of new genes",
          xlab="Number of genomes", ylab="Number of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
-
 
 mydata = read.table("number_of_conserved_genes.Rtab")
 boxplot(mydata, data=mydata, main="Number of conserved genes",
