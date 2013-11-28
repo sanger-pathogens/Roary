@@ -9,9 +9,8 @@ GetOptions(
     'num_threads=s'    => \$num_threads,
     'outfmt=s'    => \$outfmt,
     'max_target_seqs=s'    => \$max_target_seqs,
-    'out=s'   => \$output_filename,
     
 );
 system("touch _blast_results");
-system("touch $output_filename");
+
 1;
