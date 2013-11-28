@@ -48,7 +48,7 @@ sub BUILD {
         'p|processors=i'            => \$cpus,
         'apply_unknowns_filter=i'   => \$apply_unknowns_filter,
         'e|output_multifasta_files' => \$output_multifasta_files,
-        'i|perc_identity'           => \$perc_identity,
+        'i|perc_identity=i'          => \$perc_identity,
         'h|help'                    => \$help,
     );
     
