@@ -41,7 +41,7 @@ sub run {
         $self->output_filtered_clustered_fasta, 1
     );
 
-    for ( my $percent_match = 0.99 ; $percent_match >= 0.90 ; $percent_match -= 0.01 ) {
+    for ( my $percent_match = 0.99 ; $percent_match >= 0.98 ; $percent_match -= 0.005 ) {
         $self->filter_complete_clusters(
             $self->output_cd_hit_filename,
             $percent_match,
