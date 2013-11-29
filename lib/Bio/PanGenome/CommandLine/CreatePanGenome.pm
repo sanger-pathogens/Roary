@@ -28,7 +28,7 @@ has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter'       => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'                        => ( is => 'rw', isa => 'Int', default => 1 );
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'perc_identity'               => ( is => 'rw', isa => 'Num',      default  => 95 );
+has 'perc_identity'               => ( is => 'rw', isa => 'Num',      default  => 98 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 
@@ -121,7 +121,7 @@ sub usage_text {
     # Create a multifasta file for each group of sequences (Warning: thousands of files created)
     create_pan_genome -e *.gff
     
-    # Set the blastp percentage identity threshold (default 95%).
+    # Set the blastp percentage identity threshold (default 98%).
     create_pan_genome -i 99 *.gff
 
     # This help message

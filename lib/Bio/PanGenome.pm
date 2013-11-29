@@ -35,7 +35,7 @@ has 'makeblastdb_exec'            => ( is => 'rw', isa => 'Str',      default  =
 has 'blastp_exec'                 => ( is => 'rw', isa => 'Str',      default  => 'blastp' );
 has 'mcxdeblast_exec'             => ( is => 'ro', isa => 'Str',      default  => 'mcxdeblast' );
 has 'mcl_exec'                    => ( is => 'ro', isa => 'Str',      default  => 'mcl' );
-has 'perc_identity'               => ( is => 'ro', isa => 'Num',      default  => 95 );
+has 'perc_identity'               => ( is => 'ro', isa => 'Num',      default  => 98 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 

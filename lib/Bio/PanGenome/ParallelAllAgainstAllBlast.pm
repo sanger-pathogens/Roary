@@ -30,7 +30,7 @@ has 'blast_results_file_name' => ( is => 'ro', isa => 'Str',      lazy => 1, bui
 has 'makeblastdb_exec'        => ( is => 'ro', isa => 'Str',      default => 'makeblastdb' );
 has 'blastp_exec'             => ( is => 'ro', isa => 'Str',      default => 'blastp' );
 has 'segmasker_exec'          => ( is => 'ro', isa => 'Str',      default => 'segmasker' );
-has 'perc_identity'           => ( is => 'ro', isa => 'Num',      default => 95 );
+has 'perc_identity'           => ( is => 'ro', isa => 'Num',      default => 98 );
 has '_chunk_fasta_file_obj'   => ( is => 'ro', isa => 'Bio::PanGenome::ChunkFastaFile', lazy => 1, builder => '_build__chunk_fasta_file_obj' );
 has '_sequence_file_names'    => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__sequence_file_names' );
 has '_makeblastdb_obj'        => ( is => 'ro', isa => 'Bio::PanGenome::External::Makeblastdb', lazy => 1, builder => '_build__makeblastdb_obj' );

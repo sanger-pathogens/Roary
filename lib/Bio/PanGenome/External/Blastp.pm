@@ -33,7 +33,7 @@ has '_num_threads'      => ( is => 'ro', isa => 'Int', default  => 1 );
 has '_max_target_seqs'  => ( is => 'ro', isa => 'Int', default  => 2000 );
 has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 has 'output_file'       => ( is => 'ro', isa => 'Str', default  => 'results.out' );
-has 'perc_identity'    => ( is => 'ro', isa => 'Num', default  => 95 );
+has 'perc_identity'    => ( is => 'ro', isa => 'Num', default  => 98 );
 
 sub _command_to_run {
     my ($self) = @_;
