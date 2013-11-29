@@ -288,12 +288,43 @@ sub _create_accessory_graph
     for my $group_to (keys %{$self->group_order->{$current_group}})
     {
       next if(defined($core_groups{$group_to}));
-      my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
+      my $weight =  ($self->number_of_files - $self->group_order->{$current_group}->{$group_to}) +1;
       $graph->add_weighted_edge($current_group,$group_to, $weight);
     }
   }
-  
+  $self->_remove_weak_edges_from_graph($graph);
   return $graph;
+}
+
+sub _remove_weak_edges_from_graph
+{
+  my($self, $graph) = @_;
+  
+  for my $current_group (keys %{$self->group_order()})
+  {
+    next unless($graph->has_vertex($current_group));
+    
+    my $total_of_links = 0;
+    my $number_of_links = 0;
+    for my $group_to (keys %{$self->group_order->{$current_group}})
+    {
+      my $total_of_links += $self->group_order->{$current_group}->{$group_to};
+      $number_of_links++;
+    }
+    next if($number_of_links <= 1);
+    my $average_link = $total_of_links/$number_of_links;
+    my $threshold_link = int($average_link/2);
+    next if($threshold_link  <= 1);
+    
+    for my $group_to (keys %{$self->group_order->{$current_group}})
+    {
+      if($self->group_order->{$current_group}->{$group_to} < $threshold_link  && $graph->has_edge($current_group,$group_to))
+      {
+        $graph->delete_edge($current_group, $group_to);
+      }
+    }
+  }
+  
 }
 
 
