@@ -134,8 +134,8 @@ sub _header_block
     return '' if(defined($self->groups_to_contigs->{$annotated_group_name}->{comment}) && $self->groups_to_contigs->{$annotated_group_name}->{comment} ne '');
     my $coordindates = $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key};
     
-    my $tab_file_entry = "FT   variation       $coordindates\n";
-    $tab_file_entry   .= "FT                   /gene=$annotated_group_name\n";
+    my $tab_file_entry = "FT   misc_feature    $coordindates\n";
+    $tab_file_entry   .= "FT                   /label=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /locus_tag=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /colour=$colour\n";
 
