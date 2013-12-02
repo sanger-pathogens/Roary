@@ -59,7 +59,7 @@ sub _build_contig_to_ids
         $genes_annotation{$id_name}{database_annotation_exists} = 1;
       }
       
-      
+      $genes_annotation{$id_name}{contig}  = $annotation_elements[0];
       $genes_annotation{$id_name}{start}   = $annotation_elements[1];
       $genes_annotation{$id_name}{end}     = $annotation_elements[2];
     }
@@ -89,6 +89,7 @@ sub _build_overlapping_hypothetical_protein_ids
     # look for overlapping annotation which isnt a hypothetical protein
     for my $comparison_id_name (keys %{$self->_genes_annotation})
     {
+      next if($self->_genes_annotation->{$id_name}->{contig} ne $self->_genes_annotation->{$comparison_id_name}->{contig});
       next if($id_name eq $comparison_id_name);
       next if($self->_genes_annotation->{$comparison_id_name}->{product} =~ /hypothetical/i);
       

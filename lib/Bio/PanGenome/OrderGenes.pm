@@ -32,6 +32,8 @@ has '_groups'             => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder
 has 'number_of_files'     => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_number_of_files');
 has '_groups_qc'          => ( is => 'ro', isa => 'HashRef', default => sub {{}});
 
+has '_percentage_of_largest_weak_threshold'     => ( is => 'ro', isa => 'Num', default => 0.9);
+
 sub _build_number_of_files
 {
   my ($self) = @_;
@@ -141,18 +143,17 @@ sub _reorder_connected_components
    
    my @ordered_graph_groups;
    
+   my @paths_and_weights;
+   
    for my $graph_group( @{$graph_groups})
    {
-     if(@{$graph_group} < 3)
-     {
-       push( @ordered_graph_groups,$graph_group );
-       next;
-     }
      
      my $graph = Graph->new(undirected => 1);
      my %groups;
      $groups{$_}++ for (@{$graph_group});
      
+     my $total_weight =0;
+     my $number_of_edges = 0;
      for my $current_group (keys %groups)
      {
        for my $group_to (keys %{$self->group_order->{$current_group}})
@@ -164,17 +165,36 @@ sub _reorder_connected_components
          my $weight = ($self->number_of_files - $current_weight) +1;
 
          $graph->add_weighted_edge($current_group,$group_to, $weight);
+         $total_weight += $weight;
+         $number_of_edges++;
        }
+     }
+     
+     my $average_weight ;
+     if($number_of_edges <= 0)
+     {
+       $average_weight = $self->number_of_files;
+     }
+     else
+     {
+       $average_weight = $total_weight/$number_of_edges;
      }
 
      my $minimum_spanning_tree = $graph->minimum_spanning_tree;
      my $dfs_obj = Graph::Traversal::DFS->new($minimum_spanning_tree);
-
      my @reordered_dfs_groups = $dfs_obj->dfs;
-     
-     push(@ordered_graph_groups, \@reordered_dfs_groups);
+
+     push(@paths_and_weights, { 
+       path           => \@reordered_dfs_groups,
+       average_weight => $average_weight 
+     });
      
    }
+   
+   my @ordered_paths_and_weights =  sort { $a->{average_weight} <=> $b->{average_weight} } @paths_and_weights;
+   
+   @ordered_graph_groups = map { $_->{path}} @ordered_paths_and_weights;
+    
    return \@ordered_graph_groups;
 }
 
@@ -193,7 +213,7 @@ sub _build_groups_to_contigs
   my @group_graphs = $accessory_graph->connected_components();
   my $reordered_graphs = $self->_reorder_connected_components(\@group_graphs);
   
-  for my $contig_groups (sort { @{$b} <=> @{$a} }  @{$reordered_graphs})
+  for my $contig_groups (@{$reordered_graphs})
   {
     my $order_counter = 1;
   
@@ -215,7 +235,7 @@ sub _build_groups_to_contigs
   $overall_counter = 1;
   $counter = 1;
   $counter_filtered = 1;
-  for my $contig_groups (sort {@{$b} <=> @{$a} } @{$reordered_graphs_all})
+  for my $contig_groups (@{$reordered_graphs_all})
   {
     my $order_counter = 1;
   
@@ -246,7 +266,7 @@ sub _build_groups_to_contigs
   }
   
   $counter_filtered = 1;
-  for my $contig_groups (sort { @{$b} <=> @{$a} }  @{$reordered_graphs})
+  for my $contig_groups (@{$reordered_graphs})
   {    
     for my $group_name (@{$contig_groups})
     {
@@ -288,12 +308,42 @@ sub _create_accessory_graph
     for my $group_to (keys %{$self->group_order->{$current_group}})
     {
       next if(defined($core_groups{$group_to}));
-      my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
+      my $weight =  ($self->number_of_files - $self->group_order->{$current_group}->{$group_to}) +1;
       $graph->add_weighted_edge($current_group,$group_to, $weight);
     }
   }
-  
+  $self->_remove_weak_edges_from_graph($graph);
   return $graph;
+}
+
+sub _remove_weak_edges_from_graph
+{
+  my($self, $graph) = @_;
+  
+  for my $current_group (keys %{$self->group_order()})
+  {
+    next unless($graph->has_vertex($current_group));
+    
+    my $largest = 0;
+    for my $group_to (keys %{$self->group_order->{$current_group}})
+    {
+      if($largest < $self->group_order->{$current_group}->{$group_to})
+      {
+        $largest = $self->group_order->{$current_group}->{$group_to};
+      }
+    }
+    my $threshold_link = int($largest*$self->_percentage_of_largest_weak_threshold);
+    next if($threshold_link  <= 1);
+    
+    for my $group_to (keys %{$self->group_order->{$current_group}})
+    {
+      if($self->group_order->{$current_group}->{$group_to} < $threshold_link  && $graph->has_edge($current_group,$group_to))
+      {
+        $graph->delete_edge($current_group, $group_to);
+      }
+    }
+  }
+  
 }
 
 

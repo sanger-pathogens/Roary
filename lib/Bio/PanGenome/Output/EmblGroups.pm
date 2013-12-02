@@ -84,7 +84,6 @@ sub _block {
     my ( $self, $group ) = @_;
     my @taxon_names_array;
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
-    my $colour = 4; 
     
     return '' if(!(defined($self->groups_to_contigs->{$annotated_group_name}) &&  defined($self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key}) ));
     
@@ -102,14 +101,27 @@ sub _block {
             next;
         }
     }
+    
+    my $colour = 4;
 
     my $taxon_names = join(" ",@taxon_names_array);
+
     my $tab_file_entry = "FT   variation       $coordindates\n";
     $tab_file_entry   .= "FT                   /colour=$colour\n";
     $tab_file_entry   .= "FT                   /gene=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /taxa=\"$taxon_names\"\n";
 
     return $tab_file_entry;
+}
+
+sub _block_colour
+{
+   my ( $self, $annotated_group_name ) = @_;
+   my $colour = 2; 
+   return  $colour unless(defined($self->groups_to_contigs->{$annotated_group_name}->{accessory_label})  );
+
+   $colour += $self->groups_to_contigs->{$annotated_group_name}->{accessory_label} % 6;
+   return $colour;
 }
 
 sub _header_block
