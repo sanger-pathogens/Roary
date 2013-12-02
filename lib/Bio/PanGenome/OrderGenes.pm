@@ -182,7 +182,7 @@ sub _reorder_connected_components
 
      my $minimum_spanning_tree = $graph->minimum_spanning_tree;
      my $dfs_obj = Graph::Traversal::DFS->new($minimum_spanning_tree);
-
+     my @reordered_dfs_groups = $dfs_obj->dfs;
 
      push(@paths_and_weights, { 
        path           => \@reordered_dfs_groups,
