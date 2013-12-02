@@ -266,7 +266,7 @@ sub _build_groups_to_contigs
   }
   
   $counter_filtered = 1;
-  for my $contig_groups (sort { @{$b} <=> @{$a} }  @{$reordered_graphs})
+  for my $contig_groups (@{$reordered_graphs})
   {    
     for my $group_name (@{$contig_groups})
     {
