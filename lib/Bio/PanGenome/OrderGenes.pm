@@ -235,7 +235,7 @@ sub _build_groups_to_contigs
   $overall_counter = 1;
   $counter = 1;
   $counter_filtered = 1;
-  for my $contig_groups (sort {@{$b} <=> @{$a} } @{$reordered_graphs_all})
+  for my $contig_groups (@{$reordered_graphs_all})
   {
     my $order_counter = 1;
   
