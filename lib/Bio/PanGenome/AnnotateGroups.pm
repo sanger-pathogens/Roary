@@ -189,16 +189,14 @@ sub _generate_groups_to_consensus_gene_names {
         keys %{ $self->_groups_to_id_names } )
     {
         next unless ( $group_name =~ /$group_prefix/ );
-
         my $consensus_gene_name = $self->_consensus_gene_name_for_group($group_name);
 
-        if ( defined( $groups_to_gene_names{$consensus_gene_name} ) ) {
+        if ( defined( $gene_name_freq{$consensus_gene_name} ) ) {
             $groups_to_gene_names{$group_name} = $group_name;
-
         }
         else {
             $groups_to_gene_names{$group_name} = $consensus_gene_name;
-
+            $gene_name_freq{$consensus_gene_name}++;
         }
     }
     return \%groups_to_gene_names;
