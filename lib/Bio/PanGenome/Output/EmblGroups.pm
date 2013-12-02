@@ -102,7 +102,7 @@ sub _block {
         }
     }
     
-    my $colour = $self->_block_colour($annotated_group_name);
+    my $colour = 4;
 
     my $taxon_names = join(" ",@taxon_names_array);
 
