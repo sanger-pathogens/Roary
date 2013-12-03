@@ -116,11 +116,11 @@ sub _block {
 
 sub _block_colour
 {
-   my ( $self, $annotated_group_name ) = @_;
+   my ( $self, $accessory_label ) = @_;
    my $colour = 2; 
-   return  $colour unless(defined($self->groups_to_contigs->{$annotated_group_name}->{accessory_label})  );
+   return  $colour unless(defined($accessory_label)  );
 
-   $colour += $self->groups_to_contigs->{$annotated_group_name}->{accessory_label} % 6;
+   $colour += $accessory_label  % 6;
    return $colour;
 }
 
@@ -174,6 +174,45 @@ sub _annotation_type
   return $annotation_type;
 }
 
+sub _fragment_blocks
+{
+  my ( $self, $fh ) = @_;
+  my %fragment_numbers;
+  for my $group ( @{ $self->annotate_groups_obj->_groups })
+  {
+    my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
+    
+    next unless(defined($self->groups_to_contigs->{$annotated_group_name}->{accessory_label}));
+    push(@{$fragment_numbers{$self->groups_to_contigs->{$annotated_group_name}->{accessory_label}} }, $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key});
+  }
+  
+  for my $accessory_label (keys %fragment_numbers)
+  {
+    next unless(defined($fragment_numbers{$accessory_label}));
+    my @sorted_fragment =   sort {$a <=> $b}  @{$fragment_numbers{$accessory_label} };
+    my $tab_file_entry = '';
+    if(@sorted_fragment > 1)
+    {
+      my $min = $sorted_fragment[0];
+      my $max = $sorted_fragment[-1];
+      my $tab_file_entry = "FT   feature         $min".'..'."$max\n";
+    }
+    elsif(@sorted_fragment == 1)
+    {
+      my $min = $sorted_fragment[0];
+      my $tab_file_entry = "FT   feature         $min\n";
+    }
+    else
+    {
+      next;
+    }
+    $tab_file_entry     .= "FT                   /colour=".$self->_block_colour($accessory_label)."\n";
+    
+    print {$fh} $tab_file_entry;
+  }
+  
+}
+
 sub create_files {
     my ($self) = @_;
 
@@ -183,7 +222,7 @@ sub create_files {
        print { $self->_output_fh } $self->_block($group);
        print { $self->_output_header_fh } $self->_header_block($group);
     }
-    
+    $self->_fragment_blocks($self->_output_header_fh);
     print { $self->_output_header_fh } $self->_header_bottom();
     close(  $self->_output_header_fh);
     close( $self->_output_fh );
