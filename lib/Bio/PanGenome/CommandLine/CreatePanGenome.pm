@@ -25,33 +25,35 @@ has 'makeblastdb_exec'  => ( is => 'rw', isa => 'Str', default => 'makeblastdb' 
 has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
 has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' );
 has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
-has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
-has 'cpus'              => ( is => 'rw', isa => 'Int', default => 1 );
+has 'apply_unknowns_filter'       => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'cpus'                        => ( is => 'rw', isa => 'Int', default => 1 );
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'perc_identity'               => ( is => 'rw', isa => 'Num',      default  => 98 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $help );
+    my ( $fasta_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $help );
 
     GetOptionsFromArray(
         $self->args,
-        'o|output=s'           => \$output_filename,
-        'j|job_runner=s'       => \$job_runner,
-        'm|makeblastdb_exec=s' => \$makeblastdb_exec,
-        'b|blastp_exec=s'      => \$blastp_exec,
-        'd|mcxdeblast_exec=s'    => \$mcxdeblast_exec,
-        'c|mcl_exec=s'           => \$mcl_exec, 
-        'p|processors=i'       => \$cpus,
-        'apply_unknowns_filter=i' => \$apply_unknowns_filter,
+        'o|output=s'                => \$output_filename,
+        'j|job_runner=s'            => \$job_runner,
+        'm|makeblastdb_exec=s'      => \$makeblastdb_exec,
+        'b|blastp_exec=s'           => \$blastp_exec,
+        'd|mcxdeblast_exec=s'       => \$mcxdeblast_exec,
+        'c|mcl_exec=s'              => \$mcl_exec, 
+        'p|processors=i'            => \$cpus,
+        'apply_unknowns_filter=i'   => \$apply_unknowns_filter,
         'e|output_multifasta_files' => \$output_multifasta_files,
-        'h|help'               => \$help,
+        'i|perc_identity=i'          => \$perc_identity,
+        'h|help'                    => \$help,
     );
     
     if ( @{ $self->args } == 0 ) {
-        $self->_error_message("Error: You need to provide a FASTA file");
+        $self->_error_message("Error: You need to provide a GFF file");
     }
 
     $self->output_filename($output_filename)   if ( defined($output_filename) );
@@ -61,6 +63,7 @@ sub BUILD {
     $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
     $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
     $self->cpus($cpus)                         if ( defined($cpus) );
+    $self->perc_identity($perc_identity)       if ( defined($perc_identity) );
     $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
     $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
 
@@ -96,7 +99,8 @@ sub run {
         job_runner       => $self->job_runner,
         makeblastdb_exec => $self->makeblastdb_exec,
         blastp_exec      => $self->blastp_exec,
-        output_multifasta_files => $self->output_multifasta_files
+        output_multifasta_files => $self->output_multifasta_files,
+        perc_identity           => $self->perc_identity
       );
     $pan_genome_obj->run();
 }
@@ -109,13 +113,16 @@ sub usage_text {
     Take in GFF files and cluster the genes
     
     # Take in GFF files and cluster the genes
-    create_pan_genome example.gff
+    nohup create_pan_genome example.gff & 
     
     # Provide an output filename
     create_pan_genome -o results *.gff
     
     # Create a multifasta file for each group of sequences (Warning: thousands of files created)
     create_pan_genome -e *.gff
+    
+    # Set the blastp percentage identity threshold (default 98%).
+    create_pan_genome -i 99 *.gff
 
     # This help message
     create_pan_genome -h

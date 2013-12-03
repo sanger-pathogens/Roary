@@ -177,9 +177,7 @@ sub create_spreadsheets
       my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
           fasta_files     => $fasta_files,
           groups_filename => $groups_file,
-          output_plot_filename => $groups_file.'_plot.png'
       );
-      $analyse_groups_obj->create_plots();
       
       my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
           gff_files       => $gff_files,
