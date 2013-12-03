@@ -55,7 +55,7 @@ sub _build_output_header_filename
 {
     my ($self) = @_;
     my $base_name  = $self->output_filename; 
-    $base_name =~ s/\.tab/.header.tab/i;
+    $base_name =~ s/\.tab/.header.embl/i;
     return $base_name;
 }
 
@@ -124,6 +124,26 @@ sub _block_colour
    return $colour;
 }
 
+
+sub _header_top
+{
+  my ( $self) = @_;
+  my $header_lines = 'ID   Genome standard; DNA; PRO; 1234 BP.'."\n";
+  $header_lines   .= 'XX'."\n";
+  $header_lines   .= 'FH   Key             Location/Qualifiers'."\n";
+  $header_lines   .= 'FH'."\n";
+  return $header_lines;
+}
+
+sub _header_bottom
+{
+  my ( $self) = @_;
+  my $header_lines  = 'XX'."\n";
+  $header_lines    .= 'SQ   Sequence 1234 BP; 789 A; 1717 C; 1693 G; 691 T; 0 other;'."\n";
+  $header_lines    .= '//'."\n";
+  return $header_lines;
+}
+
 sub _header_block
 {
     my ( $self, $group ) = @_;
@@ -132,9 +152,10 @@ sub _header_block
     
     return '' if(!(defined($self->groups_to_contigs->{$annotated_group_name}) &&  defined($self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key}) ));
     return '' if(defined($self->groups_to_contigs->{$annotated_group_name}->{comment}) && $self->groups_to_contigs->{$annotated_group_name}->{comment} ne '');
-    my $coordindates = $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key};
+    my $coordindates    = $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key};
+    my $annotation_type = $self->_annotation_type($annotated_group_name);
     
-    my $tab_file_entry = "FT   misc_feature    $coordindates\n";
+    my $tab_file_entry = "FT$annotation_type$coordindates\n";
     $tab_file_entry   .= "FT                   /label=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /locus_tag=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /colour=$colour\n";
@@ -142,14 +163,29 @@ sub _header_block
     return $tab_file_entry;
 }
 
+sub _annotation_type
+{
+  my ( $self, $annotated_group_name ) = @_;
+  my $annotation_type = "   feature         ";
+  if($annotated_group_name =~ /group_/)
+  {
+    $annotation_type  = "   misc_feature    ";
+  }
+  return $annotation_type;
+}
+
 sub create_files {
     my ($self) = @_;
 
+    print { $self->_output_header_fh } $self->_header_top();
     for my $group ( @{ $self->annotate_groups_obj->_groups })
     {
        print { $self->_output_fh } $self->_block($group);
        print { $self->_output_header_fh } $self->_header_block($group);
     }
+    
+    print { $self->_output_header_fh } $self->_header_bottom();
+    close(  $self->_output_header_fh);
     close( $self->_output_fh );
 }
 
