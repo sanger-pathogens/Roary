@@ -55,7 +55,7 @@ sub _build_output_header_filename
 {
     my ($self) = @_;
     my $base_name  = $self->output_filename; 
-    $base_name =~ s/\.tab/.header.tab/i;
+    $base_name =~ s/\.tab/.header.embl/i;
     return $base_name;
 }
 
@@ -116,12 +116,32 @@ sub _block {
 
 sub _block_colour
 {
-   my ( $self, $annotated_group_name ) = @_;
+   my ( $self, $accessory_label ) = @_;
    my $colour = 2; 
-   return  $colour unless(defined($self->groups_to_contigs->{$annotated_group_name}->{accessory_label})  );
+   return  $colour unless(defined($accessory_label)  );
 
-   $colour += $self->groups_to_contigs->{$annotated_group_name}->{accessory_label} % 6;
+   $colour += $accessory_label  % 6;
    return $colour;
+}
+
+
+sub _header_top
+{
+  my ( $self) = @_;
+  my $header_lines = 'ID   Genome standard; DNA; PRO; 1234 BP.'."\n";
+  $header_lines   .= 'XX'."\n";
+  $header_lines   .= 'FH   Key             Location/Qualifiers'."\n";
+  $header_lines   .= 'FH'."\n";
+  return $header_lines;
+}
+
+sub _header_bottom
+{
+  my ( $self) = @_;
+  my $header_lines  = 'XX'."\n";
+  $header_lines    .= 'SQ   Sequence 1234 BP; 789 A; 1717 C; 1693 G; 691 T; 0 other;'."\n";
+  $header_lines    .= '//'."\n";
+  return $header_lines;
 }
 
 sub _header_block
@@ -132,24 +152,79 @@ sub _header_block
     
     return '' if(!(defined($self->groups_to_contigs->{$annotated_group_name}) &&  defined($self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key}) ));
     return '' if(defined($self->groups_to_contigs->{$annotated_group_name}->{comment}) && $self->groups_to_contigs->{$annotated_group_name}->{comment} ne '');
-    my $coordindates = $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key};
+    my $coordindates    = $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key};
+    my $annotation_type = $self->_annotation_type($annotated_group_name);
     
-    my $tab_file_entry = "FT   variation       $coordindates\n";
-    $tab_file_entry   .= "FT                   /gene=$annotated_group_name\n";
+    my $tab_file_entry = "FT$annotation_type$coordindates\n";
+    $tab_file_entry   .= "FT                   /label=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /locus_tag=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /colour=$colour\n";
 
     return $tab_file_entry;
 }
 
+sub _annotation_type
+{
+  my ( $self, $annotated_group_name ) = @_;
+  my $annotation_type = "   feature         ";
+  if($annotated_group_name =~ /group_/)
+  {
+    $annotation_type  = "   misc_feature    ";
+  }
+  return $annotation_type;
+}
+
+sub _fragment_blocks
+{
+  my ( $self, $fh ) = @_;
+  my %fragment_numbers;
+  for my $group ( @{ $self->annotate_groups_obj->_groups })
+  {
+    my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
+    
+    next unless(defined($self->groups_to_contigs->{$annotated_group_name}->{accessory_label}));
+    push(@{$fragment_numbers{$self->groups_to_contigs->{$annotated_group_name}->{accessory_label}} }, $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key});
+  }
+  
+  for my $accessory_label (keys %fragment_numbers)
+  {
+    next unless(defined($fragment_numbers{$accessory_label}));
+    my @sorted_fragment =   sort {$a <=> $b}  @{$fragment_numbers{$accessory_label} };
+    my $tab_file_entry = '';
+    if(@sorted_fragment > 1)
+    {
+      my $min = $sorted_fragment[0];
+      my $max = $sorted_fragment[-1];
+      my $tab_file_entry = "FT   feature         $min".'..'."$max\n";
+    }
+    elsif(@sorted_fragment == 1)
+    {
+      my $min = $sorted_fragment[0];
+      my $tab_file_entry = "FT   feature         $min\n";
+    }
+    else
+    {
+      next;
+    }
+    $tab_file_entry     .= "FT                   /colour=".$self->_block_colour($accessory_label)."\n";
+    
+    print {$fh} $tab_file_entry;
+  }
+  
+}
+
 sub create_files {
     my ($self) = @_;
 
+    print { $self->_output_header_fh } $self->_header_top();
     for my $group ( @{ $self->annotate_groups_obj->_groups })
     {
        print { $self->_output_fh } $self->_block($group);
        print { $self->_output_header_fh } $self->_header_block($group);
     }
+    $self->_fragment_blocks($self->_output_header_fh);
+    print { $self->_output_header_fh } $self->_header_bottom();
+    close(  $self->_output_header_fh);
     close( $self->_output_fh );
 }
 
