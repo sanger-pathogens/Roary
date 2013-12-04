@@ -28,6 +28,7 @@ has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  =
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',     required  => 1 );
+has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 sub run {
     my ($self) = @_;
@@ -120,17 +121,17 @@ sub run {
       $group_multifastas_nucleotides->create_files();
     }
 
-    unlink($output_mcl_filename);
-    unlink($output_inflate_clusters_filename);
-    unlink($output_group_labels_filename);
-    unlink($output_combined_filename);
-    unlink( $self->clusters_filename);
-    unlink( $self->clusters_filename . '.clstr' );
-    unlink( $self->clusters_filename . '.bak.clstr' );
-    unlink('_gff_files');
-    unlink('_fasta_files');
-    unlink('_clustered_filtered.fa');
-    unlink($input_cd_hit_groups_file);
+    unlink($output_mcl_filename)                      unless($self->dont_delete_files == 1);
+    unlink($output_inflate_clusters_filename)         unless($self->dont_delete_files == 1);
+    unlink($output_group_labels_filename)             unless($self->dont_delete_files == 1);
+    unlink($output_combined_filename)                 unless($self->dont_delete_files == 1);
+    unlink( $self->clusters_filename)                 unless($self->dont_delete_files == 1);
+    unlink( $self->clusters_filename . '.clstr' )     unless($self->dont_delete_files == 1);
+    unlink( $self->clusters_filename . '.bak.clstr' ) unless($self->dont_delete_files == 1);
+    unlink('_gff_files')                              unless($self->dont_delete_files == 1);
+    unlink('_fasta_files')                            unless($self->dont_delete_files == 1);
+    unlink('_clustered_filtered.fa')                  unless($self->dont_delete_files == 1);
+    unlink($input_cd_hit_groups_file)                 unless($self->dont_delete_files == 1);
 
 }
 

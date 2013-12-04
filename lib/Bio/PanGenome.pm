@@ -36,6 +36,7 @@ has 'blastp_exec'                 => ( is => 'rw', isa => 'Str',      default  =
 has 'mcxdeblast_exec'             => ( is => 'ro', isa => 'Str',      default  => 'mcxdeblast' );
 has 'mcl_exec'                    => ( is => 'ro', isa => 'Str',      default  => 'mcl' );
 has 'perc_identity'               => ( is => 'ro', isa => 'Num',      default  => 98 );
+has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -48,7 +49,9 @@ sub run {
     my $output_mcl_filename           = '_uninflated_mcl_groups';
     my $output_filtered_clustered_fasta  = '_clustered_filtered.fa';
     my $cdhit_groups = $output_combined_filename.'.groups';
-    unlink($cdhit_groups);
+    
+    
+    unlink($cdhit_groups) unless($self->dont_delete_files == 1);
 
     my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
         proteome_files  => $self->fasta_files,
@@ -87,7 +90,7 @@ sub run {
     );
     $mcl->run();
 
-    unlink($output_blast_results_filename);
+    unlink($output_blast_results_filename) unless($self->dont_delete_files == 1);
     
 
     my $post_analysis = Bio::PanGenome::External::PostAnalysis->new(
@@ -100,6 +103,7 @@ sub run {
         clusters_filename           => $output_cd_hit_filename.'.clstr',
         dont_wait                   => 1,
         output_multifasta_files     => $self->output_multifasta_files,
+        dont_delete_files           => $self->dont_delete_files
     );
     $post_analysis->run();
 
