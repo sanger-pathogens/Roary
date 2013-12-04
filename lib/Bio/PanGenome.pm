@@ -24,6 +24,7 @@ use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::External::PostAnalysis;
 use Bio::PanGenome::FilterFullClusters;
 use Bio::PanGenome::External::IterativeCdhit;
+use Bio::PanGenome::Output::BlastIdentityFrequency;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -80,6 +81,11 @@ sub run {
         perc_identity           => $self->perc_identity
     );
     $blast_obj->run();
+    
+    my $blast_identity_frequency_obj = Bio::PanGenome::Output::BlastIdentityFrequency->new(
+        input_filename      => $output_blast_results_filename,
+      );
+    $blast_identity_frequency_obj->create_file();
 
     my $mcl = Bio::PanGenome::External::Mcl->new(
         blast_results   => $output_blast_results_filename,
