@@ -20,3 +20,5 @@ mydata = read.table("number_of_unique_genes.Rtab")
 boxplot(mydata, data=mydata, main="Number of unique genes",
          xlab="Number of genomes", ylab="Number of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
 
+mydata = read.table("blast_identity_frequency.Rtab")
+plot(mydata)

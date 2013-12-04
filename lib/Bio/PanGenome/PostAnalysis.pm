@@ -133,6 +133,7 @@ sub run {
     unlink('_clustered_filtered.fa')                  unless($self->dont_delete_files == 1);
     unlink($input_cd_hit_groups_file)                 unless($self->dont_delete_files == 1);
 
+    system("create_pan_genome_plots.R");
 }
 
 no Moose;
