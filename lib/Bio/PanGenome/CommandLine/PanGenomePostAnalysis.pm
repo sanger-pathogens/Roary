@@ -29,11 +29,12 @@ has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'LSF' );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $output_filename, $dont_delete_files, $output_pan_geneome_filename, $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $fasta_files, $input_files, $help );
+    my ( $output_filename, $dont_create_rplots, $dont_delete_files, $output_pan_geneome_filename, $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $fasta_files, $input_files, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -46,6 +47,7 @@ sub BUILD {
         'f=s'                     => \$fasta_files,
         'i=s'                     => \$input_files,
         'dont_delete_files'      => \$dont_delete_files,
+        'dont_create_rplots'      => \$dont_create_rplots,
         'h|help'                  => \$help,
     );
     
@@ -58,6 +60,7 @@ sub BUILD {
     $self->output_multifasta_files($output_multifasta_files)         if (defined($output_multifasta_files));
     $self->clusters_filename($clusters_filename)                     if (defined($clusters_filename));
     $self->dont_delete_files($dont_delete_files)                     if (defined($dont_delete_files) );
+    $self->dont_create_rplots($dont_create_rplots)                   if (defined($dont_create_rplots) );
   
 }
 
@@ -79,6 +82,7 @@ sub run {
       output_multifasta_files         =>  $self->output_multifasta_files    ,
       clusters_filename               =>  $self->clusters_filename          ,
       dont_delete_files               =>  $self->dont_delete_files,
+      dont_create_rplots              =>  $self->dont_create_rplots
       );                                                             
     $obj->run();
     

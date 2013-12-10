@@ -30,7 +30,7 @@ has 'output_file'     => ( is => 'ro', isa => 'Str', default  => 'output_groups'
 has '_score'     => ( is => 'ro', isa => 'Str', default  => 'r' );
 
 has '_inflation_value' => ( is => 'ro', isa => 'Num', default => 1.5 );
-has '_logging'         => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
+has '_logging'         => ( is => 'ro', isa => 'Str', default  => '> /dev/null 2>&1' );
 
 has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
 

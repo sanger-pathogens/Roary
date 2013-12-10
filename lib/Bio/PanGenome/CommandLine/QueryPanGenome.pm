@@ -18,6 +18,7 @@ use Bio::PanGenome::PrepareInputFiles;
 use Bio::PanGenome::Output::DifferenceBetweenSets;
 use Bio::PanGenome::AnnotateGroups;
 use Bio::PanGenome::GroupStatistics;
+use Bio::PanGenome::OrderGenes;
 
 has 'args'        => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -184,11 +185,18 @@ sub create_spreadsheets
           output_filename => $groups_file.'_reannotated',
           groups_filename => $groups_file,
       );
+      $annotate_groups->reannotate;
+    
+      my $order_genes_obj = Bio::PanGenome::OrderGenes->new(
+        analyse_groups_obj => $analyse_groups_obj,
+        gff_files          => $gff_files,
+      );
       
       my $group_statistics = Bio::PanGenome::GroupStatistics->new(
           output_filename     => $groups_file.'_statistics.csv',
           annotate_groups_obj => $annotate_groups,
-          analyse_groups_obj  => $analyse_groups_obj
+          analyse_groups_obj  => $analyse_groups_obj,
+          groups_to_contigs   => $order_genes_obj->groups_to_contigs
       );
       $group_statistics->create_spreadsheet;
 }

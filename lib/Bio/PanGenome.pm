@@ -38,6 +38,7 @@ has 'mcxdeblast_exec'             => ( is => 'ro', isa => 'Str',      default  =
 has 'mcl_exec'                    => ( is => 'ro', isa => 'Str',      default  => 'mcl' );
 has 'perc_identity'               => ( is => 'ro', isa => 'Num',      default  => 98 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -109,7 +110,8 @@ sub run {
         clusters_filename           => $output_cd_hit_filename.'.clstr',
         dont_wait                   => 1,
         output_multifasta_files     => $self->output_multifasta_files,
-        dont_delete_files           => $self->dont_delete_files
+        dont_delete_files           => $self->dont_delete_files,
+        dont_create_rplots          => $self->dont_create_rplots
     );
     $post_analysis->run();
 
