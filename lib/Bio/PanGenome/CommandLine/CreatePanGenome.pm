@@ -26,17 +26,18 @@ has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
 has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' );
 has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter'       => ( is => 'rw', isa => 'Bool', default => 1 );
-has 'cpus'                        => ( is => 'rw', isa => 'Int', default => 1 );
-has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'perc_identity'               => ( is => 'rw', isa => 'Num',      default  => 98 );
-has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
+has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default  => 98 );
+has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $help );
+    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -50,7 +51,8 @@ sub BUILD {
         'apply_unknowns_filter=i'   => \$apply_unknowns_filter,
         'e|output_multifasta_files' => \$output_multifasta_files,
         'i|perc_identity=i'         => \$perc_identity,
-        'dont_delete_files'        => \$dont_delete_files,
+        'dont_delete_files'         => \$dont_delete_files,
+        'dont_create_rplots'        => \$dont_create_rplots,
         'h|help'                    => \$help,
     );
     
@@ -69,6 +71,7 @@ sub BUILD {
     $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
     $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
     $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
+    $self->dont_create_rplots($dont_create_rplots)           if (defined($dont_create_rplots) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -96,15 +99,16 @@ sub run {
     );
     
     my $pan_genome_obj = Bio::PanGenome->new(
-        input_files      => $self->fasta_files,
-        fasta_files      => $prepare_input_files->fasta_files,
-        output_filename  => $self->output_filename,
-        job_runner       => $self->job_runner,
-        makeblastdb_exec => $self->makeblastdb_exec,
-        blastp_exec      => $self->blastp_exec,
+        input_files             => $self->fasta_files,
+        fasta_files             => $prepare_input_files->fasta_files,
+        output_filename         => $self->output_filename,
+        job_runner              => $self->job_runner,
+        makeblastdb_exec        => $self->makeblastdb_exec,
+        blastp_exec             => $self->blastp_exec,
         output_multifasta_files => $self->output_multifasta_files,
         perc_identity           => $self->perc_identity,
-        dont_delete_files => $self->dont_delete_files,
+        dont_delete_files       => $self->dont_delete_files,
+        dont_create_rplots      => $self->dont_create_rplots
       );
     $pan_genome_obj->run();
 }

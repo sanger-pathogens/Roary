@@ -19,18 +19,17 @@ my $cwd = getcwd();
 local $ENV{PATH} = "$ENV{PATH}:./bin";
 
 my %scripts_and_expected_files = (
-       ' -j Local t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff ' =>
+       ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff ' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
-      ' -j Local t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff     ' =>
-          [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
-              
+      ' -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff    ' =>
+          [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],              
 );
-mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files, [6,7,8,9] );
 cleanup_files();
 
 
 %scripts_and_expected_files = (
-  ' -j Local --output_multifasta_files t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff ' =>
+  ' -j Local --dont_create_rplots --output_multifasta_files t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff  ' =>
     [ 'pan_genome_sequences/00002-speH.fa.aln', 't/data/00002-speH.fa.aln' ],
 );
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
@@ -41,6 +40,7 @@ ok(-e 'number_of_conserved_genes.Rtab');
 ok(-e 'number_of_genes_in_pan_genome.Rtab');
 ok(-e 'number_of_new_genes.Rtab');
 ok(-e 'number_of_unique_genes.Rtab');
+ok(-e 'blast_identity_frequency.Rtab');
 
 
 cleanup_files();

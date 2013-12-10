@@ -21,4 +21,4 @@ boxplot(mydata, data=mydata, main="Number of unique genes",
          xlab="Number of genomes", ylab="Number of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
 
 mydata = read.table("blast_identity_frequency.Rtab")
-plot(mydata)
+plot(mydata,main="Number of blastp hits with different percentage identity",  xlab="Blast percentage identity", ylab="No. blast results")

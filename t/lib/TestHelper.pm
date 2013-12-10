@@ -2,10 +2,11 @@ package TestHelper;
 use Moose::Role;
 use Test::Most;
 use File::Slurp;
+use Data::Dumper;
 
 
 sub mock_execute_script_and_check_output {
-    my ( $script_name, $scripts_and_expected_files ) = @_;
+    my ( $script_name, $scripts_and_expected_files, $columns_to_exclude ) = @_;
     
     open OLDOUT, '>&STDOUT';
     open OLDERR, '>&STDERR';
@@ -27,7 +28,18 @@ sub mock_execute_script_and_check_output {
             my $expected_output_file_name = $scripts_and_expected_files->{$script_parameters}->[1];
 
             ok(-e $actual_output_file_name, "Actual output file exists $actual_output_file_name");
-            is(read_file($actual_output_file_name), read_file($expected_output_file_name), "Actual and expected output match for '$script_parameters'");
+            
+            if(defined($columns_to_exclude))
+            {
+              is(
+                 _exclude_variable_columns_from_spreadsheet($actual_output_file_name, $columns_to_exclude ), 
+                 _exclude_variable_columns_from_spreadsheet($expected_output_file_name, $columns_to_exclude ), 
+                 'Actual and expected match output excluding variable columns'); 
+            }
+            else
+            {
+              is(read_file($actual_output_file_name), read_file($expected_output_file_name), "Actual and expected output match for '$script_parameters'");
+            }
             unlink($actual_output_file_name);
         }
         #close STDOUT;
@@ -42,6 +54,52 @@ sub mock_execute_script_and_check_output {
     close OLDOUT or die "Can't close OLDOUT: $!";
     close OLDERR or die "Can't close OLDERR: $!";
 }
+
+
+sub compare_tab_files_with_variable_coordinates
+{
+  my ( $actual_file, $expected_file ) = @_;
+  ok(-e $actual_file, 'File exists'.  $actual_file);
+  
+  is(_filter_coordinates_from_string( $actual_file), _filter_coordinates_from_string($expected_file), 'file contents the same for '.$actual_file);
+}
+
+sub _filter_coordinates_from_string
+{
+  my ( $file_name) = @_;
+  my $file_contents = read_file($file_name);
+  my @lines = split(/\n/,$file_contents);
+  my $modified_file_contents = '';
+  for my $line (sort @lines)
+  {
+    next if($line =~ /(variation|misc_feature|feature)/);
+    $modified_file_contents .= $line."\n";
+  }
+  return $modified_file_contents;
+}
+
+sub _exclude_variable_columns_from_spreadsheet
+{
+  my ( $file_name, $columns_to_exclude) = @_;
+  my $file_contents = read_file($file_name);
+  my @lines = split(/\n/,$file_contents);
+  my $modified_file_contents = '';
+  
+  for(my $i = 0; $i< @lines; $i++)
+  {
+    my @cells = split(/,/,$lines[$i]);
+    
+    for my $col_number( @{$columns_to_exclude})
+    {
+      next unless(defined($cells[$col_number]));
+      $cells[$col_number] = '';
+    }
+    $modified_file_contents .= join(',', @cells). "\n";
+  }
+  
+  return $modified_file_contents;
+}
+
 
 no Moose;
 1;

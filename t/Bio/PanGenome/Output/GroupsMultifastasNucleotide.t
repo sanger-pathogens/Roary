@@ -15,6 +15,7 @@ BEGIN {
     
 }
 
+remove_tree('pan_genome_sequences');
 my $gff_files = [ 't/data/query_1.gff', 't/data/query_2.gff','t/data/query_3.gff' ];
 
 

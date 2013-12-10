@@ -28,7 +28,7 @@ has '_use_most_similar_clustering' => ( is => 'ro', isa => 'Bool', default  => 1
 has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_description_length'          => ( is => 'ro', isa => 'Int',  default  => 256 );
-has '_logging'          => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
+has '_logging'          => ( is => 'ro', isa => 'Str', default  => '> /dev/null 2>&1' );
 
 # Overload Role
 has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );

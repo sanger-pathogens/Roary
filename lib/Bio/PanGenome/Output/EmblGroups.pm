@@ -155,6 +155,8 @@ sub _header_block
     my $coordindates    = $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key};
     my $annotation_type = $self->_annotation_type($annotated_group_name);
     
+    $colour =  $self->_block_colour($self->groups_to_contigs->{$annotated_group_name}->{accessory_label});
+
     my $tab_file_entry = "FT$annotation_type$coordindates\n";
     $tab_file_entry   .= "FT                   /label=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /locus_tag=$annotated_group_name\n";
