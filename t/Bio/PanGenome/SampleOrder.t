@@ -17,7 +17,6 @@ ok(my $obj = Bio::PanGenome::SampleOrder->new(
 
 is_deeply($obj->ordered_samples(),['query_1', 'query_3','query_4','query_2'],'order of sample names matches the tree');
 
-
 ok( $obj = Bio::PanGenome::SampleOrder->new(
     tree_file        => 't/data/raxml.tre',
   ), 'initialise sample order object with raxml tree');
