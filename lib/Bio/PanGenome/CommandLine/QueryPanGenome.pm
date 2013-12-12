@@ -25,7 +25,7 @@ has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'input_files'     => ( is => 'rw', isa => 'ArrayRef' );
-has 'groups_filename' => ( is => 'rw', isa => 'Str' );
+has 'groups_filename' => ( is => 'rw', isa => 'Str', default => 'clustered_proteins');
 has 'group_names'     => ( is => 'rw', isa => 'ArrayRef' );
 has 'input_set_one'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'input_set_two'   => ( is => 'rw', isa => 'ArrayRef' );
@@ -55,7 +55,8 @@ sub BUILD {
     if ( defined($groups_filename) && ( -e $groups_filename ) ) {
         $self->groups_filename($groups_filename);
     }
-    else {
+    
+    if(! (-e $self->groups_filename($groups_filename))) {
         $self->_error_message("Error: Cant access the groups file $groups_filename");
     }
 
@@ -208,26 +209,26 @@ sub usage_text {
     Usage: query_pan_genome [options]
     Take in a groups file and GFF files and output selected data
     
-    # Create a FASTA file with one gene per group (repregffsentative pan genome)
-    query_pan_genome -a one_gene_per_group -g groupfile example.gff
+    # Create a FASTA file with one gene per group (representative pan genome)
+    query_pan_genome -a one_gene_per_group -g clustered_proteins example.gff
     
     # Provide an output filename
-    query_pan_genome  -a one_gene_per_group -g groupfile -o results.fa *.gff
+    query_pan_genome  -a one_gene_per_group -g clustered_proteins -o results.fa *.gff
     
     # Create multifasta files for each group/gene passed in
-    query_pan_genome  -a gene_multifasta -g groupfile -n gryA,mecA,abc *.gff
+    query_pan_genome  -a gene_multifasta -g clustered_proteins -n gryA,mecA,abc *.gff
     
     # Union
-    query_pan_genome  -a union -g groupfile *.gff
+    query_pan_genome  -a union -g clustered_proteins *.gff
     
     # Intersection
-    query_pan_genome  -a intersection -g groupfile *.gff
+    query_pan_genome  -a intersection -g clustered_proteins *.gff
 
     # Complement (Union minus Intersection)
-    query_pan_genome  -a complement -g groupfile *.gff
+    query_pan_genome  -a complement -g clustered_proteins *.gff
     
     # Difference between sets 
-    query_pan_genome  -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff  -g groupfile
+    query_pan_genome  -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff  -g clustered_proteins
 
     # This help message
     query_pan_genome -h
