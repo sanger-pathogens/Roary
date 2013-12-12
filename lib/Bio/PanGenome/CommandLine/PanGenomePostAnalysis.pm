@@ -11,8 +11,8 @@ Perform the post analysis on the pan genome
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::PostAnalysis;
-use Bio::PanGenome::External::Muscle;
 use File::Find::Rule;
+use Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
 
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -86,13 +86,16 @@ sub run {
       );                                                             
     $obj->run();
     
-    my $output_gene_files = $self->_find_input_files;
-    my $seg= Bio::PanGenome::External::Muscle->new(
-      fasta_files => $output_gene_files,
-      job_runner  => $self->job_runner
-    );
-
-    $seg->run();
+    
+    if($self->output_multifasta_files == 1)
+    {
+       my $output_gene_files = $self->_find_input_files;
+       my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
+         fasta_files => $output_gene_files,
+         job_runner  => $self->job_runner
+       );
+       $seg->run();
+    }
 }
 
 sub _find_input_files

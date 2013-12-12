@@ -120,6 +120,9 @@ sub usage_text {
     Usage: create_pan_genome [options]
     Take in GFF files and cluster the genes
     
+    For more details see:
+    http://mediawiki.internal.sanger.ac.uk/index.php/Pathogen_Informatics_Pan_Genome_Pipeline
+    
     # Take in GFF files and cluster the genes
     nohup create_pan_genome example.gff & 
     
