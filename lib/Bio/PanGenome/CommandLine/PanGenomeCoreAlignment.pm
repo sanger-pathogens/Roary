@@ -42,7 +42,7 @@ sub BUILD {
     }
     if(! -d $self->multifasta_base_directory ) 
     {
-        $self->_error_message("Error: Cant access the multifasta base directory $multifasta_base_directory");
+        $self->_error_message("Error: Cant access the multifasta base directory: ".$self->multifasta_base_directory);
     }
     
     if ( defined($spreadsheet_filename) && ( -e $spreadsheet_filename ) ) {
@@ -50,7 +50,7 @@ sub BUILD {
     }
     if(! -e $self->spreadsheet_filename ) 
     {
-        $self->_error_message("Error: Cant access the spreadsheet $spreadsheet_filename");
+        $self->_error_message("Error: Cant access the spreadsheet: ".$self->spreadsheet_filename);
     }
 
     $self->output_filename( $output_filename) if ( defined($output_filename));
