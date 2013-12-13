@@ -88,6 +88,11 @@ sub _ordered_core_genes
   my %ordered_genes;
   while ( my $row = $self->_csv_parser->getline( $self->_input_spreadsheet_fh ) ) 
   {
+    next if(@{$row} < 12);
+    next if(!defined($row->[$self->_gene_column]) || $row->[$self->_gene_column] eq '' );
+    next if(!defined($row->[$self->_avg_sequences_per_isolate_column]) || $row->[$self->_avg_sequences_per_isolate_column] eq '' );
+    next if(!defined($row->[$self->_genome_fragement_column]) || $row->[$self->_genome_fragement_column] eq '' );
+    
     next if($self->_number_of_isolates != $row->[$self->_num_isolates_column]);
     next if($row->[$self->_avg_sequences_per_isolate_column] != 1);
     $ordered_genes{$row->[$self->_genome_fragement_column]}{$row->[$self->_order_within_fragement_column]} = $row->[$self->_gene_column];
