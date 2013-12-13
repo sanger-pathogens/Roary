@@ -6,7 +6,7 @@ package Bio::PanGenome::Output::GroupsMultifastaProtein;
 
 Take a multifasta nucleotide file and output it as proteins.
    use Bio::PanGenome::Output::GroupsMultifastaProtein;
-   
+
    my $obj = Bio::PanGenome::Output::GroupsMultifastaProtein->new(
        nucleotide_fasta_file => 'example.fa'
      );
@@ -29,29 +29,34 @@ sub _build_output_filename
 {
   my ($self) = @_;
   my ( $filename, $directories, $suffix ) = fileparse($self->nucleotide_fasta_file, qr/\.[^.]*/);
-  
+
   return join('',($directories, $filename.$self->_suffix));
 }
 
-sub _fastatranslate_filename
+# Read all the sequences for a gene into memory to sort them - very small files so shouldnt be a problem
+sub _fastatranslate
 {
   my ($self) = @_;
-  return $self->output_filename.".intermediate";
-}
+  my $input_fasta_file_obj    = Bio::SeqIO->new(-file => $self->nucleotide_fasta_file, -format => 'Fasta' );
+  my $output_protein_file_obj = Bio::SeqIO->new(-file =>">".$self->output_filename,    -format => 'Fasta', -alphabet => 'protein' );
 
-sub _fastatranslate_cmd
-{
-  my ($self) = @_;
-  return 'fastatranslate --geneticcode 11  -f '. $self->nucleotide_fasta_file.' > '.$self->_fastatranslate_filename;
+  my %protein_sequence_objs;
+  while (my $seq = $input_fasta_file_obj->next_seq){
+    $protein_sequence_objs{$seq->display_id} = $seq->translate(-codontable_id => 11 );
+  }
+
+  for my $sequence_name ( sort keys %protein_sequence_objs)
+  {
+    $output_protein_file_obj->write_seq($protein_sequence_objs{$sequence_name});
+  }
+
+  return 1;
 }
 
 sub convert_nucleotide_to_protein
 {
   my ($self) = @_;
-  system($self->_fastatranslate_cmd());
-  my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' | sed \'s/*//\' > '.$self->output_filename;
-  system($cmd);
-  unlink($self->_fastatranslate_filename);
+  $self->_fastatranslate();
   1;
 }
 

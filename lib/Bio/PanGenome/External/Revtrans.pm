@@ -35,6 +35,9 @@ sub _command_to_run {
             $self->nucleotide_filename,
             $self->protein_filename,
             '-mtx', 11,
+            '-readthroughstop',
+            '-allinternal', 
+            '-match', 'name',
             '>', $self->output_filename
         )
     );
@@ -42,7 +45,6 @@ sub _command_to_run {
 
 sub run {
   my ($self) = @_;
-  my @commands_to_run;
   my $cmd = $self->_command_to_run;
   system($cmd);
   1;
