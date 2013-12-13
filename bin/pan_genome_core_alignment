@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::PanGenome::Main::PanGenomeCoreAlignment;
+
+# ABSTRACT: Take in the group statistics spreadsheet and the location of the gene multifasta files and create a core alignment.
+# PODNAME: pan_genome_core_alignment
+
+=head1 SYNOPSIS
+
+ Take in the group statistics spreadsheet and the location of the gene multifasta files and create a core alignment.
+
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+use Bio::PanGenome::CommandLine::PanGenomeCoreAlignment;
+
+Bio::PanGenome::CommandLine::PanGenomeCoreAlignment->new(args => \@ARGV, script_name => $0)->run;
