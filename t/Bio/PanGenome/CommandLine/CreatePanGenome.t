@@ -17,8 +17,8 @@ my $script_name = 'Bio::PanGenome::CommandLine::CreatePanGenome';
 my $cwd = getcwd();
 
 local $ENV{PATH} = "$ENV{PATH}:./bin";
-
-my %scripts_and_expected_files = (
+my %scripts_and_expected_files;
+%scripts_and_expected_files = (
        ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff ' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff    ' =>
@@ -42,12 +42,8 @@ ok(-e 'number_of_new_genes.Rtab');
 ok(-e 'number_of_unique_genes.Rtab');
 ok(-e 'blast_identity_frequency.Rtab');
 
-
 cleanup_files();
-
-
 done_testing();
-
 
 sub cleanup_files
 {
