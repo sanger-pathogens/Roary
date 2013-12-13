@@ -32,7 +32,7 @@ sub BUILD {
     );
 
     if ( @{ $self->args } < 2 ) {
-        $self->_error_message("Error: You need to provide at least 2 FASTA file");
+        $self->_error_message("Error: You need to provide at least 2 FASTA files");
     }
     $self->output_filename($output_filename) if ( defined($output_filename) );
 
