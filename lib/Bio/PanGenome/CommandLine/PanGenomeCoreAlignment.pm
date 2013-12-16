@@ -10,7 +10,7 @@ Take in the group statistics spreadsheet and the location of the gene multifasta
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Cwd 'abs_path';
+use Cwd;
 use Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
 use Bio::PanGenome::LookupGeneFiles;
 use Bio::PanGenome::MergeMultifastaAlignments;

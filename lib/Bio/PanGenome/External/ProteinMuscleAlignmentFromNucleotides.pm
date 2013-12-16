@@ -29,7 +29,7 @@ has 'exec'          => ( is => 'ro', isa => 'Str',      default  => 'protein_mus
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
 has '_queue'                 => ( is => 'rw', isa => 'Str', default  => 'normal' );
-has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 20 );
+has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 25 );
 
 sub _build__memory_required_in_mb {
     my ($self)          = @_;
@@ -68,7 +68,8 @@ sub run {
         dont_wait       => $self->dont_wait,
     );
     $job_runner_obj->run();
-
+    
+    $job_runner_obj->submit_dependancy_job('pan_genome_core_alignment');
     1;
 }
 
