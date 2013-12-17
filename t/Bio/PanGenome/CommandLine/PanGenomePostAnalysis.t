@@ -19,10 +19,12 @@ my $cwd = getcwd();
 local $ENV{PATH} = "$ENV{PATH}:./bin";
 
 system('cp t/data/post_analysis/* .');
-
+system('touch empty_file');
 my %scripts_and_expected_files = (
        '-o clustered_proteins -p pan_genome.fa -s group_statisics.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
-       [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],     
+       [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ], 
+       '-h' =>
+         [ 'empty_file', 't/data/empty_file' ],   
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

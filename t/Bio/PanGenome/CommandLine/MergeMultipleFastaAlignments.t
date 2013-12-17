@@ -13,12 +13,14 @@ BEGIN {
     use_ok('Bio::PanGenome::CommandLine::MergeMultipleFastaAlignments');
 }
 my $script_name = 'Bio::PanGenome::CommandLine::MergeMultipleFastaAlignments';
-
+system('touch empty_file');
 my %scripts_and_expected_files = (
     't/data/multfasta1.aln t/data/multfasta2.aln t/data/multfasta3.aln' =>
       [ 'merged_alignments.aln', 't/data/expected_output_merged.aln' ],
     '-o different_output_file.aln t/data/multfasta1.aln t/data/multfasta2.aln t/data/multfasta3.aln' =>
       [ 'different_output_file.aln', 't/data/expected_output_merged.aln' ],
+      '-h' =>
+        [ 'empty_file', 't/data/empty_file' ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

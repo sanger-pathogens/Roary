@@ -51,6 +51,7 @@ sub BUILD {
         'h|help'                  => \$help,
     );
     
+    $self->help($help) if(defined($help));
     $self->job_runner($job_runner)                                   if (defined($job_runner) );
     $self->fasta_files($fasta_files)                                 if (defined($fasta_files));
     $self->input_files($input_files)                                 if (defined($input_files));

@@ -14,10 +14,12 @@ BEGIN {
 }
 my $script_name = 'Bio::PanGenome::CommandLine::ExtractProteomeFromGff';
 my $cwd         = getcwd();
-
+system('touch empty_file');
 my %scripts_and_expected_files = (
     't/data/example_annotation.gff' =>
       ['example_annotation.gff.proteome.faa','t/data/example_annotation.gff.proteome.faa.expected' ],
+      '-h' =>
+        [ 'empty_file', 't/data/empty_file' ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

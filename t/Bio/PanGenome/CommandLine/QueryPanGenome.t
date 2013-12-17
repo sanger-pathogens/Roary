@@ -56,6 +56,9 @@ my %scripts_and_expected_files = (
     ],
     '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa   ' =>
       [ 'set_difference_common_set_statistics.csv', 't/data/expected_set_difference_common_set_statistics.csv' ],
+      
+    '-h' =>
+      [ 'empty_file', 't/data/empty_file' ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

@@ -35,6 +35,7 @@ sub BUILD {
         'h|help'                   => \$help,
     );
 
+    $self->help($help) if(defined($help));
     $self->output_filename($output_filename)           if ( defined($output_filename) );
     $self->tree_file($tree_file)                       if ( defined($tree_file) );
     $self->tree_format($tree_format)                   if ( defined($tree_format) );

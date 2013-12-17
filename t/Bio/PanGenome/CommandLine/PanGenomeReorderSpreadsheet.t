@@ -13,7 +13,7 @@ BEGIN {
     use_ok('Bio::PanGenome::CommandLine::PanGenomeReorderSpreadsheet');
 }
 my $script_name = 'Bio::PanGenome::CommandLine::PanGenomeReorderSpreadsheet';
-
+system('touch empty_file');
 my %scripts_and_expected_files = (
     '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv' =>
       [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output.csv' ],
@@ -21,6 +21,8 @@ my %scripts_and_expected_files = (
       [ 'different_output_name.csv', 't/data/reorder_isolates_expected_output.csv' ],
     '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -f newick' =>
       [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output.csv' ],
+      '-h' =>
+        [ 'empty_file', 't/data/empty_file' ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

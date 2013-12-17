@@ -50,6 +50,7 @@ sub BUILD {
         'h|help'              => \$help,
     );
 
+    $self->help($help) if(defined($help));
     $self->output_filename($output_filename) if ( defined($output_filename) );
     $self->action($action)                   if ( defined($action) );
     if ( defined($groups_filename) && ( -e $groups_filename ) ) {

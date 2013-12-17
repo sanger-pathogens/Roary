@@ -10,7 +10,7 @@ Take in the group statistics spreadsheet and the location of the gene multifasta
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Cwd;
+use Cwd 'abs_path';
 use Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
 use Bio::PanGenome::LookupGeneFiles;
 use Bio::PanGenome::MergeMultifastaAlignments;
@@ -36,6 +36,8 @@ sub BUILD {
         'o|output_filename=s'           => \$output_filename,
         'h|help'                        => \$help,
     );
+    
+    $self->help($help) if(defined($help));
 
     if ( defined($multifasta_base_directory) && ( -d $multifasta_base_directory ) ) {
         $self->multifasta_base_directory( abs_path($multifasta_base_directory));

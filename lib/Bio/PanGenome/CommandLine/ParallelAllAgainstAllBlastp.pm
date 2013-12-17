@@ -44,6 +44,7 @@ sub BUILD {
         $self->_error_message("Error: You need to provide a FASTA file");
     }
 
+    $self->help($help) if(defined($help));
     $self->output_filename($output_filename)   if ( defined($output_filename) );
     $self->job_runner($job_runner)             if ( defined($job_runner) );
     $self->makeblastdb_exec($makeblastdb_exec) if ( defined($makeblastdb_exec) );
