@@ -51,14 +51,15 @@ sub BUILD {
     );
 
     $self->help($help) if(defined($help));
+    
     $self->output_filename($output_filename) if ( defined($output_filename) );
     $self->action($action)                   if ( defined($action) );
     if ( defined($groups_filename) && ( -e $groups_filename ) ) {
         $self->groups_filename($groups_filename);
     }
     
-    if(! (-e $self->groups_filename($groups_filename))) {
-        $self->_error_message("Error: Cant access the groups file $groups_filename");
+    if(! (-e $self->groups_filename)) {
+        $self->_error_message("Error: Cant access the groups file: ".$self->groups_filename);
     }
 
     @group_names = split( /,/, join( ',', @group_names ) );
