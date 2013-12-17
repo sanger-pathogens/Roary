@@ -16,6 +16,7 @@ my $script_name = 'Bio::PanGenome::CommandLine::QueryPanGenome';
 my $cwd         = getcwd();
 
 system('touch empty_file');
+system('touch empty_file2');
 
 my %scripts_and_expected_files = (
     '-g t/data/example_groups -a gene_multifasta -n group_2 t/data/example_1.faa t/data/example_2.faa' =>
@@ -58,7 +59,7 @@ my %scripts_and_expected_files = (
       [ 'set_difference_common_set_statistics.csv', 't/data/expected_set_difference_common_set_statistics.csv' ],
       
     '-h' =>
-      [ 'empty_file', 't/data/empty_file' ],
+      [ 'empty_file2', 't/data/empty_file' ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

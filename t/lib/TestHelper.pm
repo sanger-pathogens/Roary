@@ -8,6 +8,7 @@ use Data::Dumper;
 sub mock_execute_script_and_check_output {
     my ( $script_name, $scripts_and_expected_files, $columns_to_exclude ) = @_;
     
+    system('touch empty_file');
     open OLDOUT, '>&STDOUT';
     open OLDERR, '>&STDERR';
     eval("use $script_name ;");
@@ -53,6 +54,7 @@ sub mock_execute_script_and_check_output {
     # Avoid leaks by closing the independent copies.
     close OLDOUT or die "Can't close OLDOUT: $!";
     close OLDERR or die "Can't close OLDERR: $!";
+    unlink('empty_file');
 }
 
 
