@@ -14,6 +14,7 @@ use Bio::PanGenome::AnnotateGroups;
 use Bio::PanGenome::External::Muscle;
 use Bio::PanGenome::External::Revtrans;
 use Bio::PanGenome::Output::GroupsMultifastaProtein;
+use Bio::PanGenome::SortFasta;
 
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -33,6 +34,7 @@ sub BUILD {
         'h|help'              => \$help,
     );
 
+    $self->help($help) if(defined($help));
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide at least 1 FASTA file");
     }
@@ -57,6 +59,12 @@ sub run {
 
     for my $fasta_file (@{$self->nucleotide_fasta_files})
     {
+      
+      my $sort_fasta_before = Bio::PanGenome::SortFasta->new(
+         input_filename   => $fasta_file,
+       );
+      $sort_fasta_before->sort_fasta->replace_input_with_output_file;
+      
       my $multifasta_protein_obj = Bio::PanGenome::Output::GroupsMultifastaProtein->new(
           nucleotide_fasta_file => $fasta_file,
         );
@@ -67,6 +75,11 @@ sub run {
         job_runner  => 'Local'
       );
       $seg->run();
+      
+      my $sort_fasta_after_muscle = Bio::PanGenome::SortFasta->new(
+         input_filename   => $multifasta_protein_obj->output_filename. '.aln',
+       );
+      $sort_fasta_after_muscle->sort_fasta->replace_input_with_output_file;
 
       my $revtrans= Bio::PanGenome::External::Revtrans->new(
         nucleotide_filename => $fasta_file,
@@ -74,6 +87,12 @@ sub run {
         output_filename   => $fasta_file.'.aln'
       );
       $revtrans->run();
+      
+      my $sort_fasta_after_revtrans = Bio::PanGenome::SortFasta->new(
+         input_filename   => $fasta_file.'.aln',
+       );
+      $sort_fasta_after_revtrans->sort_fasta->replace_input_with_output_file;
+      
       unlink($multifasta_protein_obj->output_filename);
       unlink($multifasta_protein_obj->output_filename. '.aln');
     }

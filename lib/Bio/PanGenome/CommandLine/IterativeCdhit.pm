@@ -45,6 +45,7 @@ sub BUILD {
         'h|help'                              => \$help,
     );
 
+    $self->help($help) if(defined($help));
     $self->lower_bound_percentage($lower_bound_percentage/100) if ( defined($lower_bound_percentage) );
     $self->upper_bound_percentage($upper_bound_percentage/100) if ( defined($upper_bound_percentage) );
     $self->step_size_percentage($step_size_percentage/100)     if ( defined($step_size_percentage) );

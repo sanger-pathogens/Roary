@@ -14,16 +14,16 @@ BEGIN {
 }
 my $script_name = 'Bio::PanGenome::CommandLine::ProteinMuscleAlignmentFromNucleotides';
 my $cwd         = getcwd();
-
+system('touch empty_file');
 my %scripts_and_expected_files = (
     't/data/nuc_multifasta.fa' =>
       [ 't/data/nuc_multifasta.fa.aln', 't/data/expected_nuc_multifasta.fa.aln' ],
+      '-h' =>
+        [ 'empty_file', 't/data/empty_file' ],
 );
 
 
 
-unlink('t/data/nuc_multifasta.fa.aln');
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
-unlink('t/data/nuc_multifasta.fa.aln');
 
 done_testing();

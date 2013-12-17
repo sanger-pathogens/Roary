@@ -56,6 +56,7 @@ sub BUILD {
         'h|help'                    => \$help,
     );
     
+    $self->help($help) if(defined($help));
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide a GFF file");
     }

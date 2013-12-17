@@ -36,6 +36,8 @@ sub BUILD {
         'o|output_filename=s'           => \$output_filename,
         'h|help'                        => \$help,
     );
+    
+    $self->help($help) if(defined($help));
 
     if ( defined($multifasta_base_directory) && ( -d $multifasta_base_directory ) ) {
         $self->multifasta_base_directory( abs_path($multifasta_base_directory));

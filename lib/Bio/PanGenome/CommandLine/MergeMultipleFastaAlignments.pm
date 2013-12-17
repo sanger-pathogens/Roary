@@ -31,6 +31,7 @@ sub BUILD {
         'h|help'              => \$help,
     );
 
+    $self->help($help) if(defined($help));
     if ( @{ $self->args } < 2 ) {
         $self->_error_message("Error: You need to provide at least 2 FASTA files");
     }
