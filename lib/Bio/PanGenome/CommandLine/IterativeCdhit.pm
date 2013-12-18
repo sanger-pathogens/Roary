@@ -22,9 +22,9 @@ has 'output_combined_filename'        => ( is => 'rw', isa => 'Str', default => 
 has 'number_of_input_files'           => ( is => 'rw', isa => 'Int', default => 1 );
 has 'output_filtered_clustered_fasta' => ( is => 'rw', isa => 'Str', default => '_clustered_filtered.fa' );
 
-has 'lower_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 98 );
-has 'upper_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 99 );
-has 'step_size_percentage'            => ( is => 'rw', isa => 'Num', default => 0.5 );
+has 'lower_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 0.98 );
+has 'upper_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 0.99 );
+has 'step_size_percentage'            => ( is => 'rw', isa => 'Num', default => 0.005 );
 
 
 sub BUILD {

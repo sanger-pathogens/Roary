@@ -24,7 +24,7 @@ has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 500
 has 'queue'           => ( is => 'ro', isa => 'Str',             default  => 'normal' );
 has '_job_manager'    => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
 has 'dont_wait'       => ( is => 'rw', isa => 'Bool',            default  => 0 );
-has 'job_ids'         => ( is => 'ro', isa => 'ArrayRef',        default  => {[]} );
+has 'job_ids'         => ( is => 'ro', isa => 'ArrayRef',        default  => sub {[]} );
 
 sub _build__job_manager {
     my ($self) = @_;
