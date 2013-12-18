@@ -27,3 +27,6 @@ accessory.header.embl
 blast_identity_frequency.Rtab
 core_accessory.header.embl
 reannotated_groups_file
+set_difference_common_set_reannotated
+set_difference_unique_set_one_reannotated
+set_difference_unique_set_two_reannotated
