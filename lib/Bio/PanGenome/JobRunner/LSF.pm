@@ -65,7 +65,7 @@ sub run {
     my ($self) = @_;
     for my $command_to_run ( @{ $self->commands_to_run } ) {
         my $job_id = $self->_submit_job($command_to_run);
-        push(@{$self->job_ids}, $job_id);    
+        push(@{$self->job_ids}, $job_id->id);    
     }
     
     if(!(defined($self->dont_wait) && $self->dont_wait == 1 ))
