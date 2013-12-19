@@ -27,111 +27,173 @@ has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  =
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'group_statisics.csv' );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
-has 'clusters_filename'           => ( is => 'rw', isa => 'Str',     required  => 1 );
+has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );
+has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+
+has '_output_mcl_filename'               => ( is => 'ro', isa => 'Str', default  => '_uninflated_mcl_groups' );
+has '_output_inflate_clusters_filename'  => ( is => 'ro', isa => 'Str', default  => '_inflated_mcl_groups' );
+has '_output_group_labels_filename'      => ( is => 'ro', isa => 'Str', default  => '_labeled_mcl_groups' );
+has '_output_combined_filename'          => ( is => 'ro', isa => 'Str', default  => '_combined_files' );
+has '_input_cd_hit_groups_file'          => ( is => 'ro', isa => 'Str', default  => '_combined_files.groups' );
+has 'core_accessory_tab_output_filename' => ( is => 'ro', isa => 'Str', default  => 'core_accessory.tab' );
+has 'accessory_tab_output_filename'      => ( is => 'ro', isa => 'Str', default  => 'accessory.tab' );
+has 'core_accessory_ordering_key'        => ( is => 'ro', isa => 'Str', default  => 'core_accessory_overall_order_filtered' );
+has 'accessory_ordering_key'             => ( is => 'ro', isa => 'Str', default  => 'accessory_overall_order_filtered' );
+
+has '_inflate_clusters_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
+has '_group_labels_obj'      => ( is => 'ro', isa => 'Bio::PanGenome::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
+has '_annotate_groups_obj'   => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups',         lazy => 1, builder => '_build__annotate_groups_obj' );
+has '_analyse_groups_obj'    => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',          lazy => 1, builder => '_build__analyse_groups_obj' );
+has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::PanGenome::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
+has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
+has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
+has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
+
+
 
 sub run {
     my ($self) = @_;
 
-    my $output_mcl_filename              = '_uninflated_mcl_groups';
-    my $output_inflate_clusters_filename = '_inflated_mcl_groups';
-    my $output_group_labels_filename     = '_labeled_mcl_groups';
-    my $output_combined_filename         = '_combined_files';
-    my $input_cd_hit_groups_file         = '_combined_files.groups';
-
-
-    my $inflate_clusters = Bio::PanGenome::InflateClusters->new(
-        clusters_filename => $self->clusters_filename,
-        cdhit_groups_filename => $input_cd_hit_groups_file,
-        mcl_filename      => $output_mcl_filename,
-        output_file       => $output_inflate_clusters_filename
-    );
-    $inflate_clusters->inflate();
-
-    my $group_labels = Bio::PanGenome::GroupLabels->new(
-        groups_filename => $output_inflate_clusters_filename,
-        output_filename => $output_group_labels_filename
-    );
-    $group_labels->add_labels();
-
-    my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
-        gff_files       => $self->input_files,
-        output_filename => $self->output_filename,
-        groups_filename => $output_group_labels_filename,
-    );
-    $annotate_groups->reannotate;
-
-    my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
-        fasta_files     => $self->fasta_files,
-        groups_filename => $self->output_filename
-    );
+    $self->_inflate_clusters_obj->inflate();
+    $self->_group_labels_obj->add_labels();
+    $self->_annotate_groups_obj->reannotate;
+    $self->_group_statistics_obj->create_spreadsheet;
+    $self->_number_of_groups_obj->create_output_files;
+    system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
+    $self->_create_embl_files;
     
-    my $order_genes_obj = Bio::PanGenome::OrderGenes->new(
-      analyse_groups_obj => $analyse_groups_obj,
-      gff_files => $self->input_files,
-    );
-    $order_genes_obj->groups_to_contigs;
-  
-    my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
-        analyse_groups  => $analyse_groups_obj,
-        output_filename => $self->output_pan_geneome_filename
-    );
-    $one_gene_per_fasta->create_file();
-
-    my $group_statistics = Bio::PanGenome::GroupStatistics->new(
-        output_filename     => $self->output_statistics_filename,
-        annotate_groups_obj => $annotate_groups,
-        analyse_groups_obj  => $analyse_groups_obj,
-        groups_to_contigs   => $order_genes_obj->groups_to_contigs
-    );
-    $group_statistics->create_spreadsheet;
-    
-    my $gene_pool_expansion = Bio::PanGenome::Output::NumberOfGroups->new(
-      group_statistics_obj => $group_statistics,
-      groups_to_contigs    => $order_genes_obj->groups_to_contigs,
-      annotate_groups_obj => $annotate_groups,
-    );
-    $gene_pool_expansion->create_output_files;
-    
-    my $core_accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
-      output_filename     => 'core_accessory.tab',
-      annotate_groups_obj => $annotate_groups,
-      analyse_groups_obj  => $analyse_groups_obj,
-      ordering_key        => 'core_accessory_overall_order_filtered',
-      groups_to_contigs   => $order_genes_obj->groups_to_contigs
-    );
-    $core_accessory_tab_obj->create_files;
-    
-    my $accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
-      output_filename     => 'accessory.tab',
-      annotate_groups_obj => $annotate_groups,
-      analyse_groups_obj  => $analyse_groups_obj,
-      ordering_key        => 'accessory_overall_order_filtered',
-      groups_to_contigs   => $order_genes_obj->groups_to_contigs
-    );
-    $accessory_tab_obj->create_files;
-
-    if($self->output_multifasta_files)
+    if($self->output_multifasta_files == 1)
     {
-      my $group_multifastas_nucleotides = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
-          gff_files       => $self->input_files,
-          annotate_groups => $annotate_groups,
-          group_names     => $analyse_groups_obj->_groups
-        );
-      $group_multifastas_nucleotides->create_files();
+      $self->_groups_multifastas_nuc_obj->create_files();
     }
 
-    unlink($output_mcl_filename);
-    unlink($output_inflate_clusters_filename);
-    unlink($output_group_labels_filename);
-    unlink($output_combined_filename);
-    unlink( $self->clusters_filename);
-    unlink( $self->clusters_filename . '.clstr' );
-    unlink( $self->clusters_filename . '.bak.clstr' );
-    unlink('_gff_files');
-    unlink('_fasta_files');
-    unlink('_clustered_filtered.fa');
-    unlink($input_cd_hit_groups_file);
+    $self->_delete_intermediate_files;
+}
 
+sub _build__number_of_groups_obj
+{
+  my ($self) = @_;
+  return Bio::PanGenome::Output::NumberOfGroups->new(
+    group_statistics_obj => $self->_group_statistics_obj,
+    groups_to_contigs    => $self->_order_genes_obj->groups_to_contigs,
+    annotate_groups_obj  => $self->_annotate_groups_obj,
+  );
+}
+
+sub _build__group_statistics_obj
+{
+  my ($self) = @_;
+  return Bio::PanGenome::GroupStatistics->new(
+      output_filename     => $self->output_statistics_filename,
+      annotate_groups_obj => $self->_annotate_groups_obj,
+      analyse_groups_obj  => $self->_analyse_groups_obj,
+      groups_to_contigs   => $self->_order_genes_obj->groups_to_contigs
+  );
+}
+
+
+sub _build__order_genes_obj
+{
+  my ($self) = @_;
+  return Bio::PanGenome::OrderGenes->new(
+    analyse_groups_obj => $self->_analyse_groups_obj,
+    gff_files          => $self->input_files,
+  );
+}
+
+
+
+sub _build__group_labels_obj
+{
+  my ($self) = @_;
+  return Bio::PanGenome::GroupLabels->new(
+      groups_filename => $self->_output_inflate_clusters_filename,
+      output_filename => $self->_output_group_labels_filename
+  );
+}
+
+sub _build__annotate_groups_obj
+{
+   my ($self) = @_;
+   return  Bio::PanGenome::AnnotateGroups->new(
+       gff_files       => $self->input_files,
+       output_filename => $self->output_filename,
+       groups_filename => $self->_output_group_labels_filename,
+   );
+}
+
+sub _build__analyse_groups_obj
+{
+  my ($self) = @_;
+  return Bio::PanGenome::AnalyseGroups->new(
+      fasta_files     => $self->fasta_files,
+      groups_filename => $self->output_filename
+  );
+}
+
+sub _build__inflate_clusters_obj
+{
+  my ($self) = @_;
+  return Bio::PanGenome::InflateClusters->new(
+      clusters_filename     => $self->clusters_filename,
+      cdhit_groups_filename => $self->_input_cd_hit_groups_file,
+      mcl_filename          => $self->_output_mcl_filename,
+      output_file           => $self->_output_inflate_clusters_filename
+  );
+}
+
+
+sub _build__groups_multifastas_nuc_obj
+{
+  my ($self) = @_;
+  return Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+      gff_files       => $self->input_files,
+      annotate_groups => $self->_annotate_groups_obj,
+      group_names     => $self->_analyse_groups_obj->_groups
+    );
+}
+
+sub _create_embl_files
+{
+  my ($self) = @_;
+  my $core_accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+    output_filename     => $self->core_accessory_tab_output_filename,
+    annotate_groups_obj => $self->_annotate_groups_obj,
+    analyse_groups_obj  => $self->_analyse_groups_obj,
+    ordering_key        => $self->core_accessory_ordering_key,
+    groups_to_contigs   => $self->_order_genes_obj->groups_to_contigs
+  );
+  $core_accessory_tab_obj->create_files;
+  
+  my $accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+    output_filename     => $self->accessory_tab_output_filename,
+    annotate_groups_obj => $self->_annotate_groups_obj,
+    analyse_groups_obj  => $self->_analyse_groups_obj,
+    ordering_key        => $self->accessory_ordering_key,
+    groups_to_contigs   => $self->_order_genes_obj->groups_to_contigs
+  );
+  $accessory_tab_obj->create_files;
+}
+
+sub _delete_intermediate_files
+{
+  my ($self) = @_;
+  return if($self->dont_delete_files == 1);
+  
+  unlink($self->_output_mcl_filename)                      ;
+  unlink($self->_output_inflate_clusters_filename)         ;
+  unlink($self->_output_group_labels_filename)             ;
+  unlink($self->_output_combined_filename)                 ;
+  unlink($self->clusters_filename)                 ;
+  unlink($self->clusters_filename . '.clstr' )     ;
+  unlink($self->clusters_filename . '.bak.clstr' ) ;
+  unlink('_gff_files')                              ;
+  unlink('_fasta_files')                            ;
+  unlink('_clustered_filtered.fa')                  ;
+  unlink($self->_input_cd_hit_groups_file)                 ;
+  unlink('database_masking.asnb')                   ;
+  unlink('_clustered')                              ;
 }
 
 no Moose;

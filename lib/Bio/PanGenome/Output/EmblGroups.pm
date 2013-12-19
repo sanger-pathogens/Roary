@@ -148,13 +148,15 @@ sub _header_block
 {
     my ( $self, $group ) = @_;
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
-    my $colour = 2; 
+    my $colour = 1; 
     
     return '' if(!(defined($self->groups_to_contigs->{$annotated_group_name}) &&  defined($self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key}) ));
     return '' if(defined($self->groups_to_contigs->{$annotated_group_name}->{comment}) && $self->groups_to_contigs->{$annotated_group_name}->{comment} ne '');
     my $coordindates    = $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key};
     my $annotation_type = $self->_annotation_type($annotated_group_name);
     
+    $colour =  $self->_block_colour($self->groups_to_contigs->{$annotated_group_name}->{accessory_label});
+
     my $tab_file_entry = "FT$annotation_type$coordindates\n";
     $tab_file_entry   .= "FT                   /label=$annotated_group_name\n";
     $tab_file_entry   .= "FT                   /locus_tag=$annotated_group_name\n";
@@ -183,6 +185,8 @@ sub _fragment_blocks
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
     
     next unless(defined($self->groups_to_contigs->{$annotated_group_name}->{accessory_label}));
+    next unless(defined($self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key}));
+    next if($self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key} eq '');
     push(@{$fragment_numbers{$self->groups_to_contigs->{$annotated_group_name}->{accessory_label}} }, $self->groups_to_contigs->{$annotated_group_name}->{$self->ordering_key});
   }
   
@@ -195,12 +199,15 @@ sub _fragment_blocks
     {
       my $min = $sorted_fragment[0];
       my $max = $sorted_fragment[-1];
-      my $tab_file_entry = "FT   feature         $min".'..'."$max\n";
+      
+      next if(!defined($min) || !defined($max) || $min eq '' || $max eq '');
+      $tab_file_entry = "FT   feature         $min".'..'."$max\n";
     }
     elsif(@sorted_fragment == 1)
     {
       my $min = $sorted_fragment[0];
-      my $tab_file_entry = "FT   feature         $min\n";
+      next if(!defined($min) || $min eq '');
+      $tab_file_entry = "FT   feature         $min\n";
     }
     else
     {

@@ -30,7 +30,7 @@ is(
     $cwd
       . '/t/bin/dummy_mcxdeblast -m9 --score=r --line-mode=abc some_blast_results | '
       . $cwd
-      . '/t/bin/dummy_mcl - --abc -I 1.5 -o output.groups 2> /dev/null',
+      . '/t/bin/dummy_mcl - --abc -I 1.5 -o output.groups > /dev/null 2>&1',
     'Command constructed as expected'
 );
 ok( $obj->run(), 'run dummy command' );

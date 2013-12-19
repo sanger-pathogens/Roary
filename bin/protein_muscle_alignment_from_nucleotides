@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::PanGenome::Main::ProteinMuscleAlignmentFromNucleotides;
+
+# ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
+# PODNAME: protein_muscle_alignment_from_nucleotides
+
+=head1 SYNOPSIS
+
+Take in a multifasta file of nucleotides, convert to proteins and align with muscle
+
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+use Bio::PanGenome::CommandLine::ProteinMuscleAlignmentFromNucleotides;
+
+Bio::PanGenome::CommandLine::ProteinMuscleAlignmentFromNucleotides->new(args => \@ARGV, script_name => $0)->run;

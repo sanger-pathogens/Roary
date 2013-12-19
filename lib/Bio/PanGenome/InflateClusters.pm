@@ -87,10 +87,15 @@ sub inflate
   if(defined($self->cdhit_groups_filename))
   {
     # Add clusters which were excluded because the groups were full at the cdhit stage
-    open(my $cdhit_fh, $self->cdhit_groups_filename);
+    open(my $cdhit_fh, $self->cdhit_groups_filename) or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "CD hit group file not found: " . $self->cdhit_groups_filename);
     while(<$cdhit_fh>)
     {
-      print { $self->_output_fh } $_;
+      my $line = $_;
+      
+      if(defined($line))
+      {
+        print { $self->_output_fh } $line ;
+      }
     }
   }
   

@@ -30,6 +30,10 @@ has 'output_combined_filename'        => ( is => 'ro', isa => 'Str', required =>
 has 'number_of_input_files'           => ( is => 'ro', isa => 'Int', required => 1 );
 has 'output_filtered_clustered_fasta' => ( is => 'ro', isa => 'Str', required => 1 );
 
+has 'lower_bound_percentage'          => ( is => 'ro', isa => 'Num', default => 0.98 );
+has 'upper_bound_percentage'          => ( is => 'ro', isa => 'Num', default => 0.99 );
+has 'step_size_percentage'            => ( is => 'ro', isa => 'Num', default => 0.005 );
+
 sub run {
     my ($self) = @_;
 
@@ -41,7 +45,7 @@ sub run {
         $self->output_filtered_clustered_fasta, 1
     );
 
-    for ( my $percent_match = 0.99 ; $percent_match >= 0.98 ; $percent_match -= 0.005 ) {
+    for ( my $percent_match = $self->upper_bound_percentage ; $percent_match >= $self->lower_bound_percentage ; $percent_match -= $self->step_size_percentage ) {
         $self->filter_complete_clusters(
             $self->output_cd_hit_filename,
             $percent_match,

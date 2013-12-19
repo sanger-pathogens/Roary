@@ -26,6 +26,19 @@ sub run {
     }
     1;
 }
+
+
+sub _construct_dependancy_params
+{
+  my ($self) = @_;
+  return '';
+}
+
+sub submit_dependancy_job {
+    my ( $self,$command_to_run) = @_;
+    system($command_to_run );
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 

@@ -4,7 +4,7 @@ package Bio::PanGenome::SampleOrder;
 
 =head1 SYNOPSIS
 
-Take in a tree file and return an ordering of the samples
+Take in a tree file and return an ordering of the samples. Defaults to depth first search
    use Bio::PanGenome::SampleOrder;
    
    my $obj = Bio::PanGenome::SampleOrder->new(
@@ -21,6 +21,9 @@ has 'tree_file'       => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'tree_format'     => ( is => 'ro', isa => 'Str',      default  => 'newick' );
 has 'ordered_samples' => ( is => 'ro', isa => 'ArrayRef', lazy     => 1, builder => '_build_ordered_samples' );
 
+# 'b|breadth' first order or 'd|depth' first order
+has '_search_strategy' => ( is => 'ro', isa => 'Str', default =>  'depth' );
+
 sub _build_ordered_samples {
     my ($self) = @_;
     my $input = Bio::TreeIO->new(
@@ -29,8 +32,11 @@ sub _build_ordered_samples {
     );
     my $tree = $input->next_tree;
     my @taxa;
-    for my $leaf_node ( $tree->get_leaf_nodes ) {
+    for my $leaf_node ( $tree->get_nodes($self->_search_strategy) ) {
+      if($leaf_node->is_Leaf)
+      {
         push( @taxa, $leaf_node->id );
+      }
     }
     return \@taxa;
 }

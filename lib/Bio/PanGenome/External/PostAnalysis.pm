@@ -27,6 +27,8 @@ has 'output_pan_geneome_filename' => ( is => 'ro', isa => 'Str', required => 1 )
 has 'output_statistics_filename'  => ( is => 'ro', isa => 'Str', required => 1 );
 has 'clusters_filename'           => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool', required => 1 );
+has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool', default  => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
@@ -76,6 +78,13 @@ sub _command_to_run {
     
     my $output_multifasta_files_flag = '';
     $output_multifasta_files_flag = '--output_multifasta_files' if(defined($self->output_multifasta_files) && $self->output_multifasta_files == 1);
+
+    my $dont_delete_files_flag = '';
+    $dont_delete_files_flag = '--dont_delete_files' if(defined($self->dont_delete_files) && $self->dont_delete_files == 1);
+    
+    my $dont_create_rplots_flag = '';
+    $dont_create_rplots_flag = '--dont_create_rplots' if(defined($self->dont_create_rplots) && $self->dont_create_rplots == 1);
+    
     
     return join(
         " ",
@@ -88,6 +97,8 @@ sub _command_to_run {
             $output_multifasta_files_flag,
             '-i', '_gff_files',
             '-f', '_fasta_files',
+            $dont_delete_files_flag,
+            $dont_create_rplots_flag,
             '-j', $self->job_runner
         )
     );

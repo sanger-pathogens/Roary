@@ -212,37 +212,10 @@ sub _build__number_of_files {
     return @{ $self->gff_files };
 }
 
-sub _split_groups_with_min_sub_group_size {
-    my ( $self, $min_sub_group_size ) = @_;
-    my @groups = keys %{ $self->_groups_to_id_names };
-    for my $group (@groups) {
-        my $size_of_group = @{ $self->_groups_to_id_names->{$group} };
-        next if ( $size_of_group <= ($self->_number_of_files) * 2);
-        my $ids_grouped_by_gene_name = $self->_ids_grouped_by_gene_name_for_group($group);
-
-        for my $gene_name ( keys %{$ids_grouped_by_gene_name} ) {
-            next if ( @{ $ids_grouped_by_gene_name->{$gene_name} } <= $min_sub_group_size );
-            next if ( ( !defined($gene_name) ) || $gene_name eq '' );
-            next if ( $group eq $gene_name );
-            if ( defined( $self->_groups_to_id_names->{$gene_name} ) ) {
-                my $new_group_name = $self->_group_default_prefix . $self->_group_counter;
-                $self->_group_counter( ( $self->_group_counter + 1 ) );
-                $self->_groups_to_id_names->{$new_group_name} = $ids_grouped_by_gene_name->{$gene_name};
-                $self->_remove_ids_from_group( $ids_grouped_by_gene_name->{$gene_name}, $group );
-            }
-            else {
-                $self->_groups_to_id_names->{$gene_name} = $ids_grouped_by_gene_name->{$gene_name};
-                $self->_remove_ids_from_group( $ids_grouped_by_gene_name->{$gene_name}, $group );
-            }
-        }
-    }
-}
 
 sub _split_groups {
     my ($self) = @_;
-    
-    $self->_split_groups_with_min_sub_group_size($self->_number_of_files);
-
+     
     $self->_groups_to_consensus_gene_names( $self->_generate_groups_to_consensus_gene_names );
     $self->_ids_to_groups( $self->_generate__ids_to_groups );
 }

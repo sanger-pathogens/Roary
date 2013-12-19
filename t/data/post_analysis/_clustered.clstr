@@ -1,0 +1,55 @@
+>Cluster 0
+0	518aa, >abc_01705... *
+1	518aa, >abc_01705... at 100.00%
+>Cluster 1
+0	333aa, >1_3... *
+1	333aa, >2_3... at 100.00%
+>Cluster 2
+0	333aa, >3_3... *
+>Cluster 3
+0	319aa, >1_1... *
+1	319aa, >2_1... at 100.00%
+>Cluster 4
+0	315aa, >abc_00011... *
+1	315aa, >abc_00011... at 100.00%
+>Cluster 5
+0	311aa, >abc_00008... *
+1	311aa, >abc_00008... at 100.00%
+>Cluster 6
+0	241aa, >1_2... *
+1	241aa, >2_2... at 100.00%
+>Cluster 7
+0	241aa, >abc_00006... *
+1	241aa, >abc_00006... at 100.00%
+>Cluster 8
+0	238aa, >abc_00004... *
+1	238aa, >abc_00004... at 100.00%
+>Cluster 9
+0	228aa, >abc_00016... *
+1	228aa, >abc_00016... at 100.00%
+>Cluster 10
+0	228aa, >3_5... *
+>Cluster 11
+0	75aa, >abc_00010... *
+1	75aa, >abc_00010... at 100.00%
+>Cluster 12
+0	65aa, >abc_00003... *
+1	65aa, >abc_00003... at 100.00%
+>Cluster 13
+0	62aa, >abc_00012... *
+1	62aa, >abc_00012... at 100.00%
+>Cluster 14
+0	62aa, >abc_00012... *
+>Cluster 15
+0	49aa, >abc_00002... *
+>Cluster 16
+0	48aa, >abc_00002... *
+1	48aa, >abc_00002... at 100.00%
+>Cluster 17
+0	45aa, >abc_00014... *
+>Cluster 18
+0	44aa, >abc_00014... *
+1	44aa, >abc_00014... at 100.00%
+>Cluster 19
+0	44aa, >1_6... *
+1	44aa, >2_7... at 100.00%
