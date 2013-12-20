@@ -65,7 +65,7 @@ sub run {
         commands_to_run => \@commands_to_run,
         memory_in_mb    => $self->_memory_required_in_mb,
         queue           => $self->_queue,
-        dont_wait       => $self->dont_wait,
+        dont_wait       => 1,
     );
     $job_runner_obj->run();
     
