@@ -30,6 +30,7 @@ sub _build_ordered_gene_files
   my @gene_files;
   for my $gene (@{$self->ordered_genes})
   {
+    $gene =~ s!\W!_!gi;
     my $filename = $gene.'.fa.aln';
     my $gene_filepath = join('/',($self->multifasta_directory, $filename));
     

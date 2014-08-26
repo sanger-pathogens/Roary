@@ -104,6 +104,8 @@ sub _extract_nucleotide_regions {
     $self->_create_nucleotide_fasta_file_from_gff;
     $self->_create_bed_file_from_gff;
 
+    print STDERR "\n\n\n\n\nExtracting regions with bedtools!\n\n\n\n\n";
+
     my $cmd =
         'bedtools getfasta -fi '
       . $self->_nucleotide_fasta_file_from_gff_filename
@@ -113,9 +115,19 @@ sub _extract_nucleotide_regions {
       . $self->_extracted_nucleotide_fasta_file_from_bed_filename
       . ' -name > /dev/null 2>&1';
       system($cmd);
+      $self->_cleanup_fasta; # remove quotes from fasta headers
       unlink($self->_nucleotide_fasta_file_from_gff_filename);
       unlink($self->_bed_output_filename);
       unlink($self->_nucleotide_fasta_file_from_gff_filename.'.fai');
+}
+
+sub _cleanup_fasta {
+  my $self = shift;
+  my $fa = $self->_extracted_nucleotide_fasta_file_from_bed_filename;
+  return unless(-e $fa);
+  my $cmd = "sed -n 's/\"//g' $fa > $fa.intermediate.sed";
+  system($cmd);
+  move("$fa.intermediate.sed", $fa);
 }
 
 sub _fastatranslate_filename {
