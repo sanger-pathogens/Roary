@@ -14,6 +14,7 @@ Take in GFF files and create protein sequences in FASTA format
 
 =cut
 
+use Data::Dumper;
 use Moose;
 use Bio::SeqIO;
 use Cwd;
@@ -183,6 +184,7 @@ sub _filter_fasta_sequences
       next; 
     }
     # strip out extra details put in by fastatranslate
+    print Dumper $seq;
     $seq->description(undef);
     $out_fasta_obj->write_seq($seq);
   }
