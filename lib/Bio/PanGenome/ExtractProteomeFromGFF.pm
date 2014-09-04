@@ -42,6 +42,7 @@ sub _build_fasta_file
   my ($self) = @_;
   $self->_extract_nucleotide_regions;
   $self->_convert_nucleotide_to_protein;
+  $self->_cleanup_fasta;
   $self->_cleanup_intermediate_files;
   $self->_filter_fasta_sequences($self->output_filename);
   return $self->output_filename;
@@ -66,6 +67,7 @@ sub _bed_output_filename {
 sub _cleanup_intermediate_files
 {
   my ($self) = @_;
+  unlink($self->_unfiltered_output_filename);
   unlink($self->_fastatranslate_filename);
 }
 
@@ -77,6 +79,11 @@ sub _nucleotide_fasta_file_from_gff_filename {
 sub _extracted_nucleotide_fasta_file_from_bed_filename {
     my ($self) = @_;
     return join( '.', ( $self->output_filename, 'intermediate.extracted.fa' ) );
+}
+
+sub _unfiltered_output_filename {
+    my $self = shift;
+    return join( '.', ( $self->output_filename, 'unfiltered.fa' ) );
 }
 
 sub _create_bed_file_from_gff {
@@ -105,8 +112,6 @@ sub _extract_nucleotide_regions {
     $self->_create_nucleotide_fasta_file_from_gff;
     $self->_create_bed_file_from_gff;
 
-    print STDERR "\n\n\n\n\nExtracting regions with bedtools!\n\n\n\n\n";
-
     my $cmd =
         'bedtools getfasta -fi '
       . $self->_nucleotide_fasta_file_from_gff_filename
@@ -116,19 +121,26 @@ sub _extract_nucleotide_regions {
       . $self->_extracted_nucleotide_fasta_file_from_bed_filename
       . ' -name > /dev/null 2>&1';
       system($cmd);
-      $self->_cleanup_fasta; # remove quotes from fasta headers
       unlink($self->_nucleotide_fasta_file_from_gff_filename);
       unlink($self->_bed_output_filename);
       unlink($self->_nucleotide_fasta_file_from_gff_filename.'.fai');
 }
 
 sub _cleanup_fasta {
-  my $self = shift;
-  my $fa = $self->_extracted_nucleotide_fasta_file_from_bed_filename;
-  return unless(-e $fa);
-  my $cmd = "sed -n 's/\"//g' $fa > $fa.intermediate.sed";
-  system($cmd);
-  move("$fa.intermediate.sed", $fa);
+    my $self = shift;
+    my $infile  = $self->_unfiltered_output_filename;
+    my $outfile = $self->output_filename;
+    return unless(-e $infile);
+  
+    open(my $in, '<', $infile);
+    open(my $out, '>', $outfile);
+    while( my $line = <$in> ){
+        chomp $line;
+        $line =~ s/"//g if ( $line =~ /^>/ );
+        print $out "$line\n";
+    }
+    close $in;
+    close $out;
 }
 
 sub _fastatranslate_filename {
@@ -147,7 +159,7 @@ sub _convert_nucleotide_to_protein
   my ($self) = @_;
   system($self->_fastatranslate_cmd(1));
   # Only keep sequences which have a start and stop codon.
-  my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' > '.$self->output_filename;
+  my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' > '.$self->_unfiltered_output_filename;
   unlink($self->_extracted_nucleotide_fasta_file_from_bed_filename);
   system($cmd);
 }
@@ -184,7 +196,6 @@ sub _filter_fasta_sequences
       next; 
     }
     # strip out extra details put in by fastatranslate
-    print Dumper $seq;
     $seq->description(undef);
     $out_fasta_obj->write_seq($seq);
   }
