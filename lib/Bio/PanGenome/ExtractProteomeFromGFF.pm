@@ -14,7 +14,6 @@ Take in GFF files and create protein sequences in FASTA format
 
 =cut
 
-use Data::Dumper;
 use Moose;
 use Bio::SeqIO;
 use Cwd;

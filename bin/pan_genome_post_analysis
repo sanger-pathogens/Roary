@@ -13,7 +13,7 @@ Perform the post analysis on the pan genome
 
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
-#BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
 use Bio::PanGenome::CommandLine::PanGenomePostAnalysis;
 
 Bio::PanGenome::CommandLine::PanGenomePostAnalysis->new(args => \@ARGV, script_name => $0)->run;
