@@ -34,7 +34,8 @@ sub _build_ids_to_gene_name {
       my $id_name;
       if($line =~/ID=([^;]+);/)
       {
-        $id_name= $1;
+        $id_name = $1;
+        $id_name =~ s!"!!g;
       }
       else
       {
