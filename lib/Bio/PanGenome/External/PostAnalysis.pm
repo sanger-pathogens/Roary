@@ -32,8 +32,8 @@ has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
-has '_minimum_memory_mb'    => ( is => 'ro', isa => 'Int', default => 1000 );
-has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 15 );
+has '_minimum_memory_mb'    => ( is => 'ro', isa => 'Int', default => 4000 );
+has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 30 );
 has '_queue'                => ( is => 'rw', isa => 'Str',  lazy => 1, builder => '_build__queue');
 
 
@@ -45,7 +45,7 @@ sub _build__queue {
     {
       $queue = 'long';
     }
-    elsif($num_samples > 1000)
+    elsif($num_samples > 800)
     {
       $queue = 'basement';
     }

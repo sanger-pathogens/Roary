@@ -36,7 +36,7 @@ sub _build__memory_required_in_mb
 {
   my ($self) = @_;
   my $filename = $self->fasta_file;
-  my $memory_required = 1000;
+  my $memory_required = 2000;
   if(-e $filename)
   {
     $memory_required = -s $filename;
@@ -44,7 +44,7 @@ sub _build__memory_required_in_mb
     $memory_required = int($memory_required/1000000);
     # Triple memory for worst case senario
     $memory_required *= 3;
-    $memory_required = 1000 if($memory_required < 1000);
+    $memory_required = 2000 if($memory_required < 2000);
   }
 
   return $memory_required;

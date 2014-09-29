@@ -33,7 +33,7 @@ has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 25 );
 
 sub _build__memory_required_in_mb {
     my ($self)          = @_;
-    my $memory_required = 1000;
+    my $memory_required = 5000;
     return $memory_required;
 }
 
