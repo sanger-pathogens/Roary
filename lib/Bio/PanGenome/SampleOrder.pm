@@ -22,7 +22,9 @@ has 'tree_format'     => ( is => 'ro', isa => 'Str',      default  => 'newick' )
 has 'ordered_samples' => ( is => 'ro', isa => 'ArrayRef', lazy     => 1, builder => '_build_ordered_samples' );
 
 # 'b|breadth' first order or 'd|depth' first order
-has '_search_strategy' => ( is => 'ro', isa => 'Str', default =>  'depth' );
+has 'search_strategy' => ( is => 'ro', isa => 'Str', default =>  'depth' );
+has 'sortby' => (is => 'ro', isa => 'Maybe[Str]');
+
 
 sub _build_ordered_samples {
     my ($self) = @_;
@@ -32,7 +34,7 @@ sub _build_ordered_samples {
     );
     my $tree = $input->next_tree;
     my @taxa;
-    for my $leaf_node ( $tree->get_nodes($self->_search_strategy) ) {
+    for my $leaf_node ( $tree->get_nodes($self->search_strategy,$self->sortby) ) {
       if($leaf_node->is_Leaf)
       {
         push( @taxa, $leaf_node->id );

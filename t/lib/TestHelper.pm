@@ -9,6 +9,7 @@ sub mock_execute_script_and_check_output {
     my ( $script_name, $scripts_and_expected_files, $columns_to_exclude ) = @_;
     
     system('touch empty_file');
+    
     open OLDOUT, '>&STDOUT';
     open OLDERR, '>&STDERR';
     eval("use $script_name ;");
@@ -25,11 +26,11 @@ sub mock_execute_script_and_check_output {
 
             my $cmd = "$script_name->new(args => \\\@input_args, script_name => '$script_name')->run;";
             eval($cmd); warn $@ if $@;
+            
             my $actual_output_file_name = $scripts_and_expected_files->{$script_parameters}->[0];
             my $expected_output_file_name = $scripts_and_expected_files->{$script_parameters}->[1];
 
-            ok(-e $actual_output_file_name, "Actual output file exists $actual_output_file_name");
-            
+            ok(-e $actual_output_file_name, "Actual output file exists $actual_output_file_name  $script_parameters");
             if(defined($columns_to_exclude))
             {
               is(
