@@ -20,11 +20,14 @@ has 'tree_file'            => ( is => 'rw', isa => 'Str' );
 has 'spreadsheet_filename' => ( is => 'rw', isa => 'Str' );
 has 'output_filename'      => ( is => 'rw', isa => 'Str', default => 'reordered_spreadsheet.csv' );
 has 'tree_format'          => ( is => 'rw', isa => 'Str', default => 'newick' );
+has 'search_strategy'      => ( is => 'rw', isa => 'Str', default =>  'depth' );
+has 'sortby'               => ( is => 'rw', isa => 'Str', default => 'height');
+
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $output_filename, $tree_file, $tree_format, $spreadsheet_filename, $help );
+    my ( $output_filename, $tree_file,$search_strategy, $sortby, $tree_format, $spreadsheet_filename, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -32,6 +35,8 @@ sub BUILD {
         't|tree_file=s'            => \$tree_file,
         'f|tree_format=s'          => \$tree_format,
         's|spreadsheet_filename=s' => \$spreadsheet_filename,
+        'a|search_strategy=s'      => \$search_strategy,
+        'b|sortby=s'               => \$sortby,
         'h|help'                   => \$help,
     );
 
@@ -40,18 +45,23 @@ sub BUILD {
     $self->tree_file($tree_file)                       if ( defined($tree_file) );
     $self->tree_format($tree_format)                   if ( defined($tree_format) );
     $self->spreadsheet_filename($spreadsheet_filename) if ( defined($spreadsheet_filename) );
-
+    $self->sortby($sortby)                             if ( defined($sortby) );
+    $self->search_strategy($search_strategy)           if ( defined($search_strategy) );
 }
 
 sub run {
     my ($self) = @_;
-
     ( defined($self->spreadsheet_filename) && defined($self->tree_file) && ( -e $self->spreadsheet_filename ) && ( -e $self->tree_file ) && ( !$self->help ) ) or die $self->usage_text;
+
+    ($self->sortby eq "height" || $self->sortby eq "creation" || $self->sortby eq "alpha" || $self->sortby eq "revalpha") or die $self->usage_text;
+    ($self->search_strategy eq "breadth" || $self->search_strategy eq "depth") or die $self->usage_text;
 
     my $obj = Bio::PanGenome::ReorderSpreadsheet->new(
         tree_file       => $self->tree_file,
         spreadsheet     => $self->spreadsheet_filename,
-        output_filename => $self->output_filename
+        output_filename => $self->output_filename,
+        sortby          => $self->sortby,
+        search_strategy => $self->search_strategy
     );
     $obj->reorder_spreadsheet();
 
@@ -70,6 +80,12 @@ sub usage_text {
     
     # Specify an output filename
     pan_genome_reorder_spreadsheet -t my_tree.tre -s my_spreadsheet.csv -o output_spreadsheet.csv
+    
+    # Use a different search strategy  (default is 'depth' first search)
+    pan_genome_reorder_spreadsheet -t my_tree.tre -s my_spreadsheet.csv -a breadth
+    
+    # Use a different child sorting method (height/creation/alpha/revalpha), default is 'height'
+    pan_genome_reorder_spreadsheet -t my_tree.tre -s my_spreadsheet.csv -b alpha
     
     # This help message
     pan_genome_reorder_spreadsheet -h
