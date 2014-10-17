@@ -45,6 +45,35 @@ compare_tab_files_with_variable_coordinates('core_accessory.header.embl', 't/dat
 compare_tab_files_with_variable_coordinates('core_accessory.tab', 't/data/post_analysis_expected/core_accessory.tab');
 
 cleanup_files();
+
+system('cp t/data/post_analysis/* .');
+system('touch empty_file');
+%scripts_and_expected_files = (
+       '-t 1 -o clustered_proteins -p pan_genome.fa -s group_statisics.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
+       [ 'clustered_proteins', 't/data/clustered_proteins_post_analysis' ], 
+       '-h' =>
+         [ 'empty_file', 't/data/empty_file' ],   
+);
+
+mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+
+ok( -e 'number_of_unique_genes.Rtab', 'number_of_unique_genes.Rtab exists');
+ok( -e 'number_of_new_genes.Rtab', 'number_of_new_genes exists');
+ok( -e 'number_of_genes_in_pan_genome.Rtab', 'number_of_genes_in_pan_genome exists');
+ok( -e 'number_of_conserved_genes.Rtab','number_of_conserved_genes');
+ok( -e 'group_statisics.csv', 'group_statisics exists');
+ok( -e 'core_accessory.tab', 'core_accessory.tab exists');
+ok( -e 'core_accessory.header.embl','core_accessory.header.embl exists');
+ok( -e 'accessory.tab','accessory.tab exists');
+ok( -e 'accessory.header.embl','accessory.header.embl exists');
+
+compare_tab_files_with_variable_coordinates('accessory.header.embl', 't/data/post_analysis_expected/accessory.header.embl');
+compare_tab_files_with_variable_coordinates('accessory.tab', 't/data/post_analysis_expected/accessory.tab');
+compare_tab_files_with_variable_coordinates('core_accessory.header.embl', 't/data/post_analysis_expected/core_accessory.header.embl');
+compare_tab_files_with_variable_coordinates('core_accessory.tab', 't/data/post_analysis_expected/core_accessory.tab');
+
+
+cleanup_files();
 done_testing();
 
 sub cleanup_files

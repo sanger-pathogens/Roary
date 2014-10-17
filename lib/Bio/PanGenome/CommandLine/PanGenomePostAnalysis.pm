@@ -30,11 +30,12 @@ has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'LSF' );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $output_filename, $dont_create_rplots, $dont_delete_files, $output_pan_geneome_filename, $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $fasta_files, $input_files, $help );
+    my ( $output_filename, $translation_table, $dont_create_rplots, $dont_delete_files, $output_pan_geneome_filename, $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $fasta_files, $input_files, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -48,6 +49,7 @@ sub BUILD {
         'i=s'                     => \$input_files,
         'dont_delete_files'      => \$dont_delete_files,
         'dont_create_rplots'      => \$dont_create_rplots,
+        't|translation_table=i'   => \$translation_table,
         'h|help'                  => \$help,
     );
     
@@ -62,6 +64,7 @@ sub BUILD {
     $self->clusters_filename($clusters_filename)                     if (defined($clusters_filename));
     $self->dont_delete_files($dont_delete_files)                     if (defined($dont_delete_files) );
     $self->dont_create_rplots($dont_create_rplots)                   if (defined($dont_create_rplots) );
+    $self->translation_table($translation_table)                     if (defined($translation_table) );
   
 }
 
@@ -92,8 +95,9 @@ sub run {
     {
        my $output_gene_files = $self->_find_input_files;
        my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
-         fasta_files => $output_gene_files,
-         job_runner  => $self->job_runner
+         fasta_files         => $output_gene_files,
+         job_runner          => $self->job_runner,
+         translation_table   => $self->translation_table
        );
        $seg->run();
     }

@@ -26,6 +26,7 @@ has 'fasta_files_to_gff_files' =>
   ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_fasta_files_to_gff_files' );
 has 'apply_unknowns_filter'    => ( is => 'rw', isa => 'Bool', default => 1 );
 has '_queue'                  => ( is => 'rw', isa => 'Str',  default => 'small' );
+has 'translation_table'     => ( is => 'rw', isa => 'Int',  default => 11 );
 
 sub _build__extract_proteome_objects
 {
@@ -59,7 +60,7 @@ sub _build_fasta_files_to_gff_files {
         
         my $output_filename = $filename.'.'.$output_suffix;
         $fasta_files{ $filename  } = $gff_filename_without_directory.'.'.$output_suffix;
-        push(@commands_to_run, "extract_proteome_from_gff --apply_unknowns_filter ".$self->apply_unknowns_filter." -o $output_suffix $filename");
+        push(@commands_to_run, "extract_proteome_from_gff --translation_table ".$self->translation_table." --apply_unknowns_filter ".$self->apply_unknowns_filter." -o $output_suffix $filename");
     }
     # Farm out the computation and block until its ready
     my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue);

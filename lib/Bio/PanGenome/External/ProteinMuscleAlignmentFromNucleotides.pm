@@ -25,6 +25,7 @@ with 'Bio::PanGenome::JobRunner::Role';
 
 has 'fasta_files'   => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'exec'          => ( is => 'ro', isa => 'Str',      default  => 'protein_muscle_alignment_from_nucleotides' );
+has 'translation_table'      => ( is => 'rw', isa => 'Int',      default => 11 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
@@ -39,7 +40,7 @@ sub _build__memory_required_in_mb {
 
 sub _command_to_run {
     my ( $self, $fasta_files, ) = @_;
-    return $self->exec. " ". join( " ", @{$fasta_files}  );
+    return $self->exec. " -t ".$self->translation_table." ". join( " ", @{$fasta_files}  );
 }
 
 sub run {
