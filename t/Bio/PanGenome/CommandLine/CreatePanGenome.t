@@ -25,7 +25,10 @@ system('touch empty_file');
        ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-          [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],              
+          [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
+          
+          ' -t 1 -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+              [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],         
           '-h' =>
             [ 'empty_file', 't/data/empty_file' ],
 );
