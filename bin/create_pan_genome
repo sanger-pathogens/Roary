@@ -13,7 +13,7 @@ Create a pan genome from a set of proteome FASTA files
 
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
-#BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
 use Bio::PanGenome::CommandLine::CreatePanGenome;
 
 Bio::PanGenome::CommandLine::CreatePanGenome->new(args => \@ARGV, script_name => $0)->run;

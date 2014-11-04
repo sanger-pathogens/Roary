@@ -22,9 +22,9 @@ my %scripts_and_expected_files;
 system('touch empty_file');
 
 %scripts_and_expected_files = (
-       ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff ' =>
+       ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
-      ' -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_6.gff    ' =>
+      ' -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
           [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],              
           '-h' =>
             [ 'empty_file', 't/data/empty_file' ],
@@ -32,21 +32,17 @@ system('touch empty_file');
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files, [6,7,8,9] );
 cleanup_files();
 
-
 %scripts_and_expected_files = (
   ' -j Local --dont_create_rplots --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
     [ 'pan_genome_sequences/sopB.fa.aln', 't/data/sopB.fa.aln' ],
 );
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
-
 ok(my $seq_len = Bio::PanGenome::SequenceLengths->new(
   fasta_file   => 'core_gene_alignment.aln',
 ), 'Check size of the core_gene_alignment.aln init');
 
 is($seq_len->sequence_lengths->{'11111_1#11'}, 58389, 'length of first sequence');
-
-
 
 ok(-e 'accessory.tab');
 ok(-e 'core_accessory.tab');
@@ -82,7 +78,7 @@ sub cleanup_files
   unlink('number_of_genes_in_pan_genome.Rtab');
   unlink('number_of_new_genes.Rtab');
   unlink('number_of_unique_genes.Rtab');
-  unlink('query_6.gff.proteome.faa');
+  unlink('query_5.gff.proteome.faa');
   unlink('core_gene_alignment.aln');  
   unlink('blast_identity_frequency.Rtab');
   unlink('real_data_1.gff.proteome.faa');
