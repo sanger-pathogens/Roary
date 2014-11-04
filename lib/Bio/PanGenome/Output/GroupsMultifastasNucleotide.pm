@@ -29,7 +29,7 @@ has 'annotate_groups' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', 
 has 'output_directory' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_directory');
 
 has '_number_of_groups' => ( is => 'rw', isa => 'Num', lazy_build => 1 );
-has '_group_limit'      => ( is => 'rw', isa => 'Num', default => 8000 );
+has '_group_limit'      => ( is => 'rw', isa => 'Num', default => 50000 );
 
 sub _build_output_directory
 {
