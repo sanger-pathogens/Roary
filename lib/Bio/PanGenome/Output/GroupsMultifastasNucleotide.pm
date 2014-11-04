@@ -28,6 +28,9 @@ has 'annotate_groups' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', 
 
 has 'output_directory' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_directory');
 
+has '_number_of_groups' => ( is => 'rw', isa => 'Num', lazy_build => 1 );
+has '_group_limit'      => ( is => 'rw', isa => 'Num', default => 8000 );
+
 sub _build_output_directory
 {
   my ($self) = @_;
@@ -35,9 +38,22 @@ sub _build_output_directory
   return $output_directory;
 }
 
+sub _build__number_of_groups {
+  my $self = shift;
+
+  return $self->annotate_groups->_group_counter;
+}
+
 sub create_files {
     my ($self) = @_;
-  
+
+    my $num_groups = $self->_number_of_groups;
+    my $limit      = $self->_group_limit;
+    if ( $num_groups > $limit ){
+      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created.\n";
+      return 1;
+    }
+
     make_path($self->output_directory);
     
     for my $gff_file ( @{ $self->gff_files } ) 
