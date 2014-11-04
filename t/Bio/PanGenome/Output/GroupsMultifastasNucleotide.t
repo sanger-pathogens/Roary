@@ -26,6 +26,8 @@ my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
 
 $annotate_groups->reannotate;
 
+print Dumper $annotate_groups->_genes_to_file;
+
 ok(
     my $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
         group_names    => [ 'group_2', 'group_5' ],

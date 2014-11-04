@@ -181,19 +181,19 @@ sub _delete_intermediate_files
   my ($self) = @_;
   return if($self->dont_delete_files == 1);
   
-  unlink($self->_output_mcl_filename)                      ;
-  unlink($self->_output_inflate_clusters_filename)         ;
-  unlink($self->_output_group_labels_filename)             ;
-  unlink($self->_output_combined_filename)                 ;
+  unlink($self->_output_mcl_filename)              ;
+  unlink($self->_output_inflate_clusters_filename) ;
+  unlink($self->_output_group_labels_filename)     ;
+  unlink($self->_output_combined_filename)         ;
   unlink($self->clusters_filename)                 ;
   unlink($self->clusters_filename . '.clstr' )     ;
   unlink($self->clusters_filename . '.bak.clstr' ) ;
-  unlink('_gff_files')                              ;
-  unlink('_fasta_files')                            ;
-  unlink('_clustered_filtered.fa')                  ;
-  unlink($self->_input_cd_hit_groups_file)                 ;
-  unlink('database_masking.asnb')                   ;
-  unlink('_clustered')                              ;
+  unlink('_gff_files')                             ;
+  unlink('_fasta_files')                           ;
+  unlink('_clustered_filtered.fa')                 ;
+  unlink($self->_input_cd_hit_groups_file)         ;
+  unlink('database_masking.asnb')                  ;
+  unlink('_clustered')                             ;
 }
 
 no Moose;
