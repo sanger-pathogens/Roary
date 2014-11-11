@@ -16,8 +16,6 @@ Take in a group file and assosiated GFF files for the isolates and update the gr
 
 =cut
 
-use Data::Dumper;
-
 use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::GeneNamesFromGFF;

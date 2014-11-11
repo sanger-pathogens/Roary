@@ -16,8 +16,6 @@ Add labels to the groups
 
 =cut
 
-use Data::Dumper;
-
 use Moose;
 use POSIX;
 use Text::CSV;
