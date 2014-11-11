@@ -31,6 +31,7 @@ has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 
 has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default  => 98 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
@@ -38,7 +39,7 @@ has '_error_message'    => ( is => 'rw', isa => 'Str' );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files,$translation_table,  $dont_create_rplots, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $help );
+    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -54,6 +55,7 @@ sub BUILD {
         'i|perc_identity=i'         => \$perc_identity,
         'dont_delete_files'         => \$dont_delete_files,
         'dont_create_rplots'        => \$dont_create_rplots,
+        'verbose_stats'             => \$verbose_stats,
         't|translation_table=i'     => \$translation_table,
         'h|help'                    => \$help,
     );
@@ -75,6 +77,7 @@ sub BUILD {
     $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
     $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
     $self->dont_create_rplots($dont_create_rplots)           if (defined($dont_create_rplots) );
+    $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
     $self->translation_table($translation_table)             if (defined($translation_table) );
 
     for my $filename ( @{ $self->args } ) {
@@ -114,6 +117,7 @@ sub run {
         perc_identity           => $self->perc_identity,
         dont_delete_files       => $self->dont_delete_files,
         dont_create_rplots      => $self->dont_create_rplots,
+        verbose_stats           => $self->verbose_stats,
         translation_table       => $self->translation_table
       );
     $pan_genome_obj->run();
@@ -146,6 +150,9 @@ sub usage_text {
     
     # Different translation table (default is 11 which is for Bacteria). Viruses/Vert = 1
     create_pan_genome --translation_table 1 *.gff 
+
+    # Include full annotation and inference in group statistics
+    create_pan_genome --verbose_stats *.gff
 
     # This help message
     create_pan_genome -h

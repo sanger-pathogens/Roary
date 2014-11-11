@@ -50,7 +50,7 @@ has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::GroupStati
 has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
 has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
 
-
+has 'verbose_stats' => ( is => 'rw', isa => 'Bool', default => 0 ); 
 
 sub run {
     my ($self) = @_;
@@ -88,7 +88,8 @@ sub _build__group_statistics_obj
       output_filename     => $self->output_statistics_filename,
       annotate_groups_obj => $self->_annotate_groups_obj,
       analyse_groups_obj  => $self->_analyse_groups_obj,
-      groups_to_contigs   => $self->_order_genes_obj->groups_to_contigs
+      groups_to_contigs   => $self->_order_genes_obj->groups_to_contigs,
+      _verbose            => $self->verbose_stats,
   );
 }
 

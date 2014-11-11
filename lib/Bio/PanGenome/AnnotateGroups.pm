@@ -20,6 +20,8 @@ use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::GeneNamesFromGFF;
 
+use File::Grep qw(fgrep);
+
 has 'gff_files'          => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'output_filename'    => ( is => 'ro', isa => 'Str',      default  => 'reannotated_groups_file' );
 has 'groups_filename'    => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -35,6 +37,8 @@ has '_ids_to_groups'      => ( is => 'rw', isa => 'HashRef',  lazy => 1, builder
 
 has '_group_counter' => ( is => 'rw', isa => 'Int', lazy => 1, builder => '_builder__group_counter' );
 has '_group_default_prefix' => ( is => 'rw', isa => 'Str', default => 'group_' );
+
+has '_ids_to_verbose_stats' => ( is => 'rw', isa => 'HashRef', lazy_build => 1 );
 
 sub BUILD {
     my ($self) = @_;
@@ -103,6 +107,37 @@ sub _build__ids_to_gene_names {
 
     return \%ids_to_gene_names;
 }
+
+sub _build__ids_to_verbose_stats {
+        my $self = shift;
+
+        my @matches_hash = fgrep { /ID=/ } @{ $self->_filtered_gff_files };
+        my @matches;
+        foreach my $m ( @matches_hash ){
+            push( @matches, values $m->{matches} );
+        }
+        # chomp @matches;
+        
+        my %verbose;
+        foreach my $line ( @matches ){
+            my ( $id, $inf, $prod );
+            if( $line =~ m/ID=([^;]+);/ ){
+                $id = $1;
+            }
+            else {
+                next;
+            }
+
+            $inf = $1 if ( $line =~ m/inference=([^;]+);/ );
+            $prod = $1 if ( $line =~ m/product=([^;]+)[;\n]/ );
+
+            my %info = ( 'inference' => $inf, 'product' => $prod );
+            $verbose{$id} = \%info;
+        }
+
+        return \%verbose;
+}
+
 
 sub consensus_product_for_id_names {
     my ( $self, $id_names ) = @_;
@@ -246,6 +281,42 @@ sub reannotate {
     }
     close( $self->_output_fh );
     return $self;
+}
+
+sub full_annotation {
+    my ( $self, $group ) = @_;
+
+    my @id_names = @{ $self->_groups_to_id_names->{$group} };
+
+    my %product_freq;
+    for my $id_name ( @id_names ) {
+        next unless ( defined( $self->_ids_to_verbose_stats->{$id_name}->{'product'} ) );
+        $product_freq{ $self->_ids_to_verbose_stats->{$id_name}->{'product'} }++;
+    }
+
+    my @sorted_product_keys = sort { $product_freq{$b} <=> $product_freq{$a} } keys(%product_freq);
+
+    if ( @sorted_product_keys > 0 ) {
+        return join('; ', @sorted_product_keys);
+    }
+    else {
+        return '';
+    }
+    
+}
+
+sub inference {
+    my ( $self, $group ) = @_;
+
+    my @infs;
+    foreach my $g ( @{ $self->_groups_to_id_names->{$group} } ){
+        next unless ( defined  $self->_ids_to_verbose_stats->{$g}->{'inference'} );
+        push( @infs, $self->_ids_to_verbose_stats->{$g}->{'inference'} );
+    }
+
+    # maybe make a consensus in the future?
+
+    return $infs[0];
 }
 
 no Moose;
