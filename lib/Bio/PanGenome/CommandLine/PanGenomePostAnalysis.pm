@@ -139,12 +139,13 @@ sub usage_text {
     
     #Normal usage
     pan_genome_post_analysis 
-      -o output_groups_filename      /
-      -p output_pan_genome_filename  /
-      -s output_stats_filename       /
-      -c output_clusters_filename    /
-      -f file_of_proteins               /
-      -i file_of_gffs             
+      -o output_groups_filename      
+      -p output_pan_genome_filename  
+      -s output_stats_filename       
+      -c output_clusters_filename    
+      -f file_of_proteins               
+      -i file_of_gffs   
+      --verbose_stats          
 
     # This help message
     pan_genome_post_analysis -h
