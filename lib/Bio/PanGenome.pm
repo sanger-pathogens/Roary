@@ -113,7 +113,7 @@ sub run {
         output_multifasta_files     => $self->output_multifasta_files,
         dont_delete_files           => $self->dont_delete_files,
         dont_create_rplots          => $self->dont_create_rplots,
-        
+        verbose_stats               => $self->verbose_stats
     );
     $post_analysis->run();
 
