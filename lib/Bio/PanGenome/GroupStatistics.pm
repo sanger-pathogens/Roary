@@ -189,6 +189,7 @@ sub create_spreadsheet {
     my @sorted_groups = sort {
           $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$b} )
       <=> $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$a} )
+      ||  $a cmp $b  
         } @{ $self->annotate_groups_obj->_groups };
 
     for my $group (@sorted_groups){
