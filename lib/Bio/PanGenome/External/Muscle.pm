@@ -33,7 +33,7 @@ has '_queue' => ( is => 'rw', isa => 'Str', default => 'small' );
 
 sub _build__memory_required_in_mb {
     my ($self)          = @_;
-    my $memory_required = 1000;
+    my $memory_required = 4000;
     return $memory_required;
 }
 

@@ -18,6 +18,8 @@ system('touch empty_file');
 my %scripts_and_expected_files = (
     't/data/example_annotation.gff' =>
       ['example_annotation.gff.proteome.faa','t/data/example_annotation.gff.proteome.faa.expected' ],
+      '-t 1 t/data/example_annotation.gff' =>
+        ['example_annotation.gff.proteome.faa','t/data/example_annotation.gff.proteome.faa.expected' ],
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
 );

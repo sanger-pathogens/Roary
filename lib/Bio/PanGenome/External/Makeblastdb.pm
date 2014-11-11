@@ -35,7 +35,7 @@ has '_logfile'           => ( is => 'ro', isa => 'Str', default  => '/dev/null' 
 has 'output_database'    => ( is => 'ro', isa => 'Str', lazy     => 1, builder => '_build_output_database' );
 
 # Overload Role
-has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int', default => 3000);
+has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int', default => 4000);
 
 sub _build_output_database {
     my ($self) = @_;

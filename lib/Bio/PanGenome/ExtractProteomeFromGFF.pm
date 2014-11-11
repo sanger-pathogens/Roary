@@ -34,7 +34,7 @@ has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_bui
 has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
-
+has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 
 sub _build_fasta_file
 {
@@ -150,7 +150,7 @@ sub _fastatranslate_filename {
 sub _fastatranslate_cmd
 {
   my ($self) = @_;
-  return 'fastatranslate --geneticcode 11  -f '. $self->_extracted_nucleotide_fasta_file_from_bed_filename.' >> '.$self->_fastatranslate_filename;
+  return 'fastatranslate --geneticcode '.$self->translation_table.'  -f '. $self->_extracted_nucleotide_fasta_file_from_bed_filename.' >> '.$self->_fastatranslate_filename;
 }
 
 sub _convert_nucleotide_to_protein
