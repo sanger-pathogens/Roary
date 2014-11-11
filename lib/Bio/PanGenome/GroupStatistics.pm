@@ -16,6 +16,8 @@ Add labels to the groups
 
 =cut
 
+use Data::Dumper;
+
 use Moose;
 use POSIX;
 use Text::CSV;
@@ -33,6 +35,8 @@ has '_text_csv_obj'      => ( is => 'ro', isa  => 'Text::CSV', lazy    => 1, bui
 has '_sorted_file_names' => ( is => 'ro', isa  => 'ArrayRef',  lazy    => 1, builder => '_build__sorted_file_names' );
 has '_groups_to_files'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__groups_to_files' );
 has '_files_to_groups'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__files_to_groups' );
+
+has '_verbose'           => ( is => 'ro', isa => 'Bool', default => 0 );
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -63,6 +67,8 @@ sub _header {
         $filename_cpy =~ s!\.gff\.proteome\.faa!!;
         push( @header, $filename_cpy );
     }
+
+    push( @header, 'Inference' ) if ( $self->_verbose );
 
     return \@header;
 }
@@ -165,6 +171,13 @@ sub _row {
         }
     }
 
+    ## ADD INFERENCE AND FULL ANNOTATION IF VERBOSE REQUESTED ##
+    if ( $self->_verbose ){
+      my ( $full_annotation, $inference );
+        $row[2] = $self->annotate_groups_obj->full_annotation($group);
+        push( @row, $self->annotate_groups_obj->inference($group) );
+    }
+
     return \@row;
 }
 
@@ -173,15 +186,12 @@ sub create_spreadsheet {
 
     $self->_text_csv_obj->print( $self->_output_fh, $self->_header );
 
-    for my $group (
-        sort {
-            $self->analyse_groups_obj->_count_num_files_in_group(
-                $self->annotate_groups_obj->_groups_to_id_names->{$b} )
-              <=> $self->analyse_groups_obj->_count_num_files_in_group(
-                $self->annotate_groups_obj->_groups_to_id_names->{$a} )
-        } @{ $self->annotate_groups_obj->_groups }
-      )
-    {
+    my @sorted_groups = sort {
+          $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$b} )
+      <=> $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$a} )
+        } @{ $self->annotate_groups_obj->_groups };
+
+    for my $group (@sorted_groups){
         $self->_text_csv_obj->print( $self->_output_fh, $self->_row($group) );
     }
     close( $self->_output_fh );

@@ -57,5 +57,18 @@ is(read_file('group_statitics.csv'),read_file('t/data/expected_group_statitics_m
 unlink('group_statitics.csv');
 
 
+## TEST VERBOSE STATS ##
+
+ok($obj = Bio::PanGenome::GroupStatistics->new(
+  annotate_groups_obj => $annotate_groups,
+  analyse_groups_obj  => $analyse_groups,
+  _verbose            => 1
+),'Initialise group statistics object');
+ok($obj->create_spreadsheet,'Create the CSV file');
+ok(-e 'group_statitics.csv', 'CSV file exists');
+is(read_file('group_statitics.csv'),read_file('t/data/expected_group_statitics_verbose.csv'), 'Spreadsheet content as expected');
+
+# unlink('group_statitics.csv');
+
 
 done_testing();
