@@ -48,13 +48,14 @@ my $analyse_groups_2 = Bio::PanGenome::AnalyseGroups->new(
 
 ok($obj = Bio::PanGenome::GroupStatistics->new(
   annotate_groups_obj => $annotate_groups_2,
-  analyse_groups_obj  => $analyse_groups_2 
+  analyse_groups_obj  => $analyse_groups_2,
+  output_filename     => 'missing_genes_stats.csv' 
 ),'Initialise group statistics object where one isolate has only 1 gene');
 ok($obj->create_spreadsheet,'Create the CSV file');
-ok(-e 'group_statitics.csv', 'CSV file exists');
-is(read_file('group_statitics.csv'),read_file('t/data/expected_group_statitics_missing_genes.csv'), 'Spreadsheet content as expected with missing genes');
+ok(-e 'missing_genes_stats.csv', 'CSV file exists');
+is(read_file('missing_genes_stats.csv'),read_file('t/data/expected_group_statitics_missing_genes.csv'), 'Spreadsheet content as expected with missing genes');
 
-unlink('group_statitics.csv');
+unlink('missing_genes_stats.csv');
 
 
 ## TEST VERBOSE STATS ##
@@ -62,13 +63,13 @@ unlink('group_statitics.csv');
 ok($obj = Bio::PanGenome::GroupStatistics->new(
   annotate_groups_obj => $annotate_groups,
   analyse_groups_obj  => $analyse_groups,
-  _verbose            => 1
+  _verbose            => 1,
+  output_filename     => 'verbose_stats.csv'
 ),'Initialise group statistics object');
 ok($obj->create_spreadsheet,'Create the CSV file');
-ok(-e 'group_statitics.csv', 'CSV file exists');
-is(read_file('group_statitics.csv'),read_file('t/data/expected_group_statitics_verbose.csv'), 'Spreadsheet content as expected');
+ok(-e 'verbose_stats.csv', 'CSV file exists');
+is(read_file('verbose_stats.csv'),read_file('t/data/expected_group_statitics_verbose.csv'), 'Verbose spreadsheet content as expected');
 
-# unlink('group_statitics.csv');
-
+unlink('verbose_stats.csv');
 
 done_testing();
