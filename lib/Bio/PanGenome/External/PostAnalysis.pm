@@ -107,7 +107,7 @@ sub _command_to_run {
     $dont_create_rplots_flag = '--dont_create_rplots' if(defined($self->dont_create_rplots) && $self->dont_create_rplots == 1);
     
     my $verbose_stats_flag = '';
-    $verbose_stats_flag = '--verbose_stats' if ( defined $self->verbose_stats );
+    $verbose_stats_flag = '--verbose_stats' if ( defined($self->verbose_stats) && $self->verbose_stats == 1 );
     
     return join(
         " ",
