@@ -48,7 +48,7 @@ sub _build__queue {
     {
       $queue = 'long';
     }
-    elsif($num_samples > 800)
+    elsif($num_samples > 600)
     {
       $queue = 'basement';
     }
