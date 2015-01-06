@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Pan Genome Pipeline : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Pan Genome Pipeline</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/sanger-pathogens/Bio-PanGenome">View on GitHub</a>
+
+          <h1 id="project_title">Pan Genome Pipeline</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/sanger-pathogens/Bio-PanGenome/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/sanger-pathogens/Bio-PanGenome/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>This application allows for the construction of pan genomes (bacteria and viruses). It can take thousands of highly fragmented draft assemblies and produce information on the presence and absence of genes to identify the core and accessory genomes.</p>
+
+<h2>
+<a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Method</h2>
+
+<p>A pan genome pipeline has been created which takes the GFF files created by the Prokka [prokka] and clusters the predicted proteins to allow for the full genomic variation of the input set to be explored.</p>
+
+<p>The inputs to the pan genome pipeline are a set of annotation files with corresponding nucleotide sequences in GFF3 format. Predicted coding regions are extracted and converted to protein sequences. Sequences where more than 5% of nucleotides are unknown or which are less than 120 nucleotides (standard cutoff used by the large centres [commonannotation]) are excluded from further analysis. Sequences must have a start or stop codon, and any without them are filtered out [fasta_grep]. CD-hit [cdhit] is used to iteratively perform a first pass clustering. This substantially reduces the running time of later steps. Beginning with a sequence identity of 100% and a matching length of 100%, the protein sequences are then clustered. If a sequence is found in every isolate, it is said to be a conserved gene and the cluster is added to the final results. All of these sequences are then removed and not considered for blast analysis. CD-hit is repeated again with a lower threshold, reducing by 0.1% down to the user defined threshold (defaults to 98%), with conserved clusters removed at each stage.
+One final clustering step is performed with CD-hit, with a sequence identity of 100% leaving one representative sequence for each cluster in a protein FASTA file. A blast database is created from this FASTA file. Low complexity regions are first masked out with SegMasker [ncbi_blast_plus], and a protein blast database is created with makeblastdb [ncbi_blast_plus]. The FASTA file is chunked up and compared to the blast database to perform an all against all blast (in parallel. The combined blast results are then fed into MCL[mcl] which clusters the input sequences. It uses a normalised bit store (bit scores normalized by length of the HSP). The clusters are then re-inflated with the final CD-hit clustering results, and with the iterative CD-hit conserved clusters. The clusters are labeled with the most commonly occurring gene names assigned to the sequences in the cluster. If there is no annotated gene name, a unique identified is generated. The functional annotation is also recorded for each cluster.</p>
+
+<p>The ordering of each protein, on each contig, in each de novo assembly, is noted. It is then used to create a graph of the ordering of the clusters, which provides a reasonable relative ordering of the clusters. Each edge is weighted by the number of isolates that the ordering is found in. Multiple graphs are created for each of connected groups (e.g. chromosome and plasmids would be on separate graphs). To reduce the impact of spurious links, which can be caused by misassemblies and misclustering, the graph is filtered to remove weak edges. For a given node, all edges not within 90% of the strongest edge are removed. This greatly improves the contiguation of mobile elements, but it has the downside of disconnecting low frequency variation found within those elements. Representing a complex graph on a straight line is a nontrivial task. The graphs are then simplified to minimum spanning trees and traversed using depth first search. The graphs are ordered by the average edge weight for the resulting path. This is used to plot the presence and absence of genes to isolates against a tree for the whole pan genome. The same process is repeated, but with the conserved clusters removed from the graph, to generate an overview of the accessory regions.</p>
+
+<p>From the graphs quality information can be derived about the clusters. If there are a large number of disconnected graphs, each with a small number of genes and found in low frequency in the isolates, it can indicate low copy number contamination of the isolate. This is usually overwhelmingly apparent. A small number of these can be biologically very interesting, for example a drug resistance gene being inserted at an IS element. If there are very large numbers of genes on contiguous blocks it can also indicate contamination by another organism, again this is very straight forward to spot visually. A further quality control step is performed where the quality of the predicted proteins is accessed based on the predicted annotation. If two genes are overlapping by more than 10% (minimum 4 nucleotides) in different open reading frames it could indicate a mis-prediction. If one of the proteins is marked as a hypothetical protein, and the other has a predicted function, the hypothetical protein is flagged as potentially erroneous.</p>
+
+<p>Multiple output files are created by the pipeline. A spreadsheet detailing the presence and absence of each gene in each isolate, statistics, functional annotation, qc information and sorting information is created. A FASTA file with one representative sequence from each cluster is created to allow for mapping to the pan genome. A multiple sequence file of all the nucleotide sequences for each cluster is created. It is also aligned using muscle to create a multiple sequence alignment file. Tab delimited files are created for post processing using R. Isolates are added in a random order 100 times and the number of unique genes, number of conserved genes, number of genes in the pan genome, and number of new genes, are noted.</p>
+
+<h2>
+<a id="how-to-use-the-scripts" class="anchor" href="#how-to-use-the-scripts" aria-hidden="true"><span class="octicon octicon-link"></span></a> How to use the scripts</h2>
+
+<p><code>create_pan_genome -i 90 *.gff</code></p>
+
+<p>Run the pan genome pipeline with the chosen percentage identity.</p>
+
+<p><code>create_pan_genome -i 97 *.gff</code></p>
+
+<p>To get a multifasta files for each cluster, which get deposited in a directory called ‘pan_genome_sequences’ you can use the –e parameter. This creates 2 files per gene so can create large numbers of output files, so it should be used with care.</p>
+
+<p><code>create_pan_genome -e *.gff</code></p>
+
+<p>There are a number of tab files produced (*.Rtab) which can be processed with R. By default Rplots.pdf contains a graph for how the pan genome changes as more genomes are randomly added with the number of conserved genes, the number of new genes, the number of unique genes and the total number of genes in the pan genome. This can be used to see if the pan genome is closed and to estimate the number of new genes that are predicted to be for every new genome added to the pan genome.
+The group_statistics.csv spreadsheet contains detailed information about the presence and absence of genes, listing the unique gene IDs (based on the lane_id), which can be used to lookup the original sequences. It also includes analysis on the number of isolates which contain a gene, the frequency of occurance, and a predicted ordering of the genes in the pan genome and the accessory genome.</p>
+
+<h2>
+<a id="output-files" class="anchor" href="#output-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output files</h2>
+
+<h3>
+<a id="spreadsheet" class="anchor" href="#spreadsheet" aria-hidden="true"><span class="octicon octicon-link"></span></a>Spreadsheet</h3>
+
+<p>A spreadsheet is created showing presence and absence of genes, plus some other information. It is called 'group_statistics.csv' and can be opened in Excel. The first column is the most frequently occurring gene name. If the same gene name is found in another group it is inserted into the second column. This can occur because the annotation and clustering methods use different thresholds and methods to assign a gene name to a protein. The third column contains the functional annotation from the first database used. They are searched in the following order: RefSeq, uniprotKB, Clusters, Conserved domain database, Tigrfams, and Pfam (A). Columns D, E and F contain the frequence of occurance of sequences within the genes, so that you can identify paralogs and conserved genes.
+Columns G and H allow you to order the genes based on the core+accessory de novo contig evidence. In Excel select Data-&gt;sort and sort on Column G followed by Column H. This the ordering of genes in iCANDY. Similarly Columns H and I contain the order of the accessory genome. A blank cell means its not in the accessory. This is the same ordering as the genes in the accessory.tab file used to generate the iCANDY figures.
+The QC column flags up two types of issues: the first is where there are two genes overlapping, one has annotation, and the other has none. So the gene without annotation is flagged. These are appear to be mispredictions by prodigal. the second is where 1 or 2 genes appear on a single contig with no links to another contig. These are marked as 'Investigate' because they can signify low copy number contamination if there are lots of them, or an interesting mobile element.
+Finally there is a matrix with presence and absence of each gene in each isolate. The unique gene ID back to the sequence and annotation is given in the column. If an isolate contains more than 1 sequence in the group it, they are separated by a tab in the same cell.</p>
+
+<h3>
+<a id="rtab-files" class="anchor" href="#rtab-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rtab files</h3>
+
+<p>These files contain tab delimited data for generating plots in R (or another language). We randomly sort the annotation files and plot what happens to the pan genome when they are added one by one. A number of iterations are performed because the order you add the files in can change the results, with the number of iterations set to the number of files (minimum 100). This allows for bounds to be placed on the values.</p>
+
+<p>number_of_conserved_genes.Rtab</p>
+
+<p>A gene is conserved if it occurs in every isolate.</p>
+
+<p>number_of_genes_in_pan_genome.Rtab</p>
+
+<p>This is the total number of genes identified, so is core + accessory.</p>
+
+<p>number_of_new_genes.Rtab</p>
+
+<p>This is the number of new (previously unseen) genes found as each file is added.</p>
+
+<p>number_of_unique_genes.Rtab</p>
+
+<p>This is the number of genes which are found in exactly 1 isolate.</p>
+
+<h3>
+<a id="multifasta-files-of-each-gene" class="anchor" href="#multifasta-files-of-each-gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multifasta files of each gene</h3>
+
+<p>If you pass in the flag '-e' multifasta files containing nucleotide sequences will be generated for each gene. They will all reside in a sub directory called 'pan_genome_sequences'. The naming scheme for the files is: the number of sequences in the file, followed by the gene name. You can use seaview to open the sequence and take a look at it.
+There is also an aligned version of the nucleotides. The nucleotide sequences are translated to proteins (translation table 11), aligned with muscle, then reverse translated back to nucleotides with revtrans [revtrans]. The resulting file ends with '.aln'.</p>
+
+<h2>
+<a id="querying-the-pan-genome" class="anchor" href="#querying-the-pan-genome" aria-hidden="true"><span class="octicon octicon-link"></span></a>Querying the pan genome</h2>
+
+<p>You can query the pan genome in two ways, 1.) open up the group_statistics.csv spreadsheet in excel and filter the rows and columns yourself, or 2.) use the query_pan_genome script. It takes in the groups file (clustered_proteins) and a list of the gff files that were used to create the pan genome in the first place.</p>
+
+<p>To get help run:</p>
+
+<p><code>query_pan_genome -h</code></p>
+
+<h3>
+<a id="difference-between-sets-of-isolates" class="anchor" href="#difference-between-sets-of-isolates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Difference between sets of isolates</h3>
+
+<p>If you have two sets of isolates, you can use this script to tell what the differences are (in terms of genes). For example, you might have a set of drug resistant isolates, and another set of susceptible isolates and you want to know are there genes how they differ. For a given pan genome, you can pass in two lists of GFF files. It will output what genes are unique to set 1, unique to set 2 and what they have in common.</p>
+
+<p><code>query_pan_genome  -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff  -g clustered_proteins</code></p>
+
+<p>The output files are the groups file and a spreadsheet.</p>
+
+<p><code>set_difference_unique_set_one_statistics.csv</code></p>
+
+<p><code>set_difference_unique_set_one</code></p>
+
+<p><code>set_difference_unique_set_two_statistics.csv</code></p>
+
+<p><code>set_difference_unique_set_two</code></p>
+
+<p><code>set_difference_common_set_statistics.csv</code></p>
+
+<p><code>set_difference_common_set</code></p>
+
+<h3>
+<a id="create-a-fasta-file-with-one-gene-per-group" class="anchor" href="#create-a-fasta-file-with-one-gene-per-group" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a FASTA file with one gene per group</h3>
+
+<p>This action will take the first protein sequence from every group and output it to a FASTA file. It will give you a flavour of whats in the whole pan genome.</p>
+
+<p><code>query_pan_genome -a one_gene_per_group -g clustered_proteins *.gff</code></p>
+
+<p>You can also provide an output file name.</p>
+
+<p><code>query_pan_genome  -a one_gene_per_group -g clustered_proteins -o results.fa *.gff</code></p>
+
+<h3>
+<a id="create-multifasta-files-for-a-list-of-genes" class="anchor" href="#create-multifasta-files-for-a-list-of-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create multiFASTA files for a list of genes</h3>
+
+<p>This action will create a multiFASTA file of protein sequences for the list of genes passed in.</p>
+
+<p><code>query_pan_genome  -a gene_multifasta -g clustered_proteins -n gryA,mecA,abc *.gff</code></p>
+
+<h3>
+<a id="union-pan-genome" class="anchor" href="#union-pan-genome" aria-hidden="true"><span class="octicon octicon-link"></span></a>Union (pan genome)</h3>
+
+<p>Get the union of the genes for the GFF files passed in. This will give you all of the genes that are found in any of the isolates used to create the pan genome.</p>
+
+<p><code>query_pan_genome  -a union -g clustered_proteins *.gff</code></p>
+
+<p>To get the list of genes found in a subset of GFF files:</p>
+
+<p><code>query_pan_genome  -a union -g clustered_proteins file1.gff file2.gff file3.gff</code></p>
+
+<h3>
+<a id="intersection-core-genes" class="anchor" href="#intersection-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intersection (core genes)</h3>
+
+<p>Get the intersection of the genes for the GFF files passed in. This will give you all the genes that are found in all isolates (e.g. the core genes) for the given list of GFF files.</p>
+
+<p><code>query_pan_genome  -a intersection -g clustered_proteins *.gff</code></p>
+
+<p>To get the core genes for a subset of GFF files:</p>
+
+<p><code>query_pan_genome  -a intersection -g clustered_proteins file1.gff file2.gff file3.gff</code></p>
+
+<h3>
+<a id="complement-accessory-genes" class="anchor" href="#complement-accessory-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Complement (accessory genes)</h3>
+
+<p>Get the complement, otherwise known as the accessory genes. It is the Union minus the Intersection.</p>
+
+<p><code>query_pan_genome  -a complement -g clustered_proteins *.gff</code></p>
+
+<p>To get the accessory genes for a subset of GFF files:</p>
+
+<p><code>query_pan_genome  -a intersection -g clustered_proteins file1.gff file2.gff file3.gff</code></p>
+
+<h2>
+<a id="clustering-iteratively-with-cd-hit" class="anchor" href="#clustering-iteratively-with-cd-hit" aria-hidden="true"><span class="octicon octicon-link"></span></a>Clustering iteratively with CD-hit</h2>
+
+<p>Iteratively cluster a set of proteins with CD-hit, lowering the threshold each time and extracting core genes (1 per isolate) to another file. The core gene sequences are removed from the input protein sequences. This is a quick way of finding the core genes in closely related isolates, substantially reducing the number of sequences you might want to perform an all against all blast with. It is important to set the -n parameter to the number of isolates in your input set.</p>
+
+<p>Basic usage where you have a single isolate</p>
+
+<p><code>iterative_cdhit -m proteome_fasta.faa</code></p>
+
+<p>Where you have 10 isolates</p>
+
+<p><code>iterative_cdhit -m proteome_fasta.faa -n 10</code></p>
+
+<p>Specify the output file name cdhit results</p>
+
+<p><code>iterative_cdhit -m proteome_fasta.faa  -c _clustered</code></p>
+
+<p>Specify the output file name for the output protein sequences</p>
+
+<p><code>iterative_cdhit -m proteome_fasta.faa  -f output_filtered_clustered_fasta</code></p>
+
+<p>Change the lower bound percentage that you iterate to (defaults to 98%)</p>
+
+<p><code>iterative_cdhit -m proteome_fasta.faa  -l 95</code></p>
+
+<p>Change the upper bound percentage that you iterate from (defaults to 99%)</p>
+
+<p><code>iterative_cdhit -m proteome_fasta.faa -l 100</code></p>
+
+<p>Change the intermediate step size (defaults to 0.5%)</p>
+
+<p><code>iterative_cdhit -m proteome_fasta.faa -l 0.1</code></p>
+
+<p>This help message</p>
+
+<p><code>iterative_cdhit -h</code></p>
+
+<h2>
+<a id="reordering-the-pan-genome-spreadsheet-against-a-tree" class="anchor" href="#reordering-the-pan-genome-spreadsheet-against-a-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reordering the pan genome spreadsheet against a tree</h2>
+
+<p>Take in a tree and a spreadsheet from the pan genome pipeline and output a spreadsheet with the columns ordered by the tree. By default it expects the tree to be in newick format and the tree traversed using depth first search.</p>
+
+<p>Reorder the spreadsheet columns to match the order of the samples in the tree</p>
+
+<p><code>pan_genome_reorder_spreadsheet -t my_tree.tre -s group_statistics.csv</code></p>
+
+<p>Specify an output filename</p>
+
+<p><code>pan_genome_reorder_spreadsheet -t my_tree.tre -s group_statistics.csv -o reordered_spreadsheet.csv</code></p>
+
+<h2>
+<a id="merging-multifasta-alignments" class="anchor" href="#merging-multifasta-alignments" aria-hidden="true"><span class="octicon octicon-link"></span></a>Merging Multifasta alignments</h2>
+
+<p>There is a stand alone script to merge multifasta alignments of equal length together. Each file must contain the same number of sequences and they must already be in the correct order. Each sequence within a file should be the same length (e.g. an alignment).</p>
+
+<p>Merge a list of files</p>
+
+<p><code>merge_multifasta_alignments  multifasta_1.aln multifasta_2.aln multifasta_3.aln</code></p>
+
+<p>Provide an output file name</p>
+
+<p><code>merge_multifasta_alignments -o output.aln multifasta_1.aln multifasta_2.aln</code></p>
+
+<h2>
+<a id="alignment-of-core-genes" class="anchor" href="#alignment-of-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Alignment of core genes</h2>
+
+<p>An alignment of the core genes is automatically created if you use the '-e' option in the create_pan_genome script. You can also use this as a standalone script if you wish. You can create a multifasta alignment of the core genes using the script pan_genome_core_alignment. The input is the spreadsheet containing the presence and absence of genes (group_statistics.csv) and the location of the directory with the multifasta alignments for each gene (pan_genome_sequences). The output file contains one sequence for each isolate, with the genes concatenated in the order in which they are found in the de novo assemblies. A core gene is defined as one which is found exactly once in every isolate. It is planned to automatically run this at the end of the pan genome pipeline, but for the moment its a standalone script.</p>
+
+<p>When run from the directory where the pan genome exists, it should just work:</p>
+
+<p><code>pan_genome_core_alignment</code></p>
+
+<p>Specify the directory containing the multifastas (-m), the spreadsheet (-s) and an output file name (-o)</p>
+
+<p><code>pan_genome_core_alignment -m pan_genome_sequences -s group_statisics.csv -o output_alignment.aln</code></p>
+
+<p>Help message:</p>
+
+<p><code>pan_genome_core_alignment -h</code></p>
+
+<h2>
+<a id="software-availability" class="anchor" href="#software-availability" aria-hidden="true"><span class="octicon octicon-link"></span></a>Software Availability</h2>
+
+<p>All of the source code is available under GNU GPL 3 open source licence from:</p>
+
+<p><code>https://github.com/sanger-pathogens/assembly_improvement</code></p>
+
+<p><code>https://github.com/sanger-pathogens/Bio-PanGenome</code></p>
+
+<p><code>https://github.com/sanger-pathogens/Bio-AutomatedAnnotation</code></p>
+
+<p>The perl modules can also be installed from CPAN by running:</p>
+
+<p><code>cpanm Bio::PanGenome Bio::AutomatedAnnotation Bio::AssemblyImprovement</code></p>
+
+<h2>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
+
+<p><code>[cdhit] Fu, Limin and Niu, Beifang and Zhu, Zhengwei and Wu, Sitao and Li, Weizhong, CD-HIT: accelerated for clustering the next-generation sequencing data, Bioinformatics, 2012 volume 28, number 23, pages 3150-3152</code></p>
+
+<p><code>[uniprot] The UniProt Consortium, Update on activities at the Universal Protein Resource (UniProt) in 2013, Nucleic Acids Res. 41: D43-D47 (2013).</code></p>
+
+<p><code>[commonannotation] Common Gene Annotation Process, Broad Institute, WUGC, JCVI and Baylor, http://hmpdacc.org/doc/CommonGeneAnnotation_SOP.pdf 2011</code></p>
+
+<p><code>[ncbi_blast_plus] Camacho C, Madden T, Ma N, et al. BLAST Command Line Applications User Manual. 2008 Jun 23 [Updated 2013 Jul 30]. In: BLAST® Help [Internet]. Bethesda (MD): National Center for Biotechnology Information (US); 2008-. Available from: http://www.ncbi.nlm.nih.gov/books/NBK1763/</code></p>
+
+<p><code>[mcl] Enright A.J., Van Dongen S., Ouzounis C.A. An efficient algorithm for large-scale detection of protein families. Nucleic Acids Research 30(7):1575-1584 (2002).</code></p>
+
+<p><code>[gff3] http://www.sequenceontology.org/gff3.shtml</code></p>
+
+<p><code>[fasta_grep] https://github.com/sanger-pathogens/fasta_grep</code></p>
+
+<p><code>[revtrans] Rasmus Wernersson and Anders Gorm Pedersen, RevTrans - Constructing alignments of coding DNA from aligned amino acid sequences. Nucl. Acids Res., 2003, 31(13), 3537-3539.</code></p>
+
+<p><code>[prokka] Seemann T. Prokka: rapid prokaryotic genome annotation. Bioinformatics. 2014 Jul 15;30(14):2068-9. PMID:24642063</code></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Pan Genome Pipeline maintained by <a href="https://github.com/sanger-pathogens">sanger-pathogens</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
