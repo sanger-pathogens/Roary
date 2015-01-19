@@ -19,9 +19,9 @@ my $kraken_data = [
 
 ok(
 	my $qc_report_obj = Bio::PanGenome::QC::Report->new( 
-		fasta_assemblies => [],
-		outfile          => "kraken_report.csv",
-		_kraken_data     => $kraken_data
+		input_files  => [],
+		outfile      => "kraken_report.csv",
+		_kraken_data => $kraken_data
 	),
 	'QC report object created'
 );

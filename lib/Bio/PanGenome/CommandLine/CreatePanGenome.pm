@@ -12,7 +12,7 @@ use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome;
 use Bio::PanGenome::PrepareInputFiles;
-
+use Bio::PanGenome::QC::Report;
 
 has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'       => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -35,11 +35,12 @@ has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 )
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
+has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $help );
+    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -57,6 +58,7 @@ sub BUILD {
         'dont_create_rplots'        => \$dont_create_rplots,
         'verbose_stats'             => \$verbose_stats,
         't|translation_table=i'     => \$translation_table,
+        'qc|run_qc'                 => \$run_qc,
         'h|help'                    => \$help,
     );
     
@@ -79,6 +81,7 @@ sub BUILD {
     $self->dont_create_rplots($dont_create_rplots)           if (defined($dont_create_rplots) );
     $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
     $self->translation_table($translation_table)             if (defined($translation_table) );
+    $self->run_qc($run_qc) if ( defined( $run_qc ) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -99,13 +102,23 @@ sub run {
         die $self->usage_text;
     }
     
+    print STDERR "PrepareInputFiles\n";
     my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
       input_files           => $self->fasta_files,
       job_runner            => $self->job_runner,
       apply_unknowns_filter => $self->apply_unknowns_filter,
       translation_table     => $self->translation_table
     );
-    
+
+    if( $self->run_qc ){
+        print STDERR "QC Report\n";
+        my $qc_input_files = Bio::PanGenome::QC::Report->new(
+            input_files => $prepare_input_files->fasta_files
+        );
+        $qc_input_files->report;
+    }
+    return 1;
+
     my $pan_genome_obj = Bio::PanGenome->new(
         input_files             => $self->fasta_files,
         fasta_files             => $prepare_input_files->fasta_files,
