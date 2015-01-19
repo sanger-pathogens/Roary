@@ -10,6 +10,7 @@ use Moose;
 use File::Temp;
 use Cwd;
 use Bio::PanGenome::QC::ShredAssemblies;
+use Bio::PanGenome::QC::Kraken;
 
 has 'input_files'      => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'kraken_exec'      => ( is => 'ro', isa => 'Str',      default => 'kraken' );
