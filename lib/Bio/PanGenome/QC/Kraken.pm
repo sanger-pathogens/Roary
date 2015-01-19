@@ -62,7 +62,9 @@ sub _parse_kraken_report {
 		last if (defined $top_genus && defined $top_species);
 	}
 
+	$top_genus ||= "not_found"
 	$top_genus =~ s/^\s+//g;
+	$top_species ||= "not_found";
 	$top_species =~ s/^\s+//g;
 
 	return [ $top_genus, $top_species ];
@@ -73,7 +75,7 @@ sub _kraken_cmd {
 
 	return $self->kraken_exec . 
 	" --db " . $self->kraken_db . 
-	" --output $kraken_output $a";
+	" --output $kraken_output $a > /dev/null 2>&1";
 }
 
 sub _kraken_report_cmd {
