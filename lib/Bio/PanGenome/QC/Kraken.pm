@@ -7,8 +7,9 @@ package Bio::PanGenome::QC::Kraken;
 =cut
 
 use Moose;
-#use Bio::PanGenome::JobRunner::LSF;
+use Bio::PanGenome::JobRunner::LSF;
 use Data::Dumper;
+with 'Bio::PanGenome::JobRunner::Role';
 
 has 'assembly_directory' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'glob_search'        => ( is => 'ro', isa => 'Str',      default => '*.shred.fa' );
@@ -37,8 +38,12 @@ sub _top_kraken_hit {
 	$kraken_output =~ s/fa$/kraken/;
 	my $kraken_report = "$kraken_output.report";
 
-	system( $self->_kraken_cmd( $assembly, $kraken_output ) );
-	system( $self->_kraken_report_cmd( $kraken_output, $kraken_report ) );
+	my $job_runner_obj = $self->_job_runner_class->new( 
+		commands_to_run => [ $self->_kraken_cmd( $assembly, $kraken_output ), $self->_kraken_report_cmd( $kraken_output, $kraken_report ) ], 
+		memory_in_mb => $self->_memory_required_in_mb, 
+		queue => $self->_queue
+	);
+    $job_runner_obj->run();
 
 	# parse report
 	my ( $top_genus, $top_species ) = @{ $self->_parse_kraken_report($kraken_report) };
