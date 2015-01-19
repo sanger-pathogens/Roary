@@ -42,7 +42,8 @@ sub _build__tmp_directory {
 	my $temp_directory_obj = File::Temp->newdir(DIR => getcwd, CLEANUP => 1 );
 	my $tmp = $temp_directory_obj->dirname();
 
-	return $tmp;
+	#return $tmp;
+	return getcwd;
 }
 
 sub report {

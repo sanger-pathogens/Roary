@@ -37,7 +37,7 @@ sub shred {
 		# write to file
 		my $prefix = basename( $assembly, ".fa" );
 		my $outfile = $self->output_directory . "/$prefix.shred.fa";
-		open( OUTFH, '>',  $outfile ) or die "Couldn't open $outfile: $!";
+		open( OUTFH, '>',  $outfile ) or die "Couldn't write to $outfile: $!";
 		my $c = 1;
 		foreach my $r ( @reads ){
 			print OUTFH ">" . $prefix . "_$c\n";
