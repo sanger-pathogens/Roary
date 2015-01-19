@@ -113,7 +113,7 @@ sub run {
     if( $self->run_qc ){
         print STDERR "QC Report\n";
         my $qc_input_files = Bio::PanGenome::QC::Report->new(
-            input_files => $prepare_input_files->fasta_files
+            input_files => $self->fasta_files
         );
         $qc_input_files->report;
     }

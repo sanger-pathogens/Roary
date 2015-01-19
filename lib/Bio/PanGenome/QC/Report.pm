@@ -11,7 +11,7 @@ use File::Temp;
 use Cwd;
 use Bio::PanGenome::QC::ShredAssemblies;
 
-has 'input_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'input_files'      => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'kraken_exec'      => ( is => 'ro', isa => 'Str',      default => 'kraken' );
 has 'kraken_db'        => ( is => 'ro', isa => 'Str',      default => '' );
 has 'outfile'          => ( is => 'rw', isa => 'Str',      default => 'qc_report.csv' );
@@ -23,7 +23,7 @@ sub _build__kraken_data {
 	my $self = shift;
 
 	my $shredder = Bio::PanGenome::QC::ShredAssemblies->new(
-		assembly_files   => $self->input_files,
+		gff_files        => $self->input_files,
 		output_directory => $self->_tmp_directory
 	);
 	$shredder->shred or die ( "Failed to shred assembly data\n" );
