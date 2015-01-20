@@ -112,7 +112,7 @@ sub _extract_nucleotide_regions {
     $self->_create_bed_file_from_gff;
 
     my $cmd =
-        'bedtools getfasta -fi '
+        'bedtools getfasta -s -fi '
       . $self->_nucleotide_fasta_file_from_gff_filename
       . ' -bed '
       . $self->_bed_output_filename
@@ -147,16 +147,26 @@ sub _fastatranslate_filename {
     return join( '.', ( $self->output_filename, 'intermediate.translate.fa' ) );
 }
 
-sub _fastatranslate_cmd
+sub _fastatranslate
 {
-  my ($self) = @_;
-  return 'fastatranslate --geneticcode '.$self->translation_table.'  -f '. $self->_extracted_nucleotide_fasta_file_from_bed_filename.' >> '.$self->_fastatranslate_filename;
+  my ($self, $inputfile, $outputfile) = @_;
+  
+  my $input_fasta_file_obj    = Bio::SeqIO->new(-file => $inputfile, -format => 'Fasta' );
+  my $output_protein_file_obj = Bio::SeqIO->new(-file =>">".$outputfile,    -format => 'Fasta', -alphabet => 'protein' );
+
+  my %protein_sequence_objs;
+  while (my $seq = $input_fasta_file_obj->next_seq){
+    $seq->desc(undef);
+    my $protseq = $seq->translate(-codontable_id => $self->translation_table);
+    $output_protein_file_obj->write_seq($protseq);
+  }
+  return 1;
 }
 
 sub _convert_nucleotide_to_protein
 {
   my ($self) = @_;
-  system($self->_fastatranslate_cmd(1));
+  $self->_fastatranslate($self->_extracted_nucleotide_fasta_file_from_bed_filename,$self->_fastatranslate_filename);
   # Only keep sequences which have a start and stop codon.
   my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' > '.$self->_unfiltered_output_filename;
   unlink($self->_extracted_nucleotide_fasta_file_from_bed_filename);
@@ -194,8 +204,7 @@ sub _filter_fasta_sequences
     {
       next; 
     }
-    # strip out extra details put in by fastatranslate
-    $seq->description(undef);
+    $seq->desc(undef);
     $out_fasta_obj->write_seq($seq);
   }
   # Replace the original file.

@@ -25,7 +25,6 @@ Querying the data:
 
 Dependancies
 ============
-exonerate
 BedTools
 gsed
 RevTrans - http://www.cbs.dtu.dk/services/RevTrans/download.php
