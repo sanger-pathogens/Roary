@@ -166,11 +166,8 @@ sub _fastatranslate
 sub _convert_nucleotide_to_protein
 {
   my ($self) = @_;
-  $self->_fastatranslate($self->_extracted_nucleotide_fasta_file_from_bed_filename,$self->_fastatranslate_filename);
-  # Only keep sequences which have a start and stop codon.
-  my $cmd = 'fasta_grep -f '.$self->_fastatranslate_filename.' > '.$self->_unfiltered_output_filename;
+  $self->_fastatranslate($self->_extracted_nucleotide_fasta_file_from_bed_filename,$self->_unfiltered_output_filename);
   unlink($self->_extracted_nucleotide_fasta_file_from_bed_filename);
-  system($cmd);
 }
 
 
