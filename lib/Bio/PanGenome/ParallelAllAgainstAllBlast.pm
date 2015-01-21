@@ -99,13 +99,13 @@ sub _build__memory_required_in_mb
 {
   my ($self) = @_;
   my $filename = $self->fasta_file;
-  my $file_size = 1000;
+  my $file_size = 3000;
   if(-e $filename)
   {
     $file_size = -s $filename;
-    $file_size *=10;
+    $file_size *=12;
     $file_size = int($file_size/1000000);
-    $file_size = 100 if($file_size < 100);
+    $file_size = 3000 if($file_size < 3000);
   }
 
   return $file_size;
