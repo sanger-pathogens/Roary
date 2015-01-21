@@ -32,7 +32,7 @@ system('touch empty_file');
           '-h' =>
             [ 'empty_file', 't/data/empty_file' ],
 );
-mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files, [6,7,8,9] );
+mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
 cleanup_files();
 
 %scripts_and_expected_files = (

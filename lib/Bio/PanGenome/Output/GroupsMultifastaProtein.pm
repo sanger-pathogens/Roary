@@ -24,6 +24,7 @@ use Bio::PanGenome::AnalyseGroups;
 has 'nucleotide_fasta_file' => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'output_filename'       => ( is => 'ro', isa => 'Str',  lazy     => 1, builder => '_build_output_filename' );
 has '_suffix'               => ( is => 'ro', isa => 'Str',  default  => '.faa' );
+has 'translation_table'  => ( is => 'rw', isa => 'Int',      default => 11 );
 
 sub _build_output_filename
 {
@@ -42,7 +43,7 @@ sub _fastatranslate
 
   my %protein_sequence_objs;
   while (my $seq = $input_fasta_file_obj->next_seq){
-    $protein_sequence_objs{$seq->display_id} = $seq->translate(-codontable_id => 11 );
+    $protein_sequence_objs{$seq->display_id} = $seq->translate(-codontable_id => $self->translation_table );
   }
 
   for my $sequence_name ( sort keys %protein_sequence_objs)

@@ -70,6 +70,7 @@ sub run {
       
       my $multifasta_protein_obj = Bio::PanGenome::Output::GroupsMultifastaProtein->new(
           nucleotide_fasta_file => $fasta_file,
+          translation_table     => $self->translation_table
         );
       $multifasta_protein_obj->convert_nucleotide_to_protein();
       
