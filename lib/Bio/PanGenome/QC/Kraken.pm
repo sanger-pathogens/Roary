@@ -67,7 +67,7 @@ sub _parse_kraken_report {
 		last if (defined $top_genus && defined $top_species);
 	}
 
-	$top_genus ||= "not_found"
+	$top_genus ||= "not_found";
 	$top_genus =~ s/^\s+//g;
 	$top_species ||= "not_found";
 	$top_species =~ s/^\s+//g;
