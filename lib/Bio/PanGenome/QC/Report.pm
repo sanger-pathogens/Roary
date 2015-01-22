@@ -19,18 +19,21 @@ has 'outfile'          => ( is => 'rw', isa => 'Str',      default => 'qc_report
 has '_kraken_data'     => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 has '_header'          => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
 has '_tmp_directory'   => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
+has 'job_runner'       => ( is => 'rw', isa => 'Str',      default => 'LSF' );
 
 sub _build__kraken_data {
 	my $self = shift;
 
 	my $shredder = Bio::PanGenome::QC::ShredAssemblies->new(
 		gff_files        => $self->input_files,
-		output_directory => $self->_tmp_directory
+		output_directory => $self->_tmp_directory,
+		job_runner       => $self->job_runner
 	);
 	$shredder->shred or die ( "Failed to shred assembly data\n" );
 
 	my $kraken = Bio::PanGenome::QC::Kraken->new(
 		assembly_directory => $self->_tmp_directory,
+		job_runner         => $self->job_runner
 	);
 	return $kraken->top_hits;
 }
