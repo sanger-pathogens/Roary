@@ -80,7 +80,7 @@ sub _kraken_cmd {
 
 	return $self->kraken_exec . 
 	" --db " . $self->kraken_db . 
-	" --output $kraken_output $a > /dev/null 2>&1";
+	" --output $kraken_output $a 2> /dev/null";
 }
 
 sub _kraken_report_cmd {
