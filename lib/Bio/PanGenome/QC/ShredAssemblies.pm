@@ -26,17 +26,17 @@ sub _extract_nuc_fasta {
 	my ($self, $gff) = @_;
 
 	my $prefix = basename( $gff, ".gff" );
-	my $outfile = $self->output_directory . "$prefix.fna";
+	my $outfile = $self->output_directory . "/$prefix.fna";
 	my $cmd = "sed -n '/##FASTA/,//p' $gff | grep -v \'##FASTA\' > $outfile";
 
-	my $job_runner_obj = $self->_job_runner_class->new( 
-		commands_to_run => [ $cmd ], 
-		memory_in_mb => $self->_memory_required_in_mb, 
-		queue => $self->_queue
-	);
-    $job_runner_obj->run();
+	# my $job_runner_obj = $self->_job_runner_class->new( 
+	# 	commands_to_run => [ $cmd ], 
+	# 	memory_in_mb => $self->_memory_required_in_mb, 
+	# 	queue => $self->_queue
+	# );
+ 	# $job_runner_obj->run();
 
-	#system( $cmd );
+	system( $cmd );
 	return $outfile;
 }
 

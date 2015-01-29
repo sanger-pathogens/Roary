@@ -8,6 +8,7 @@ package Bio::PanGenome::QC::Kraken;
 
 use Moose;
 use Bio::PanGenome::JobRunner::LSF;
+use File::Basename;
 use Data::Dumper;
 with 'Bio::PanGenome::JobRunner::Role';
 
@@ -17,7 +18,7 @@ has 'kraken_exec'        => ( is => 'ro', isa => 'Str',      default => 'kraken'
 has 'kraken_report_exec' => ( is => 'ro', isa => 'Str',      default => 'kraken-report' );
 has 'kraken_db'          => ( is => 'ro', isa => 'Str',      default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
 has 'top_hits'           => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
-
+has 'kraken_memory'      => ( is => 'rw', isa => 'Int',      default => 2000 );
 
 sub _build_top_hits {
 	my $self = shift;
@@ -38,17 +39,26 @@ sub _top_kraken_hit {
 	$kraken_output =~ s/fa$/kraken/;
 	my $kraken_report = "$kraken_output.report";
 
-	my $job_runner_obj = $self->_job_runner_class->new( 
-		commands_to_run => [ $self->_kraken_cmd( $assembly, $kraken_output ), $self->_kraken_report_cmd( $kraken_output, $kraken_report ) ], 
-		memory_in_mb => $self->_memory_required_in_mb, 
+	my $kraken_runner_obj = $self->_job_runner_class->new( 
+		commands_to_run => [ $self->_kraken_cmd( $assembly, $kraken_output ) ], 
+		memory_in_mb => $self->kraken_memory, 
 		queue => $self->_queue
 	);
-    $job_runner_obj->run();
+    $kraken_runner_obj->run();
+
+    my $kraken_report_runner_obj = $self->_job_runner_class->new( 
+		commands_to_run => [ $self->_kraken_report_cmd( $kraken_output, $kraken_report ) ], 
+		memory_in_mb => $self->kraken_memory, 
+		queue => $self->_queue
+	);
+    $kraken_report_runner_obj->run();
 
 	# parse report
 	my ( $top_genus, $top_species ) = @{ $self->_parse_kraken_report($kraken_report) };
 
-	return [ $assembly, $top_genus, $top_species ];
+	my $assembly_id = basename( $assembly, '.shred.fa' );
+
+	return [ $assembly_id, $top_genus, $top_species ];
 }
 
 sub _parse_kraken_report {
@@ -78,17 +88,19 @@ sub _parse_kraken_report {
 sub _kraken_cmd {
 	my ( $self, $a, $kraken_output ) = @_;
 
-	return $self->kraken_exec . 
+	my $kcmd = $self->kraken_exec . 
 	" --db " . $self->kraken_db . 
-	" --output $kraken_output $a 2> /dev/null";
+	" --output $kraken_output $a";
+	return $kcmd;
 }
 
 sub _kraken_report_cmd {
 	my ( $self, $k, $report_output ) = @_;
 
-	return $self->kraken_report_exec .
+	my $krcmd = $self->kraken_report_exec .
 	" --db " . $self->kraken_db .
 	" $k > $report_output";
+	return $krcmd;
 }
 
 __PACKAGE__->meta->make_immutable;

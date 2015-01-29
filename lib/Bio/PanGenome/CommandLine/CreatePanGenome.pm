@@ -102,7 +102,6 @@ sub run {
         die $self->usage_text;
     }
     
-    print STDERR "PrepareInputFiles\n";
     my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
       input_files           => $self->fasta_files,
       job_runner            => $self->job_runner,
@@ -111,14 +110,12 @@ sub run {
     );
 
     if( $self->run_qc ){
-        print STDERR "QC Report\n";
         my $qc_input_files = Bio::PanGenome::QC::Report->new(
             input_files => $self->fasta_files,
             job_runner  => $self->job_runner
         );
         $qc_input_files->report;
     }
-    return 1;
 
     my $pan_genome_obj = Bio::PanGenome->new(
         input_files             => $self->fasta_files,

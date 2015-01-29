@@ -8,6 +8,7 @@ package Bio::PanGenome::QC::Report;
 
 use Moose;
 use File::Temp;
+use File::Path 'rmtree';
 use Cwd;
 use Bio::PanGenome::QC::ShredAssemblies;
 use Bio::PanGenome::QC::Kraken;
@@ -18,8 +19,10 @@ has 'kraken_db'        => ( is => 'ro', isa => 'Str',      default => '' );
 has 'outfile'          => ( is => 'rw', isa => 'Str',      default => 'qc_report.csv' );
 has '_kraken_data'     => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 has '_header'          => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
-has '_tmp_directory'   => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
 has 'job_runner'       => ( is => 'rw', isa => 'Str',      default => 'LSF' );
+
+has '_tmp_directory_obj' => ( is => 'rw', lazy_build => 1 );
+has '_tmp_directory'   =>   ( is => 'rw', lazy_build => 1, isa => 'Str', );
 
 sub _build__kraken_data {
 	my $self = shift;
@@ -42,12 +45,13 @@ sub _build__header {
 	return join( ',', ( 'Sample', 'Genus', 'Species' ) );
 }
 
-sub _build__tmp_directory {
-	my $temp_directory_obj = File::Temp->newdir(DIR => getcwd, CLEANUP => 1 );
-	my $tmp = $temp_directory_obj->dirname();
+sub _build__tmp_directory_obj {
+	return File::Temp->newdir(DIR => getcwd, CLEANUP => 1 ); 
+}
 
-	#return $tmp;
-	return getcwd;
+sub _build__tmp_directory {
+	my $self = shift;
+	return $self->_tmp_directory_obj->dirname();
 }
 
 sub report {

@@ -10,7 +10,7 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::QC::ShredAssembly');
+    use_ok('Bio::PanGenome::QC::ShredAssemblies');
 }
 
 my $temp_directory_obj = File::Temp->newdir(DIR => getcwd, CLEANUP => 1 );
@@ -18,8 +18,8 @@ my $tmp = $temp_directory_obj->dirname();
 
 my $shred_obj;
 ok(
-	$shred_obj = Bio::PanGenome::QC::ShredAssembly->new(
-		assembly_files   => ['t/data/shred1.fa', 't/data/shred2.fa'],
+	$shred_obj = Bio::PanGenome::QC::ShredAssemblies->new(
+		gff_files   => ['t/data/shred1.gff', 't/data/shred2.gff'],
 		read_size        => 10,
 		output_directory => $tmp
 	),
@@ -42,8 +42,8 @@ is(
 
 my $exp = [ "AAAAA", "TTTTT", "CCCCC", "GGGGG" ];
 ok(
-	$shred_obj = Bio::PanGenome::QC::ShredAssembly->new(
-		assembly_files   => ['t/data/shred1.fa', 't/data/shred2.fa'],
+	$shred_obj = Bio::PanGenome::QC::ShredAssemblies->new(
+		gff_files   => ['t/data/shred1.fa', 't/data/shred2.fa'],
 		read_size        => 5,
 		output_directory => $tmp
 	),
