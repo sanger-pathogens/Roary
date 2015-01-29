@@ -165,6 +165,9 @@ sub usage_text {
     # Include full annotation and inference in group statistics
     create_pan_genome --verbose_stats *.gff
 
+    # Generate QC report detailing top genus and species for each assembly
+    create_pan_genome -qc *.gff
+
     # This help message
     create_pan_genome -h
 
