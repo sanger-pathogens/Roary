@@ -56,6 +56,7 @@ sub run {
         memory_in_mb    => $self->_memory_required_in_mb,
         queue           => $self->_queue,
         dont_wait       => $self->dont_wait,
+        cpus            => $self->cpus 
     );
     $job_runner_obj->run();
 

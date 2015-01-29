@@ -39,7 +39,7 @@ has '_error_message'    => ( is => 'rw', isa => 'Str' );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $help );
+    my ( $fasta_files, $dont_create_rplots,$max_threads, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -103,6 +103,7 @@ sub run {
       input_files           => $self->fasta_files,
       job_runner            => $self->job_runner,
       apply_unknowns_filter => $self->apply_unknowns_filter,
+      cpus                  => $self->cpus,
       translation_table     => $self->translation_table
     );
     
@@ -111,6 +112,7 @@ sub run {
         fasta_files             => $prepare_input_files->fasta_files,
         output_filename         => $self->output_filename,
         job_runner              => $self->job_runner,
+        cpus                    => $self->cpus,
         makeblastdb_exec        => $self->makeblastdb_exec,
         blastp_exec             => $self->blastp_exec,
         output_multifasta_files => $self->output_multifasta_files,
@@ -153,6 +155,12 @@ sub usage_text {
 
     # Include full annotation and inference in group statistics
     create_pan_genome --verbose_stats *.gff
+    
+    # Run sequentially without LSF
+    create_pan_genome -j Local *.gff
+    
+    # Run locally with GNU parallel and 4 processors
+    create_pan_genome -j Parallel -p 4  *.gff
 
     # This help message
     create_pan_genome -h

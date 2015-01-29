@@ -124,7 +124,8 @@ sub _command_to_run {
             $dont_delete_files_flag,
             $dont_create_rplots_flag,
             $verbose_stats_flag,
-            '-j', $self->job_runner
+            '-j', $self->job_runner,
+            '--processors', $self->cpus
         )
     );
 }
@@ -139,6 +140,7 @@ sub run {
         memory_in_mb    => $self->_memory_required_in_mb,
         queue           => $self->_queue,
         dont_wait       => $self->dont_wait,
+        cpus            => $self->cpus 
     );
     $job_runner_obj->run();
 

@@ -21,6 +21,7 @@ has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'fasta_files'       => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename'   => ( is => 'rw', isa => 'Str', default => 'blast_results' );
 has 'job_runner'        => ( is => 'rw', isa => 'Str', default => 'LSF' );
+has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
 has 'makeblastdb_exec'  => ( is => 'rw', isa => 'Str', default => 'makeblastdb' );
 has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
 
@@ -29,7 +30,7 @@ has '_error_message' => ( is => 'rw', isa => 'Str' );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec, $blastp_exec, $help );
+    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec, $blastp_exec, $help, $cpus );
 
     GetOptionsFromArray(
         $self->args,
@@ -37,6 +38,7 @@ sub BUILD {
         'j|job_runner=s'       => \$job_runner,
         'm|makeblastdb_exec=s' => \$makeblastdb_exec,
         'b|blastp_exec=s'      => \$blastp_exec,
+        'p|processors=i'       => \$cpus,
         'h|help'               => \$help,
     );
     
@@ -49,6 +51,7 @@ sub BUILD {
     $self->job_runner($job_runner)             if ( defined($job_runner) );
     $self->makeblastdb_exec($makeblastdb_exec) if ( defined($makeblastdb_exec) );
     $self->blastp_exec($blastp_exec)           if ( defined($blastp_exec) );
+    $self->cpus($cpus)                         if ( defined($cpus) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -94,6 +97,7 @@ sub run {
         fasta_file       => $output_combined_filename,
         blast_results_file_name  => $self->output_filename,
         job_runner       => $self->job_runner,
+        cpus             => $self->cpus,
         makeblastdb_exec => $self->makeblastdb_exec,
         blastp_exec      => $self->blastp_exec
     );
@@ -112,6 +116,9 @@ sub usage_text {
     
     # Provide an output filename
     parallel_all_against_all_blastp -o blast_results example.faa
+    
+    # number of processors to use
+    parallel_all_against_all_blastp -p 10 example.faa
 
     # This help message
     parallel_all_against_all_blastp -h

@@ -28,6 +28,7 @@ has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',  default  => 'g
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'LSF' );
+has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
@@ -40,7 +41,7 @@ sub BUILD {
     my ( 
       $output_filename, $dont_create_rplots, $dont_delete_files, $output_pan_geneome_filename, 
       $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, 
-      $fasta_files, $input_files, $verbose_stats, $translation_table, $help 
+      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus
     );
 
 
@@ -57,6 +58,7 @@ sub BUILD {
         'dont_delete_files'       => \$dont_delete_files,
         'dont_create_rplots'      => \$dont_create_rplots,
         'verbose_stats'           => \$verbose_stats,
+        'processors=i'            => \$cpus,
         't|translation_table=i'   => \$translation_table,
         'h|help'                  => \$help,
     );
@@ -74,6 +76,7 @@ sub BUILD {
     $self->dont_create_rplots($dont_create_rplots)                   if (defined($dont_create_rplots) );
     $self->verbose_stats($verbose_stats)                             if (defined($verbose_stats));
     $self->translation_table($translation_table)                     if (defined($translation_table) );
+    $self->cpus($cpus)                                               if ( defined($cpus) );
   
 }
 
@@ -107,7 +110,8 @@ sub run {
        my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
          fasta_files         => $output_gene_files,
          job_runner          => $self->job_runner,
-         translation_table   => $self->translation_table
+         translation_table   => $self->translation_table,
+         cpus                => $self->cpus
        );
        $seg->run();
     }
@@ -151,6 +155,7 @@ sub usage_text {
       -c output_clusters_filename    
       -f file_of_proteins               
       -i file_of_gffs   
+      --processors number of processors
       --verbose_stats          
 
     # This help message
