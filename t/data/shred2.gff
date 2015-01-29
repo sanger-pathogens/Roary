@@ -1,0 +1,9 @@
+##gff-version 3
+##sequence-region shredA 1 40
+##sequence-region shredB 1 40
+shredA	Prodigal:2.60	CDS	179	1471	.	-	0	ID=11983_1#21_00001;eC_number=2.7.13.3;gene=regB;inference=ab initio prediction:Prodigal:2.60,similar to AA sequence:RefSeq:YP_005150533.1,similar to AA sequence:UniProtKB:Q3J6C1,protein motif:CLUSTERS:PRK11360,protein motif:Cdd:COG4191,protein motif:TIGRFAMs:TIGR02966,protein motif:Pfam:PF02518.20;locus_tag=11983_1#21_00001;product=integral membrane sensor signal transduction histidine kinase,Sensor histidine kinase regB,sensory histidine kinase AtoS,Signal transduction histidine kinase regulating C4-dicarboxylate transport system,phosphate regulon sensor kinase PhoR,Histidine kinase-%2C DNA gyrase B-%2C and HSP90-like ATPase;protein_id=gnl|SC|11983_1#21_00001
+##FASTA
+>shredA
+AAAAAAAAAAGGGGGGGGGGTTTTTTTTTTCCCCCCCCCC
+>shredB
+AAAAAAAAAACCCCCCCCCCTTTTTTTTTTGGGGGGGGGG
