@@ -22,15 +22,20 @@ my %scripts_and_expected_files;
 system('touch empty_file');
 
 %scripts_and_expected_files = (
-       ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
-       [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
+      ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-          [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
-          
-          ' -t 1 -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-              [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],         
-          '-h' =>
-            [ 'empty_file', 't/data/empty_file' ],
+        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
+      ' -t 1 -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
+      ' -j Parallel  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
+      ' -j Parallel --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
+      ' -t 1 -j Parallel --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
+      '-h' =>
+        [ 'empty_file', 't/data/empty_file' ],
 );
 mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
 cleanup_files();

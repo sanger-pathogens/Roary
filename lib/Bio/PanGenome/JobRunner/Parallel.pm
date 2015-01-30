@@ -22,13 +22,12 @@ use File::Temp qw/ tempfile /;
 has 'commands_to_run' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'cpus'            => ( is => 'ro', isa => 'Int',      default => 1 );
 
-
 sub run {
     my ($self) = @_;
     my ($fh, $filename) = tempfile();
-    write_file( $fh, @{ $self->commands_to_run } ) ;
+    write_file( $fh, join("\n", @{ $self->commands_to_run }) ) ;
   
-    my $parallel_command = "parallel -j ".$self->cpus." -a $filename";
+    my $parallel_command = "parallel --no-notice  -j ".$self->cpus." -a $filename";
     system($parallel_command);
     1;
 }
