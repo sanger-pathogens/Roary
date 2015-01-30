@@ -33,6 +33,7 @@ has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 
 
 sub BUILD {
@@ -41,7 +42,7 @@ sub BUILD {
     my ( 
       $output_filename, $dont_create_rplots, $dont_delete_files, $output_pan_geneome_filename, 
       $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, 
-      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus
+      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit
     );
 
 
@@ -60,6 +61,7 @@ sub BUILD {
         'verbose_stats'           => \$verbose_stats,
         'processors=i'            => \$cpus,
         't|translation_table=i'   => \$translation_table,
+        'group_limit=i'           => \$group_limit,
         'h|help'                  => \$help,
     );
     
@@ -77,6 +79,7 @@ sub BUILD {
     $self->verbose_stats($verbose_stats)                             if (defined($verbose_stats));
     $self->translation_table($translation_table)                     if (defined($translation_table) );
     $self->cpus($cpus)                                               if ( defined($cpus) );
+    $self->group_limit($group_limit)                                 if ( defined($group_limit) );
   
 }
 
@@ -100,6 +103,7 @@ sub run {
       dont_delete_files               =>  $self->dont_delete_files,
       dont_create_rplots              =>  $self->dont_create_rplots,
       verbose_stats                   =>  $self->verbose_stats,
+      group_limit                     =>  $self->group_limit,
       );                                                             
     $obj->run();
     

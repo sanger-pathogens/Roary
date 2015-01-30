@@ -29,7 +29,8 @@ has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  =
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 
 has '_output_mcl_filename'               => ( is => 'ro', isa => 'Str', default  => '_uninflated_mcl_groups' );
 has '_output_inflate_clusters_filename'  => ( is => 'ro', isa => 'Str', default  => '_inflated_mcl_groups' );
@@ -151,7 +152,8 @@ sub _build__groups_multifastas_nuc_obj
   return Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
       gff_files       => $self->input_files,
       annotate_groups => $self->_annotate_groups_obj,
-      group_names     => $self->_analyse_groups_obj->_groups
+      group_names     => $self->_analyse_groups_obj->_groups,
+      group_limit     => $self->group_limit
     );
 }
 

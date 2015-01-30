@@ -21,7 +21,7 @@ has 'commands_to_run' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 sub run {
     my ($self) = @_;
 
-    for my $command_to_run ( @{ $self->commands_to_run } ) {
+    for my $command_to_run ( @{ $self->commands_to_run } ) {  
         system($command_to_run );
     }
     1;

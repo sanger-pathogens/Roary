@@ -29,7 +29,7 @@ has 'annotate_groups' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', 
 has 'output_directory' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_directory');
 
 has '_number_of_groups' => ( is => 'rw', isa => 'Num', lazy_build => 1 );
-has '_group_limit'      => ( is => 'rw', isa => 'Num', default => 50000 );
+has 'group_limit'      => ( is => 'rw', isa => 'Num', default => 50000 );
 
 sub _build_output_directory
 {
@@ -48,9 +48,9 @@ sub create_files {
     my ($self) = @_;
 
     my $num_groups = $self->_number_of_groups;
-    my $limit      = $self->_group_limit;
+    my $limit      = $self->group_limit;
     if ( $num_groups > $limit ){
-      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created.\n";
+      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created. Please check the spreadsheet for contamination from different species.\n";
       return 1;
     }
 

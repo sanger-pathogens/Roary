@@ -41,7 +41,8 @@ has 'perc_identity'               => ( is => 'ro', isa => 'Num',      default  =
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'translation_table'           => ( is => 'rw', isa => 'Int',      default => 11 );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',      default  => 11 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -120,7 +121,8 @@ sub run {
         dont_delete_files           => $self->dont_delete_files,
         dont_create_rplots          => $self->dont_create_rplots,
         verbose_stats               => $self->verbose_stats,
-        translation_table           => $self->translation_table
+        translation_table           => $self->translation_table,
+        group_limit                 => $self->group_limit,
     );
     $post_analysis->run();
 

@@ -56,7 +56,7 @@ ok(
         group_names     => [ 'group_2', 'group_5' ],
         gff_files       => $gff_files,
         annotate_groups => $annotate_groups,
-        _group_limit    => 4
+        group_limit    => 4
     ),
     'initialise creating multiple fastas'
 );
