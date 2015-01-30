@@ -60,7 +60,7 @@ ok(
     ),
     'initialise creating multiple fastas'
 );
-my $exp_stderr = "Number of clusters (8) exceeds limit (4). Multifastas not created.\n";
+my $exp_stderr = "Number of clusters (8) exceeds limit (4). Multifastas not created. Please check the spreadsheet for contamination from different species.\n";
 stderr_is { $obj->create_files() } $exp_stderr, 'multifasta creation fails when group limit exceeded';
 
 done_testing();

@@ -29,7 +29,7 @@ has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  =
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 
 has '_output_mcl_filename'               => ( is => 'ro', isa => 'Str', default  => '_uninflated_mcl_groups' );
