@@ -27,7 +27,7 @@ sub run {
     my ($fh, $filename) = tempfile();
     write_file( $fh, join("\n", @{ $self->commands_to_run }) ) ;
   
-    my $parallel_command = "parallel --no-notice  -j ".$self->cpus." -a $filename";
+    my $parallel_command = "cat $filename | parallel -j ".$self->cpus;
     system($parallel_command);
     1;
 }
