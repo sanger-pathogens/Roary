@@ -12,7 +12,7 @@ use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome;
 use Bio::PanGenome::PrepareInputFiles;
-
+use Bio::PanGenome::QC::Report;
 
 has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'       => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -36,11 +36,12 @@ has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
+has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $create_rplots,$group_limit, $max_threads, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $help );
+    my ( $fasta_files, $create_rplots,$group_limit, $max_threads, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -59,6 +60,7 @@ sub BUILD {
         'verbose_stats'             => \$verbose_stats,
         't|translation_table=i'     => \$translation_table,
         'group_limit=i'             => \$group_limit,
+        'qc|run_qc'                 => \$run_qc,
         'h|help'                    => \$help,
     );
     
@@ -82,6 +84,7 @@ sub BUILD {
     $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
     $self->translation_table($translation_table)             if (defined($translation_table) );
     $self->group_limit($group_limit)                         if ( defined($group_limit) );
+    $self->run_qc($run_qc) if ( defined( $run_qc ) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -109,7 +112,15 @@ sub run {
       cpus                  => $self->cpus,
       translation_table     => $self->translation_table
     );
-    
+
+    if( $self->run_qc ){
+        my $qc_input_files = Bio::PanGenome::QC::Report->new(
+            input_files => $self->fasta_files,
+            job_runner  => $self->job_runner
+        );
+        $qc_input_files->report;
+    }
+
     my $pan_genome_obj = Bio::PanGenome->new(
         input_files             => $self->fasta_files,
         fasta_files             => $prepare_input_files->fasta_files,
@@ -169,6 +180,9 @@ sub usage_text {
     # Increase the groups/clusters limit (default 50,000). If you need to change this your
     # probably trying to work data from more than one species (which this script wasnt designed for).
     create_pan_genome --group_limit 60000  *.gff
+
+    # Generate QC report detailing top genus and species for each assembly
+    create_pan_genome -qc *.gff
 
     # This help message
     create_pan_genome -h
