@@ -108,7 +108,7 @@ sub mock_execute_script_and_check_output_sorted {
     # Restore stdout.
     open STDOUT, '>&OLDOUT' or die "Can't restore stdout: $!";
     open STDERR, '>&OLDERR' or die "Can't restore stderr: $!";
-
+    
     # Avoid leaks by closing the independent copies.
     close OLDOUT or die "Can't close OLDOUT: $!";
     close OLDERR or die "Can't close OLDERR: $!";

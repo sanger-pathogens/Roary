@@ -73,7 +73,6 @@ sub merge_files {
             );
             $self->_output_seqio_obj->write_seq($merged_seq_obj);
         }
-        exit;
     }
     return 1;
 }
