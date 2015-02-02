@@ -13,7 +13,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::PostAnalysis;
 use File::Find::Rule;
 use Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
-
+use File::Path qw(remove_tree);
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'                 => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -106,18 +106,20 @@ sub run {
       group_limit                     =>  $self->group_limit,
       );                                                             
     $obj->run();
-    
-    
-    if($self->output_multifasta_files == 1)
+
+    my $output_gene_files = $self->_find_input_files;
+    my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
+      fasta_files         => $output_gene_files,
+      job_runner          => $self->job_runner,
+      translation_table   => $self->translation_table,
+      cpus                => $self->cpus
+    );
+    $seg->run();
+     
+    # Cleanup intermediate multifasta files
+    if($self->output_multifasta_files == 0)
     {
-       my $output_gene_files = $self->_find_input_files;
-       my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
-         fasta_files         => $output_gene_files,
-         job_runner          => $self->job_runner,
-         translation_table   => $self->translation_table,
-         cpus                => $self->cpus
-       );
-       $seg->run();
+      remove_tree('pan_genome_sequences');
     }
 }
 

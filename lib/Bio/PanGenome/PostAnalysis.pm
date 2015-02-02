@@ -64,10 +64,7 @@ sub run {
     system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
     $self->_create_embl_files;
     
-    if($self->output_multifasta_files == 1)
-    {
-      $self->_groups_multifastas_nuc_obj->create_files();
-    }
+    $self->_groups_multifastas_nuc_obj->create_files();
 
     $self->_delete_intermediate_files;
 }
@@ -150,6 +147,7 @@ sub _build__groups_multifastas_nuc_obj
 {
   my ($self) = @_;
   return Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+      output_multifasta_files  => $self->output_multifasta_files,
       gff_files       => $self->input_files,
       annotate_groups => $self->_annotate_groups_obj,
       group_names     => $self->_analyse_groups_obj->_groups,
