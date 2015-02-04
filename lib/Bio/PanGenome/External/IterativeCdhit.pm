@@ -61,7 +61,7 @@ sub _command_to_run {
         ' ',
         (
             $self->exec,                     '-c', $self->output_cd_hit_filename, '-m',
-            $self->output_combined_filename, '-n', $self->number_of_input_files,  '-f',
+            $self->output_combined_filename, '-n', $self->number_of_input_files, '--cpus', $self->cpus, '-f',
             $self->output_filtered_clustered_fasta
         )
     );
