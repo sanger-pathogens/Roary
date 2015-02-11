@@ -32,6 +32,7 @@ has 'output_filename'             => ( is => 'rw', isa => 'Str',      default  =
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  => 'pan_genome.fa' );
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'group_statisics.csv' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',      default  => 'LSF' );
+has 'cpus'                        => ( is => 'ro', isa => 'Int',      default => 1 );
 has 'makeblastdb_exec'            => ( is => 'rw', isa => 'Str',      default  => 'makeblastdb' );
 has 'blastp_exec'                 => ( is => 'rw', isa => 'Str',      default  => 'blastp' );
 has 'mcxdeblast_exec'             => ( is => 'ro', isa => 'Str',      default  => 'mcxdeblast' );
@@ -40,7 +41,8 @@ has 'perc_identity'               => ( is => 'ro', isa => 'Num',      default  =
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'translation_table'           => ( is => 'rw', isa => 'Int',      default => 11 );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',      default  => 11 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -71,6 +73,7 @@ sub run {
       number_of_input_files            => $number_of_input_files, 
       output_filtered_clustered_fasta  => $output_filtered_clustered_fasta,
       job_runner                       => $self->job_runner,
+      cpus                             => $self->cpus
     );
     
     $iterative_cdhit->run();
@@ -79,6 +82,7 @@ sub run {
         fasta_file              => $output_cd_hit_filename,
         blast_results_file_name => $output_blast_results_filename,
         job_runner              => $self->job_runner,
+        cpus                    => $self->cpus,
         makeblastdb_exec        => $self->makeblastdb_exec,
         blastp_exec             => $self->blastp_exec,
         perc_identity           => $self->perc_identity
@@ -95,6 +99,7 @@ sub run {
         mcxdeblast_exec => $self->mcxdeblast_exec,
         mcl_exec        => $self->mcl_exec,
         job_runner      => $self->job_runner,
+        cpus            => $self->cpus,
         output_file     => $output_mcl_filename
     );
     $mcl->run();
@@ -104,6 +109,7 @@ sub run {
 
     my $post_analysis = Bio::PanGenome::External::PostAnalysis->new(
         job_runner                  => $self->job_runner,
+        cpus                        => $self->cpus,
         fasta_files                 => $self->fasta_files,
         input_files                 => $self->input_files,
         output_filename             => $self->output_filename,
@@ -115,7 +121,8 @@ sub run {
         dont_delete_files           => $self->dont_delete_files,
         dont_create_rplots          => $self->dont_create_rplots,
         verbose_stats               => $self->verbose_stats,
-        translation_table           => $self->translation_table
+        translation_table           => $self->translation_table,
+        group_limit                 => $self->group_limit,
     );
     $post_analysis->run();
 

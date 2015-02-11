@@ -40,7 +40,7 @@ sub _build__memory_required_in_mb {
 sub _command_to_run {
     my ( $self, $fasta_file, $output_file ) = @_;
     return
-      join( " ", ( $self->exec, '-in', $fasta_file, '-out', $output_file, '-quiet', '-maxhours', 7, '> /dev/null 2>&1') );
+      join( " ", ( $self->exec, '-in', $fasta_file, '-out', $output_file, '-quiet', '-maxhours', 1, '> /dev/null 2>&1') );
 }
 
 sub run {
@@ -56,6 +56,7 @@ sub run {
         memory_in_mb    => $self->_memory_required_in_mb,
         queue           => $self->_queue,
         dont_wait       => $self->dont_wait,
+        cpus            => $self->cpus 
     );
     $job_runner_obj->run();
 

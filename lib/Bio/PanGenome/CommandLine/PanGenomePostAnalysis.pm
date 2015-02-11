@@ -13,7 +13,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::PostAnalysis;
 use File::Find::Rule;
 use Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
-
+use File::Path qw(remove_tree);
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'                 => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -28,10 +28,12 @@ has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',  default  => 'g
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'LSF' );
+has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 
 
 sub BUILD {
@@ -40,7 +42,7 @@ sub BUILD {
     my ( 
       $output_filename, $dont_create_rplots, $dont_delete_files, $output_pan_geneome_filename, 
       $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, 
-      $fasta_files, $input_files, $verbose_stats, $translation_table, $help 
+      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit
     );
 
 
@@ -57,7 +59,9 @@ sub BUILD {
         'dont_delete_files'       => \$dont_delete_files,
         'dont_create_rplots'      => \$dont_create_rplots,
         'verbose_stats'           => \$verbose_stats,
+        'processors=i'            => \$cpus,
         't|translation_table=i'   => \$translation_table,
+        'group_limit=i'           => \$group_limit,
         'h|help'                  => \$help,
     );
     
@@ -74,6 +78,8 @@ sub BUILD {
     $self->dont_create_rplots($dont_create_rplots)                   if (defined($dont_create_rplots) );
     $self->verbose_stats($verbose_stats)                             if (defined($verbose_stats));
     $self->translation_table($translation_table)                     if (defined($translation_table) );
+    $self->cpus($cpus)                                               if ( defined($cpus) );
+    $self->group_limit($group_limit)                                 if ( defined($group_limit) );
   
 }
 
@@ -97,19 +103,23 @@ sub run {
       dont_delete_files               =>  $self->dont_delete_files,
       dont_create_rplots              =>  $self->dont_create_rplots,
       verbose_stats                   =>  $self->verbose_stats,
+      group_limit                     =>  $self->group_limit,
       );                                                             
     $obj->run();
-    
-    
-    if($self->output_multifasta_files == 1)
+
+    my $output_gene_files = $self->_find_input_files;
+    my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
+      fasta_files         => $output_gene_files,
+      job_runner          => $self->job_runner,
+      translation_table   => $self->translation_table,
+      cpus                => $self->cpus
+    );
+    $seg->run();
+     
+    # Cleanup intermediate multifasta files
+    if($self->output_multifasta_files == 0)
     {
-       my $output_gene_files = $self->_find_input_files;
-       my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
-         fasta_files         => $output_gene_files,
-         job_runner          => $self->job_runner,
-         translation_table   => $self->translation_table
-       );
-       $seg->run();
+      remove_tree('pan_genome_sequences');
     }
 }
 
@@ -151,6 +161,7 @@ sub usage_text {
       -c output_clusters_filename    
       -f file_of_proteins               
       -i file_of_gffs   
+      --processors number of processors
       --verbose_stats          
 
     # This help message
