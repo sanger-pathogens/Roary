@@ -105,8 +105,7 @@ sub _build__groups_to_files {
         }
         $groups_to_files{$group} = \%filenames;
     }
-    #print "GROUPS TO FILES: ";
-    #print Dumper \%groups_to_files;
+    
     return \%groups_to_files;
 }
 

@@ -100,17 +100,12 @@ sub _build__ids_to_gene_names {
     for my $filename ( @{ $self->_filtered_gff_files } ) {
         my $gene_names_from_gff = Bio::PanGenome::GeneNamesFromGFF->new( gff_file => $filename );
         my %id_to_gene_lookup = %{ $gene_names_from_gff->ids_to_gene_name };
-        print "GeneNamesFromGFF: ";
-        print Dumper \%id_to_gene_lookup;
         @ids_to_gene_names{ keys %id_to_gene_lookup } = values %id_to_gene_lookup;
 
         my %id_to_product_lookup = %{ $gene_names_from_gff->ids_to_product };
         @ids_to_product{ keys %id_to_product_lookup } = values %id_to_product_lookup;
     }
     $self->_ids_to_product( \%ids_to_product );
-
-    print "IDS TO GENE NAMES : ";
-    print Dumper \%ids_to_gene_names;
 
     return \%ids_to_gene_names;
 }
@@ -180,8 +175,7 @@ sub _builder__groups_to_id_names {
             $groups_to_id_names{$group_name} = \@elements;
         }
     }
-    print "GROUPS TO ID NAMES: ";
-    print Dumper \%groups_to_id_names;
+    
     return \%groups_to_id_names;
 }
 
