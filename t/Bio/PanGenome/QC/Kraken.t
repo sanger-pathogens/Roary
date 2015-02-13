@@ -12,7 +12,8 @@ BEGIN {
 ok(
 	my $kraken_obj = Bio::PanGenome::QC::Kraken->new( 
 		assembly_directory => "t/data/kraken",
-		glob_search        => "*.test.fa"
+		glob_search        => "*.test.fa",
+		job_runner         => "Local"
 	),
 	'kraken object created'
 );

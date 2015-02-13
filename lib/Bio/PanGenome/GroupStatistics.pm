@@ -23,6 +23,8 @@ use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::AnnotateGroups;
 
+use Data::Dumper;
+
 has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
 has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'group_statitics.csv' );
@@ -103,6 +105,8 @@ sub _build__groups_to_files {
         }
         $groups_to_files{$group} = \%filenames;
     }
+    #print "GROUPS TO FILES: ";
+    #print Dumper \%groups_to_files;
     return \%groups_to_files;
 }
 

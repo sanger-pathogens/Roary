@@ -19,6 +19,8 @@ Take in a group file and assosiated GFF files for the isolates and update the gr
 use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::GeneNamesFromGFF;
+use Data::Dumper;
+use Array::Utils qw(array_minus);
 
 use File::Grep qw(fgrep);
 
@@ -98,12 +100,17 @@ sub _build__ids_to_gene_names {
     for my $filename ( @{ $self->_filtered_gff_files } ) {
         my $gene_names_from_gff = Bio::PanGenome::GeneNamesFromGFF->new( gff_file => $filename );
         my %id_to_gene_lookup = %{ $gene_names_from_gff->ids_to_gene_name };
+        print "GeneNamesFromGFF: ";
+        print Dumper \%id_to_gene_lookup;
         @ids_to_gene_names{ keys %id_to_gene_lookup } = values %id_to_gene_lookup;
 
         my %id_to_product_lookup = %{ $gene_names_from_gff->ids_to_product };
         @ids_to_product{ keys %id_to_product_lookup } = values %id_to_product_lookup;
     }
     $self->_ids_to_product( \%ids_to_product );
+
+    print "IDS TO GENE NAMES : ";
+    print Dumper \%ids_to_gene_names;
 
     return \%ids_to_gene_names;
 }
@@ -173,6 +180,8 @@ sub _builder__groups_to_id_names {
             $groups_to_id_names{$group_name} = \@elements;
         }
     }
+    print "GROUPS TO ID NAMES: ";
+    print Dumper \%groups_to_id_names;
     return \%groups_to_id_names;
 }
 
@@ -258,8 +267,7 @@ sub _split_groups {
 sub _remove_ids_from_group {
     my ( $self, $ids_to_remove, $group ) = @_;
 
-    my @remaining_ids =
-      grep { not $_ ~~ @{$ids_to_remove} } @{ $self->_groups_to_id_names->{$group} };
+    my @remaining_ids = array_minus( @{ $self->_groups_to_id_names->{$group} }, @{ $ids_to_remove } );
     $self->_groups_to_id_names->{$group} = \@remaining_ids;
     if ( @{ $self->_groups_to_id_names->{$group} } == 0 ) {
         delete( $self->_groups_to_id_names->{$group} );

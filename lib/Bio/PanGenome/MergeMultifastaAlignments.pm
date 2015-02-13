@@ -18,6 +18,7 @@ sequences are in the correct order.
 
 use Moose;
 use Bio::SeqIO;
+use Data::Dumper;
 
 has 'multifasta_files'  => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
 has 'output_filename'   => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
@@ -51,6 +52,7 @@ sub merge_files {
     my $reached_eof = 0;
 
     while ( $reached_eof == 0 ) {
+        last unless ( scalar @{ $self->_input_seqio_objs} > 0 );
         my $merged_sequence = '';
         my $first_name;
         for my $input_seq_io ( @{ $self->_input_seqio_objs } ) {

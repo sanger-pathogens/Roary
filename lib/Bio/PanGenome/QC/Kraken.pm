@@ -7,7 +7,6 @@ package Bio::PanGenome::QC::Kraken;
 =cut
 
 use Moose;
-use Bio::PanGenome::JobRunner::LSF;
 use File::Basename;
 use Data::Dumper;
 with 'Bio::PanGenome::JobRunner::Role';

@@ -68,7 +68,7 @@ sub run {
       $self->_groups_multifastas_nuc_obj->create_files();
     }
 
-    $self->_delete_intermediate_files;
+    #$self->_delete_intermediate_files;
 }
 
 sub _build__number_of_groups_obj
