@@ -27,10 +27,11 @@ has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' )
 has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter'       => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
-has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 );
-has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default  => 98 );
-has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default => 98 );
+has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 
@@ -40,7 +41,7 @@ has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $help );
+    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -56,6 +57,7 @@ sub BUILD {
         'i|perc_identity=i'         => \$perc_identity,
         'dont_delete_files'         => \$dont_delete_files,
         'dont_create_rplots'        => \$dont_create_rplots,
+        'dont_split_groups'         => \$dont_split_groups,
         'verbose_stats'             => \$verbose_stats,
         't|translation_table=i'     => \$translation_table,
         'qc|run_qc'                 => \$run_qc,
@@ -78,9 +80,10 @@ sub BUILD {
     $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
     $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
     $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
-    $self->dont_create_rplots($dont_create_rplots)           if (defined($dont_create_rplots) );
+    $self->dont_create_rplots($dont_create_rplots)           if ( defined($dont_create_rplots) );
+    $self->dont_split_groups($dont_split_groups)             if ( defined($dont_split_groups) );
     $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
-    $self->translation_table($translation_table)             if (defined($translation_table) );
+    $self->translation_table($translation_table)             if ( defined($translation_table) );
     $self->run_qc($run_qc) if ( defined( $run_qc ) );
 
     for my $filename ( @{ $self->args } ) {
@@ -128,6 +131,7 @@ sub run {
         perc_identity           => $self->perc_identity,
         dont_delete_files       => $self->dont_delete_files,
         dont_create_rplots      => $self->dont_create_rplots,
+        dont_split_groups       => $self->dont_split_groups,
         verbose_stats           => $self->verbose_stats,
         translation_table       => $self->translation_table
       );

@@ -19,6 +19,7 @@ use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::Output::NumberOfGroups;
 use Bio::PanGenome::OrderGenes;
 use Bio::PanGenome::Output::EmblGroups;
+use Bio::PanGenome::SplitGroups;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -29,9 +30,11 @@ has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  =
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'dont_split_groups'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has '_output_mcl_filename'               => ( is => 'ro', isa => 'Str', default  => '_uninflated_mcl_groups' );
+has '_output_inflate_unsplit_clusters_filename'  => ( is => 'ro', isa => 'Str', default  => '_inflated_unsplit_mcl_groups' );
 has '_output_inflate_clusters_filename'  => ( is => 'ro', isa => 'Str', default  => '_inflated_mcl_groups' );
 has '_output_group_labels_filename'      => ( is => 'ro', isa => 'Str', default  => '_labeled_mcl_groups' );
 has '_output_combined_filename'          => ( is => 'ro', isa => 'Str', default  => '_combined_files' );
@@ -49,6 +52,7 @@ has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::PanGenome::OrderGenes
 has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
 has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
 has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
+has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::PanGenome::SplitGroups', lazy_build => 1 );
 
 has 'verbose_stats' => ( is => 'rw', isa => 'Bool', default => 0 ); 
 
@@ -56,6 +60,10 @@ sub run {
     my ($self) = @_;
 
     $self->_inflate_clusters_obj->inflate();
+
+    ## SPLIT GROUPS WITH PARALOGS ##
+    $self->_split_groups_obj->split_groups unless ( $self->dont_split_groups );
+
     $self->_group_labels_obj->add_labels();
     $self->_annotate_groups_obj->reannotate;
     $self->_group_statistics_obj->create_spreadsheet;
@@ -69,6 +77,17 @@ sub run {
     }
 
     $self->_delete_intermediate_files;
+}
+
+sub _build__split_groups_obj {
+  my ( $self ) = @_;
+  return Bio::PanGenome::SplitGroups->new(
+    groupfile   => $self->_output_inflate_unsplit_clusters_filename,
+    gff_files   => $self->input_files,
+    fasta_files => $self->fasta_files,
+    outfile     => $self->_output_inflate_clusters_filename,
+    dont_delete => $self->dont_delete_files
+  );
 }
 
 sub _build__number_of_groups_obj
@@ -140,7 +159,7 @@ sub _build__inflate_clusters_obj
       clusters_filename     => $self->clusters_filename,
       cdhit_groups_filename => $self->_input_cd_hit_groups_file,
       mcl_filename          => $self->_output_mcl_filename,
-      output_file           => $self->_output_inflate_clusters_filename
+      output_file           => $self->_output_inflate_unsplit_clusters_filename
   );
 }
 

@@ -22,12 +22,12 @@ my %scripts_and_expected_files;
 system('touch empty_file');
 
 %scripts_and_expected_files = (
-       ' -j Local  --dont_create_rplots t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+       ' -j Local  --dont_create_rplots --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
-      ' -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+      ' -j Local --dont_create_rplots --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
           [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
           
-          ' -t 1 -j Local --dont_create_rplots  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+          ' -t 1 -j Local --dont_create_rplots --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
               [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],         
           '-h' =>
             [ 'empty_file', 't/data/empty_file' ],
@@ -36,7 +36,7 @@ mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files
 cleanup_files();
 
 %scripts_and_expected_files = (
-  ' -j Local --dont_create_rplots --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+  ' -j Local --dont_create_rplots --dont_split_groups --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
     [ 'pan_genome_sequences/sopB.fa.aln', 't/data/sopB.fa.aln' ],
 );
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

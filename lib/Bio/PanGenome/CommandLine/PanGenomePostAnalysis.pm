@@ -30,6 +30,7 @@ has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'LSF' );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 
@@ -38,7 +39,7 @@ sub BUILD {
     my ($self) = @_;
 
     my ( 
-      $output_filename, $dont_create_rplots, $dont_delete_files, $output_pan_geneome_filename, 
+      $output_filename, $dont_create_rplots, $dont_delete_files, $dont_split_groups, $output_pan_geneome_filename, 
       $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, 
       $fasta_files, $input_files, $verbose_stats, $translation_table, $help 
     );
@@ -56,24 +57,26 @@ sub BUILD {
         'i=s'                     => \$input_files,
         'dont_delete_files'       => \$dont_delete_files,
         'dont_create_rplots'      => \$dont_create_rplots,
+        'dont_split_groups'       => \$dont_split_groups,
         'verbose_stats'           => \$verbose_stats,
         't|translation_table=i'   => \$translation_table,
         'h|help'                  => \$help,
     );
     
     $self->help($help) if(defined($help));
-    $self->job_runner($job_runner)                                   if (defined($job_runner) );
-    $self->fasta_files($fasta_files)                                 if (defined($fasta_files));
-    $self->input_files($input_files)                                 if (defined($input_files));
-    $self->output_filename($output_filename)                         if (defined($output_filename));
-    $self->output_pan_geneome_filename($output_pan_geneome_filename) if (defined($output_pan_geneome_filename));
-    $self->output_statistics_filename($output_statistics_filename)   if (defined($output_statistics_filename));
-    $self->output_multifasta_files($output_multifasta_files)         if (defined($output_multifasta_files));
-    $self->clusters_filename($clusters_filename)                     if (defined($clusters_filename));
-    $self->dont_delete_files($dont_delete_files)                     if (defined($dont_delete_files) );
-    $self->dont_create_rplots($dont_create_rplots)                   if (defined($dont_create_rplots) );
-    $self->verbose_stats($verbose_stats)                             if (defined($verbose_stats));
-    $self->translation_table($translation_table)                     if (defined($translation_table) );
+    $self->job_runner($job_runner)                                   if ( defined($job_runner) );
+    $self->fasta_files($fasta_files)                                 if ( defined($fasta_files) );
+    $self->input_files($input_files)                                 if ( defined($input_files) );
+    $self->output_filename($output_filename)                         if ( defined($output_filename) );
+    $self->output_pan_geneome_filename($output_pan_geneome_filename) if ( defined($output_pan_geneome_filename) );
+    $self->output_statistics_filename($output_statistics_filename)   if ( defined($output_statistics_filename) );
+    $self->output_multifasta_files($output_multifasta_files)         if ( defined($output_multifasta_files) );
+    $self->clusters_filename($clusters_filename)                     if ( defined($clusters_filename) );
+    $self->dont_delete_files($dont_delete_files)                     if ( defined($dont_delete_files) );
+    $self->dont_create_rplots($dont_create_rplots)                   if ( defined($dont_create_rplots) );
+    $self->dont_split_groups($dont_split_groups)                     if ( defined($dont_split_groups) );
+    $self->verbose_stats($verbose_stats)                             if ( defined($verbose_stats) );
+    $self->translation_table($translation_table)                     if ( defined($translation_table) );
   
 }
 
@@ -96,6 +99,7 @@ sub run {
       clusters_filename               =>  $self->clusters_filename          ,
       dont_delete_files               =>  $self->dont_delete_files,
       dont_create_rplots              =>  $self->dont_create_rplots,
+      dont_split_groups               =>  $self->dont_split_groups,
       verbose_stats                   =>  $self->verbose_stats,
       );                                                             
     $obj->run();
