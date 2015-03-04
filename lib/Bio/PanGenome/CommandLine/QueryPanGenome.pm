@@ -12,7 +12,6 @@ use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::Output::GroupsMultifastas;
-use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::Output::QueryGroups;
 use Bio::PanGenome::PrepareInputFiles;
 use Bio::PanGenome::Output::DifferenceBetweenSets;
@@ -110,14 +109,7 @@ sub run {
         groups_filename => $self->groups_filename,
     );
 
-    if ( $self->action eq 'one_gene_per_group' ) {
-        my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
-            analyse_groups  => $analyse_groups_obj,
-            output_filename => $self->output_filename
-        );
-        $one_gene_per_fasta->create_file();
-    }
-    elsif ( $self->action eq 'union' ) {
+    if ( $self->action eq 'union' ) {
         my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
             analyse_groups        => $analyse_groups_obj,
             output_union_filename => $self->output_filename,

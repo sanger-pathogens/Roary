@@ -13,7 +13,6 @@ use Bio::PanGenome::InflateClusters;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::GroupLabels;
 use Bio::PanGenome::AnnotateGroups;
-use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::Output::NumberOfGroups;
