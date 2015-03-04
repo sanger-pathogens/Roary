@@ -9,6 +9,7 @@ Create a pan genome
 =cut
 
 use Moose;
+use File::Copy;
 use Bio::PanGenome::InflateClusters;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::GroupLabels;
@@ -62,7 +63,12 @@ sub run {
     $self->_inflate_clusters_obj->inflate();
 
     ## SPLIT GROUPS WITH PARALOGS ##
-    $self->_split_groups_obj->split_groups unless ( $self->dont_split_groups );
+    if ( $self->dont_split_groups ){
+      move( $self->_output_inflate_unsplit_clusters_filename, $self->_output_inflate_clusters_filename );
+    }
+    else {
+      $self->_split_groups_obj->split_groups;
+    }
 
     $self->_group_labels_obj->add_labels();
     $self->_annotate_groups_obj->reannotate;
