@@ -137,8 +137,6 @@ sub _command_to_run {
 sub run {
     my ($self) = @_;
 
-    print STDERR "External/PostAnalysis.pm LOCAL!!\n";
-
     my @commands_to_run;
     push( @commands_to_run, $self->_command_to_run );
 

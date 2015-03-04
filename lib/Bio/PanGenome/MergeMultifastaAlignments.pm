@@ -18,7 +18,6 @@ sequences are in the correct order.
 
 use Moose;
 use Bio::SeqIO;
-use Data::Dumper;
 
 has 'multifasta_files'  => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
 has 'output_filename'   => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
