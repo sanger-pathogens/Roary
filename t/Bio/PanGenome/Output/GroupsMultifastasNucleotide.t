@@ -28,10 +28,6 @@ my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
 
 $annotate_groups->reannotate;
 
-#print Dumper $annotate_groups->_genes_to_file;
-#print Dumper $annotate_groups;
-#print $annotate_groups->_group_counter;
-
 ok(
     $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
         group_names     => [ 'group_2', 'group_5' ],
@@ -45,9 +41,6 @@ ok( $obj->create_files(), 'Create multiple fasta files' );
 is(read_file('pan_genome_sequences/hly.fa'),     read_file('t/data/pan_genome_sequences/hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
 is(read_file('pan_genome_sequences/speH.fa'),    read_file('t/data/pan_genome_sequences/speH.fa' ), 'Check multifasta content is correct for 2-speH.fa ');
 is(read_file('pan_genome_sequences/argF.fa'),    read_file('t/data/pan_genome_sequences/argF.fa' ), 'Check multifasta content is correct for 2-argF.fa ');
-is(read_file('pan_genome_sequences/group_7.fa'), read_file('t/data/pan_genome_sequences/group_7.fa' ), 'Check multifasta content is correct for 1-group_7.fa ');
-is(read_file('pan_genome_sequences/group_6.fa'), read_file('t/data/pan_genome_sequences/group_6.fa' ), 'Check multifasta content is correct for 1-group_6.fa ');
-is(read_file('pan_genome_sequences/yfnB.fa'),    read_file('t/data/pan_genome_sequences/yfnB.fa' ), 'Check multifasta content is correct for 1-yfnB.fa ');
 remove_tree('pan_genome_sequences');
 
 # test group number limit
@@ -56,11 +49,11 @@ ok(
         group_names     => [ 'group_2', 'group_5' ],
         gff_files       => $gff_files,
         annotate_groups => $annotate_groups,
-        _group_limit    => 4
+        group_limit    => 4
     ),
     'initialise creating multiple fastas'
 );
-my $exp_stderr = "Number of clusters (8) exceeds limit (4). Multifastas not created.\n";
+my $exp_stderr = "Number of clusters (8) exceeds limit (4). Multifastas not created. Please check the spreadsheet for contamination from different species.\n";
 stderr_is { $obj->create_files() } $exp_stderr, 'multifasta creation fails when group limit exceeded';
 
 done_testing();

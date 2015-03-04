@@ -24,12 +24,13 @@ use Bio::PanGenome::Output::GroupsMultifastaNucleotide;
 
 has 'gff_files'        => ( is => 'ro', isa => 'ArrayRef',                      required => 1 );
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
-has 'annotate_groups' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
+has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
+has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has 'output_directory' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_directory');
 
 has '_number_of_groups' => ( is => 'rw', isa => 'Num', lazy_build => 1 );
-has '_group_limit'      => ( is => 'rw', isa => 'Num', default => 50000 );
+has 'group_limit'      => ( is => 'rw', isa => 'Num', default => 50000 );
 
 sub _build_output_directory
 {
@@ -48,21 +49,23 @@ sub create_files {
     my ($self) = @_;
 
     my $num_groups = $self->_number_of_groups;
-    my $limit      = $self->_group_limit;
+    my $limit      = $self->group_limit;
     if ( $num_groups > $limit ){
-      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created.\n";
+      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created. Please check the spreadsheet for contamination from different species.\n";
       return 1;
     }
 
     make_path($self->output_directory);
     
+    # if its output_multifasta_files == false then you want to create the core genome and delete all intermediate multifasta files
     for my $gff_file ( @{ $self->gff_files } ) 
     {
       my $gff_multifasta = Bio::PanGenome::Output::GroupsMultifastaNucleotide->new(
           gff_file             => $gff_file,
           group_names          => $self->group_names,
           output_directory     => $self->output_directory,
-          annotate_groups      => $self->annotate_groups
+          annotate_groups      => $self->annotate_groups,
+          output_multifasta_files => $self->output_multifasta_files
       );
       $gff_multifasta->populate_files;
     }

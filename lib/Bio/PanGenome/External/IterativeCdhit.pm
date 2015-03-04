@@ -61,7 +61,7 @@ sub _command_to_run {
         ' ',
         (
             $self->exec,                     '-c', $self->output_cd_hit_filename, '-m',
-            $self->output_combined_filename, '-n', $self->number_of_input_files,  '-f',
+            $self->output_combined_filename, '-n', $self->number_of_input_files, '--cpus', $self->cpus, '-f',
             $self->output_filtered_clustered_fasta
         )
     );
@@ -75,7 +75,8 @@ sub run {
     my $job_runner_obj = $self->_job_runner_class->new(
         commands_to_run => \@commands_to_run,
         memory_in_mb    => $self->_memory_required_in_mb,
-        queue           => $self->_queue
+        queue           => $self->_queue,
+        cpus            => $self->cpus 
     );
     $job_runner_obj->run();
 

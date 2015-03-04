@@ -8,7 +8,6 @@ package Bio::PanGenome::QC::Kraken;
 
 use Moose;
 use File::Basename;
-use Data::Dumper;
 with 'Bio::PanGenome::JobRunner::Role';
 
 has 'assembly_directory' => ( is => 'ro', isa => 'Str',      required => 1 );

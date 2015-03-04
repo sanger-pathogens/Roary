@@ -30,10 +30,11 @@ has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 )
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default => 98 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -41,7 +42,7 @@ has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $dont_create_rplots, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $help );
+    my ( $fasta_files, $create_rplots,$group_limit, $max_threads, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -56,10 +57,11 @@ sub BUILD {
         'e|output_multifasta_files' => \$output_multifasta_files,
         'i|perc_identity=i'         => \$perc_identity,
         'dont_delete_files'         => \$dont_delete_files,
-        'dont_create_rplots'        => \$dont_create_rplots,
         'dont_split_groups'         => \$dont_split_groups,
+        'create_rplots'             => \$create_rplots,
         'verbose_stats'             => \$verbose_stats,
         't|translation_table=i'     => \$translation_table,
+        'group_limit=i'             => \$group_limit,
         'qc|run_qc'                 => \$run_qc,
         'h|help'                    => \$help,
     );
@@ -80,10 +82,11 @@ sub BUILD {
     $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
     $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
     $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
-    $self->dont_create_rplots($dont_create_rplots)           if ( defined($dont_create_rplots) );
     $self->dont_split_groups($dont_split_groups)             if ( defined($dont_split_groups) );
+    $self->dont_create_rplots(0)                             if (defined($create_rplots) );
     $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
-    $self->translation_table($translation_table)             if ( defined($translation_table) );
+    $self->translation_table($translation_table)             if (defined($translation_table) );
+    $self->group_limit($group_limit)                         if ( defined($group_limit) );
     $self->run_qc($run_qc) if ( defined( $run_qc ) );
 
     for my $filename ( @{ $self->args } ) {
@@ -109,6 +112,7 @@ sub run {
       input_files           => $self->fasta_files,
       job_runner            => $self->job_runner,
       apply_unknowns_filter => $self->apply_unknowns_filter,
+      cpus                  => $self->cpus,
       translation_table     => $self->translation_table
     );
 
@@ -125,6 +129,7 @@ sub run {
         fasta_files             => $prepare_input_files->fasta_files,
         output_filename         => $self->output_filename,
         job_runner              => $self->job_runner,
+        cpus                    => $self->cpus,
         makeblastdb_exec        => $self->makeblastdb_exec,
         blastp_exec             => $self->blastp_exec,
         output_multifasta_files => $self->output_multifasta_files,
@@ -133,7 +138,8 @@ sub run {
         dont_create_rplots      => $self->dont_create_rplots,
         dont_split_groups       => $self->dont_split_groups,
         verbose_stats           => $self->verbose_stats,
-        translation_table       => $self->translation_table
+        translation_table       => $self->translation_table,
+        group_limit             => $self->group_limit
       );
     $pan_genome_obj->run();
 }
@@ -168,6 +174,16 @@ sub usage_text {
 
     # Include full annotation and inference in group statistics
     create_pan_genome --verbose_stats *.gff
+    
+    # Run sequentially without LSF
+    create_pan_genome -j Local *.gff
+    
+    # Run locally with GNU parallel and 4 processors
+    create_pan_genome -j Parallel -p 4  *.gff
+
+    # Increase the groups/clusters limit (default 50,000). If you need to change this your
+    # probably trying to work data from more than one species (which this script wasnt designed for).
+    create_pan_genome --group_limit 60000  *.gff
 
     # Generate QC report detailing top genus and species for each assembly
     create_pan_genome -qc *.gff

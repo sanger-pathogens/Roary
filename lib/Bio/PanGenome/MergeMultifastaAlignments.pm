@@ -54,6 +54,7 @@ sub merge_files {
         last unless ( scalar @{ $self->_input_seqio_objs} > 0 );
         my $merged_sequence = '';
         my $first_name;
+        return 1 if(@{ $self->_input_seqio_objs } == 0);
         for my $input_seq_io ( @{ $self->_input_seqio_objs } ) {
             my $current_sequence = $input_seq_io->next_seq;
             if ( !defined($current_sequence) ) {

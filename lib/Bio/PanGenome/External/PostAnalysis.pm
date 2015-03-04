@@ -32,7 +32,7 @@ has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 
 has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default  => 11 );
-
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default  => 50000 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
@@ -129,7 +129,9 @@ sub _command_to_run {
             $dont_create_rplots_flag,
             $dont_split_groups_flag,
             $verbose_stats_flag,
-            '-j', $self->job_runner
+            '-j', $self->job_runner,
+            '--processors', $self->cpus,
+            '--group_limit', $self->group_limit
         )
     );
 }
@@ -145,6 +147,7 @@ sub run {
         memory_in_mb    => $self->_memory_required_in_mb,
         queue           => $self->_queue,
         dont_wait       => $self->dont_wait,
+        cpus            => $self->cpus 
     );
     $job_runner_obj->run();
 
