@@ -38,7 +38,7 @@ sub _build_contig_to_ids
     chomp;
     my $line = $_;   
     my $id_name;
-    if($line =~/ID=([^;]+);/)
+    if($line =~/ID=["']?([^;"']+)["']?;?/i)
     {
       $id_name= $1;
     }
@@ -51,7 +51,8 @@ sub _build_contig_to_ids
     # Map gene IDs to the contig
     push(@{$contigs_to_ids{$annotation_elements[0]}}, $id_name);
     
-    if($line =~/product=([^,;]+)[,;]/)
+    if($line =~/product=["']?([^;,"']+)[,"']?;?/i)
+	
     {
       $genes_annotation{$id_name}{product} = $1;
       if($line =~ /similar to AA sequence:UniProtKB:/ || $line =~ /similar to AA sequence:RefSeq:/ || $line =~ /protein motif:/)
