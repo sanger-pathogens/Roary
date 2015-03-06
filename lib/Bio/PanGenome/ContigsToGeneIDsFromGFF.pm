@@ -55,7 +55,7 @@ sub _build_contig_to_ids
 	
     {
       $genes_annotation{$id_name}{product} = $1;
-      if($line =~ /similar to AA sequence:UniProtKB:/ || $line =~ /similar to AA sequence:RefSeq:/ || $line =~ /protein motif:/)
+      if($line =~ /UniProtKB/ || $line =~ /RefSeq/ || $line =~ /protein motif/)
       {
         $genes_annotation{$id_name}{database_annotation_exists} = 1;
       }

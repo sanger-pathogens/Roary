@@ -111,7 +111,7 @@ sub _build__ids_to_gene_names {
 sub _build__ids_to_verbose_stats {
         my $self = shift;
 
-        my @matches_hash = fgrep { /ID=/ } @{ $self->_filtered_gff_files };
+        my @matches_hash = fgrep { /ID=/i } @{ $self->_filtered_gff_files };
         my @matches;
         foreach my $m ( @matches_hash ){
             push( @matches, values $m->{matches} );
@@ -121,7 +121,7 @@ sub _build__ids_to_verbose_stats {
         my %verbose;
         foreach my $line ( @matches ){
             my ( $id, $inf, $prod );
-            if( $line =~ m/ID=([^;]+);/ ){
+            if( $line =~ m/ID=["']?([^;"']+)["']?;?/i ){
                 $id = $1;
             }
             else {
@@ -130,6 +130,7 @@ sub _build__ids_to_verbose_stats {
 
             $inf = $1 if ( $line =~ m/inference=([^;]+);/ );
             $prod = $1 if ( $line =~ m/product=([^;]+)[;\n]/ );
+			
 
             my %info = ( 'inference' => $inf, 'product' => $prod );
             $verbose{$id} = \%info;

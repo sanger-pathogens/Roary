@@ -32,7 +32,7 @@ sub _build_ids_to_gene_name {
       chomp;
       my $line = $_;   
       my $id_name;
-      if($line =~/ID=([^;]+);/)
+      if($line =~/ID=["']?([^;"']+)["']?;?/i)
       {
         $id_name = $1;
         $id_name =~ s!"!!g;
@@ -42,7 +42,7 @@ sub _build_ids_to_gene_name {
         next;
       }
       
-      if($line =~/gene=([^;]+);/)
+      if($line =~/gene=["']?([^;"']+)["']?;?/i)
       {
           my $gene_name = $1;
           $gene_name =~ s!"!!g;
@@ -50,12 +50,7 @@ sub _build_ids_to_gene_name {
           $id_to_gene_name{$id_name} = $gene_name;
       }
       
-      if($line =~/product=([^,;]+)[,;]/)
-      {
-              my $product = $1;
-              $self->ids_to_product->{$id_name} = $product;
-      }
-      if($line =~/product=([^,;]+)$/)
+      if($line =~/product=["']?([^;,"']+)[,"']?;?/i)
       {
               my $product = $1;
               $self->ids_to_product->{$id_name} = $product;
