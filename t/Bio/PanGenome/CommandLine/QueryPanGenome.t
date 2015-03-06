@@ -63,7 +63,7 @@ mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files
 unlink('set_difference_unique_set_two')                if ( -e 'set_difference_unique_set_two' );
 unlink('set_difference_common_set')                    if ( -e 'set_difference_common_set' );
 unlink('pan_genome_results_group_5.fa')                if ( -e 'pan_genome_results_group_5.fa' );
-unlink('group_statisics.csv')                          if ( -e 'group_statisics.csv' );
+unlink('gene_presence_absence.csv')                          if ( -e 'gene_presence_absence.csv' );
 unlink('set_difference_unique_set_two_statistics.csv') if ( -e 'set_difference_unique_set_two_statistics.csv' );
 unlink('set_difference_unique_set_one_statistics.csv') if ( -e 'set_difference_unique_set_one_statistics.csv' );
 unlink('set_difference_common_set_statistics.csv')     if ( -e 'set_difference_common_set_statistics.csv' );
