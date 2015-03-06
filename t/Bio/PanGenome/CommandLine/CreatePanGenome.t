@@ -25,15 +25,15 @@ system('touch empty_file');
       ' -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
+        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
       ' -t 1 -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
+        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
       ' -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
+        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
       ' -t 1 -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
+        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
 );
@@ -71,7 +71,7 @@ sub cleanup_files
   unlink('example_1.faa.tmp.filtered.fa');
   unlink('example_2.faa.tmp.filtered.fa');
   unlink('example_3.faa.tmp.filtered.fa');
-  unlink('group_statisics.csv');
+  unlink('gene_presence_absence.csv');
   unlink('query_1.gff.proteome.faa');
   unlink('query_2.gff.proteome.faa');
   unlink('query_3.gff.proteome.faa');

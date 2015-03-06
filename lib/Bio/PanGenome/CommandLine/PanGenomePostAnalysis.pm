@@ -24,7 +24,7 @@ has 'fasta_files'                 => ( is => 'rw', isa => 'Str' );
 has 'input_files'                 => ( is => 'rw', isa => 'Str');
 has 'output_filename'             => ( is => 'rw', isa => 'Str',  default  => 'clustered_proteins' );
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',  default  => 'pan_genome.fa' );
-has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',  default  => 'group_statisics.csv' );
+has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',  default  => 'gene_presence_absence.csv' );
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'LSF' );

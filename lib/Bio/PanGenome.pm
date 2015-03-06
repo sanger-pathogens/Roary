@@ -29,7 +29,7 @@ has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required =
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'output_filename'             => ( is => 'rw', isa => 'Str',      default  => 'clustered_proteins' );
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  => 'pan_genome.fa' );
-has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'group_statisics.csv' );
+has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'gene_presence_absence.csv' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',      default  => 'LSF' );
 has 'cpus'                        => ( is => 'ro', isa => 'Int',      default => 1 );
 has 'makeblastdb_exec'            => ( is => 'rw', isa => 'Str',      default  => 'makeblastdb' );

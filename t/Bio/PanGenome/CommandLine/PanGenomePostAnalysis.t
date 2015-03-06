@@ -21,7 +21,7 @@ local $ENV{PATH} = "$ENV{PATH}:./bin";
 system('cp t/data/post_analysis/* .');
 system('touch empty_file');
 my %scripts_and_expected_files = (
-       '-o clustered_proteins -p pan_genome.fa -s group_statisics.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
+       '-o clustered_proteins -p pan_genome.fa -s gene_presence_absence.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_post_analysis' ], 
        '-h' =>
          [ 'empty_file', 't/data/empty_file' ],   
@@ -33,7 +33,7 @@ ok( -e 'number_of_unique_genes.Rtab', 'number_of_unique_genes.Rtab exists');
 ok( -e 'number_of_new_genes.Rtab', 'number_of_new_genes exists');
 ok( -e 'number_of_genes_in_pan_genome.Rtab', 'number_of_genes_in_pan_genome exists');
 ok( -e 'number_of_conserved_genes.Rtab','number_of_conserved_genes');
-ok( -e 'group_statisics.csv', 'group_statisics exists');
+ok( -e 'gene_presence_absence.csv', 'gene_presence_absence exists');
 ok( -e 'core_accessory.tab', 'core_accessory.tab exists');
 ok( -e 'core_accessory.header.embl','core_accessory.header.embl exists');
 ok( -e 'accessory.tab','accessory.tab exists');
@@ -49,7 +49,7 @@ cleanup_files();
 system('cp t/data/post_analysis/* .');
 system('touch empty_file');
 %scripts_and_expected_files = (
-       '-t 1 -o clustered_proteins -p pan_genome.fa -s group_statisics.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
+       '-t 1 -o clustered_proteins -p pan_genome.fa -s gene_presence_absence.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_post_analysis' ], 
        '-h' =>
          [ 'empty_file', 't/data/empty_file' ],   
@@ -61,7 +61,7 @@ ok( -e 'number_of_unique_genes.Rtab', 'number_of_unique_genes.Rtab exists');
 ok( -e 'number_of_new_genes.Rtab', 'number_of_new_genes exists');
 ok( -e 'number_of_genes_in_pan_genome.Rtab', 'number_of_genes_in_pan_genome exists');
 ok( -e 'number_of_conserved_genes.Rtab','number_of_conserved_genes');
-ok( -e 'group_statisics.csv', 'group_statisics exists');
+ok( -e 'gene_presence_absence.csv', 'gene_presence_absence exists');
 ok( -e 'core_accessory.tab', 'core_accessory.tab exists');
 ok( -e 'core_accessory.header.embl','core_accessory.header.embl exists');
 ok( -e 'accessory.tab','accessory.tab exists');
@@ -93,7 +93,7 @@ sub cleanup_files
   unlink('accessory.tab');
   unlink('core_accessory.header.embl');
   unlink('core_accessory.tab');
-  unlink('group_statisics.csv');
+  unlink('gene_presence_absence.csv');
   unlink('number_of_unique_genes.Rtab');
   unlink('number_of_new_genes.Rtab');
   unlink('number_of_genes_in_pan_genome.Rtab');
