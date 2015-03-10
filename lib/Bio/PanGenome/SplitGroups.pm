@@ -20,7 +20,7 @@ use Data::Dumper;
 has 'groupfile'   => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'outfile'     => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 3 );
+has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 10 );
 has 'dont_delete' => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has '_outfile_handle'     => ( is => 'ro', lazy_build => 1 );
@@ -92,6 +92,11 @@ sub split_groups {
 		if( $self->_contains_paralogs( \@group ) ){
 			my @true_orthologs = @{ $self->_true_orthologs( \@group ) };
 			push( @newgroups,  @true_orthologs);
+
+			# print "SPLITTING GROUP: ";
+			# print Dumper \@group;
+			# print "RESULTING IN: ";
+			# print Dumper \@true_orthologs;
 		}
 		else {
 			push( @newgroups, \@group );
@@ -126,7 +131,7 @@ sub split_groups_old {
 
 			if( $self->_contains_paralogs( \@group ) ){
 				$self->_set_genes_to_groups( $in_groups );
-				my @true_orthologs = @{ $self->_true_orthologs( \@group ) };
+				my @true_orthologs = @{ $self->_true_orthologs_old( \@group ) };
 				push( @newgroups,  @true_orthologs);
 				$any_paralogs = 1;
 				# print "SPLITTING GROUP: ";
@@ -237,42 +242,45 @@ sub _true_orthologs {
 	}
 
 	my @groups = ( $gs );
-	while ( 1 ){
-		my @new_groups = ();
-		for my $group ( @groups ){
-			# finding paralogs in the group
-			my @paralogs = @{ $self->_find_paralogs( $group ) };
-			my @paralog_cgns;
-			for my $p ( @paralogs ){
-				push( @paralog_cgns, $cgns{$p} );
-			}
-
-			my @new_groups;
-			for my $p ( @paralogs ){
-				push( @new_groups, [ $p ] );
-			}
-			push( @new_groups, [] ); # extra "leftovers" array to gather genes that don't share CGN with anything
-
-			# cluster other members of the group to their closest match
-			for my $g ( @{ $group } ){
-				next if ( grep {$_ eq $g} @paralogs );
-				my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns );
-				push( @{ $new_groups[$closest] }, $g );
-			}
-
-			# check for "leftovers", remove if absent
-			my $last = pop @new_groups;
-			push( @new_groups, $last ) if ( @$last > 0 );
+	my @split_groups;
+	my $continue = 1;
+	my $c = 0;
+	for my $group ( @groups ){
+		# finding paralogs in the group
+		my @paralogs = @{ $self->_find_paralogs( $group ) };
+		my @paralog_cgns;
+		for my $p ( @paralogs ){
+			push( @paralog_cgns, $cgns{$p} );
 		}
 
-		# check if paralogs are still present in any group
-		my $continue = 1;
-		for my $g ( @new_groups ){
-			$continue = 0 unless ( $self->_contains_paralogs($g) );
+		for my $p ( @paralogs ){
+			push( @split_groups, [ $p ] );
 		}
-		last unless( $continue );
+		push( @split_groups, [] ); # extra "leftovers" array to gather genes that don't share CGN with anything
 
-		@groups = @new_groups;
+		# cluster other members of the group to their closest match
+		for my $g ( @{ $group } ){
+			next if ( grep {$_ eq $g} @paralogs );
+			my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns );
+			push( @{ $split_groups[$closest] }, $g );
+		}
+
+		# check for "leftovers", remove if absent
+		my $last = pop @split_groups;
+		push( @split_groups, $last ) if ( @$last > 0 );
+	}
+
+	$self->_update_genes_to_groups( \@split_groups );
+
+	my @new_groups;
+	for my $g ( @split_groups ){
+		if( $self->_contains_paralogs( $g ) ){
+			my @true_orthologs = @{ $self->_true_orthologs( $g ) };
+			push( @new_groups,  @true_orthologs);
+		}
+		else {
+			push( @new_groups, $g );
+		}
 	}
 
 	# sort
@@ -369,7 +377,7 @@ sub _same_group {
 	my ( $self, $gene1, $gene2 ) = @_;
 	my $g1 = $self->_genes_to_groups->{$gene1};
 	my $g2 = $self->_genes_to_groups->{$gene2};
-	return 1 if ( defined $g1 && defined $g2 && $g1 == $g2 );
+	return 1 if ( defined $g1 && defined $g2 && $g1 eq $g2 );
 	return 0;
 }
 

@@ -21,9 +21,6 @@ ok( $obj = Bio::PanGenome::SplitGroups->new(
   _do_sorting => 1
 ), 'initalise object');
 
-my $exp = [ 't/data/split_groups/paralog_clusters1', 'split_groups/group_1', 'split_groups/group_2', 'blah.out' ];
-is_deeply $obj->_group_filelist, $exp, 'file list correct';
-
 $obj->split_groups;
 ok( -e 'blah.out', 'output file exists' );
 is(read_file('blah.out'), read_file('t/data/split_groups/paralog_exp_clusters1'), 'split group output correct for test 1');
