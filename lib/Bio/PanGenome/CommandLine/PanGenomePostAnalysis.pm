@@ -35,14 +35,14 @@ has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default  => 0 
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
-
+has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 1.0 );
 
 sub BUILD {
     my ($self) = @_;
 
     my ( 
       $output_filename, $dont_create_rplots, $dont_delete_files, $dont_split_groups, $output_pan_geneome_filename, 
-      $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, 
+      $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $core_definition,
       $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit
     );
 
@@ -64,6 +64,7 @@ sub BUILD {
         'processors=i'            => \$cpus,
         't|translation_table=i'   => \$translation_table,
         'group_limit=i'           => \$group_limit,
+        'core_definition=f'       => \$core_definition,
         'h|help'                  => \$help,
     );
     
@@ -79,11 +80,11 @@ sub BUILD {
     $self->dont_delete_files($dont_delete_files)                     if ( defined($dont_delete_files) );
     $self->dont_create_rplots($dont_create_rplots)                   if ( defined($dont_create_rplots) );
     $self->dont_split_groups($dont_split_groups)                     if ( defined($dont_split_groups) );
-    $self->verbose_stats($verbose_stats)                             if (defined($verbose_stats));
-    $self->translation_table($translation_table)                     if (defined($translation_table) );
+    $self->verbose_stats($verbose_stats)                             if ( defined($verbose_stats));
+    $self->translation_table($translation_table)                     if ( defined($translation_table) );
     $self->cpus($cpus)                                               if ( defined($cpus) );
     $self->group_limit($group_limit)                                 if ( defined($group_limit) );
-  
+    $self->core_definition( $core_definition )                       if ( defined($core_definition) );
 }
 
 sub run {
@@ -116,6 +117,7 @@ sub run {
       fasta_files         => $output_gene_files,
       job_runner          => $self->job_runner,
       translation_table   => $self->translation_table,
+      core_definition     => $self->core_definition,
       cpus                => $self->cpus
     );
     $seg->run();
@@ -159,14 +161,15 @@ sub usage_text {
     
     #Normal usage
     pan_genome_post_analysis 
-      -o output_groups_filename      
-      -p output_pan_genome_filename  
-      -s output_stats_filename       
-      -c output_clusters_filename    
-      -f file_of_proteins               
-      -i file_of_gffs   
-      --processors number of processors
-      --verbose_stats          
+      -o <output_groups_filename>     
+      -p <output_pan_genome_filename>
+      -s <output_stats_filename>     
+      -c <output_clusters_filename>   
+      -f <file_of_proteins>              
+      -i <file_of_gffs> 
+      --processors <number of processors>
+      --verbose_stats
+      --core_definition <proportion of genomes required to qualify gene as core>        
 
     # This help message
     pan_genome_post_analysis -h

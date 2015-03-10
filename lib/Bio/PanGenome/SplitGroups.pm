@@ -81,6 +81,37 @@ sub split_groups {
 	my ( $self ) = @_;
 
 	$self->_make_tmp_dir;
+	$self->_set_genes_to_groups( $self->groupfile );
+
+	# read in groupfile
+	my @newgroups;
+	open( my $group_handle, '<', $self->groupfile );
+	while( my $line = <$group_handle> ){
+		my @group = split( /\s+/, $line );
+
+		if( $self->_contains_paralogs( \@group ) ){
+			my @true_orthologs = @{ $self->_true_orthologs( \@group ) };
+			push( @newgroups,  @true_orthologs);
+		}
+		else {
+			push( @newgroups, \@group );
+		}
+	}	
+	close( $group_handle );
+
+	# write split groups to file
+	open( my $outfile_handle, '>', $self->outfile );
+	for my $g ( @newgroups ) {
+		my $group_str = join( "\t", @{ $g } ) . "\n";
+		print $outfile_handle $group_str;
+	}
+	close( $outfile_handle );
+}
+
+sub split_groups_old {
+	my ( $self ) = @_;
+
+	$self->_make_tmp_dir;
 
 	# iteratively
 	for my $x ( 0..($self->iterations - 1) ){
@@ -144,6 +175,21 @@ sub _set_genes_to_groups {
 	$self->_genes_to_groups( \%genes2groups );
 }
 
+sub _update_genes_to_groups {
+	my ( $self, $groups ) = @_;
+
+	my %genes2groups = %{ $self->_genes_to_groups };
+	my $c = 1;
+	for my $g ( @{ $groups } ){
+		for my $h ( @{ $g } ){
+			$genes2groups{$h} .= ".$c";
+		}
+		$c++;
+	}
+
+	$self->_genes_to_groups( \%genes2groups );
+}
+
 sub _get_files_for_iteration {
 	my ( $self, $n ) = @_;
 	my @filelist = @{ $self->_group_filelist };
@@ -182,6 +228,67 @@ sub _find_paralogs {
 }
 
 sub _true_orthologs {
+	my ( $self, $gs ) = @_;
+
+	# first, create CGN hash for group
+	my %cgns;
+	for my $g ( @{$gs} ){
+		$cgns{$g} = $self->_parse_gene_neighbourhood( $g );
+	}
+
+	my @groups = ( $gs );
+	while ( 1 ){
+		my @new_groups = ();
+		for my $group ( @groups ){
+			# finding paralogs in the group
+			my @paralogs = @{ $self->_find_paralogs( $group ) };
+			my @paralog_cgns;
+			for my $p ( @paralogs ){
+				push( @paralog_cgns, $cgns{$p} );
+			}
+
+			my @new_groups;
+			for my $p ( @paralogs ){
+				push( @new_groups, [ $p ] );
+			}
+			push( @new_groups, [] ); # extra "leftovers" array to gather genes that don't share CGN with anything
+
+			# cluster other members of the group to their closest match
+			for my $g ( @{ $group } ){
+				next if ( grep {$_ eq $g} @paralogs );
+				my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns );
+				push( @{ $new_groups[$closest] }, $g );
+			}
+
+			# check for "leftovers", remove if absent
+			my $last = pop @new_groups;
+			push( @new_groups, $last ) if ( @$last > 0 );
+		}
+
+		# check if paralogs are still present in any group
+		my $continue = 1;
+		for my $g ( @new_groups ){
+			$continue = 0 unless ( $self->_contains_paralogs($g) );
+		}
+		last unless( $continue );
+
+		@groups = @new_groups;
+	}
+
+	# sort
+	if ( $self->_do_sorting ){
+		my @sorted_new_groups;
+		for my $gr ( @new_groups ){
+			my @s_gr = sort @{ $gr };
+			push( @sorted_new_groups, \@s_gr );
+		}
+		return \@sorted_new_groups;
+	}
+
+	return \@new_groups;
+}
+
+sub _true_orthologs_old {
 	my ( $self, $group ) = @_;
 
 	# first, create CGN hash for group

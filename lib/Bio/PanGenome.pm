@@ -32,7 +32,7 @@ has 'output_filename'             => ( is => 'rw', isa => 'Str',      default  =
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  => 'pan_genome.fa' );
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'group_statisics.csv' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',      default  => 'LSF' );
-has 'cpus'                        => ( is => 'ro', isa => 'Int',      default => 1 );
+has 'cpus'                        => ( is => 'ro', isa => 'Int',      default  => 1 );
 has 'makeblastdb_exec'            => ( is => 'rw', isa => 'Str',      default  => 'makeblastdb' );
 has 'blastp_exec'                 => ( is => 'rw', isa => 'Str',      default  => 'blastp' );
 has 'mcxdeblast_exec'             => ( is => 'ro', isa => 'Str',      default  => 'mcxdeblast' );
@@ -44,6 +44,7 @@ has 'dont_split_groups'           => ( is => 'ro', isa => 'Bool',     default  =
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',      default  => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
+has 'core_definition'             => ( is => 'rw', isa => 'Num',      default  => 1.0 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -125,6 +126,7 @@ sub run {
         verbose_stats               => $self->verbose_stats,
         translation_table           => $self->translation_table,
         group_limit                 => $self->group_limit,
+        core_definition             => $self->core_definition,
     );
     $post_analysis->run();
 

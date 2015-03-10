@@ -22,18 +22,20 @@ has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'multifasta_base_directory' => ( is => 'rw', isa => 'Str', default => 'pan_genome_sequences' );
 has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'group_statisics.csv' );
 has 'output_filename'           => ( is => 'rw', isa => 'Str', default => 'core_gene_alignment.aln' );
+has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 1 );
 has '_error_message'            => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $help );
+    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition, $help );
 
     GetOptionsFromArray(
         $self->args,
         'm|multifasta_base_directory=s' => \$multifasta_base_directory,
         's|spreadsheet_filename=s'      => \$spreadsheet_filename,
         'o|output_filename=s'           => \$output_filename,
+        'c|core_definition=f'           => \$core_definition,
         'h|help'                        => \$help,
     );
     
@@ -55,8 +57,8 @@ sub BUILD {
         $self->_error_message("Error: Cant access the spreadsheet: ".$self->spreadsheet_filename);
     }
 
-    $self->output_filename( $output_filename) if ( defined($output_filename));
-
+    $self->output_filename( $output_filename ) if ( defined($output_filename) );
+    $self->core_definition( $core_definition ) if ( defined($core_definition) ); 
 }
 
 sub run {
@@ -68,7 +70,10 @@ sub run {
         die $self->usage_text;
     }
 
-    my $core_genes_obj = Bio::PanGenome::ExtractCoreGenesFromSpreadsheet->new( spreadsheet  => $self->spreadsheet_filename);
+    my $core_genes_obj = Bio::PanGenome::ExtractCoreGenesFromSpreadsheet->new( 
+        spreadsheet     => $self->spreadsheet_filename,
+        core_definition => $self->core_definition
+    );
     
     my $gene_files = Bio::PanGenome::LookupGeneFiles->new(
         multifasta_directory => $self->multifasta_base_directory,
