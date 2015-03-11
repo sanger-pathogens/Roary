@@ -27,8 +27,8 @@ ok(
 ok( $obj->create_files(), 'Create multiple fasta files' );
 
 # Check that the files have been created
-ok( -e $obj->output_filename_base . '_group_2.fa', 'group created' );
-ok( -e $obj->output_filename_base . '_group_5.fa', 'group created' );
+ok( -e $obj->output_filename_base . '_group_2.fa', $obj->output_filename_base . '_group_2.fa'.' group created' );
+ok( -e $obj->output_filename_base . '_group_5.fa', $obj->output_filename_base . '_group_2.fa'.' group created' );
 
 is(
     read_file( $obj->output_filename_base . '_group_2.fa' ),

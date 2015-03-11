@@ -14,7 +14,6 @@ use Bio::PanGenome::InflateClusters;
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::GroupLabels;
 use Bio::PanGenome::AnnotateGroups;
-use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
 use Bio::PanGenome::Output::NumberOfGroups;
@@ -26,7 +25,7 @@ has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required =
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'output_filename'             => ( is => 'rw', isa => 'Str',      default  => 'clustered_proteins' );
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  => 'pan_genome.fa' );
-has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'group_statisics.csv' );
+has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'gene_presence_absence.csv' );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );

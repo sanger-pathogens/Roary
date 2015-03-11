@@ -20,7 +20,7 @@ has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'multifasta_base_directory' => ( is => 'rw', isa => 'Str', default => 'pan_genome_sequences' );
-has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'group_statisics.csv' );
+has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'gene_presence_absence.csv' );
 has 'output_filename'           => ( is => 'rw', isa => 'Str', default => 'core_gene_alignment.aln' );
 has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 1 );
 has '_error_message'            => ( is => 'rw', isa => 'Str' );
@@ -99,7 +99,7 @@ sub usage_text {
     pan_genome_core_alignment
     
     # Specify the directory containing the multifastas (-m), the spreadsheet (-s) and an output file name (-o)
-    pan_genome_core_alignment -m pan_genome_sequences -s group_statisics.csv -o output_alignment.aln
+    pan_genome_core_alignment -m pan_genome_sequences -s gene_presence_absence.csv -o output_alignment.aln
     
     # This help message
     pan_genome_core_alignment -h
