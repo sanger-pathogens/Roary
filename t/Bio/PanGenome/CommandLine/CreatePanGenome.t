@@ -71,7 +71,7 @@ sub cleanup_files
   unlink('example_1.faa.tmp.filtered.fa');
   unlink('example_2.faa.tmp.filtered.fa');
   unlink('example_3.faa.tmp.filtered.fa');
-  unlink('group_statisics.csv');
+  unlink('gene_presence_absence.csv');
   unlink('query_1.gff.proteome.faa');
   unlink('query_2.gff.proteome.faa');
   unlink('query_3.gff.proteome.faa');
