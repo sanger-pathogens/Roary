@@ -25,15 +25,15 @@ system('touch empty_file');
       ' -j Local --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Local --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],     
       ' -t 1 -j Local --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],
       ' -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],     
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],     
       ' -t 1 -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'group_statisics.csv', 't/data/overall_group_statisics.csv' ],
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
 );

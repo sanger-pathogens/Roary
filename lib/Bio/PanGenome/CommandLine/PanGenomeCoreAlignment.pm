@@ -35,7 +35,7 @@ sub BUILD {
         'm|multifasta_base_directory=s' => \$multifasta_base_directory,
         's|spreadsheet_filename=s'      => \$spreadsheet_filename,
         'o|output_filename=s'           => \$output_filename,
-        'c|core_definition=f'           => \$core_definition,
+        'cd|core_definition=f'          => \$core_definition,
         'h|help'                        => \$help,
     );
     
@@ -58,7 +58,7 @@ sub BUILD {
     }
 
     $self->output_filename( $output_filename ) if ( defined($output_filename) );
-    $self->core_definition( $core_definition ) if ( defined($core_definition) ); 
+    $self->core_definition( $core_definition/100 ) if ( defined($core_definition) ); 
 }
 
 sub run {

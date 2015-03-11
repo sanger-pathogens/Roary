@@ -17,8 +17,10 @@ system('touch empty_file');
 my %scripts_and_expected_files = (
     '-m t/data/core_alignment -s t/data/core_alignment.csv' =>
       [ 'core_gene_alignment.aln', 't/data/expected_core_gene_alignment.aln' ],
-      '-h' =>
-        [ 'empty_file', 't/data/empty_file' ],
+    '-m t/data/core_alignment -s t/data/core_alignment_core0.66.csv --core_definition 66' => 
+      [ 'core_gene_alignment.aln', 't/data/expected_core_gene_alignment_core0.66.aln' ],
+    '-h' =>
+      [ 'empty_file', 't/data/empty_file' ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

@@ -64,7 +64,7 @@ sub BUILD {
         'processors=i'            => \$cpus,
         't|translation_table=i'   => \$translation_table,
         'group_limit=i'           => \$group_limit,
-        'core_definition=f'       => \$core_definition,
+        'cd|core_definition=f'    => \$core_definition,
         'h|help'                  => \$help,
     );
     
@@ -84,7 +84,7 @@ sub BUILD {
     $self->translation_table($translation_table)                     if ( defined($translation_table) );
     $self->cpus($cpus)                                               if ( defined($cpus) );
     $self->group_limit($group_limit)                                 if ( defined($group_limit) );
-    $self->core_definition( $core_definition )                       if ( defined($core_definition) );
+    $self->core_definition( $core_definition/100 )                   if ( defined($core_definition) );
 }
 
 sub run {
@@ -169,7 +169,7 @@ sub usage_text {
       -i <file_of_gffs> 
       --processors <number of processors>
       --verbose_stats
-      --core_definition <proportion of genomes required to qualify gene as core>        
+      --core_definition <percentage of genomes required to qualify gene as core>        
 
     # This help message
     pan_genome_post_analysis -h

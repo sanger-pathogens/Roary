@@ -90,7 +90,7 @@ sub BUILD {
     $self->translation_table($translation_table)             if (defined($translation_table) );
     $self->group_limit($group_limit)                         if ( defined($group_limit) );
     $self->run_qc($run_qc) if ( defined( $run_qc ) );
-    $self->core_definition( $core_definition ) if ( defined($core_definition) );
+    $self->core_definition( $core_definition/100 ) if ( defined($core_definition) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {

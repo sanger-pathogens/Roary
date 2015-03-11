@@ -19,6 +19,8 @@ sequences are in the correct order.
 use Moose;
 use Bio::SeqIO;
 
+use Data::Dumper;
+
 has 'multifasta_files'  => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
 has 'output_filename'   => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
 has '_output_seqio_obj' => ( is => 'ro', isa => 'Bio::SeqIO', lazy     => 1, builder => '_build__output_seqio_obj' );
@@ -55,12 +57,18 @@ sub merge_files {
         my $merged_sequence = '';
         my $first_name;
         return 1 if(@{ $self->_input_seqio_objs } == 0);
+
+        my @c_seqs;
         for my $input_seq_io ( @{ $self->_input_seqio_objs } ) {
-            my $current_sequence = $input_seq_io->next_seq;
-            if ( !defined($current_sequence) ) {
-                $reached_eof = 1;
-                last;
-            }
+            my $next_seq = $input_seq_io->next_seq;
+            push( @c_seqs, $next_seq );
+        }
+
+        # check if any seqs need padding or whether to end the while loop
+        my $fixed_seqs = $self->_check_seqs( \@c_seqs );
+        last unless ( defined($fixed_seqs) );
+        
+        for my $current_sequence ( @{ $fixed_seqs } ){
             $merged_sequence .= $current_sequence->seq;
             if ( !defined($first_name) ) {
                 $first_name = $current_sequence->display_id;
@@ -76,6 +84,40 @@ sub merge_files {
         }
     }
     return 1;
+}
+
+sub _check_seqs {
+    my ( $self, $seqs ) = @_;
+
+    my ($seq_len, $seq_id);
+    my $nothing_defined = 1;
+    for my $s ( @{ $seqs } ){
+        if ( defined $s ){
+            $nothing_defined = 0;
+            $seq_len = $s->length;
+            $seq_id  = $s->display_id;
+            last;
+        }
+    }
+
+    return undef if ( $nothing_defined );
+
+    # pad seqs if not all are undef
+    my @padded;
+    for my $s ( @{ $seqs } ){
+        if ( defined $s ){
+            push( @padded, $s );
+        }
+        else {
+            my $bio_seq = Bio::Seq->new( 
+                -seq => 'N' x $seq_len,
+                -id  => $seq_id,
+            );
+            push( @padded, $bio_seq );
+        }
+    }
+
+    return \@padded;
 }
 
 sub _strip_id_from_name {
