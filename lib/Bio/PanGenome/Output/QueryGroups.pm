@@ -20,17 +20,30 @@ use Moose;
 use Bio::SeqIO;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::AnalyseGroups;
+use POSIX;
+
+use Data::Dumper;
 
 has 'analyse_groups'        => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups', required => 1 );
 has 'input_filenames'       => ( is => 'ro', isa => 'ArrayRef',                      required => 1 );
 has 'output_union_filename' => ( is => 'ro', isa => 'Str',                           default  => 'union_of_groups.gg' );
 has 'output_intersection_filename' => ( is => 'ro', isa => 'Str',      default => 'intersection_of_groups.gg' );
 has 'output_complement_filename'   => ( is => 'ro', isa => 'Str',      default => 'complement_of_groups.gg' );
+has 'core_definition'       => ( is => 'ro', isa => 'Num', default => 1.0 );
+
 has '_groups_freq'                 => ( is => 'ro', isa => 'HashRef', lazy    => 1, builder => '_build__groups_freq' );
 has '_groups_intersection' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__groups_intersection' );
 has '_groups_complement'  => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__groups_complement' );
 has '_groups'             => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__groups' );
 has '_number_of_isolates' => ( is => 'ro', isa => 'Int',      lazy => 1, builder => '_builder__number_of_isolates' );
+has '_min_no_isolates_for_core' => ( is => 'rw', isa => 'Int',      lazy_build => 1 );
+
+sub _build__min_no_isolates_for_core {
+    my ( $self ) = @_;
+    my $threshold = ceil( $self->_number_of_isolates * $self->core_definition );
+
+    return $threshold;
+}
 
 sub _builder__number_of_isolates {
     my ($self) = @_;
@@ -50,6 +63,7 @@ sub _build__groups_freq {
             push(@{$groups_freq{ $self->analyse_groups->_genes_to_groups->{$gene} }}, $gene);
         }
     }
+
     return \%groups_freq;
 }
 
@@ -65,7 +79,7 @@ sub _build__groups_intersection {
     my @groups_intersection;
 
     for my $group ( @{$self->_groups} ) {
-        if ( @{$self->_groups_freq->{$group}} == $self->_number_of_isolates ) {
+        if ( scalar @{$self->_groups_freq->{$group}} >= $self->_min_no_isolates_for_core ) {
             push( @groups_intersection, $group );
         }
     }
