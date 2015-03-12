@@ -21,7 +21,8 @@ ok(
 	$shred_obj = Bio::PanGenome::QC::ShredAssemblies->new(
 		gff_files   => ['t/data/shred1.gff', 't/data/shred2.gff'],
 		read_size        => 10,
-		output_directory => $tmp
+		output_directory => $tmp,
+		job_runner       => "Local"
 	),
 	'shredding object created'
 );
@@ -45,7 +46,8 @@ ok(
 	$shred_obj = Bio::PanGenome::QC::ShredAssemblies->new(
 		gff_files   => ['t/data/shred1.fa', 't/data/shred2.fa'],
 		read_size        => 5,
-		output_directory => $tmp
+		output_directory => $tmp,
+		job_runner       => "Local"
 	),
 	'shredding object created'
 );

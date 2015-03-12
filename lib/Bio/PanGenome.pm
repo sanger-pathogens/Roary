@@ -31,7 +31,7 @@ has 'output_filename'             => ( is => 'rw', isa => 'Str',      default  =
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  => 'pan_genome.fa' );
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'gene_presence_absence.csv' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',      default  => 'LSF' );
-has 'cpus'                        => ( is => 'ro', isa => 'Int',      default => 1 );
+has 'cpus'                        => ( is => 'ro', isa => 'Int',      default  => 1 );
 has 'makeblastdb_exec'            => ( is => 'rw', isa => 'Str',      default  => 'makeblastdb' );
 has 'blastp_exec'                 => ( is => 'rw', isa => 'Str',      default  => 'blastp' );
 has 'mcxdeblast_exec'             => ( is => 'ro', isa => 'Str',      default  => 'mcxdeblast' );
@@ -39,9 +39,11 @@ has 'mcl_exec'                    => ( is => 'ro', isa => 'Str',      default  =
 has 'perc_identity'               => ( is => 'ro', isa => 'Num',      default  => 98 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'dont_split_groups'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',      default  => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
+has 'core_definition'             => ( is => 'rw', isa => 'Num',      default  => 1.0 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -119,9 +121,11 @@ sub run {
         output_multifasta_files     => $self->output_multifasta_files,
         dont_delete_files           => $self->dont_delete_files,
         dont_create_rplots          => $self->dont_create_rplots,
+        dont_split_groups           => $self->dont_split_groups,
         verbose_stats               => $self->verbose_stats,
         translation_table           => $self->translation_table,
         group_limit                 => $self->group_limit,
+        core_definition             => $self->core_definition,
     );
     $post_analysis->run();
 

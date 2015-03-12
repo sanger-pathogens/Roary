@@ -103,6 +103,7 @@ sub _build__groups_to_files {
         }
         $groups_to_files{$group} = \%filenames;
     }
+    
     return \%groups_to_files;
 }
 

@@ -17,12 +17,16 @@ Take in a spreadsheet produced by the pipeline and identify the core genes.
 use Moose;
 use Text::CSV;
 use Bio::PanGenome::GroupStatistics;
+use POSIX;
+
+use Data::Dumper;
 
 has 'spreadsheet'            => ( is => 'ro', isa  => 'Str',      required => 1 );
 
 has '_csv_parser'            => ( is => 'ro', isa  => 'Text::CSV',lazy     => 1, builder => '_build__csv_parser' );
 has '_input_spreadsheet_fh'  => ( is => 'ro', lazy => 1,          builder  => '_build__input_spreadsheet_fh' );
 has 'ordered_core_genes'     => ( is => 'ro', isa  => 'ArrayRef', lazy     => 1, builder  => '_build_ordered_core_genes' );
+has 'core_definition'        => ( is => 'ro', isa => 'Num', default => 1 );
 
 has '_number_of_isolates'                 => ( is => 'rw', isa  => 'Int');
 has '_gene_column'                        => ( is => 'rw', isa  => 'Int');
@@ -30,6 +34,14 @@ has '_num_isolates_column'                => ( is => 'rw', isa  => 'Int');
 has '_avg_sequences_per_isolate_column'   => ( is => 'rw', isa  => 'Int');
 has '_genome_fragement_column'            => ( is => 'rw', isa  => 'Int');
 has '_order_within_fragement_column'      => ( is => 'rw', isa  => 'Int');
+has '_min_no_isolates_for_core'           => ( is => 'rw', isa  => 'Int', lazy_build => 1 );
+
+sub _build__min_no_isolates_for_core {
+  my ($self) = @_;
+  my $threshold = ceil( $self->_number_of_isolates * $self->core_definition );
+
+  return $threshold;
+}
 
 sub _build__csv_parser
 {
@@ -88,12 +100,13 @@ sub _ordered_core_genes
   my %ordered_genes;
   while ( my $row = $self->_csv_parser->getline( $self->_input_spreadsheet_fh ) ) 
   {
-    next if(@{$row} < 12);
-    next if(!defined($row->[$self->_gene_column]) || $row->[$self->_gene_column] eq '' );
-    next if(!defined($row->[$self->_avg_sequences_per_isolate_column]) || $row->[$self->_avg_sequences_per_isolate_column] eq '' );
-    next if(!defined($row->[$self->_genome_fragement_column]) || $row->[$self->_genome_fragement_column] eq '' );
+    next if(@{$row} < 12); # no genes in group
+    next if(!defined($row->[$self->_gene_column]) || $row->[$self->_gene_column] eq '' ); # no gene name
+    next if(!defined($row->[$self->_avg_sequences_per_isolate_column]) || $row->[$self->_avg_sequences_per_isolate_column] eq '' ); # no average
+    next if(!defined($row->[$self->_genome_fragement_column]) || $row->[$self->_genome_fragement_column] eq '' ); # fragment not defined
     
-    next if($self->_number_of_isolates != $row->[$self->_num_isolates_column]);
+    # next if($self->_number_of_isolates != $row->[$self->_num_isolates_column]); # if gene is not in all isolates
+    next if ( $row->[$self->_num_isolates_column] < $self->_min_no_isolates_for_core );
     next if($row->[$self->_avg_sequences_per_isolate_column] != 1);
     $ordered_genes{$row->[$self->_genome_fragement_column]}{$row->[$self->_order_within_fragement_column]} = $row->[$self->_gene_column];
   }

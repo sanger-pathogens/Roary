@@ -15,6 +15,7 @@ Parse a GFF and efficiently extract ID -> Gene Name
 =cut
 
 use Moose;
+
 use Bio::Tools::GFF;
 with 'Bio::PanGenome::ParseGFFAnnotationRole';
 

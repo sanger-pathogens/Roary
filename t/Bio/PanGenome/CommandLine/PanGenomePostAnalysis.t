@@ -21,7 +21,7 @@ local $ENV{PATH} = "$ENV{PATH}:./bin";
 system('cp t/data/post_analysis/* .');
 system('touch empty_file');
 my %scripts_and_expected_files = (
-       '-o clustered_proteins -p pan_genome.fa -s gene_presence_absence.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
+       '-o clustered_proteins -p pan_genome.fa -s gene_presence_absence.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots --dont_split_groups' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_post_analysis' ], 
        '-h' =>
          [ 'empty_file', 't/data/empty_file' ],   
@@ -49,7 +49,7 @@ cleanup_files();
 system('cp t/data/post_analysis/* .');
 system('touch empty_file');
 %scripts_and_expected_files = (
-       '-t 1 -o clustered_proteins -p pan_genome.fa -s gene_presence_absence.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots' =>
+       '-t 1 -o clustered_proteins -p pan_genome.fa -s gene_presence_absence.csv -c _clustered.clstr  -i _gff_files -f _fasta_files  -j Local --dont_create_rplots --dont_split_groups' =>
        [ 'clustered_proteins', 't/data/clustered_proteins_post_analysis' ], 
        '-h' =>
          [ 'empty_file', 't/data/empty_file' ],   

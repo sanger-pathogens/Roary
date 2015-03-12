@@ -11,10 +11,11 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::CreatePanGenome');
+    use_ok('Bio::PanGenome::CommandLine::Roary');
+	use_ok('Bio::PanGenome::CommandLine::CreatePanGenome');
     use Bio::PanGenome::SequenceLengths;
 }
-my $script_name = 'Bio::PanGenome::CommandLine::CreatePanGenome';
+my $script_name = 'Bio::PanGenome::CommandLine::Roary';
 my $cwd = getcwd();
 
 local $ENV{PATH} = "$ENV{PATH}:./bin";
@@ -22,17 +23,17 @@ my %scripts_and_expected_files;
 system('touch empty_file');
 
 %scripts_and_expected_files = (
-      ' -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+      ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
-      ' -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+      ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
-      ' -t 1 -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+      ' -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-      ' -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+      ' -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
-      ' -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+      ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
-      ' -t 1 -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+      ' -t 1 -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
@@ -41,10 +42,11 @@ mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expecte
 cleanup_files();
 
 %scripts_and_expected_files = (
-  ' -j Local  --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
-    [ 'pan_genome_sequences/sopB.fa.aln', 't/data/sopB.fa.aln' ],
+  ' -j Local --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+    [ 'pan_genome_sequences/flgM.fa.aln', 't/data/flgM.fa.aln' ],
 );
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+ok(-e 'core_gene_alignment.aln', 'Core gene alignment exists');
 
 ok(my $seq_len = Bio::PanGenome::SequenceLengths->new(
   fasta_file   => 'core_gene_alignment.aln',
