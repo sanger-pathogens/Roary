@@ -24,6 +24,7 @@ has 'nucleotide_filename'  => ( is => 'ro', isa => 'Str', required => 1 );
 has 'protein_filename'     => ( is => 'ro', isa => 'Str', required => 1  );
 has 'output_filename'      => ( is => 'ro', isa => 'Str', required => 1  );
 has 'exec'                 => ( is => 'ro', isa => 'Str', default  => 'revtrans.py' );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',  default  => 11 );
 
 
 sub _command_to_run {
@@ -34,7 +35,7 @@ sub _command_to_run {
             $self->exec,      
             $self->nucleotide_filename,
             $self->protein_filename,
-            '-mtx', 11,
+            '-mtx', $self->translation_table,
             '-readthroughstop',
             '-allinternal', 
             '-match', 'name',

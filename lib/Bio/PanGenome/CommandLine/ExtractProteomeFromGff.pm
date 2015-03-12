@@ -21,16 +21,18 @@ has 'gff_files'             => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_suffix'         => ( is => 'rw', isa => 'Str', default => 'proteome.faa' );
 has '_error_message'        => ( is => 'rw', isa => 'Str' );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $gff_files, $output_suffix, $apply_unknowns_filter, $help );
+    my ( $gff_files, $output_suffix, $apply_unknowns_filter, $help, $translation_table );
 
     GetOptionsFromArray(
         $self->args,
         'o|output_suffix=s'       => \$output_suffix,
         'apply_unknowns_filter=i' => \$apply_unknowns_filter,
+        't|translation_table=i'   => \$translation_table,
         'h|help'                  => \$help,
     );
 
@@ -44,6 +46,7 @@ sub BUILD {
     }
 
     $self->apply_unknowns_filter($apply_unknowns_filter) if ( defined($apply_unknowns_filter) );
+    $self->translation_table($translation_table)         if (defined($translation_table) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -69,7 +72,8 @@ sub run {
         my $obj = Bio::PanGenome::ExtractProteomeFromGFF->new(
             gff_file              => $gff_file,
             output_filename       => $filename . '.' . $self->output_suffix,
-            apply_unknowns_filter => $self->apply_unknowns_filter
+            apply_unknowns_filter => $self->apply_unknowns_filter,
+            translation_table     => $self->translation_table
         );
         $obj->fasta_file();
     }
@@ -87,6 +91,9 @@ sub usage_text {
     
     # specify an output suffix
     extract_proteome_from_gff -o output_suffix.faa  *.gff
+    
+    # specify an output suffix
+    extract_proteome_from_gff --translation_table 1  *.gff
     
     # This help message
     extract_proteome_from_gff -h

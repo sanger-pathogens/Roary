@@ -1,4 +1,4 @@
 "Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragement","Accessory Order with Fragment","QC","query_1.fa.tmp.filtered.fa","query_2.fa.tmp.filtered.fa","query_3.fa.tmp.filtered.fa"
 "group_1","","","3","3","1","","","","","","1_1","2_1","3_1"
-"group_3","","","2","2","1","","","","","","1_3","","3_3"
 "group_2","","","2","2","1","","","","","","1_2","2_2",""
+"group_3","","","2","2","1","","","","","","1_3","","3_3"

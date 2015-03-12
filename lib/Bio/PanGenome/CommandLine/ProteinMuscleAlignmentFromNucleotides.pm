@@ -20,6 +20,7 @@ use Bio::PanGenome::SortFasta;
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'translation_table'  => ( is => 'rw', isa => 'Int',      default => 11 );
 
 has 'nucleotide_fasta_files'  => ( is => 'rw', isa => 'ArrayRef' );
 has '_error_message'          => ( is => 'rw', isa => 'Str' );
@@ -27,14 +28,16 @@ has '_error_message'          => ( is => 'rw', isa => 'Str' );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $nucleotide_fasta_files, $help );
+    my ( $nucleotide_fasta_files, $help,$translation_table );
 
     GetOptionsFromArray(
         $self->args,
+        't|translation_table=i'     => \$translation_table,
         'h|help'              => \$help,
     );
 
     $self->help($help) if(defined($help));
+    $self->translation_table($translation_table)             if (defined($translation_table) );
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide at least 1 FASTA file");
     }
@@ -67,6 +70,7 @@ sub run {
       
       my $multifasta_protein_obj = Bio::PanGenome::Output::GroupsMultifastaProtein->new(
           nucleotide_fasta_file => $fasta_file,
+          translation_table     => $self->translation_table
         );
       $multifasta_protein_obj->convert_nucleotide_to_protein();
       
@@ -84,7 +88,8 @@ sub run {
       my $revtrans= Bio::PanGenome::External::Revtrans->new(
         nucleotide_filename => $fasta_file,
         protein_filename  => $multifasta_protein_obj->output_filename. '.aln',
-        output_filename   => $fasta_file.'.aln'
+        output_filename   => $fasta_file.'.aln',
+        translation_table => $self->translation_table
       );
       $revtrans->run();
       
@@ -107,6 +112,9 @@ sub usage_text {
     
     # Transfer the annotation from the GFF files to the group file
     protein_muscle_alignment_from_nucleotides protein_fasta_1.faa protein_fasta_2.faa
+    
+    # Use a different translation table (default 11)
+    protein_muscle_alignment_from_nucleotides -t 1 protein_fasta_1.faa protein_fasta_2.faa
     
     # This help message
     protein_muscle_alignment_from_nucleotides -h

@@ -29,11 +29,34 @@ has 'clusters_filename'           => ( is => 'ro', isa => 'Str', required => 1 )
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool', required => 1 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool', default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',  default  => 11 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default  => 50000 );
+has 'core_definition'             => ( is => 'ro', isa => 'Num',  default  => 1.0 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
-has '_minimum_memory_mb'    => ( is => 'ro', isa => 'Int', default => 1000 );
-has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 10 );
+has '_minimum_memory_mb'    => ( is => 'ro', isa => 'Int', default => 4000 );
+has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 30 );
+has '_queue'                => ( is => 'rw', isa => 'Str',  lazy => 1, builder => '_build__queue');
+
+
+sub _build__queue {
+    my ($self) = @_;
+    my $queue = 'normal';
+    my $num_samples = @{ $self->input_files };
+    if($num_samples > 200)
+    {
+      $queue = 'long';
+    }
+    elsif($num_samples > 600)
+    {
+      $queue = 'basement';
+    }
+    return $queue;
+}
+
 
 sub _build__memory_required_in_mb {
     my ($self) = @_;
@@ -85,6 +108,11 @@ sub _command_to_run {
     my $dont_create_rplots_flag = '';
     $dont_create_rplots_flag = '--dont_create_rplots' if(defined($self->dont_create_rplots) && $self->dont_create_rplots == 1);
     
+    my $dont_split_groups_flag = '';
+    $dont_split_groups_flag = '--dont_split_groups' if ( defined $self->dont_split_groups && $self->dont_split_groups == 1 );
+
+    my $verbose_stats_flag = '';
+    $verbose_stats_flag = '--verbose_stats' if ( defined($self->verbose_stats) && $self->verbose_stats == 1 );
     
     return join(
         " ",
@@ -97,15 +125,22 @@ sub _command_to_run {
             $output_multifasta_files_flag,
             '-i', '_gff_files',
             '-f', '_fasta_files',
+            '-t', $self->translation_table,
             $dont_delete_files_flag,
             $dont_create_rplots_flag,
-            '-j', $self->job_runner
+            $dont_split_groups_flag,
+            $verbose_stats_flag,
+            '-j', $self->job_runner,
+            '--processors', $self->cpus,
+            '--group_limit', $self->group_limit,
+            '-cd', ($self->core_definition*100)
         )
     );
 }
 
 sub run {
     my ($self) = @_;
+
     my @commands_to_run;
     push( @commands_to_run, $self->_command_to_run );
 
@@ -114,6 +149,7 @@ sub run {
         memory_in_mb    => $self->_memory_required_in_mb,
         queue           => $self->_queue,
         dont_wait       => $self->dont_wait,
+        cpus            => $self->cpus 
     );
     $job_runner_obj->run();
 

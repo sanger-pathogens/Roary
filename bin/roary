@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::PanGenome::Main::Roary;
+
+# ABSTRACT: Create a pan genome from a set of proteome FASTA files
+# PODNAME: create_pan_geneome
+
+=head1 SYNOPSIS
+
+Create a pan genome from a set of proteome FASTA files
+
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+#BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+use Bio::PanGenome::CommandLine::Roary;
+
+Bio::PanGenome::CommandLine::Roary->new(args => \@ARGV, script_name => $0)->run;

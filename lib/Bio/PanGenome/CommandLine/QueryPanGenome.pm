@@ -12,7 +12,6 @@ use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::AnalyseGroups;
 use Bio::PanGenome::Output::GroupsMultifastas;
-use Bio::PanGenome::Output::OneGenePerGroupFasta;
 use Bio::PanGenome::Output::QueryGroups;
 use Bio::PanGenome::PrepareInputFiles;
 use Bio::PanGenome::Output::DifferenceBetweenSets;
@@ -31,13 +30,14 @@ has 'input_set_one'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'input_set_two'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'pan_genome_results' );
 has 'action'          => ( is => 'rw', isa => 'Str', default => 'one_gene_per_group' );
+has 'core_definition' => ( is => 'rw', isa => 'Num', default => 1.0 );
 
 has '_error_message' => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $input_files, $output_filename, $groups_filename, @group_names, @input_set_one, @input_set_two, $action, $help );
+    my ( $input_files, $output_filename, $groups_filename, @group_names, @input_set_one, @input_set_two, $action, $core_definition, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -47,6 +47,7 @@ sub BUILD {
         'a|action=s'          => \$action,
         'i|input_set_one=s'   => \@input_set_one,
         't|input_set_two=s'   => \@input_set_two,
+        'c|core_definition=f' => \$core_definition,
         'h|help'              => \$help,
     );
 
@@ -54,6 +55,7 @@ sub BUILD {
     
     $self->output_filename($output_filename) if ( defined($output_filename) );
     $self->action($action)                   if ( defined($action) );
+    $self->core_definition($core_definition) if ( defined($core_definition) );
     if ( defined($groups_filename) && ( -e $groups_filename ) ) {
         $self->groups_filename($groups_filename);
     }
@@ -110,14 +112,7 @@ sub run {
         groups_filename => $self->groups_filename,
     );
 
-    if ( $self->action eq 'one_gene_per_group' ) {
-        my $one_gene_per_fasta = Bio::PanGenome::Output::OneGenePerGroupFasta->new(
-            analyse_groups  => $analyse_groups_obj,
-            output_filename => $self->output_filename
-        );
-        $one_gene_per_fasta->create_file();
-    }
-    elsif ( $self->action eq 'union' ) {
+    if ( $self->action eq 'union' ) {
         my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
             analyse_groups        => $analyse_groups_obj,
             output_union_filename => $self->output_filename,
@@ -129,7 +124,8 @@ sub run {
         my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
             analyse_groups               => $analyse_groups_obj,
             output_intersection_filename => $self->output_filename, 
-            input_filenames => $prepare_input_files->fasta_files
+            input_filenames => $prepare_input_files->fasta_files,
+            core_definition => $self->core_definition
         );
         $query_groups->groups_intersection();
     }
@@ -137,7 +133,8 @@ sub run {
         my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
             analyse_groups             => $analyse_groups_obj,
             output_complement_filename => $self->output_filename, 
-            input_filenames => $prepare_input_files->fasta_files
+            input_filenames => $prepare_input_files->fasta_files,
+            core_definition => $self->core_definition
         );
         $query_groups->groups_complement();
     }

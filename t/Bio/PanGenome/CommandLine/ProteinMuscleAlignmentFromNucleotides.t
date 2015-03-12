@@ -18,6 +18,8 @@ system('touch empty_file');
 my %scripts_and_expected_files = (
     't/data/nuc_multifasta.fa' =>
       [ 't/data/nuc_multifasta.fa.aln', 't/data/expected_nuc_multifasta.fa.aln' ],
+      '-t 1 t/data/nuc_multifasta.fa' =>
+        [ 't/data/nuc_multifasta.fa.aln', 't/data/expected_nuc_multifasta.fa.aln' ],
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
 );

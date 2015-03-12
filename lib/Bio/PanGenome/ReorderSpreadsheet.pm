@@ -23,7 +23,9 @@ use Bio::PanGenome::GroupStatistics;
 has 'tree_file'   => ( is => 'ro', isa => 'Str', required => 1 );
 has 'spreadsheet' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'tree_format' => ( is => 'ro', isa => 'Str', default  => 'newick' );
-has 'output_filename'        => ( is => 'ro', isa  => 'Str',      default => 'reordered_groups_stats.csv' );
+has 'output_filename'        => ( is => 'ro', isa => 'Str',      default => 'reordered_groups_stats.csv' );
+has 'search_strategy'        => ( is => 'ro', isa => 'Str', default =>  'depth' );
+has 'sortby'                 => ( is => 'ro', isa => 'Maybe[Str]');
 
 has '_sample_order'          => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__sample_order' );
 has '_input_spreadsheet_fh'  => ( is => 'ro', lazy => 1,          builder => '_build__input_spreadsheet_fh' );
@@ -33,6 +35,7 @@ has '_fixed_headers'         => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, 
 has '_num_fixed_headers'     => ( is => 'ro', isa  => 'Int',      lazy    => 1, builder => '_build__num_fixed_headers' );
 has '_csv_parser'            => ( is => 'ro', isa  => 'Text::CSV',lazy    => 1, builder => '_build__csv_parser' );
 has '_csv_output'            => ( is => 'ro', isa  => 'Text::CSV',lazy    => 1, builder => '_build__csv_output' );
+
 
 sub BUILD {
   my ($self) = @_;
@@ -158,7 +161,9 @@ sub _build__sample_order {
     my ($self) = @_;
     my $obj = Bio::PanGenome::SampleOrder->new(
         tree_file   => $self->tree_file,
-        tree_format => $self->tree_format
+        tree_format => $self->tree_format,
+        search_strategy => $self->search_strategy,
+        sortby => $self->sortby
     );
     return $obj->ordered_samples();
 }

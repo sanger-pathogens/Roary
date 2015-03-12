@@ -26,6 +26,7 @@ has 'gff_file'         => ( is => 'ro', isa => 'Str',                           
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
 has 'output_directory' => ( is => 'ro', isa => 'Str',                           required => 1 );
 has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
+has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has 'fasta_file'   => ( is => 'ro', isa => 'Str',        lazy => 1, builder => '_build_fasta_file' );
 has '_input_seqio' => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__input_seqio' );
@@ -54,6 +55,9 @@ sub populate_files {
           my $current_group =  $self->annotate_groups->_ids_to_groups->{$input_seq->display_id};
 
           my $number_of_genes = @{$self->annotate_groups->_groups_to_id_names->{$current_group}};
+          # Theres no need to align a single sequence
+          next if($self->output_multifasta_files == 0 && $number_of_genes == 1);
+          
           my $output_seq = $self->_group_seq_io_obj($current_group,$number_of_genes);
           $output_seq->write_seq($input_seq);
         }

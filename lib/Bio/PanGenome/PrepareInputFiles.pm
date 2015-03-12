@@ -22,6 +22,7 @@ use Cwd;
 
 has 'input_files'      => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
 has 'job_runner'       => ( is => 'ro', isa => 'Str',             default  => 'Local' );
+has 'cpus'             => ( is => 'ro', isa => 'Int',      default => 1 );
 has '_input_gff_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy     => 1, builder => '_build__input_gff_files' );
 has '_input_fasta_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__input_fasta_files' );
 has '_input_fasta_files_filtered' =>
@@ -38,6 +39,7 @@ has '_extract_proteome_obj' => (
     builder => '_build__extract_proteome_obj'
 );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'translation_table'     => ( is => 'rw', isa => 'Int',  default => 11 );
 
 has '_fasta_filter_obj' =>
   ( is => 'ro', isa => 'Bio::PanGenome::FilterUnknowsFromFasta', lazy => 1, builder => '_fasta_filter_obj' );
@@ -71,7 +73,9 @@ sub _build__extract_proteome_obj {
     return Bio::PanGenome::ExtractProteomeFromGFFs->new(
         gff_files             => $self->_input_gff_files,
         job_runner            => $self->job_runner,
-        apply_unknowns_filter => $self->apply_unknowns_filter
+        apply_unknowns_filter => $self->apply_unknowns_filter,
+        translation_table     => $self->translation_table,
+        cpus                  => $self->cpus 
     );
 }
 

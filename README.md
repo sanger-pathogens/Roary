@@ -21,11 +21,9 @@ Querying the data:
 2.) Given a set of isolates, output the union, intersection or complement.
 3.) Given a list of genes, create multifasta files for each gene from all isolates
 
-
-
 Dependancies
 ============
-exonerate
 BedTools
 gsed
 RevTrans - http://www.cbs.dtu.dk/services/RevTrans/download.php
+R

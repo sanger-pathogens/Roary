@@ -21,6 +21,29 @@ my %scripts_and_expected_files = (
       [ 'different_output_name.csv', 't/data/reorder_isolates_expected_output.csv' ],
     '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -f newick' =>
       [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output.csv' ],
+      
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a depth' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output.csv' ],
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a depth -b height' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_depth_height.csv' ],
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a depth -b creation' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_depth_creation.csv' ],  
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a depth -b alpha' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_depth_alpha.csv' ],
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a depth -b revalpha' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_depth_revalpha.csv' ],
+      
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a breadth' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output.csv' ],
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a breadth -b height' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_breadth_height.csv' ],
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a breadth -b creation' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_breadth_creation.csv' ],  
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a breadth -b alpha' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_breadth_alpha.csv' ],
+    '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv -a breadth -b revalpha' =>
+      [ 'reordered_spreadsheet.csv', 't/data/reorder_isolates_expected_output_breadth_revalpha.csv' ],
+
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
 );

@@ -15,7 +15,8 @@ ok(
     my $obj = Bio::PanGenome::ReorderSpreadsheet->new(
         tree_file       => 't/data/reorder_isolates.tre',
         spreadsheet     => 't/data/reorder_isolates_input.csv',
-        output_filename => 'reorder_isolates_output.csv'
+        output_filename => 'reorder_isolates_output.csv',
+        sortby => 'height'
     ),
     'initialise reordering the spreadsheet'
 );
@@ -23,7 +24,7 @@ ok(
 
 
         
-is_deeply($obj->_column_mappings,[0,1,2,3,4,5,6,7,8,9,10,11,13,12],'Column mappings with fixed in same order and end columns ordered by tree file');
+is_deeply($obj->_column_mappings,[0,1,2,3,4,5,6,7,8,9,10,11,12,13],'Column mappings with fixed in same order and end columns ordered by tree file');
 ok( $obj->reorder_spreadsheet(), 'run the reorder method' );
 ok( -e $obj->output_filename,    'check the output file exists' );
 

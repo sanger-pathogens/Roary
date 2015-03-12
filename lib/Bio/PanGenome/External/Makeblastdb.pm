@@ -35,7 +35,7 @@ has '_logfile'           => ( is => 'ro', isa => 'Str', default  => '/dev/null' 
 has 'output_database'    => ( is => 'ro', isa => 'Str', lazy     => 1, builder => '_build_output_database' );
 
 # Overload Role
-has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int', default => 3000);
+has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int', default => 4000);
 
 sub _build_output_database {
     my ($self) = @_;
@@ -63,7 +63,7 @@ sub run {
   my @commands_to_run;
   push(@commands_to_run, $self->_command_to_run );
   
-  my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue );
+  my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus  => $self->cpus  );
   $job_runner_obj->run();
   
   1;

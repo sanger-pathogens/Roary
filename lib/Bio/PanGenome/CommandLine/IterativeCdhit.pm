@@ -25,12 +25,13 @@ has 'output_filtered_clustered_fasta' => ( is => 'rw', isa => 'Str', default => 
 has 'lower_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 0.98 );
 has 'upper_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'step_size_percentage'            => ( is => 'rw', isa => 'Num', default => 0.005 );
+has 'cpus'                            => ( is => 'rw', isa => 'Int', default => 1 );
 
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $output_cd_hit_filename,$lower_bound_percentage,$upper_bound_percentage,$step_size_percentage, $output_combined_filename, $number_of_input_files, $output_filtered_clustered_fasta,
+    my ( $output_cd_hit_filename,$cpus,$lower_bound_percentage,$upper_bound_percentage,$step_size_percentage, $output_combined_filename, $number_of_input_files, $output_filtered_clustered_fasta,
         $help );
 
     GetOptionsFromArray(
@@ -42,6 +43,7 @@ sub BUILD {
         'l|lower_bound_percentage=s'          => \$lower_bound_percentage,
         'u|upper_bound_percentage=s'          => \$upper_bound_percentage,
         's|step_size_percentage=s'            => \$step_size_percentage,
+        'cpus=i'                              => \$cpus,
         'h|help'                              => \$help,
     );
 
@@ -52,6 +54,7 @@ sub BUILD {
     $self->output_cd_hit_filename($output_cd_hit_filename)     if ( defined($output_cd_hit_filename) );
     $self->output_combined_filename($output_combined_filename) if ( defined($output_combined_filename) );
     $self->number_of_input_files($number_of_input_files)       if ( defined($number_of_input_files) );
+    $self->cpus($cpus)                                         if ( defined($cpus) );
     $self->output_filtered_clustered_fasta($output_filtered_clustered_fasta)
       if ( defined($output_filtered_clustered_fasta) );
 
@@ -73,7 +76,8 @@ sub run {
         output_filtered_clustered_fasta => $self->output_filtered_clustered_fasta,
         lower_bound_percentage          => $self->lower_bound_percentage,
         upper_bound_percentage          => $self->upper_bound_percentage,
-        step_size_percentage            => $self->step_size_percentage
+        step_size_percentage            => $self->step_size_percentage,
+        cpus                            => $self->cpus
         
     );
     $obj->run;
@@ -86,10 +90,13 @@ sub usage_text {
     Usage: iterative_cdhit [options]
     Iteratively cluster a set of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.
     
-    # Basic usage where you have a single isolate
+    # Basic usage where you have a single isolate
     iterative_cdhit -m proteome_fasta.faa
     
-    # Where you have 10 isolates
+    # Use multiple CPUs
+    iterative_cdhit -m proteome_fasta.faa --cpus 8 
+    
+    # Where you have 10 isolates
     iterative_cdhit -m proteome_fasta.faa -n 10
     
     # Specify the output file name  cdhit results

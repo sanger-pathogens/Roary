@@ -36,6 +36,7 @@ has '_sequence_file_names'    => ( is => 'ro', isa => 'ArrayRef', lazy => 1, bui
 has '_makeblastdb_obj'        => ( is => 'ro', isa => 'Bio::PanGenome::External::Makeblastdb', lazy => 1, builder => '_build__makeblastdb_obj' );
 has '_segmasker_obj'          => ( is => 'ro', isa => 'Bio::PanGenome::External::Segmasker', lazy => 1, builder => '_build__segmasker_obj' );
 has '_blast_database'         => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__blast_database' );
+has 'cpus'                    => ( is => 'ro', isa => 'Int',  default => 1 );
 
 has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
@@ -51,7 +52,7 @@ sub _build__blast_database {
 sub _build__segmasker_obj {
     my ($self) = @_;
     my $segmasker =
-      Bio::PanGenome::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec, job_runner => $self->job_runner );
+      Bio::PanGenome::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec, job_runner => $self->job_runner, cpus  => $self->cpus );
     $segmasker->run();
     return $segmasker;
 }
@@ -59,7 +60,7 @@ sub _build__segmasker_obj {
 sub _build__makeblastdb_obj {
     my ($self) = @_;
     my $blast_database =
-      Bio::PanGenome::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file, job_runner => $self->job_runner  );
+      Bio::PanGenome::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file, job_runner => $self->job_runner, cpus  => $self->cpus  );
     $blast_database->run();
     return $blast_database;
 }
@@ -99,13 +100,13 @@ sub _build__memory_required_in_mb
 {
   my ($self) = @_;
   my $filename = $self->fasta_file;
-  my $file_size = 1000;
+  my $file_size = 3000;
   if(-e $filename)
   {
     $file_size = -s $filename;
-    $file_size *=10;
+    $file_size *=12;
     $file_size = int($file_size/1000000);
-    $file_size = 100 if($file_size < 100);
+    $file_size = 3000 if($file_size < 3000);
   }
 
   return $file_size;
@@ -130,7 +131,7 @@ sub run {
         push( @expected_output_files, $output_seq_results_file );
         push( @commands_to_run,       $blast_database->_command_to_run() );
     }
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue );
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus  => $self->cpus );
     $job_runner_obj->run();
     $self->_combine_blast_results(\@expected_output_files);
     return 1;

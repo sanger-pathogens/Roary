@@ -41,7 +41,7 @@ sub _build__memory_required_in_mb
   # http://micans.org/mcl/man/mcl.html#opt-how-much-ram
   
   my $filename = $self->blast_results;
-  my $memory_required = 1000;
+  my $memory_required = 2000;
   if(-e $filename)
   {
     $memory_required = -s $filename;
@@ -49,7 +49,7 @@ sub _build__memory_required_in_mb
     $memory_required = int($memory_required/1000000);
     # increase memory for worst case senario
     $memory_required *= 3;
-    $memory_required += 1000;
+    $memory_required += 2000;
   }
   
   
@@ -77,7 +77,7 @@ sub run {
     my @commands_to_run;
     push(@commands_to_run, $self->_command_to_run );
     
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue );
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue,        cpus            => $self->cpus  );
     $job_runner_obj->run();
     
     1;

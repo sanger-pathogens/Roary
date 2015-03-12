@@ -1,0 +1,19 @@
+  0.39	86	86	U	0	unclassified
+ 99.61	21911	0	-	1	root
+ 99.61	21911	0	-	131567	  cellular organisms
+ 99.61	21911	3	D	2	    Bacteria
+ 99.60	21908	1	P	1224	      Proteobacteria
+ 99.59	21907	9	C	28211	        Alphaproteobacteria
+ 99.55	21898	11	O	356	          Rhizobiales
+ 99.50	21887	25	F	118882	            Brucellaceae
+ 99.39	21862	20467	G	234	              Brucella
+  6.28	1381	1349	S	120577	                Brucella ceti
+  0.10	21	21	-	1423891	                  Brucella ceti TE10759-12
+  0.05	11	11	-	1407053	                  Brucella ceti TE28753-12
+  0.04	9	0	S	120576	                Brucella pinnipedialis
+  0.04	9	9	-	520461	                  Brucella pinnipedialis B2/94
+  0.01	3	0	S	444163	                Brucella microti
+  0.01	3	3	-	568815	                  Brucella microti CCM 4915
+  0.00	1	0	S	236	                Brucella ovis
+  0.00	1	1	-	444178	                  Brucella ovis ATCC 25840
+  0.00	1	1	S	29461	                Brucella suis
