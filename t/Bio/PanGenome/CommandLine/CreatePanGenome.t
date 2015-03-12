@@ -22,18 +22,18 @@ my %scripts_and_expected_files;
 system('touch empty_file');
 
 %scripts_and_expected_files = (
-      ' -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+      ' -j Local --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
-      ' -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
-      ' -t 1 -j Local   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-      ' -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+      ' -j Local --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],     
+      ' -t 1 -j Local --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],
+      ' -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
         [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
-      ' -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
-      ' -t 1 -j Parallel   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
+      ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],     
+      ' -t 1 -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+        [ 'gene_presence_absence.csv', 't/data/overall_group_statisics.csv' ],
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
 );
@@ -41,7 +41,7 @@ mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expecte
 cleanup_files();
 
 %scripts_and_expected_files = (
-  ' -j Local  --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+  ' -j Local --dont_split_groups  --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
     [ 'pan_genome_sequences/sopB.fa.aln', 't/data/sopB.fa.aln' ],
 );
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

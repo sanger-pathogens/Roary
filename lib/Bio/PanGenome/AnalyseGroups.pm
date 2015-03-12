@@ -38,7 +38,7 @@ sub BUILD {
     my ($self) = @_;
     # This triggers _genes_to_groups to be built
     $self->_groups_to_genes;
-    # This triggers _genes_to_file to be buit
+    # This triggers _genes_to_file to be built
     $self->_files_to_genes;
     $self->_freq_groups_per_genome;
 }

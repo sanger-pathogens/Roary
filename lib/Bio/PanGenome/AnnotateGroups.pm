@@ -19,6 +19,8 @@ Take in a group file and assosiated GFF files for the isolates and update the gr
 use Moose;
 use Bio::PanGenome::Exceptions;
 use Bio::PanGenome::GeneNamesFromGFF;
+use Data::Dumper;
+use Array::Utils qw(array_minus);
 
 use File::Grep qw(fgrep);
 
@@ -174,6 +176,7 @@ sub _builder__groups_to_id_names {
             $groups_to_id_names{$group_name} = \@elements;
         }
     }
+    
     return \%groups_to_id_names;
 }
 
@@ -259,8 +262,7 @@ sub _split_groups {
 sub _remove_ids_from_group {
     my ( $self, $ids_to_remove, $group ) = @_;
 
-    my @remaining_ids =
-      grep { not $_ ~~ @{$ids_to_remove} } @{ $self->_groups_to_id_names->{$group} };
+    my @remaining_ids = array_minus( @{ $self->_groups_to_id_names->{$group} }, @{ $ids_to_remove } );
     $self->_groups_to_id_names->{$group} = \@remaining_ids;
     if ( @{ $self->_groups_to_id_names->{$group} } == 0 ) {
         delete( $self->_groups_to_id_names->{$group} );

@@ -21,7 +21,8 @@ ok(
 	my $qc_report_obj = Bio::PanGenome::QC::Report->new( 
 		input_files  => [],
 		outfile      => "kraken_report.csv",
-		_kraken_data => $kraken_data
+		_kraken_data => $kraken_data,
+		job_runner   => "Local"
 	),
 	'QC report object created'
 );

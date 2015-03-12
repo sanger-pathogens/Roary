@@ -23,14 +23,16 @@ Returns the path to the results file
 use Moose;
 with 'Bio::PanGenome::JobRunner::Role';
 
-has 'fasta_files'   => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'exec'          => ( is => 'ro', isa => 'Str',      default  => 'protein_muscle_alignment_from_nucleotides' );
-has 'translation_table'      => ( is => 'rw', isa => 'Int',      default => 11 );
+has 'fasta_files'       => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein_muscle_alignment_from_nucleotides' );
+has 'translation_table' => ( is => 'rw', isa => 'Int',      default => 11 );
+has 'core_definition'   => ( is => 'ro', isa => 'Num',      default => 1 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
 has '_queue'                 => ( is => 'rw', isa => 'Str', default  => 'normal' );
 has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 25 );
+has '_core_alignment_cmd'    => ( is => 'rw', isa => 'Str', lazy_build => 1 );
 
 sub _build__memory_required_in_mb {
     my ($self)          = @_;
@@ -41,6 +43,14 @@ sub _build__memory_required_in_mb {
 sub _command_to_run {
     my ( $self, $fasta_files, ) = @_;
     return $self->exec. " -t ".$self->translation_table." ". join( " ", @{$fasta_files}  );
+}
+
+sub _build__core_alignment_cmd {
+    my ( $self ) = @_;
+    
+    my $core_cmd = "pan_genome_core_alignment";
+    $core_cmd .= " -cd " . ($self->core_definition*100) if ( defined $self->core_definition );
+    return $core_cmd;
 }
 
 sub run {
@@ -71,7 +81,7 @@ sub run {
     );
     $job_runner_obj->run();
     
-    $job_runner_obj->submit_dependancy_job('pan_genome_core_alignment');
+    $job_runner_obj->submit_dependancy_job($self->_core_alignment_cmd);
     1;
 }
 

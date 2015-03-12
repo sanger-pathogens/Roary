@@ -31,9 +31,11 @@ has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 )
 has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default => 98 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
+has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 1.0 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -41,7 +43,7 @@ has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $create_rplots,$group_limit, $max_threads, $dont_delete_files, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $help );
+    my ( $fasta_files, $create_rplots,$group_limit, $max_threads, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $core_definition, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -56,11 +58,13 @@ sub BUILD {
         'e|output_multifasta_files' => \$output_multifasta_files,
         'i|perc_identity=i'         => \$perc_identity,
         'dont_delete_files'         => \$dont_delete_files,
+        'dont_split_groups'         => \$dont_split_groups,
         'create_rplots'             => \$create_rplots,
         'verbose_stats'             => \$verbose_stats,
         't|translation_table=i'     => \$translation_table,
         'group_limit=i'             => \$group_limit,
         'qc|run_qc'                 => \$run_qc,
+        'cd|core_definition=f'      => \$core_definition,
         'h|help'                    => \$help,
     );
     
@@ -80,11 +84,13 @@ sub BUILD {
     $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
     $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
     $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
+    $self->dont_split_groups($dont_split_groups)             if ( defined($dont_split_groups) );
     $self->dont_create_rplots(0)                             if (defined($create_rplots) );
     $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
     $self->translation_table($translation_table)             if (defined($translation_table) );
     $self->group_limit($group_limit)                         if ( defined($group_limit) );
     $self->run_qc($run_qc) if ( defined( $run_qc ) );
+    $self->core_definition( $core_definition/100 ) if ( defined($core_definition) );
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -133,9 +139,11 @@ sub run {
         perc_identity           => $self->perc_identity,
         dont_delete_files       => $self->dont_delete_files,
         dont_create_rplots      => $self->dont_create_rplots,
+        dont_split_groups       => $self->dont_split_groups,
         verbose_stats           => $self->verbose_stats,
         translation_table       => $self->translation_table,
-        group_limit             => $self->group_limit
+        group_limit             => $self->group_limit,
+        core_definition         => $self->core_definition,
       );
     $pan_genome_obj->run();
 }
