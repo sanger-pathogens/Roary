@@ -13,184 +13,59 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome;
 use Bio::PanGenome::PrepareInputFiles;
 use Bio::PanGenome::QC::Report;
+extends 'Bio::PanGenome::CommandLine::Roary';
 
-has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'script_name'       => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'help'              => ( is => 'rw', isa => 'Bool',     default  => 0 );
-
-has 'fasta_files'       => ( is => 'rw', isa => 'ArrayRef' );
-has 'output_filename'   => ( is => 'rw', isa => 'Str', default => 'clustered_proteins' );
-has 'job_runner'        => ( is => 'rw', isa => 'Str', default => 'LSF' );
-has 'makeblastdb_exec'  => ( is => 'rw', isa => 'Str', default => 'makeblastdb' );
-has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
-has 'mcxdeblast_exec'   => ( is => 'rw', isa => 'Str', default => 'mcxdeblast' );
-has 'mcl_exec'          => ( is => 'rw', isa => 'Str', default => 'mcl' );
-has 'apply_unknowns_filter'       => ( is => 'rw', isa => 'Bool', default => 1 );
-has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
+has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default => 'Local' );
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default => 98 );
-has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 1 );
-has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
-has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
-has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 1.0 );
-
-has '_error_message'    => ( is => 'rw', isa => 'Str' );
-has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
-
-sub BUILD {
-    my ($self) = @_;
-
-    my ( $fasta_files, $create_rplots,$group_limit, $max_threads, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $core_definition, $help );
-
-    GetOptionsFromArray(
-        $self->args,
-        'o|output=s'                => \$output_filename,
-        'j|job_runner=s'            => \$job_runner,
-        'm|makeblastdb_exec=s'      => \$makeblastdb_exec,
-        'b|blastp_exec=s'           => \$blastp_exec,
-        'd|mcxdeblast_exec=s'       => \$mcxdeblast_exec,
-        'c|mcl_exec=s'              => \$mcl_exec, 
-        'p|processors=i'            => \$cpus,
-        'apply_unknowns_filter=i'   => \$apply_unknowns_filter,
-        'e|output_multifasta_files' => \$output_multifasta_files,
-        'i|perc_identity=i'         => \$perc_identity,
-        'dont_delete_files'         => \$dont_delete_files,
-        'dont_split_groups'         => \$dont_split_groups,
-        'create_rplots'             => \$create_rplots,
-        'verbose_stats'             => \$verbose_stats,
-        't|translation_table=i'     => \$translation_table,
-        'group_limit=i'             => \$group_limit,
-        'qc|run_qc'                 => \$run_qc,
-        'cd|core_definition=f'      => \$core_definition,
-        'h|help'                    => \$help,
-    );
-    
-    $self->help($help) if(defined($help));
-    if ( @{ $self->args } == 0 ) {
-        $self->_error_message("Error: You need to provide a GFF file");
-    }
-
-    $self->output_filename($output_filename)   if ( defined($output_filename) );
-    $self->job_runner($job_runner)             if ( defined($job_runner) );
-    $self->makeblastdb_exec($makeblastdb_exec) if ( defined($makeblastdb_exec) );
-    $self->blastp_exec($blastp_exec)           if ( defined($blastp_exec) );
-    $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
-    $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
-    $self->cpus($cpus)                         if ( defined($cpus) );
-    $self->perc_identity($perc_identity)       if ( defined($perc_identity) );
-    $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
-    $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
-    $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
-    $self->dont_split_groups($dont_split_groups)             if ( defined($dont_split_groups) );
-    $self->dont_create_rplots(0)                             if (defined($create_rplots) );
-    $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
-    $self->translation_table($translation_table)             if (defined($translation_table) );
-    $self->group_limit($group_limit)                         if ( defined($group_limit) );
-    $self->run_qc($run_qc) if ( defined( $run_qc ) );
-    $self->core_definition( $core_definition/100 ) if ( defined($core_definition) );
-
-    for my $filename ( @{ $self->args } ) {
-        if ( !-e $filename ) {
-            $self->_error_message("Error: Cant access file $filename");
-            last;
-        }
-    }
-    $self->fasta_files( $self->args );
-
-}
-
-sub run {
-    my ($self) = @_;
-
-    ( !$self->help ) or die $self->usage_text;
-    if ( defined( $self->_error_message ) ) {
-        print $self->_error_message . "\n";
-        die $self->usage_text;
-    }
-    
-    my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
-      input_files           => $self->fasta_files,
-      job_runner            => $self->job_runner,
-      apply_unknowns_filter => $self->apply_unknowns_filter,
-      cpus                  => $self->cpus,
-      translation_table     => $self->translation_table
-    );
-
-    if( $self->run_qc ){
-        my $qc_input_files = Bio::PanGenome::QC::Report->new(
-            input_files => $self->fasta_files,
-            job_runner  => $self->job_runner
-        );
-        $qc_input_files->report;
-    }
-
-    my $pan_genome_obj = Bio::PanGenome->new(
-        input_files             => $self->fasta_files,
-        fasta_files             => $prepare_input_files->fasta_files,
-        output_filename         => $self->output_filename,
-        job_runner              => $self->job_runner,
-        cpus                    => $self->cpus,
-        makeblastdb_exec        => $self->makeblastdb_exec,
-        blastp_exec             => $self->blastp_exec,
-        output_multifasta_files => $self->output_multifasta_files,
-        perc_identity           => $self->perc_identity,
-        dont_delete_files       => $self->dont_delete_files,
-        dont_create_rplots      => $self->dont_create_rplots,
-        dont_split_groups       => $self->dont_split_groups,
-        verbose_stats           => $self->verbose_stats,
-        translation_table       => $self->translation_table,
-        group_limit             => $self->group_limit,
-        core_definition         => $self->core_definition,
-      );
-    $pan_genome_obj->run();
-}
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 0.99 );
+has 'run_qc'                      => ( is => 'rw', isa => 'Bool', default => 1 );
 
 sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
     Usage: create_pan_genome [options]
-    Take in GFF files and cluster the genes
+    This script sets the defaults for use in the Pathogen Genomics group at WTSI.
+	The only differences are that it runs additional analysis by default 
+	(which are turned off to make Roary as easy as possible to install & run for external users ):
+	 - QC of samples with Kraken
+	 - MultiFASTA core alignment of core genes
+	 - Core is defined as being in 99% of isolates
+	 - A PDF of plots is created with R
     
     For more details see:
     http://mediawiki.internal.sanger.ac.uk/index.php/Pathogen_Informatics_Pan_Genome_Pipeline
     
+
     # Take in GFF files and cluster the genes
-    nohup create_pan_genome example.gff & 
-    
-    # Provide an output filename
-    create_pan_genome -o results *.gff
-    
-    # Create a multifasta file for each group of sequences (Warning: thousands of files created)
-    create_pan_genome -e *.gff
-    
+    bsub  -M4000 -R "select[mem>4000] rusage[mem=4000]" 'create_pan_genome example.gff'
+	
+    # Run with 16 processors and 10GB of RAM
+    bsub -q long -o log -e err -M10000 -R "select[mem>10000] rusage[mem=10000]" -n16 -R "span[hosts=1]" 'create_pan_genome -p 16  *.gff'
+	
+    # Run using LSF on a cluster (it bsubs for you)
+    create_pan_genome -j LSF *.gff
+
+	########### 
+	
+    # Create multifasta alignement of each gene (Warning: Thousands of files are created)
+    create_pan_genome -e --dont_delete_files *.gff
+	
+    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates
+    create_pan_genome -e --core_definition 98 *.gff
+	
     # Set the blastp percentage identity threshold (default 98%).
-    create_pan_genome -i 99 *.gff
+    create_pan_genome -i 95 *.gff
     
-    # Dont delete the intermediate files
-    create_pan_genome --dont_delete_files *.gff
-    
-    # Different translation table (default is 11 which is for Bacteria). Viruses/Vert = 1
+    # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
     create_pan_genome --translation_table 1 *.gff 
 
     # Include full annotation and inference in group statistics
     create_pan_genome --verbose_stats *.gff
-    
-    # Run sequentially without LSF
-    create_pan_genome -j Local *.gff
-    
-    # Run locally with GNU parallel and 4 processors
-    create_pan_genome -j Parallel -p 4  *.gff
 
-    # Increase the groups/clusters limit (default 50,000). If you need to change this your
-    # probably trying to work data from more than one species (which this script wasnt designed for).
+    # Increase the groups/clusters limit (default 50,000). Please check the QC results before running this
     create_pan_genome --group_limit 60000  *.gff
-
-    # Generate QC report detailing top genus and species for each assembly
-    create_pan_genome -qc *.gff
 
     # This help message
     create_pan_genome -h

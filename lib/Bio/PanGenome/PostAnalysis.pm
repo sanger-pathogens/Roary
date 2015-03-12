@@ -78,7 +78,7 @@ sub run {
     system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
     $self->_create_embl_files;
     
-    $self->_groups_multifastas_nuc_obj->create_files();
+    $self->_groups_multifastas_nuc_obj->create_files() if($self->output_multifasta_files);
 
     $self->_delete_intermediate_files;
 }

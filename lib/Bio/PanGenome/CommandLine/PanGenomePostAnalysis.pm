@@ -112,21 +112,27 @@ sub run {
       );                                                             
     $obj->run();
 
-    my $output_gene_files = $self->_find_input_files;
-    my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
-      fasta_files         => $output_gene_files,
-      job_runner          => $self->job_runner,
-      translation_table   => $self->translation_table,
-      core_definition     => $self->core_definition,
-      cpus                => $self->cpus
-    );
-    $seg->run();
-     
-    # Cleanup intermediate multifasta files
-    if($self->output_multifasta_files == 0)
+
+    if($self->output_multifasta_files == 1)
     {
-      remove_tree('pan_genome_sequences');
+      my $output_gene_files = $self->_find_input_files;
+      my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
+        fasta_files         => $output_gene_files,
+        job_runner          => $self->job_runner,
+        translation_table   => $self->translation_table,
+        core_definition     => $self->core_definition,
+        cpus                => $self->cpus
+      );
+      $seg->run();
+	
+      # Cleanup intermediate multifasta files
+      if($self->dont_delete_files == 0)
+      {
+        remove_tree('pan_genome_sequences');
+      }
     }
+     
+
 }
 
 sub _find_input_files
