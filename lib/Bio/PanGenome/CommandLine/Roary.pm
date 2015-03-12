@@ -31,6 +31,7 @@ has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 )
 has 'perc_identity'               => ( is => 'rw', isa => 'Num',  default => 98 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'dont_run_qc'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
@@ -43,7 +44,7 @@ has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $create_rplots,$group_limit, $max_threads, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $core_definition, $help );
+    my ( $fasta_files, $create_rplots,$group_limit, $dont_run_qc, $max_threads, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $core_definition, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -64,6 +65,7 @@ sub BUILD {
         't|translation_table=i'     => \$translation_table,
         'group_limit=i'             => \$group_limit,
         'qc|run_qc'                 => \$run_qc,
+		'dont_run_qc'                => \$dont_run_qc,
         'cd|core_definition=i'      => \$core_definition,
         'h|help'                    => \$help,
     );

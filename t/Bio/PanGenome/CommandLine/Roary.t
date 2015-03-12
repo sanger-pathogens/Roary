@@ -12,6 +12,7 @@ with 'TestHelper';
 BEGIN {
     use Test::Most;
     use_ok('Bio::PanGenome::CommandLine::Roary');
+	use_ok('Bio::PanGenome::CommandLine::CreatePanGenome');
     use Bio::PanGenome::SequenceLengths;
 }
 my $script_name = 'Bio::PanGenome::CommandLine::Roary';
