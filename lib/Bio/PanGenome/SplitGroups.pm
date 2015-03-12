@@ -13,9 +13,6 @@ use Bio::PanGenome::AnalyseGroups;
 use File::Path qw(make_path remove_tree);
 use File::Copy qw(move);
 
-use Data::Dumper;
-
-#no warnings qw(uninitialized);
 
 has 'groupfile'   => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -92,11 +89,6 @@ sub split_groups {
 		if( $self->_contains_paralogs( \@group ) ){
 			my @true_orthologs = @{ $self->_true_orthologs( \@group ) };
 			push( @newgroups,  @true_orthologs);
-
-			# print "SPLITTING GROUP: ";
-			# print Dumper \@group;
-			# print "RESULTING IN: ";
-			# print Dumper \@true_orthologs;
 		}
 		else {
 			push( @newgroups, \@group );
@@ -134,10 +126,6 @@ sub split_groups_old {
 				my @true_orthologs = @{ $self->_true_orthologs_old( \@group ) };
 				push( @newgroups,  @true_orthologs);
 				$any_paralogs = 1;
-				# print "SPLITTING GROUP: ";
-				# print Dumper \@group;
-				# print "RESULTING IN: ";
-				# print Dumper \@true_orthologs;
 			}
 			else {
 				push( @newgroups, \@group );
