@@ -14,6 +14,7 @@ with 'Bio::PanGenome::JobRunner::Role';
 
 has 'gff_files'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'read_size'        => ( is => 'rw', isa => 'Int',      default => 150 );
+has 'max_reads_per_sequence'  => ( is => 'rw', isa => 'Int',default => 20 );
 has 'output_directory' => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
 
 sub _build_output_directory {
@@ -63,6 +64,11 @@ sub shred {
 sub _shredded_seq {
 	my ( $self, $seq ) = @_;
 	chomp $seq;
+	
+	if(length($seq)> ($self->read_size * $self->max_reads_per_sequence))
+	{
+		$seq = substr $seq,0,($self->read_size * $self->max_reads_per_sequence);
+	}
 
 	my $size = $self->read_size;
 	my $unpack = "(A$size)*";
