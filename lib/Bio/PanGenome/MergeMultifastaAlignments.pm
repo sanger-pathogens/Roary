@@ -19,8 +19,6 @@ sequences are in the correct order.
 use Moose;
 use Bio::SeqIO;
 
-use Data::Dumper;
-
 has 'multifasta_files'  => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
 has 'output_filename'   => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
 has 'presence_absence'  => ( is => 'rw', isa => 'ArrayRef',   lazy_build => 1 );
@@ -124,46 +122,6 @@ sub merge_files {
     return 1;        
 }
 
-
-sub merge_files_old {
-    my ($self) = @_;
-
-    my $reached_eof = 0;
-
-    while ( $reached_eof == 0 ) {
-        last unless ( scalar @{ $self->_input_seqio_objs} > 0 );
-        my $merged_sequence = '';
-        my $first_name;
-        return 1 if(@{ $self->_input_seqio_objs } == 0);
-
-        my @c_seqs;
-        for my $input_seq_io ( @{ $self->_input_seqio_objs } ) {
-            my $next_seq = $input_seq_io->next_seq;
-            push( @c_seqs, $next_seq );
-        }
-
-        # check if any seqs need padding or whether to end the while loop
-        my $fixed_seqs = $self->_check_seqs_and_pad( \@c_seqs );
-        last unless ( defined($fixed_seqs) );
-        
-        for my $current_sequence ( @{ $fixed_seqs } ){
-            $merged_sequence .= $current_sequence->seq;
-            if ( !defined($first_name) ) {
-                $first_name = $current_sequence->display_id;
-            }
-        }
-
-        if ( $reached_eof == 0 ) {
-            my $merged_seq_obj = Bio::Seq->new(
-                -display_id => $self->_strip_id_from_name($first_name),
-                -seq        => $merged_sequence
-            );
-            $self->_output_seqio_obj->write_seq($merged_seq_obj);
-        }
-    }
-    return 1;
-}
-
 sub _check_seqs_and_pad {
     my ( $self, $seqs ) = @_;
 
@@ -172,7 +130,6 @@ sub _check_seqs_and_pad {
     for my $s ( @{ $seqs } ){
         if ( defined $s ){
             $nothing_defined = 0;
-            # $seq_len = $s->length;
             $seq_id  = $s->display_id;
             last;
         }

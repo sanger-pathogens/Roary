@@ -15,8 +15,6 @@ use Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
 use Bio::PanGenome::LookupGeneFiles;
 use Bio::PanGenome::MergeMultifastaAlignments;
 
-use Data::Dumper;
-
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );

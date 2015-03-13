@@ -55,11 +55,6 @@ sub _build__input_spreadsheet_fh {
     return $fh;
 }
 
-sub _build_presence_absence {
-    my $self = shift;
-
-}
-
 sub _update_number_of_isolates
 {
   my ($self, $header_row) = @_;
