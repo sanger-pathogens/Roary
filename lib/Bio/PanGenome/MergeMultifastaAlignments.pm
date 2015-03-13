@@ -21,7 +21,6 @@ use Bio::SeqIO;
 
 has 'multifasta_files'  => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
 has 'output_filename'   => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
-has 'presence_absence'  => ( is => 'rw', isa => 'ArrayRef',   lazy_build => 1 );
 has '_output_seqio_obj' => ( is => 'ro', isa => 'Bio::SeqIO', lazy     => 1, builder => '_build__output_seqio_obj' );
 has '_input_seqio_objs' => ( is => 'ro', isa => 'ArrayRef',   lazy     => 1, builder => '_build__input_seqio_objs' );
 
