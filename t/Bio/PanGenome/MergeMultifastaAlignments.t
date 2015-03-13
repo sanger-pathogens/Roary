@@ -11,8 +11,10 @@ BEGIN {
     use_ok('Bio::PanGenome::MergeMultifastaAlignments');
 }
 
+my $obj;
+
 my $outputfile = 'output_merged.aln';
-ok(my $obj = Bio::PanGenome::MergeMultifastaAlignments->new(
+ok($obj = Bio::PanGenome::MergeMultifastaAlignments->new(
   multifasta_files => ['t/data/multfasta1.aln','t/data/multfasta2.aln','t/data/multfasta3.aln'],
   output_filename  => $outputfile
 ),'initalise obj');
@@ -25,7 +27,7 @@ is(read_file($outputfile), read_file('t/data/expected_output_merged.aln'), 'cont
 unlink($outputfile);
 
 # Test cases where genomes are missing from some gene files
-ok(my $obj = Bio::PanGenome::MergeMultifastaAlignments->new(
+ok($obj = Bio::PanGenome::MergeMultifastaAlignments->new(
   multifasta_files => ['t/data/multfasta2.aln','t/data/multfasta4.aln','t/data/multfasta1.aln', 't/data/multfasta5.aln'],
   output_filename  => $outputfile
 ),'initalise obj');
