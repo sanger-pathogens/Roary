@@ -15,6 +15,8 @@ use Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
 use Bio::PanGenome::LookupGeneFiles;
 use Bio::PanGenome::MergeMultifastaAlignments;
 
+use Data::Dumper;
+
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
@@ -74,7 +76,7 @@ sub run {
         spreadsheet     => $self->spreadsheet_filename,
         core_definition => $self->core_definition
     );
-    
+
     my $gene_files = Bio::PanGenome::LookupGeneFiles->new(
         multifasta_directory => $self->multifasta_base_directory,
         ordered_genes        => $core_genes_obj->ordered_core_genes,
