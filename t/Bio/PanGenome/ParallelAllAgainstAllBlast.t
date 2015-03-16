@@ -6,6 +6,7 @@ use File::Slurp;
 use Cwd;
 
 BEGIN { unshift( @INC, './lib' ) }
+$ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;

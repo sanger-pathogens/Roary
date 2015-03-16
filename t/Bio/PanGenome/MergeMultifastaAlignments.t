@@ -5,6 +5,7 @@ use Data::Dumper;
 use File::Slurp;
 
 BEGIN { unshift( @INC, './lib' ) }
+$ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
