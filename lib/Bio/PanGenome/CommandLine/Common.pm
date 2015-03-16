@@ -12,6 +12,16 @@ Common command line settings
 use Moose;
 use FindBin;
 
+
+sub run {
+	my ($self) = @_;
+}
+
+sub usage_text {
+    my ($self) = @_;
+	return "Usage text";
+}
+
 # add our included binaries to the END of the PATH
 before 'run' => sub {
 	my ($self) = @_;
