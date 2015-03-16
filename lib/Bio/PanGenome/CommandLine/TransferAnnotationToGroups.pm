@@ -11,6 +11,7 @@ Take in a groups file and a set of GFF files and transfer the consensus annotati
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::AnnotateGroups;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );

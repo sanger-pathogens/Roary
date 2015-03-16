@@ -14,6 +14,7 @@ use Cwd 'abs_path';
 use Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
 use Bio::PanGenome::LookupGeneFiles;
 use Bio::PanGenome::MergeMultifastaAlignments;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );

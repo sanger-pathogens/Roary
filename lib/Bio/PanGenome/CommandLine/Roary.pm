@@ -13,6 +13,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome;
 use Bio::PanGenome::PrepareInputFiles;
 use Bio::PanGenome::QC::Report;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'       => ( is => 'ro', isa => 'Str',      required => 1 );

@@ -11,6 +11,7 @@ Iteratively run cdhit
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::IterativeCdhit;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );

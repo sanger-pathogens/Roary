@@ -11,6 +11,7 @@ Take in a tree and a spreadsheet and output a reordered spreadsheet
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::ReorderSpreadsheet;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );

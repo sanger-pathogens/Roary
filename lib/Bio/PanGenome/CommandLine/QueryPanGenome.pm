@@ -18,6 +18,7 @@ use Bio::PanGenome::Output::DifferenceBetweenSets;
 use Bio::PanGenome::AnnotateGroups;
 use Bio::PanGenome::GroupStatistics;
 use Bio::PanGenome::OrderGenes;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'        => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
