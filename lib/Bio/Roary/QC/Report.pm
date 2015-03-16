@@ -19,7 +19,7 @@ has 'kraken_db'        => ( is => 'ro', isa => 'Str',      default => '' );
 has 'outfile'          => ( is => 'rw', isa => 'Str',      default => 'qc_report.csv' );
 has '_kraken_data'     => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 has '_header'          => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
-has 'job_runner'       => ( is => 'rw', isa => 'Str',      default => 'LSF' );
+has 'job_runner'       => ( is => 'rw', isa => 'Str',      default => 'Local' );
 
 has '_tmp_directory_obj' => ( is => 'rw', lazy_build => 1 );
 has '_tmp_directory'   =>   ( is => 'rw', lazy_build => 1, isa => 'Str', );

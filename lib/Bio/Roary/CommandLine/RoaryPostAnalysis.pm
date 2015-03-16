@@ -28,7 +28,7 @@ has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',  default  => 'p
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',  default  => 'gene_presence_absence.csv' );
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
-has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'LSF' );
+has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'Local' );
 has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default  => 0 );
