@@ -17,11 +17,13 @@ Wrapper to run cd-hit
 =cut
 
 use Moose;
+use File::Spec;
 with 'Bio::PanGenome::JobRunner::Role';
 
 has 'input_file'                   => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'output_base'                  => ( is => 'ro', isa => 'Str',  default  => 'output' );
 has 'exec'                         => ( is => 'ro', isa => 'Str',  default  => 'cd-hit' );
+has 'alt_exec'                     => ( is => 'ro', isa => 'Str',  default  => 'cdhit' );
 has '_max_available_memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__max_available_memory_in_mb' );
 has '_use_most_similar_clustering' => ( is => 'ro', isa => 'Bool', default  => 1 );
 has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 1 );
@@ -64,11 +66,11 @@ sub clusters_filename
 }
 
 sub _command_to_run {
-    my ($self) = @_;
+    my ($self,$executable) = @_;
     return join(
         ' ',
         (
-            $self->exec,                        '-i', $self->input_file,                   '-o',
+            $executable,                        '-i', $self->input_file,                   '-o',
             $self->output_base,                 '-T', $self->cpus,                         '-M',
             $self->_max_available_memory_in_mb, '-g', $self->_use_most_similar_clustering, '-s',
             $self->_length_difference_cutoff,   '-d', $self->_description_length ,'-c', $self->_sequence_identity_threshold, 
@@ -77,10 +79,25 @@ sub _command_to_run {
     );
 }
 
+sub _find_exe {
+  my($self,$executables) = @_;
+  for my $dir (File::Spec->path) {
+	  for my $exec (@{$executables})
+	  {
+        my $exe = File::Spec->catfile($dir, $exec);
+        return $exe if -x $exe; 
+      }
+  }
+  return $executables->[0];
+}
+
 sub run {
     my ($self) = @_;
     my @commands_to_run;
-    push(@commands_to_run, $self->_command_to_run );
+	
+	my $executable = $self->_find_exe([$self->exec, $self->alt_exec]);
+	
+    push(@commands_to_run, $self->_command_to_run($executable) );
     
     my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus => $self->cpus );
     $job_runner_obj->run();
