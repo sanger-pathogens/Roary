@@ -1,29 +1,45 @@
-Bio-PanGenome
-=============
+#Roary the pan genome pipeline
 
-The algorithm works as follows:
+Roary is a high speed stand alone pan genome pipeline, which takes annotated assemblies in GFF3 format (produced by Prokka) and calculates the pan genome.  Using a standard desktop PC, it can analyse datasets with thousands of samples, something which is computationally infeasible with existing methods, without compromising the quality of the results.  128 samples can be analysed in under 1 hour using 1 GB of RAM and a single processor. To perform this analysis using existing methods would take weeks and hundreds of GB of RAM.
 
-1.) Extract protein sequences for each CDS from GFF files, reorienting to positive strand,
-2.) Create a combined protein sequence, filtering out proteins with more than 5% missing data (assembly errors),
-3.) Cluster sequences with 99% identity and 99% length with cd-hit,
-4.) Parallel all-against-all blastp with clustered sequences,
-5.) TribeMCL,
-6.) Reinflate MCL groups with cd-hit clusters,
-7.) Transfer annotation to the groups (gene names),
+##Installation - The quick and dirty way
 
-Outputs:
-1.) Plot of group frequency in isolates so you can visually see core and accessory
-2.) Spreadsheet with statistics on groups, annotation, etc...
-3.) FASTA file with a single representative sequence per group
+###Download
+Download the latest software from https://github.com/sanger-pathogens/Bio-Roary/archive/v2.0.0.tar.gz
 
-Querying the data:
-1.) Given two sets of isolates, output the genes unique to each set, and the set of common genes (3 files).
-2.) Given a set of isolates, output the union, intersection or complement.
-3.) Given a list of genes, create multifasta files for each gene from all isolates
+###Extract
 
-Dependancies
-============
-BedTools
-gsed
-RevTrans - http://www.cbs.dtu.dk/services/RevTrans/download.php
-R
+Choose somewhere to put it, for example in your home directory (no root access required):
+
+  cd $HOME
+  tar zxvf Roary-XXXX.tar.gz
+  ls Roary*
+
+###Add to your Environment
+
+Add the following lines to your $HOME/.bashrc file, or to /etc/profile.d/roary.sh to make it available to all users:
+
+   export PATH=$PATH:$HOME/Bio-Roary-x.xxx/bin
+   export PERL5LIB=$PERL5LIB:$HOME/Bio-Roary-x.xxx/lib
+
+###Install perl dependancies
+   cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp Graph Moose Moose::Role Text::CSV
+   
+
+
+##Installation - Ubuntu/Debian
+###Install the dependancies
+Assuming you have root on your system, all the dependancies executables are installable using apt.
+   sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel
+   
+###Install Roary and its perl dependancies
+   cpanm Bio::Roary
+
+
+##Installation - OSX using homebrew
+Assuming you have homebrew setup and installed on your OSX system tap the science keg and install the dependancies:
+   brew tap homebrew/science
+   brew install bedtools cd-hit blast mcl muscle parallel
+   
+###Install Roary and its perl dependancies
+   cpanm Bio::Roary
