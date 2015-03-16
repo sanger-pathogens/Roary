@@ -13,6 +13,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::ParallelAllAgainstAllBlast;
 use Bio::PanGenome::CombinedProteome;
 use Bio::PanGenome::PrepareInputFiles;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );

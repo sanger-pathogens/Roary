@@ -14,6 +14,7 @@ use Bio::PanGenome::PostAnalysis;
 use File::Find::Rule;
 use Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
 use File::Path qw(remove_tree);
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'                 => ( is => 'ro', isa => 'Str',      required => 1 );

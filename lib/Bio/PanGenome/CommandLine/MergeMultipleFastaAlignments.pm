@@ -11,6 +11,7 @@ Take in a list of alignment files with equal numbers of sequences and merge them
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::PanGenome::MergeMultifastaAlignments;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );

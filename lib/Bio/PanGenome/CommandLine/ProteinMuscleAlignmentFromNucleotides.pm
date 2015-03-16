@@ -15,6 +15,7 @@ use Bio::PanGenome::External::Muscle;
 use Bio::PanGenome::External::Revtrans;
 use Bio::PanGenome::Output::GroupsMultifastaProtein;
 use Bio::PanGenome::SortFasta;
+extends 'Bio::PanGenome::CommandLine::Common';
 
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
