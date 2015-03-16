@@ -1,13 +1,13 @@
-package Bio::PanGenome::SortFasta;
+package Bio::Roary::SortFasta;
 
 # ABSTRACT: sort a fasta file by name
 
 =head1 SYNOPSIS
 
 sort a fasta file by name
-   use Bio::PanGenome::SortFasta;
+   use Bio::Roary::SortFasta;
    
-   my $obj = Bio::PanGenome::SortFasta->new(
+   my $obj = Bio::Roary::SortFasta->new(
      input_filename   => 'infasta.fa',
    );
    $obj->sort_fasta->replace_input_with_output_file;

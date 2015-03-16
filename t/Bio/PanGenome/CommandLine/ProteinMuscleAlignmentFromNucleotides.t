@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::ProteinMuscleAlignmentFromNucleotides');
+    use_ok('Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::ProteinMuscleAlignmentFromNucleotides';
+my $script_name = 'Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides';
 my $cwd         = getcwd();
 system('touch empty_file');
 my %scripts_and_expected_files = (

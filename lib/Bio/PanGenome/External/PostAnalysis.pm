@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::PostAnalysis;
+package Bio::Roary::External::PostAnalysis;
 
 # ABSTRACT: Perform the post analysis
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::PostAnalysis;
 
 Perform the post analysis 
 
-   use Bio::PanGenome::External::PostAnalysis;
+   use Bio::Roary::External::PostAnalysis;
    
-   my $seg= Bio::PanGenome::External::PostAnalysis->new(
+   my $seg= Bio::Roary::External::PostAnalysis->new(
      fasta_file => 'contigs.fa',
    );
    
@@ -17,7 +17,7 @@ Perform the post analysis
 =cut
 
 use Moose;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'input_files'                 => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'exec'                        => ( is => 'ro', isa => 'Str', default  => 'pan_genome_post_analysis' );

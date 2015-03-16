@@ -9,13 +9,13 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::AnnotateGroups');
+    use_ok('Bio::Roary::AnnotateGroups');
 }
 
 my $obj;
 
 
-ok($obj = Bio::PanGenome::AnnotateGroups->new(
+ok($obj = Bio::Roary::AnnotateGroups->new(
   gff_files   => ['t/data/query_1.gff','t/data/query_2.gff','t/data/query_3.gff'],
   groups_filename => 't/data/query_groups',
 ),'initalise');

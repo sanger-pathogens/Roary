@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::PanGenomeReorderSpreadsheet;
+package Bio::Roary::CommandLine::RoaryReorderSpreadsheet;
 
 # ABSTRACT: Take in a tree and a spreadsheet and output a reordered spreadsheet
 
@@ -10,8 +10,8 @@ Take in a tree and a spreadsheet and output a reordered spreadsheet
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::ReorderSpreadsheet;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::ReorderSpreadsheet;
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -57,7 +57,7 @@ sub run {
     ($self->sortby eq "height" || $self->sortby eq "creation" || $self->sortby eq "alpha" || $self->sortby eq "revalpha") or die $self->usage_text;
     ($self->search_strategy eq "breadth" || $self->search_strategy eq "depth") or die $self->usage_text;
 
-    my $obj = Bio::PanGenome::ReorderSpreadsheet->new(
+    my $obj = Bio::Roary::ReorderSpreadsheet->new(
         tree_file       => $self->tree_file,
         spreadsheet     => $self->spreadsheet_filename,
         output_filename => $self->output_filename,

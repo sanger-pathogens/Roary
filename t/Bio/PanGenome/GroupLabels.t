@@ -9,11 +9,11 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::GroupLabels');
+    use_ok('Bio::Roary::GroupLabels');
 }
 
 ok(
-    my $obj = Bio::PanGenome::GroupLabels->new(
+    my $obj = Bio::Roary::GroupLabels->new(
         groups_filename => 't/data/example_groups_without_labels'
     ),
     'initialise with a groups file'

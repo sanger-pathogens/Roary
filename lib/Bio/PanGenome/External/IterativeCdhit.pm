@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::IterativeCdhit;
+package Bio::Roary::External::IterativeCdhit;
 
 # ABSTRACT: Iteratively run CDhit
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::IterativeCdhit;
 
 Iteratively run CDhit
 
-   use Bio::PanGenome::External::IterativeCdhit;
+   use Bio::Roary::External::IterativeCdhit;
    
-   my $seg= Bio::PanGenome::External::IterativeCdhit->new(
+   my $seg= Bio::Roary::External::IterativeCdhit->new(
      output_cd_hit_filename => '',
      output_combined_filename  => '',
      number_of_input_files => 10, 
@@ -20,7 +20,7 @@ Iteratively run CDhit
 =cut
 
 use Moose;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'output_cd_hit_filename'          => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_combined_filename'        => ( is => 'ro', isa => 'Str', required => 1 );

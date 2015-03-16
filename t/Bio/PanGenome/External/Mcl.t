@@ -9,14 +9,14 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::External::Mcl');
+    use_ok('Bio::Roary::External::Mcl');
 }
 
 my $cwd = getcwd();
 my $obj;
 
 ok(
-    $obj = Bio::PanGenome::External::Mcl->new(
+    $obj = Bio::Roary::External::Mcl->new(
         blast_results   => 'some_blast_results',
         mcxdeblast_exec => $cwd . '/t/bin/dummy_mcxdeblast',
         mcl_exec        => $cwd . '/t/bin/dummy_mcl',
@@ -38,7 +38,7 @@ ok( $obj->run(), 'run dummy command' );
 unlink('output.groups');
 
 ok(
-    $obj = Bio::PanGenome::External::Mcl->new(
+    $obj = Bio::Roary::External::Mcl->new(
         blast_results => 't/data/blast_results',
     ),
     'initialise object with real values'

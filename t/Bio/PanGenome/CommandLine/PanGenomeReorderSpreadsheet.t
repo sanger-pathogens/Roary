@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::PanGenomeReorderSpreadsheet');
+    use_ok('Bio::Roary::CommandLine::RoaryReorderSpreadsheet');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::PanGenomeReorderSpreadsheet';
+my $script_name = 'Bio::Roary::CommandLine::RoaryReorderSpreadsheet';
 system('touch empty_file');
 my %scripts_and_expected_files = (
     '-t t/data/reorder_isolates.tre -s t/data/reorder_isolates_input.csv' =>

@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::PanGenomePostAnalysis;
+package Bio::Roary::CommandLine::RoaryPostAnalysis;
 
 # ABSTRACT: Perform the post analysis on the pan genome
 
@@ -10,11 +10,11 @@ Perform the post analysis on the pan genome
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::PostAnalysis;
+use Bio::Roary::PostAnalysis;
 use File::Find::Rule;
-use Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
+use Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides;
 use File::Path qw(remove_tree);
-extends 'Bio::PanGenome::CommandLine::Common';
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'                 => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -97,7 +97,7 @@ sub run {
         die $self->usage_text;
     }
 
-    my $obj = Bio::PanGenome::PostAnalysis->new(
+    my $obj = Bio::Roary::PostAnalysis->new(
       fasta_files                     =>  $self->_read_file_into_array($self->fasta_files) ,
       input_files                     =>  $self->_read_file_into_array($self->input_files) ,
       output_filename                 =>  $self->output_filename            ,
@@ -117,7 +117,7 @@ sub run {
     if($self->output_multifasta_files == 1)
     {
       my $output_gene_files = $self->_find_input_files;
-      my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
+      my $seg = Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides->new(
         fasta_files         => $output_gene_files,
         job_runner          => $self->job_runner,
         translation_table   => $self->translation_table,

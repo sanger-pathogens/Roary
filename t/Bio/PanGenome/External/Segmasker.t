@@ -8,13 +8,13 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::External::Segmasker');
+    use_ok('Bio::Roary::External::Segmasker');
 }
 
 my $cwd = getcwd();
 my $obj;
 
-ok($obj = Bio::PanGenome::External::Segmasker->new(
+ok($obj = Bio::Roary::External::Segmasker->new(
   fasta_file      => 't/data/some_fasta_file.fa',
   exec            => $cwd.'/t/bin/dummy_segmasker',
 ),'initialise object');

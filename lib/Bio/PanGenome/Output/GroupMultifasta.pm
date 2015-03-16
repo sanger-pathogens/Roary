@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::GroupMultifasta;
+package Bio::Roary::Output::GroupMultifasta;
 
 # ABSTRACT:  Take in a group and create a multifasta file
 
 =head1 SYNOPSIS
 
 Take in a group and create a multifasta file
-   use Bio::PanGenome::Output::GroupMultifasta;
+   use Bio::Roary::Output::GroupMultifasta;
    
-   my $obj = Bio::PanGenome::Output::GroupMultifasta->new(
+   my $obj = Bio::Roary::Output::GroupMultifasta->new(
        group_name      => 'aaa',
        analyse_groups  => $analyse_groups,
        output_filename_base => 'abc'
@@ -18,11 +18,11 @@ Take in a group and create a multifasta file
 
 use Moose;
 use Bio::SeqIO;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
 
 has 'group_name'           => ( is => 'ro', isa => 'Str',                           required => 1 );
-has 'analyse_groups'       => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups', required => 1 );
+has 'analyse_groups'       => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups', required => 1 );
 has 'output_filename_base' => ( is => 'ro', isa => 'Str',                           default  => 'output_groups' );
 has '_genes'         => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__genes' );
 has '_output_seq_io' => ( is => 'ro', lazy => 1,          builder => '_build__output_seq_io' );

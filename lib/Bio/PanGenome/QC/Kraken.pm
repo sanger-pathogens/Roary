@@ -1,4 +1,4 @@
-package Bio::PanGenome::QC::Kraken;
+package Bio::Roary::QC::Kraken;
 
 # ABSTRACT: run kraken on list of inputs and parse output
 
@@ -8,7 +8,7 @@ package Bio::PanGenome::QC::Kraken;
 
 use Moose;
 use File::Basename;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'assembly_directory' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'glob_search'        => ( is => 'ro', isa => 'Str',      default => '*.shred.fa' );

@@ -6,16 +6,16 @@ use Cwd;
 
 
 BEGIN { unshift( @INC, './lib' ) }
-use Bio::PanGenome::External::Makeblastdb;
+use Bio::Roary::External::Makeblastdb;
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::External::Blastp');
+    use_ok('Bio::Roary::External::Blastp');
 }
 
 my $cwd = getcwd();
 my $obj;
 
-ok($obj = Bio::PanGenome::External::Blastp->new(
+ok($obj = Bio::Roary::External::Blastp->new(
   fasta_file      => 't/data/some_fasta_file.fa',
   blast_database  => 'some_blast_database',
   exec            => $cwd.'/t/bin/dummy_blastp',

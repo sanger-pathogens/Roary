@@ -1,13 +1,13 @@
-package Bio::PanGenome::FilterUnknownsFromFasta;
+package Bio::Roary::FilterUnknownsFromFasta;
 
 # ABSTRACT: Take in fasta files, remove sequences with too many unknowns and return a list of the new files
 
 =head1 SYNOPSIS
 
 Take in fasta files, remove sequences with too many unknowns and return a list of the new files
-   use Bio::PanGenome::FilterUnknownsFromFasta;
+   use Bio::Roary::FilterUnknownsFromFasta;
    
-   my $obj = Bio::PanGenome::FilterUnknownsFromFasta->new(
+   my $obj = Bio::Roary::FilterUnknownsFromFasta->new(
        fasta_files        => [],
      );
    $obj->filtered_fasta_files();
@@ -17,7 +17,7 @@ Take in fasta files, remove sequences with too many unknowns and return a list o
 use Moose;
 use Bio::SeqIO;
 use Cwd;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 use File::Basename;
 
 has 'fasta_files'                    => ( is => 'ro', isa => 'ArrayRef',  required => 1 );

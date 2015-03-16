@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::Roary;
+package Bio::Roary::CommandLine::Roary;
 
 # ABSTRACT: Take in FASTA files of proteins and cluster them
 
@@ -10,10 +10,10 @@ Take in FASTA files of proteins and cluster them
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome;
-use Bio::PanGenome::PrepareInputFiles;
-use Bio::PanGenome::QC::Report;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary;
+use Bio::Roary::PrepareInputFiles;
+use Bio::Roary::QC::Report;
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name'       => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -114,7 +114,7 @@ sub run {
         die $self->usage_text;
     }
     
-    my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
+    my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
       input_files           => $self->fasta_files,
       job_runner            => $self->job_runner,
       apply_unknowns_filter => $self->apply_unknowns_filter,
@@ -123,14 +123,14 @@ sub run {
     );
 
     if( $self->run_qc ){
-        my $qc_input_files = Bio::PanGenome::QC::Report->new(
+        my $qc_input_files = Bio::Roary::QC::Report->new(
             input_files => $self->fasta_files,
             job_runner  => $self->job_runner
         );
         $qc_input_files->report;
     }
 
-    my $pan_genome_obj = Bio::PanGenome->new(
+    my $pan_genome_obj = Bio::Roary->new(
         input_files             => $self->fasta_files,
         fasta_files             => $prepare_input_files->fasta_files,
         output_filename         => $self->output_filename,

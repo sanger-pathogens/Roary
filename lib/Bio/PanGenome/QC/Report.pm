@@ -1,4 +1,4 @@
-package Bio::PanGenome::QC::Report;
+package Bio::Roary::QC::Report;
 
 # ABSTRACT: generate a report based on kraken output
 
@@ -10,8 +10,8 @@ use Moose;
 use File::Temp;
 use File::Path 'rmtree';
 use Cwd;
-use Bio::PanGenome::QC::ShredAssemblies;
-use Bio::PanGenome::QC::Kraken;
+use Bio::Roary::QC::ShredAssemblies;
+use Bio::Roary::QC::Kraken;
 
 has 'input_files'      => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'kraken_exec'      => ( is => 'ro', isa => 'Str',      default => 'kraken' );
@@ -27,14 +27,14 @@ has '_tmp_directory'   =>   ( is => 'rw', lazy_build => 1, isa => 'Str', );
 sub _build__kraken_data {
 	my $self = shift;
 
-	my $shredder = Bio::PanGenome::QC::ShredAssemblies->new(
+	my $shredder = Bio::Roary::QC::ShredAssemblies->new(
 		gff_files        => $self->input_files,
 		output_directory => $self->_tmp_directory,
 		job_runner       => $self->job_runner
 	);
 	$shredder->shred or die ( "Failed to shred assembly data\n" );
 
-	my $kraken = Bio::PanGenome::QC::Kraken->new(
+	my $kraken = Bio::Roary::QC::Kraken->new(
 		assembly_directory => $self->_tmp_directory,
 		job_runner         => $self->job_runner
 	);

@@ -9,13 +9,13 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::PrepareInputFiles');
+    use_ok('Bio::Roary::PrepareInputFiles');
 }
 
 my $obj;
 
 ok(
-    $obj = Bio::PanGenome::PrepareInputFiles->new(
+    $obj = Bio::Roary::PrepareInputFiles->new(
         input_files => [
             't/data/example_annotation.gff',   't/data/example_1.faa',
             't/data/example_annotation_2.gff', 't/data/example_2.faa','t/data/sequences_with_unknowns.faa'

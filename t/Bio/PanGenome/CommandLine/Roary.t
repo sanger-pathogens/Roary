@@ -11,11 +11,11 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::Roary');
-	use_ok('Bio::PanGenome::CommandLine::CreatePanGenome');
-    use Bio::PanGenome::SequenceLengths;
+    use_ok('Bio::Roary::CommandLine::Roary');
+	use_ok('Bio::Roary::CommandLine::CreateRoary');
+    use Bio::Roary::SequenceLengths;
 }
-my $script_name = 'Bio::PanGenome::CommandLine::Roary';
+my $script_name = 'Bio::Roary::CommandLine::Roary';
 my $cwd = getcwd();
 
 local $ENV{PATH} = "$ENV{PATH}:./bin";
@@ -48,7 +48,7 @@ cleanup_files();
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 ok(-e 'core_gene_alignment.aln', 'Core gene alignment exists');
 
-ok(my $seq_len = Bio::PanGenome::SequenceLengths->new(
+ok(my $seq_len = Bio::Roary::SequenceLengths->new(
   fasta_file   => 'core_gene_alignment.aln',
 ), 'Check size of the core_gene_alignment.aln init');
 

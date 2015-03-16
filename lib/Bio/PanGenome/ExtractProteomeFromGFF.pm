@@ -1,13 +1,13 @@
-package Bio::PanGenome::ExtractProteomeFromGFF;
+package Bio::Roary::ExtractProteomeFromGFF;
 
 # ABSTRACT: Take in a GFF file and create protein sequences in FASTA format
 
 =head1 SYNOPSIS
 
 Take in GFF files and create protein sequences in FASTA format
-   use Bio::PanGenome::ExtractProteomeFromGFF;
+   use Bio::Roary::ExtractProteomeFromGFF;
    
-   my $obj = Bio::PanGenome::ExtractProteomeFromGFF->new(
+   my $obj = Bio::Roary::ExtractProteomeFromGFF->new(
        gff_file        => $fasta_file,
      );
    $obj->fasta_file();
@@ -17,11 +17,11 @@ Take in GFF files and create protein sequences in FASTA format
 use Moose;
 use Bio::SeqIO;
 use Cwd;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 use File::Basename;
 use File::Temp;
 use File::Copy;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'gff_file' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );

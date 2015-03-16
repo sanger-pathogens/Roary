@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::GroupsMultifastaProtein;
+package Bio::Roary::Output::GroupsMultifastaProtein;
 
 # ABSTRACT:  Take a multifasta nucleotide file and output it as proteins.
 
 =head1 SYNOPSIS
 
 Take a multifasta nucleotide file and output it as proteins.
-   use Bio::PanGenome::Output::GroupsMultifastaProtein;
+   use Bio::Roary::Output::GroupsMultifastaProtein;
 
-   my $obj = Bio::PanGenome::Output::GroupsMultifastaProtein->new(
+   my $obj = Bio::Roary::Output::GroupsMultifastaProtein->new(
        nucleotide_fasta_file => 'example.fa'
      );
    $obj->convert_nucleotide_to_protein();
@@ -18,8 +18,8 @@ use Moose;
 use Bio::SeqIO;
 use File::Path qw(make_path);
 use File::Basename;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
 
 has 'nucleotide_fasta_file' => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'output_filename'       => ( is => 'ro', isa => 'Str',  lazy     => 1, builder => '_build_output_filename' );

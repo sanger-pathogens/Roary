@@ -9,13 +9,13 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::MergeMultifastaAlignments');
+    use_ok('Bio::Roary::MergeMultifastaAlignments');
 }
 
 my $obj;
 
 my $outputfile = 'output_merged.aln';
-ok($obj = Bio::PanGenome::MergeMultifastaAlignments->new(
+ok($obj = Bio::Roary::MergeMultifastaAlignments->new(
   multifasta_files => ['t/data/multfasta1.aln','t/data/multfasta2.aln','t/data/multfasta3.aln'],
   output_filename  => $outputfile
 ),'initalise obj');
@@ -28,7 +28,7 @@ is(read_file($outputfile), read_file('t/data/expected_output_merged.aln'), 'cont
 unlink($outputfile);
 
 # Test cases where genomes are missing from some gene files
-ok($obj = Bio::PanGenome::MergeMultifastaAlignments->new(
+ok($obj = Bio::Roary::MergeMultifastaAlignments->new(
   multifasta_files => ['t/data/multfasta2.aln','t/data/multfasta4.aln','t/data/multfasta1.aln', 't/data/multfasta5.aln'],
   output_filename  => $outputfile
 ),'initalise obj');

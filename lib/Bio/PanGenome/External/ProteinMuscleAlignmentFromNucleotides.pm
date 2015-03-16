@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
+package Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides;
 
 # ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
 
 Take in a multifasta file of nucleotides, convert to proteins and align with muscle
 
-   use Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides;
+   use Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides;
    
-   my $seg = Bio::PanGenome::External::ProteinMuscleAlignmentFromNucleotides->new(
+   my $seg = Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides->new(
      fasta_files => [],
    );
    
@@ -21,7 +21,7 @@ Returns the path to the results file
 =cut
 
 use Moose;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'fasta_files'       => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein_muscle_alignment_from_nucleotides' );

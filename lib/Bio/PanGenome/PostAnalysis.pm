@@ -1,4 +1,4 @@
-package Bio::PanGenome::PostAnalysis;
+package Bio::Roary::PostAnalysis;
 
 # ABSTRACT: Post analysis of pan genomes
 
@@ -10,16 +10,16 @@ Create a pan genome
 
 use Moose;
 use File::Copy;
-use Bio::PanGenome::InflateClusters;
-use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::GroupLabels;
-use Bio::PanGenome::AnnotateGroups;
-use Bio::PanGenome::GroupStatistics;
-use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
-use Bio::PanGenome::Output::NumberOfGroups;
-use Bio::PanGenome::OrderGenes;
-use Bio::PanGenome::Output::EmblGroups;
-use Bio::PanGenome::SplitGroups;
+use Bio::Roary::InflateClusters;
+use Bio::Roary::AnalyseGroups;
+use Bio::Roary::GroupLabels;
+use Bio::Roary::AnnotateGroups;
+use Bio::Roary::GroupStatistics;
+use Bio::Roary::Output::GroupsMultifastasNucleotide;
+use Bio::Roary::Output::NumberOfGroups;
+use Bio::Roary::OrderGenes;
+use Bio::Roary::Output::EmblGroups;
+use Bio::Roary::SplitGroups;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -46,15 +46,15 @@ has 'core_accessory_ordering_key'        => ( is => 'ro', isa => 'Str', default 
 has 'accessory_ordering_key'             => ( is => 'ro', isa => 'Str', default  => 'accessory_overall_order_filtered' );
 has 'core_definition'                    => ( is => 'ro', isa => 'Num', default  => 1.0 );
 
-has '_inflate_clusters_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
-has '_group_labels_obj'      => ( is => 'ro', isa => 'Bio::PanGenome::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
-has '_annotate_groups_obj'   => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups',         lazy => 1, builder => '_build__annotate_groups_obj' );
-has '_analyse_groups_obj'    => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',          lazy => 1, builder => '_build__analyse_groups_obj' );
-has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::PanGenome::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
-has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
-has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
-has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
-has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::PanGenome::SplitGroups', lazy_build => 1 );
+has '_inflate_clusters_obj'  => ( is => 'ro', isa => 'Bio::Roary::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
+has '_group_labels_obj'      => ( is => 'ro', isa => 'Bio::Roary::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
+has '_annotate_groups_obj'   => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups',         lazy => 1, builder => '_build__annotate_groups_obj' );
+has '_analyse_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',          lazy => 1, builder => '_build__analyse_groups_obj' );
+has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::Roary::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
+has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
+has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
+has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
+has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::Roary::SplitGroups', lazy_build => 1 );
 
 has 'verbose_stats' => ( is => 'rw', isa => 'Bool', default => 0 ); 
 
@@ -85,7 +85,7 @@ sub run {
 
 sub _build__split_groups_obj {
   my ( $self ) = @_;
-  return Bio::PanGenome::SplitGroups->new(
+  return Bio::Roary::SplitGroups->new(
     groupfile   => $self->_output_inflate_unsplit_clusters_filename,
     gff_files   => $self->input_files,
     fasta_files => $self->fasta_files,
@@ -97,7 +97,7 @@ sub _build__split_groups_obj {
 sub _build__number_of_groups_obj
 {
   my ($self) = @_;
-  return Bio::PanGenome::Output::NumberOfGroups->new(
+  return Bio::Roary::Output::NumberOfGroups->new(
     group_statistics_obj => $self->_group_statistics_obj,
     groups_to_contigs    => $self->_order_genes_obj->groups_to_contigs,
     annotate_groups_obj  => $self->_annotate_groups_obj,
@@ -107,7 +107,7 @@ sub _build__number_of_groups_obj
 sub _build__group_statistics_obj
 {
   my ($self) = @_;
-  return Bio::PanGenome::GroupStatistics->new(
+  return Bio::Roary::GroupStatistics->new(
       output_filename     => $self->output_statistics_filename,
       annotate_groups_obj => $self->_annotate_groups_obj,
       analyse_groups_obj  => $self->_analyse_groups_obj,
@@ -120,7 +120,7 @@ sub _build__group_statistics_obj
 sub _build__order_genes_obj
 {
   my ($self) = @_;
-  return Bio::PanGenome::OrderGenes->new(
+  return Bio::Roary::OrderGenes->new(
     analyse_groups_obj => $self->_analyse_groups_obj,
     gff_files          => $self->input_files,
   );
@@ -131,7 +131,7 @@ sub _build__order_genes_obj
 sub _build__group_labels_obj
 {
   my ($self) = @_;
-  return Bio::PanGenome::GroupLabels->new(
+  return Bio::Roary::GroupLabels->new(
       groups_filename => $self->_output_inflate_clusters_filename,
       output_filename => $self->_output_group_labels_filename
   );
@@ -140,7 +140,7 @@ sub _build__group_labels_obj
 sub _build__annotate_groups_obj
 {
    my ($self) = @_;
-   return  Bio::PanGenome::AnnotateGroups->new(
+   return  Bio::Roary::AnnotateGroups->new(
        gff_files       => $self->input_files,
        output_filename => $self->output_filename,
        groups_filename => $self->_output_group_labels_filename,
@@ -150,7 +150,7 @@ sub _build__annotate_groups_obj
 sub _build__analyse_groups_obj
 {
   my ($self) = @_;
-  return Bio::PanGenome::AnalyseGroups->new(
+  return Bio::Roary::AnalyseGroups->new(
       fasta_files     => $self->fasta_files,
       groups_filename => $self->output_filename
   );
@@ -159,7 +159,7 @@ sub _build__analyse_groups_obj
 sub _build__inflate_clusters_obj
 {
   my ($self) = @_;
-  return Bio::PanGenome::InflateClusters->new(
+  return Bio::Roary::InflateClusters->new(
       clusters_filename     => $self->clusters_filename,
       cdhit_groups_filename => $self->_input_cd_hit_groups_file,
       mcl_filename          => $self->_output_mcl_filename,
@@ -171,7 +171,7 @@ sub _build__inflate_clusters_obj
 sub _build__groups_multifastas_nuc_obj
 {
   my ($self) = @_;
-  return Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+  return Bio::Roary::Output::GroupsMultifastasNucleotide->new(
       output_multifasta_files  => $self->output_multifasta_files,
       gff_files       => $self->input_files,
       annotate_groups => $self->_annotate_groups_obj,
@@ -183,7 +183,7 @@ sub _build__groups_multifastas_nuc_obj
 sub _create_embl_files
 {
   my ($self) = @_;
-  my $core_accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+  my $core_accessory_tab_obj = Bio::Roary::Output::EmblGroups->new(
     output_filename     => $self->core_accessory_tab_output_filename,
     annotate_groups_obj => $self->_annotate_groups_obj,
     analyse_groups_obj  => $self->_analyse_groups_obj,
@@ -192,7 +192,7 @@ sub _create_embl_files
   );
   $core_accessory_tab_obj->create_files;
   
-  my $accessory_tab_obj = Bio::PanGenome::Output::EmblGroups->new(
+  my $accessory_tab_obj = Bio::Roary::Output::EmblGroups->new(
     output_filename     => $self->accessory_tab_output_filename,
     annotate_groups_obj => $self->_annotate_groups_obj,
     analyse_groups_obj  => $self->_analyse_groups_obj,

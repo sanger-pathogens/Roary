@@ -9,11 +9,11 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::ReorderSpreadsheet');
+    use_ok('Bio::Roary::ReorderSpreadsheet');
 }
 
 ok(
-    my $obj = Bio::PanGenome::ReorderSpreadsheet->new(
+    my $obj = Bio::Roary::ReorderSpreadsheet->new(
         tree_file       => 't/data/reorder_isolates.tre',
         spreadsheet     => 't/data/reorder_isolates_input.csv',
         output_filename => 'reorder_isolates_output.csv',

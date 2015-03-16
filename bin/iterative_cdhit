@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Bio::PanGenome::Main::IterativeCdhit;
+package Bio::Roary::Main::IterativeCdhit;
 
 # ABSTRACT: Iteratively run cdhit
 # PODNAME:  iterative_cdhit
@@ -14,6 +14,6 @@ Iteratively run cdhit
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
 #BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
-use Bio::PanGenome::CommandLine::IterativeCdhit;
+use Bio::Roary::CommandLine::IterativeCdhit;
 
-Bio::PanGenome::CommandLine::IterativeCdhit->new(args => \@ARGV, script_name => $0)->run;
+Bio::Roary::CommandLine::IterativeCdhit->new(args => \@ARGV, script_name => $0)->run;

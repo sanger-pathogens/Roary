@@ -11,9 +11,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::PanGenomePostAnalysis');
+    use_ok('Bio::Roary::CommandLine::RoaryPostAnalysis');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::PanGenomePostAnalysis';
+my $script_name = 'Bio::Roary::CommandLine::RoaryPostAnalysis';
 my $cwd = getcwd();
 
 local $ENV{PATH} = "$ENV{PATH}:./bin";

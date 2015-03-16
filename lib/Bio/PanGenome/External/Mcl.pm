@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::Mcl;
+package Bio::Roary::External::Mcl;
 
 # ABSTRACT: Wrapper around MCL which takes in blast results and outputs clustered results
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::Mcl;
 
 Wrapper around MCL which takes in blast results and outputs clustered results
 
-   use Bio::PanGenome::External::Mcl;
+   use Bio::Roary::External::Mcl;
    
-   my $mcl= Bio::PanGenome::External::Mcl->new(
+   my $mcl= Bio::Roary::External::Mcl->new(
      blast_results     => 'db',
      mcxdeblast_exec   => 'mcxdeblast',
      mcl_exec          => 'mcl',
@@ -20,7 +20,7 @@ Wrapper around MCL which takes in blast results and outputs clustered results
 =cut
 
 use Moose;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'blast_results'   => ( is => 'ro', isa => 'Str', required => 1 );
 has 'mcxdeblast_exec' => ( is => 'ro', isa => 'Str', default  => 'mcxdeblast' );

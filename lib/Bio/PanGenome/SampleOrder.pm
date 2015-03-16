@@ -1,13 +1,13 @@
-package Bio::PanGenome::SampleOrder;
+package Bio::Roary::SampleOrder;
 
 # ABSTRACT: Take in a tree file and return an ordering of the samples
 
 =head1 SYNOPSIS
 
 Take in a tree file and return an ordering of the samples. Defaults to depth first search
-   use Bio::PanGenome::SampleOrder;
+   use Bio::Roary::SampleOrder;
    
-   my $obj = Bio::PanGenome::SampleOrder->new(
+   my $obj = Bio::Roary::SampleOrder->new(
        tree_file        => $tree_file,
      );
    $obj->ordered_samples();

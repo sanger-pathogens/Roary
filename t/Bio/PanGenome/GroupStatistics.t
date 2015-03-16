@@ -9,22 +9,22 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::GroupStatistics');
+    use_ok('Bio::Roary::GroupStatistics');
 }
 
-my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
+my $annotate_groups = Bio::Roary::AnnotateGroups->new(
   gff_files   => ['t/data/query_1.gff','t/data/query_2.gff','t/data/query_3.gff'],
   groups_filename => 't/data/query_groups',
 );
 
-my $analyse_groups = Bio::PanGenome::AnalyseGroups->new(
+my $analyse_groups = Bio::Roary::AnalyseGroups->new(
     fasta_files     => ['t/data/query_1.fa','t/data/query_2.fa','t/data/query_3.fa'],
     groups_filename => 't/data/query_groups'
 );
 
 my $obj;
 
-ok($obj = Bio::PanGenome::GroupStatistics->new(
+ok($obj = Bio::Roary::GroupStatistics->new(
   annotate_groups_obj => $annotate_groups,
   analyse_groups_obj  => $analyse_groups 
 ),'Initialise group statistics object');
@@ -37,17 +37,17 @@ unlink('group_statitics.csv');
 
 ############################
 
-my $annotate_groups_2 = Bio::PanGenome::AnnotateGroups->new(
+my $annotate_groups_2 = Bio::Roary::AnnotateGroups->new(
   gff_files   => ['t/data/query_1.gff','t/data/query_2.gff','t/data/query_3.gff','t/data/query_4_missing_genes.gff'],
   groups_filename => 't/data/query_groups_missing_genes',
 );
 
-my $analyse_groups_2 = Bio::PanGenome::AnalyseGroups->new(
+my $analyse_groups_2 = Bio::Roary::AnalyseGroups->new(
     fasta_files     => ['t/data/query_1.fa','t/data/query_2.fa','t/data/query_3.fa','t/data/query_4_missing_genes.fa'],
     groups_filename => 't/data/query_groups_missing_genes'
 );
 
-ok($obj = Bio::PanGenome::GroupStatistics->new(
+ok($obj = Bio::Roary::GroupStatistics->new(
   annotate_groups_obj => $annotate_groups_2,
   analyse_groups_obj  => $analyse_groups_2,
   output_filename     => 'missing_genes_stats.csv' 
@@ -61,7 +61,7 @@ unlink('missing_genes_stats.csv');
 
 ## TEST VERBOSE STATS ##
 
-ok($obj = Bio::PanGenome::GroupStatistics->new(
+ok($obj = Bio::Roary::GroupStatistics->new(
   annotate_groups_obj => $annotate_groups,
   analyse_groups_obj  => $analyse_groups,
   _verbose            => 1,

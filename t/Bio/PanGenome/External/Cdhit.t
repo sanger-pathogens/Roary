@@ -8,13 +8,13 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::External::Cdhit');
+    use_ok('Bio::Roary::External::Cdhit');
 }
 
 my $cwd = getcwd();
 my $obj;
 
-ok($obj = Bio::PanGenome::External::Cdhit->new(
+ok($obj = Bio::Roary::External::Cdhit->new(
   input_file   => 't/data/some_fasta_file.fa',
   output_base  => 'output',
   exec         =>  $cwd.'/t/bin/dummy_cd-hit',

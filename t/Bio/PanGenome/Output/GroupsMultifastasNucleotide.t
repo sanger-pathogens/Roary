@@ -10,9 +10,9 @@ BEGIN { unshift( @INC, './lib' ) }
 BEGIN {
     use Test::Most;
     use Test::Output;
-    use_ok('Bio::PanGenome::Output::GroupsMultifastasNucleotide');
-    use Bio::PanGenome::AnnotateGroups;
-    use Bio::PanGenome::AnalyseGroups;
+    use_ok('Bio::Roary::Output::GroupsMultifastasNucleotide');
+    use Bio::Roary::AnnotateGroups;
+    use Bio::Roary::AnalyseGroups;
     
 }
 
@@ -21,7 +21,7 @@ my $gff_files = [ 't/data/query_1.gff', 't/data/query_2.gff','t/data/query_3.gff
 
 my $obj;
 
-my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
+my $annotate_groups = Bio::Roary::AnnotateGroups->new(
   gff_files       => $gff_files,
   groups_filename => 't/data/query_groups',
 );
@@ -29,7 +29,7 @@ my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
 $annotate_groups->reannotate;
 
 ok(
-    $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+    $obj = Bio::Roary::Output::GroupsMultifastasNucleotide->new(
         group_names     => [ 'group_2', 'group_5' ],
         gff_files       => $gff_files,
         annotate_groups => $annotate_groups
@@ -45,7 +45,7 @@ remove_tree('pan_genome_sequences');
 
 # test group number limit
 ok(
-    $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+    $obj = Bio::Roary::Output::GroupsMultifastasNucleotide->new(
         group_names     => [ 'group_2', 'group_5' ],
         gff_files       => $gff_files,
         annotate_groups => $annotate_groups,

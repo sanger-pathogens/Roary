@@ -1,13 +1,13 @@
-package Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
+package Bio::Roary::ExtractCoreGenesFromSpreadsheet;
 
 # ABSTRACT: Take in a spreadsheet produced by the pipeline and identify the core genes.
 
 =head1 SYNOPSIS
 
 Take in a spreadsheet produced by the pipeline and identify the core genes.
-   use Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
+   use Bio::Roary::ExtractCoreGenesFromSpreadsheet;
    
-   my $obj = Bio::PanGenome::ExtractCoreGenesFromSpreadsheet->new(
+   my $obj = Bio::Roary::ExtractCoreGenesFromSpreadsheet->new(
        spreadsheet        => 'group_statistics.csv',
      );
    $obj->ordered_core_genes();
@@ -16,7 +16,7 @@ Take in a spreadsheet produced by the pipeline and identify the core genes.
 
 use Moose;
 use Text::CSV;
-use Bio::PanGenome::GroupStatistics;
+use Bio::Roary::GroupStatistics;
 use POSIX;
 
 use Data::Dumper;
@@ -58,7 +58,7 @@ sub _build__input_spreadsheet_fh {
 sub _update_number_of_isolates
 {
   my ($self, $header_row) = @_;
-  my $number_of_isolates = @{$header_row} - @{Bio::PanGenome::GroupStatistics->fixed_headers};
+  my $number_of_isolates = @{$header_row} - @{Bio::Roary::GroupStatistics->fixed_headers};
   $self->_number_of_isolates($number_of_isolates);
 }
 

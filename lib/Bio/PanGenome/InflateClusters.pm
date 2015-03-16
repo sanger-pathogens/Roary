@@ -1,13 +1,13 @@
-package Bio::PanGenome::InflateClusters;
+package Bio::Roary::InflateClusters;
 
 # ABSTRACT: Take the clusters file from cd-hit and use it to inflate the output of MCL
 
 =head1 SYNOPSIS
 
 Take the clusters file from cd-hit and use it to inflate the output of MCL
-   use Bio::PanGenome::InflateClusters;
+   use Bio::Roary::InflateClusters;
    
-   my $obj = Bio::PanGenome::InflateClusters->new(
+   my $obj = Bio::Roary::InflateClusters->new(
      clusters_filename  => 'example.clstr',
      mcl_filename       => 'example.mcl',
      output_file        => 'example.output'
@@ -17,8 +17,8 @@ Take the clusters file from cd-hit and use it to inflate the output of MCL
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
-with 'Bio::PanGenome::ClustersRole';
+use Bio::Roary::Exceptions;
+with 'Bio::Roary::ClustersRole';
 
 has 'mcl_filename'      => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_file'       => ( is => 'ro', isa => 'Str', default  => 'inflated_results' );
@@ -29,14 +29,14 @@ has 'cdhit_groups_filename'  => ( is => 'ro', isa => 'Maybe[Str]' );
 sub _build__output_fh
 {
   my($self) = @_;
-  open(my $fh, '>', $self->output_file) or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw( error => 'Cant write to file: ' . $self->output_file );
+  open(my $fh, '>', $self->output_file) or Bio::Roary::Exceptions::CouldntWriteToFile->throw( error => 'Cant write to file: ' . $self->output_file );
   return $fh;
 }
 
 sub _build__mcl_fh
 {
    my($self) = @_;
-   open(my $fh, $self->mcl_filename) or Bio::PanGenome::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $self->mcl_filename );
+   open(my $fh, $self->mcl_filename) or Bio::Roary::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $self->mcl_filename );
    return $fh;
 }
 
@@ -87,7 +87,7 @@ sub inflate
   if(defined($self->cdhit_groups_filename))
   {
     # Add clusters which were excluded because the groups were full at the cdhit stage
-    open(my $cdhit_fh, $self->cdhit_groups_filename) or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "CD hit group file not found: " . $self->cdhit_groups_filename);
+    open(my $cdhit_fh, $self->cdhit_groups_filename) or Bio::Roary::Exceptions::FileNotFound->throw( error => "CD hit group file not found: " . $self->cdhit_groups_filename);
     while(<$cdhit_fh>)
     {
       my $line = $_;

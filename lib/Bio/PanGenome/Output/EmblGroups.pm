@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::EmblGroups;
+package Bio::Roary::Output::EmblGroups;
 
 # ABSTRACT: Create a tab/embl file with the features for drawing pretty pictures
 
 =head1 SYNOPSIS
 
 reate a tab/embl file with the features for drawing pretty pictures
-   use Bio::PanGenome::Output::EmblGroups;
+   use Bio::Roary::Output::EmblGroups;
    
-   my $obj = Bio::PanGenome::Output::EmblGroups->new(
+   my $obj = Bio::Roary::Output::EmblGroups->new(
      output_filename => 'group_statitics.csv',
      annotate_groups_obj => $annotate_groups_obj,
      analyse_groups_obj  => $analyse_groups_obj
@@ -18,12 +18,12 @@ reate a tab/embl file with the features for drawing pretty pictures
 
 use Moose;
 use POSIX;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::AnnotateGroups;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
+use Bio::Roary::AnnotateGroups;
 
-has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
-has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
+has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
+has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
 has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'core_accessory.tab' );
 has 'output_header_filename'     => ( is => 'ro', isa => 'Str',             lazy    => 1, builder => '_build_output_header_filename');
 has 'groups_to_contigs'   => ( is => 'ro', isa => 'Maybe[HashRef]');
@@ -37,7 +37,7 @@ has '_groups_to_files'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, bui
 sub _build__output_fh {
     my ($self) = @_;
     open( my $fh, '>', $self->output_filename )
-      or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw(
+      or Bio::Roary::Exceptions::CouldntWriteToFile->throw(
         error => "Couldnt write output file:" . $self->output_filename );
     return $fh;
 }
@@ -46,7 +46,7 @@ sub _build__output_header_fh
 {
   my ($self) = @_;
   open( my $fh, '>', $self->output_header_filename )
-    or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw(
+    or Bio::Roary::Exceptions::CouldntWriteToFile->throw(
       error => "Couldnt write output file:" . $self->output_filename );
   return $fh;
 }

@@ -1,13 +1,13 @@
-package Bio::PanGenome::SequenceLengths;
+package Bio::Roary::SequenceLengths;
 
 # ABSTRACT:  Take in a fasta file and create a hash with the length of each sequence
 
 =head1 SYNOPSIS
 
 Add labels to the groups
-   use Bio::PanGenome::SequenceLengths;
+   use Bio::Roary::SequenceLengths;
    
-   my $obj = Bio::PanGenome::SequenceLengths->new(
+   my $obj = Bio::Roary::SequenceLengths->new(
      fasta_file   => 'abc.fa',
    );
    $obj->sequence_lengths;
@@ -16,7 +16,7 @@ Add labels to the groups
 
 use Moose;
 use Bio::SeqIO;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 
 has 'fasta_file'       => ( is => 'ro', isa => 'Str',        required => 1 );
 has 'sequence_lengths' => ( is => 'ro', isa => 'HashRef',    lazy     => 1, builder => '_build_sequence_lengths' );

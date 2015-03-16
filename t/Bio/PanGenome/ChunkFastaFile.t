@@ -9,19 +9,19 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::ChunkFastaFile');
+    use_ok('Bio::Roary::ChunkFastaFile');
 }
 
 my $obj;
 
 
-ok($obj = Bio::PanGenome::ChunkFastaFile->new(
+ok($obj = Bio::Roary::ChunkFastaFile->new(
   fasta_file   => 't/data/example_1.faa',
 ),'initalise object to produce a single sequence file');
 is_deeply($obj->sequence_file_names, [$obj->_working_directory_name.'/0.seq'], 'a single sequence file is created' );
 is(read_file('t/data/example_1.faa'), read_file($obj->_working_directory_name.'/0.seq'), 'input and output file should be the same');
 
-ok($obj = Bio::PanGenome::ChunkFastaFile->new(
+ok($obj = Bio::Roary::ChunkFastaFile->new(
   fasta_file        => 't/data/example_1.faa',
   target_chunk_size => 1,
 ),'initalise object to produce one file per sequence');

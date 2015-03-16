@@ -1,15 +1,15 @@
-package Bio::PanGenome::ClustersRole;
+package Bio::Roary::ClustersRole;
 # ABSTRACT: A role to read a clusters file from CD hit 
 
 =head1 SYNOPSIS
 
 A role to read a clusters file from CD hit 
-   with 'Bio::PanGenome::ClustersRole';
+   with 'Bio::Roary::ClustersRole';
 
 =cut
 
 use Moose::Role;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 
 has 'clusters_filename' => ( is => 'ro', isa => 'Str', required => 1 );
 has '_clustered_genes'  => ( is => 'ro',lazy => 1, builder => '_build__clustered_genes' );
@@ -18,7 +18,7 @@ has '_clusters_fh'      => ( is => 'ro',lazy => 1, builder => '_build__clusters_
 sub _build__clusters_fh
 {
   my($self) = @_;
-  open(my $fh, $self->clusters_filename) or Bio::PanGenome::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $self->clusters_filename );
+  open(my $fh, $self->clusters_filename) or Bio::Roary::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $self->clusters_filename );
   return $fh;
 }
 

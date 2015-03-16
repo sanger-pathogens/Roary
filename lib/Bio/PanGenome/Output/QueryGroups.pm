@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::QueryGroups;
+package Bio::Roary::Output::QueryGroups;
 
 # ABSTRACT:  Output the groups of the union of a set of input isolates
 
 =head1 SYNOPSIS
 
 Output the groups of the union of a set of input isolates
-   use Bio::PanGenome::Output::QueryGroups;
+   use Bio::Roary::Output::QueryGroups;
    
-   my $obj = Bio::PanGenome::Output::QueryGroups->new(
+   my $obj = Bio::Roary::Output::QueryGroups->new(
        analyse_groups  => $analyse_groups
      );
    $obj->groups_union();
@@ -18,13 +18,13 @@ Output the groups of the union of a set of input isolates
 
 use Moose;
 use Bio::SeqIO;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
 use POSIX;
 
 use Data::Dumper;
 
-has 'analyse_groups'        => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups', required => 1 );
+has 'analyse_groups'        => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups', required => 1 );
 has 'input_filenames'       => ( is => 'ro', isa => 'ArrayRef',                      required => 1 );
 has 'output_union_filename' => ( is => 'ro', isa => 'Str',                           default  => 'union_of_groups.gg' );
 has 'output_intersection_filename' => ( is => 'ro', isa => 'Str',      default => 'intersection_of_groups.gg' );
@@ -96,7 +96,7 @@ sub _build__groups_complement {
 sub _print_out_groups {
     my ( $self, $filename, $groups ) = @_;
     open( my $fh, '>', $filename )
-      or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw( error => 'Couldnt write to file: ' . $filename );
+      or Bio::Roary::Exceptions::CouldntWriteToFile->throw( error => 'Couldnt write to file: ' . $filename );
 
    my %groups_freq = %{ $self->_groups_freq };
    my @sorted_groups = sort { @{$groups_freq{$b}} <=> @{$groups_freq{$a}} } @{$groups};

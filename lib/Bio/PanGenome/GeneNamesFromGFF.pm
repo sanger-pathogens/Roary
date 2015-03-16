@@ -1,13 +1,13 @@
-package Bio::PanGenome::GeneNamesFromGFF;
+package Bio::Roary::GeneNamesFromGFF;
 
 # ABSTRACT: Parse a GFF and efficiently extract ID -> Gene Name
 
 =head1 SYNOPSIS
 
 Parse a GFF and efficiently extract ID -> Gene Name
-   use Bio::PanGenome::GeneNamesFromGFF;
+   use Bio::Roary::GeneNamesFromGFF;
    
-   my $obj = Bio::PanGenome::GeneNamesFromGFF->new(
+   my $obj = Bio::Roary::GeneNamesFromGFF->new(
      gff_file   => 'abc.gff'
    );
    $obj->ids_to_gene_name;
@@ -17,7 +17,7 @@ Parse a GFF and efficiently extract ID -> Gene Name
 use Moose;
 
 use Bio::Tools::GFF;
-with 'Bio::PanGenome::ParseGFFAnnotationRole';
+with 'Bio::Roary::ParseGFFAnnotationRole';
 
 has 'ids_to_gene_name' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_ids_to_gene_name' );
 has 'ids_to_product' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );

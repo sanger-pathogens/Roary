@@ -1,4 +1,4 @@
-package Bio::PanGenome::QC::ShredAssemblies;
+package Bio::Roary::QC::ShredAssemblies;
 
 # ABSTRACT: slice .fa assemblies into "reads" for kraken input
 
@@ -10,7 +10,7 @@ use Moose;
 use Bio::SeqIO;
 use File::Basename;
 use Cwd;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'gff_files'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'read_size'        => ( is => 'rw', isa => 'Int',      default => 150 );

@@ -1,13 +1,13 @@
-package Bio::PanGenome::LookupGeneFiles;
+package Bio::Roary::LookupGeneFiles;
 
 # ABSTRACT: Take in an ordering of genes and a directory and return an ordered list of file locations
 
 =head1 SYNOPSIS
 
 Take in an ordering of genes and a directory and return an ordered list of file locations
-   use Bio::PanGenome::LookupGeneFiles;
+   use Bio::Roary::LookupGeneFiles;
    
-   my $obj = Bio::PanGenome::LookupGeneFiles->new(
+   my $obj = Bio::Roary::LookupGeneFiles->new(
        multifasta_directory        => 'pan_genome_sequences',
        ordered_genes           => ['gene5','gene2','gene3'],
 

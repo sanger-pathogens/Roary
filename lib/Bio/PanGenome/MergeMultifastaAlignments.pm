@@ -1,4 +1,4 @@
-package Bio::PanGenome::MergeMultifastaAlignments;
+package Bio::Roary::MergeMultifastaAlignments;
 
 # ABSTRACT: Merge multifasta alignment files with equal numbers of sequences.
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::MergeMultifastaAlignments;
 
 Merge multifasta alignment files with equal numbers of sequences.So each sequence in each file gets concatenated together.  It is assumed the 
 sequences are in the correct order.
-   use Bio::PanGenome::MergeMultifastaAlignments;
+   use Bio::Roary::MergeMultifastaAlignments;
    
-   my $obj = Bio::PanGenome::MergeMultifastaAlignments->new(
+   my $obj = Bio::Roary::MergeMultifastaAlignments->new(
      multifasta_files => [],
      output_filename  => 'output_merged.aln'
    );

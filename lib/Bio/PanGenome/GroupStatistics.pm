@@ -1,13 +1,13 @@
-package Bio::PanGenome::GroupStatistics;
+package Bio::Roary::GroupStatistics;
 
 # ABSTRACT: Add labels to the groups
 
 =head1 SYNOPSIS
 
 Add labels to the groups
-   use Bio::PanGenome::GroupStatistics;
+   use Bio::Roary::GroupStatistics;
    
-   my $obj = Bio::PanGenome::GroupStatistics->new(
+   my $obj = Bio::Roary::GroupStatistics->new(
      output_filename => 'group_statitics.csv',
      annotate_groups_obj => $annotate_groups_obj,
      analyse_groups_obj  => $analyse_groups_obj
@@ -19,12 +19,12 @@ Add labels to the groups
 use Moose;
 use POSIX;
 use Text::CSV;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::AnnotateGroups;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
+use Bio::Roary::AnnotateGroups;
 
-has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
-has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
+has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
+has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
 has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'group_statitics.csv' );
 has 'groups_to_contigs'   => ( is => 'ro', isa => 'Maybe[HashRef]');
 
@@ -39,7 +39,7 @@ has '_verbose'           => ( is => 'ro', isa => 'Bool', default => 0 );
 sub _build__output_fh {
     my ($self) = @_;
     open( my $fh, '>', $self->output_filename )
-      or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw(
+      or Bio::Roary::Exceptions::CouldntWriteToFile->throw(
         error => "Couldnt write output file:" . $self->output_filename );
     return $fh;
 }

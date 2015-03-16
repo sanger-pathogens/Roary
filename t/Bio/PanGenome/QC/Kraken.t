@@ -6,11 +6,11 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::QC::Kraken');
+    use_ok('Bio::Roary::QC::Kraken');
 }
 
 ok(
-	my $kraken_obj = Bio::PanGenome::QC::Kraken->new( 
+	my $kraken_obj = Bio::Roary::QC::Kraken->new( 
 		assembly_directory => "t/data/kraken",
 		glob_search        => "*.test.fa",
 		job_runner         => "Local"

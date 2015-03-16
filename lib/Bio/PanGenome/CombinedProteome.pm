@@ -1,13 +1,13 @@
-package Bio::PanGenome::CombinedProteome;
+package Bio::Roary::CombinedProteome;
 
 # ABSTRACT: Take in multiple FASTA sequences containing proteomes and concat them together and output a FASTA file, filtering out more than 5% X's
 
 =head1 SYNOPSIS
 
 Take in multiple FASTA sequences containing proteomes and concat them together and output a FASTA file, filtering out more than 5% X's
-   use Bio::PanGenome::CombinedProteome;
+   use Bio::Roary::CombinedProteome;
    
-   my $obj = Bio::PanGenome::CombinedProteome->new(
+   my $obj = Bio::Roary::CombinedProteome->new(
      proteome_files   => ['abc.fa','efg.fa'],
      output_filename   => 'example_output.fa',
      maximum_percentage_of_unknowns => 5.0,
@@ -17,7 +17,7 @@ Take in multiple FASTA sequences containing proteomes and concat them together a
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 
 has 'proteome_files'                 => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'output_filename'                => ( is => 'ro', isa => 'Str',      default  => 'combined_output.fa' );
@@ -26,7 +26,7 @@ sub BUILD {
     my ($self) = @_;
 
     for my $filename ( @{ $self->proteome_files } ) {
-        Bio::PanGenome::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $filename )
+        Bio::Roary::Exceptions::FileNotFound->throw( error => 'Cant open file: ' . $filename )
           unless ( -e $filename );
     }
 }

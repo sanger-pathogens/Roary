@@ -1,13 +1,13 @@
-package Bio::PanGenome::External::Cdhit;
+package Bio::Roary::External::Cdhit;
 
 # ABSTRACT: Wrapper to run cd-hit
 
 =head1 SYNOPSIS
 
 Wrapper to run cd-hit
-   use Bio::PanGenome::External::Cdhit;
+   use Bio::Roary::External::Cdhit;
    
-   my $obj = Bio::PanGenome::External::Cdhit->new(
+   my $obj = Bio::Roary::External::Cdhit->new(
      input_file   => 'abc.fa',
      exec         => 'cd-hit',
      output_base  => 'efg',
@@ -18,7 +18,7 @@ Wrapper to run cd-hit
 
 use Moose;
 use File::Spec;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'input_file'                   => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'output_base'                  => ( is => 'ro', isa => 'Str',  default  => 'output' );

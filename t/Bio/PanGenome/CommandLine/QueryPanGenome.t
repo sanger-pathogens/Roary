@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::QueryPanGenome');
+    use_ok('Bio::Roary::CommandLine::QueryRoary');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::QueryPanGenome';
+my $script_name = 'Bio::Roary::CommandLine::QueryRoary';
 my $cwd         = getcwd();
 
 system('touch empty_file');

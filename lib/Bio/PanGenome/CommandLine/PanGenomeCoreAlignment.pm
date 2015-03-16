@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::PanGenomeCoreAlignment;
+package Bio::Roary::CommandLine::RoaryCoreAlignment;
 
 # ABSTRACT: Take in the group statistics spreadsheet and the location of the gene multifasta files and create a core alignment.
 
@@ -11,10 +11,10 @@ Take in the group statistics spreadsheet and the location of the gene multifasta
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Cwd 'abs_path';
-use Bio::PanGenome::ExtractCoreGenesFromSpreadsheet;
-use Bio::PanGenome::LookupGeneFiles;
-use Bio::PanGenome::MergeMultifastaAlignments;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::ExtractCoreGenesFromSpreadsheet;
+use Bio::Roary::LookupGeneFiles;
+use Bio::Roary::MergeMultifastaAlignments;
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -71,17 +71,17 @@ sub run {
         die $self->usage_text;
     }
 
-    my $core_genes_obj = Bio::PanGenome::ExtractCoreGenesFromSpreadsheet->new( 
+    my $core_genes_obj = Bio::Roary::ExtractCoreGenesFromSpreadsheet->new( 
         spreadsheet     => $self->spreadsheet_filename,
         core_definition => $self->core_definition
     );
 
-    my $gene_files = Bio::PanGenome::LookupGeneFiles->new(
+    my $gene_files = Bio::Roary::LookupGeneFiles->new(
         multifasta_directory => $self->multifasta_base_directory,
         ordered_genes        => $core_genes_obj->ordered_core_genes,
       );
     
-    my $merge_alignments_obj = Bio::PanGenome::MergeMultifastaAlignments->new(
+    my $merge_alignments_obj = Bio::Roary::MergeMultifastaAlignments->new(
       multifasta_files => $gene_files->ordered_gene_files(),
       output_filename  => $self->output_filename
     );

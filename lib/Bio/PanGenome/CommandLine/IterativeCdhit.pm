@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::IterativeCdhit;
+package Bio::Roary::CommandLine::IterativeCdhit;
 
 # ABSTRACT: Iteratively run cdhit
 
@@ -10,8 +10,8 @@ Iteratively run cdhit
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::IterativeCdhit;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::IterativeCdhit;
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -70,7 +70,7 @@ sub run {
         die $self->usage_text;
     }
 
-    my $obj = Bio::PanGenome::IterativeCdhit->new(
+    my $obj = Bio::Roary::IterativeCdhit->new(
         output_cd_hit_filename          => $self->output_cd_hit_filename,
         output_combined_filename        => $self->output_combined_filename,
         number_of_input_files           => $self->number_of_input_files,

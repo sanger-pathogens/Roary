@@ -9,28 +9,28 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use Bio::PanGenome::AnnotateGroups;
-    use Bio::PanGenome::AnalyseGroups;
-    use Bio::PanGenome::GroupStatistics;
-    use_ok('Bio::PanGenome::Output::NumberOfGroups');
+    use Bio::Roary::AnnotateGroups;
+    use Bio::Roary::AnalyseGroups;
+    use Bio::Roary::GroupStatistics;
+    use_ok('Bio::Roary::Output::NumberOfGroups');
 }
 
-my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
+my $annotate_groups = Bio::Roary::AnnotateGroups->new(
   gff_files   => ['t/data/query_1.gff','t/data/query_2.gff','t/data/query_3.gff'],
   groups_filename => 't/data/query_groups',
 );
 
-my $analyse_groups = Bio::PanGenome::AnalyseGroups->new(
+my $analyse_groups = Bio::Roary::AnalyseGroups->new(
     fasta_files     => ['t/data/query_1.fa','t/data/query_2.fa','t/data/query_3.fa'],
     groups_filename => 't/data/query_groups'
 );
 
-my $group_statistics = Bio::PanGenome::GroupStatistics->new(
+my $group_statistics = Bio::Roary::GroupStatistics->new(
   annotate_groups_obj => $annotate_groups,
   analyse_groups_obj  => $analyse_groups 
 );
 
-ok(my $obj = Bio::PanGenome::Output::NumberOfGroups->new(
+ok(my $obj = Bio::Roary::Output::NumberOfGroups->new(
   group_statistics_obj => $group_statistics,
   annotate_groups_obj      => $annotate_groups
   ),'initialise object');

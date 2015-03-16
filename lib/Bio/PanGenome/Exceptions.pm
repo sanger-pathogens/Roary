@@ -1,4 +1,4 @@
-package Bio::PanGenome::Exceptions;
+package Bio::Roary::Exceptions;
 # ABSTRACT: Exceptions for input data 
 
 =head1 SYNOPSIS
@@ -9,9 +9,9 @@ Exceptions for input data
 
 
 use Exception::Class (
-    Bio::PanGenome::Exceptions::FileNotFound   => { description => 'Couldnt open the file' },
-    Bio::PanGenome::Exceptions::CouldntWriteToFile   => { description => 'Couldnt open the file for writing' },
-    Bio::PanGenome::Exceptions::LSFJobFailed   => { description => 'Jobs failed' },
+    Bio::Roary::Exceptions::FileNotFound   => { description => 'Couldnt open the file' },
+    Bio::Roary::Exceptions::CouldntWriteToFile   => { description => 'Couldnt open the file for writing' },
+    Bio::Roary::Exceptions::LSFJobFailed   => { description => 'Jobs failed' },
 );  
 
 1;

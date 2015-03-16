@@ -9,13 +9,13 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::SortFasta');
+    use_ok('Bio::Roary::SortFasta');
 }
 
 my $obj;
 
 
-ok( $obj = Bio::PanGenome::SortFasta->new(
+ok( $obj = Bio::Roary::SortFasta->new(
   input_filename   => 't/data/out_of_order_fasta.fa',
 ), 'initalise object');
 

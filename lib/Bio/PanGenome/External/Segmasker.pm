@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::Segmasker;
+package Bio::Roary::External::Segmasker;
 
 # ABSTRACT: Wrapper around Segmasker for low complexity filtering
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::Segmasker;
 
 Wrapper around Segmasker for low complexity filtering
 
-   use Bio::PanGenome::External::Segmasker;
+   use Bio::Roary::External::Segmasker;
    
-   my $seg= Bio::PanGenome::External::Segmasker->new(
+   my $seg= Bio::Roary::External::Segmasker->new(
      fasta_file => 'contigs.fa',
    );
    
@@ -21,7 +21,7 @@ Returns the path to the results file
 =cut
 
 use Moose;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'fasta_file'        => ( is => 'ro', isa => 'Str', required => 1 );
 has 'exec'              => ( is => 'ro', isa => 'Str', default  => 'segmasker' );

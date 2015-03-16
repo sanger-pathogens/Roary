@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::ParallelAllAgainstAllBlastp;
+package Bio::Roary::CommandLine::ParallelAllAgainstAllBlastp;
 
 # ABSTRACT: Take in a FASTA file of proteins and blast against itself
 
@@ -10,10 +10,10 @@ Take in a FASTA file of proteins and blast against itself
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::ParallelAllAgainstAllBlast;
-use Bio::PanGenome::CombinedProteome;
-use Bio::PanGenome::PrepareInputFiles;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::ParallelAllAgainstAllBlast;
+use Bio::Roary::CombinedProteome;
+use Bio::Roary::PrepareInputFiles;
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -73,7 +73,7 @@ sub run {
         die $self->usage_text;
     }
     
-    my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
+    my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
       input_files   => $self->fasta_files,
     );
     
@@ -81,7 +81,7 @@ sub run {
     if(@{$self->fasta_files} > 1)
     {
       $output_combined_filename = 'combined_files.fa';
-      my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
+      my $combine_fasta_files = Bio::Roary::CombinedProteome->new(
         proteome_files                 => $prepare_input_files->fasta_files,
         output_filename                => $output_combined_filename,
         maximum_percentage_of_unknowns => 5.0,
@@ -94,7 +94,7 @@ sub run {
       $output_combined_filename = $self->fasta_files->[0];
     }
 
-    my $blast_obj = Bio::PanGenome::ParallelAllAgainstAllBlast->new(
+    my $blast_obj = Bio::Roary::ParallelAllAgainstAllBlast->new(
         fasta_file       => $output_combined_filename,
         blast_results_file_name  => $self->output_filename,
         job_runner       => $self->job_runner,

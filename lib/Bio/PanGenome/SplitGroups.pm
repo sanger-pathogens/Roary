@@ -1,15 +1,15 @@
-package Bio::PanGenome::SplitGroups;
+package Bio::Roary::SplitGroups;
 
 # ABSTRACT: 
 
 =head1 SYNOPSIS
 
-	use Bio::PanGenome::SplitGroups;
+	use Bio::Roary::SplitGroups;
 
 =cut
 
 use Moose;
-use Bio::PanGenome::AnalyseGroups;
+use Bio::Roary::AnalyseGroups;
 use File::Path qw(make_path remove_tree);
 use File::Copy qw(move);
 
@@ -42,7 +42,7 @@ sub _build__outfile_handle {
 sub _build__analyse_groups_obj {
 	my ( $self ) = @_;
 
-	return Bio::PanGenome::AnalyseGroups->new(
+	return Bio::Roary::AnalyseGroups->new(
 		fasta_files     => $self->fasta_files,
 		groups_filename => $self->groupfile
 	);

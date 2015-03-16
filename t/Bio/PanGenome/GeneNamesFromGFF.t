@@ -9,13 +9,13 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::GeneNamesFromGFF');
+    use_ok('Bio::Roary::GeneNamesFromGFF');
 }
 
 my $obj;
 
 ok(
-    $obj = Bio::PanGenome::GeneNamesFromGFF->new(
+    $obj = Bio::Roary::GeneNamesFromGFF->new(
         gff_file => 't/data/query_1.gff'
     ),
     'initialise reading GFF file'
@@ -33,7 +33,7 @@ is_deeply(
 );
 
 ok(
-    $obj = Bio::PanGenome::GeneNamesFromGFF->new(
+    $obj = Bio::Roary::GeneNamesFromGFF->new(
         gff_file => 't/data/query_2.gff'
     ),
     'initialise reading another GFF file'

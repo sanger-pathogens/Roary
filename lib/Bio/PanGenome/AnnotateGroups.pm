@@ -1,13 +1,13 @@
-package Bio::PanGenome::AnnotateGroups;
+package Bio::Roary::AnnotateGroups;
 
 # ABSTRACT: Take in a group file and assosiated GFF files for the isolates and update the group name to the gene name
 
 =head1 SYNOPSIS
 
 Take in a group file and assosiated GFF files for the isolates and update the group name to the gene name
-   use Bio::PanGenome::AnnotateGroups;
+   use Bio::Roary::AnnotateGroups;
    
-   my $obj = Bio::PanGenome::AnnotateGroups->new(
+   my $obj = Bio::Roary::AnnotateGroups->new(
      gff_files   => ['abc.gff','efg.gff'],
      output_filename   => 'example_output.fa',
      groups_filename => 'groupsfile',
@@ -17,8 +17,8 @@ Take in a group file and assosiated GFF files for the isolates and update the gr
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::GeneNamesFromGFF;
+use Bio::Roary::Exceptions;
+use Bio::Roary::GeneNamesFromGFF;
 use Data::Dumper;
 use Array::Utils qw(array_minus);
 
@@ -82,7 +82,7 @@ sub _builder__ids_to_groups {
 sub _build__output_fh {
     my ($self) = @_;
     open( my $fh, '>', $self->output_filename )
-      or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw(
+      or Bio::Roary::Exceptions::CouldntWriteToFile->throw(
         error => "Couldnt write output file:" . $self->output_filename );
     return $fh;
 }
@@ -98,7 +98,7 @@ sub _build__ids_to_gene_names {
     my %ids_to_gene_names;
     my %ids_to_product;
     for my $filename ( @{ $self->_filtered_gff_files } ) {
-        my $gene_names_from_gff = Bio::PanGenome::GeneNamesFromGFF->new( gff_file => $filename );
+        my $gene_names_from_gff = Bio::Roary::GeneNamesFromGFF->new( gff_file => $filename );
         my %id_to_gene_lookup = %{ $gene_names_from_gff->ids_to_gene_name };
         @ids_to_gene_names{ keys %id_to_gene_lookup } = values %id_to_gene_lookup;
 
@@ -165,7 +165,7 @@ sub _builder__groups_to_id_names {
     my %groups_to_id_names;
 
     open( my $fh, $self->groups_filename )
-      or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
+      or Bio::Roary::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
     while (<$fh>) {
         chomp;
         my $line = $_;

@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::CreatePanGenome;
+package Bio::Roary::CommandLine::CreateRoary;
 
 # ABSTRACT: Take in FASTA files of proteins and cluster them
 
@@ -10,10 +10,10 @@ Take in FASTA files of proteins and cluster them
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome;
-use Bio::PanGenome::PrepareInputFiles;
-use Bio::PanGenome::QC::Report;
-extends 'Bio::PanGenome::CommandLine::Roary';
+use Bio::Roary;
+use Bio::Roary::PrepareInputFiles;
+use Bio::Roary::QC::Report;
+extends 'Bio::Roary::CommandLine::Roary';
 
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default => 'Local' );
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 );

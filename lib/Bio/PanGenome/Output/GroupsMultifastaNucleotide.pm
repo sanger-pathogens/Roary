@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::GroupsMultifastaNucleotide;
+package Bio::Roary::Output::GroupsMultifastaNucleotide;
 
 # ABSTRACT:  Take in a GFF files and a groups file and output one multifasta file per group with nucleotide sequences.
 
 =head1 SYNOPSIS
 
 Take in a GFF files and a groups file and output one multifasta file per group with nucleotide sequences.
-   use Bio::PanGenome::Output::GroupsMultifastas;
+   use Bio::Roary::Output::GroupsMultifastas;
    
-   my $obj = Bio::PanGenome::Output::GroupsMultifastasNucleotide->new(
+   my $obj = Bio::Roary::Output::GroupsMultifastasNucleotide->new(
        group_names      => ['aaa','bbb'],
      );
    $obj->populate_files();
@@ -18,14 +18,14 @@ use Moose;
 use Bio::SeqIO;
 use File::Path qw(make_path);
 use File::Basename;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
 
 has 'gff_file'         => ( is => 'ro', isa => 'Str',                           required => 1 );
 # Not implemented
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
 has 'output_directory' => ( is => 'ro', isa => 'Str',                           required => 1 );
-has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
+has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has 'fasta_file'   => ( is => 'ro', isa => 'Str',        lazy => 1, builder => '_build_fasta_file' );

@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::MergeMultipleFastaAlignments');
+    use_ok('Bio::Roary::CommandLine::MergeMultipleFastaAlignments');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::MergeMultipleFastaAlignments';
+my $script_name = 'Bio::Roary::CommandLine::MergeMultipleFastaAlignments';
 system('touch empty_file');
 my %scripts_and_expected_files = (
     't/data/multfasta1.aln t/data/multfasta2.aln t/data/multfasta3.aln' =>

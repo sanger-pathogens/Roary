@@ -9,10 +9,10 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::FilterFullClusters');
+    use_ok('Bio::Roary::FilterFullClusters');
 }
 
-ok(my $filter_clusters = Bio::PanGenome::FilterFullClusters->new(
+ok(my $filter_clusters = Bio::Roary::FilterFullClusters->new(
     clusters_filename        => 't/data/clusters_to_inflate',
     fasta_file           =>  't/data/clusters_input.fa',
     number_of_input_files => 6,

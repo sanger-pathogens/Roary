@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::Makeblastdb;
+package Bio::Roary::External::Makeblastdb;
 
 # ABSTRACT: Wrapper around NCBIs makeblastdb command
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::Makeblastdb;
 
 Take in a fasta file and create a temporary blast database.
 
-   use Bio::PanGenome::External::Makeblastdb;
+   use Bio::Roary::External::Makeblastdb;
    
-   my $blast_database= Bio::PanGenome::External::Makeblastdb->new(
+   my $blast_database= Bio::Roary::External::Makeblastdb->new(
      fasta_file => 'contigs.fa',
      exec       => 'makeblastdb'
    );
@@ -24,7 +24,7 @@ Returns the path to the temporary blast database files
 use Moose;
 use File::Temp;
 use Cwd;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'fasta_file'         => ( is => 'ro', isa => 'Str', required => 1 );
 has 'mask_data'          => ( is => 'ro', isa => 'Str', required => 1  );

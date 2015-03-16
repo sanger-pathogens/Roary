@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::TransferAnnotationToGroups;
+package Bio::Roary::CommandLine::TransferAnnotationToGroups;
 
 # ABSTRACT: Take in a groups file and a set of GFF files and transfer the consensus annotation
 
@@ -10,8 +10,8 @@ Take in a groups file and a set of GFF files and transfer the consensus annotati
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::AnnotateGroups;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::AnnotateGroups;
+extends 'Bio::Roary::CommandLine::Common';
 
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -69,7 +69,7 @@ sub run {
     }
 
   
-    my $obj = Bio::PanGenome::AnnotateGroups->new(
+    my $obj = Bio::Roary::AnnotateGroups->new(
       gff_files   => $self->gff_files,
       output_filename   => $self->output_filename,
       groups_filename => $self->groups_filename,

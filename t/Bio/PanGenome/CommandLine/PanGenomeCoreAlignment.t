@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::PanGenomeCoreAlignment');
+    use_ok('Bio::Roary::CommandLine::RoaryCoreAlignment');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::PanGenomeCoreAlignment';
+my $script_name = 'Bio::Roary::CommandLine::RoaryCoreAlignment';
 system('touch empty_file');
 my %scripts_and_expected_files = (
     '-m t/data/core_alignment -s t/data/core_alignment.csv' =>

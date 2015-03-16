@@ -1,13 +1,13 @@
-package Bio::PanGenome::PrepareInputFiles;
+package Bio::Roary::PrepareInputFiles;
 
 # ABSTRACT: Take in a mixture of FASTA and GFF input files and output FASTA proteomes only
 
 =head1 SYNOPSIS
 
 Take in a mixture of FASTA and GFF input files and output FASTA proteomes only
-   use Bio::PanGenome::PrepareInputFiles;
+   use Bio::Roary::PrepareInputFiles;
    
-   my $obj = Bio::PanGenome::PrepareInputFiles->new(
+   my $obj = Bio::Roary::PrepareInputFiles->new(
      input_files   => ['abc.gff','ddd.faa'],
    );
    $obj->fasta_files;
@@ -15,9 +15,9 @@ Take in a mixture of FASTA and GFF input files and output FASTA proteomes only
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::ExtractProteomeFromGFFs;
-use Bio::PanGenome::FilterUnknownsFromFasta;
+use Bio::Roary::Exceptions;
+use Bio::Roary::ExtractProteomeFromGFFs;
+use Bio::Roary::FilterUnknownsFromFasta;
 use Cwd;
 
 has 'input_files'      => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
@@ -28,13 +28,13 @@ has '_input_fasta_files' => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, b
 has '_input_fasta_files_filtered' =>
   ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__input_fasta_files_filtered' );
 has '_input_fasta_files_filtered_obj' =>
-    ( is => 'ro', isa => 'Bio::PanGenome::FilterUnknownsFromFasta', lazy => 1, builder => '_build__input_fasta_files_filtered_obj' );
+    ( is => 'ro', isa => 'Bio::Roary::FilterUnknownsFromFasta', lazy => 1, builder => '_build__input_fasta_files_filtered_obj' );
 
 has '_derived_fasta_files' =>
   ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__derived_fasta_files' );
 has '_extract_proteome_obj' => (
     is      => 'ro',
-    isa     => 'Bio::PanGenome::ExtractProteomeFromGFFs',
+    isa     => 'Bio::Roary::ExtractProteomeFromGFFs',
     lazy    => 1,
     builder => '_build__extract_proteome_obj'
 );
@@ -42,7 +42,7 @@ has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'translation_table'     => ( is => 'rw', isa => 'Int',  default => 11 );
 
 has '_fasta_filter_obj' =>
-  ( is => 'ro', isa => 'Bio::PanGenome::FilterUnknowsFromFasta', lazy => 1, builder => '_fasta_filter_obj' );
+  ( is => 'ro', isa => 'Bio::Roary::FilterUnknowsFromFasta', lazy => 1, builder => '_fasta_filter_obj' );
 
 sub _build__input_gff_files {
     my ($self) = @_;
@@ -58,7 +58,7 @@ sub _build__input_fasta_files {
 
 sub _build__input_fasta_files_filtered_obj {
     my ($self) = @_;
-    return Bio::PanGenome::FilterUnknownsFromFasta->new( fasta_files => $self->_input_fasta_files );
+    return Bio::Roary::FilterUnknownsFromFasta->new( fasta_files => $self->_input_fasta_files );
 }
 
 sub _build__input_fasta_files_filtered
@@ -70,7 +70,7 @@ sub _build__input_fasta_files_filtered
 
 sub _build__extract_proteome_obj {
     my ($self) = @_;
-    return Bio::PanGenome::ExtractProteomeFromGFFs->new(
+    return Bio::Roary::ExtractProteomeFromGFFs->new(
         gff_files             => $self->_input_gff_files,
         job_runner            => $self->job_runner,
         apply_unknowns_filter => $self->apply_unknowns_filter,

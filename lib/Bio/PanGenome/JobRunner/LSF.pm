@@ -1,13 +1,13 @@
-package Bio::PanGenome::JobRunner::LSF;
+package Bio::Roary::JobRunner::LSF;
 
 # ABSTRACT: Execute a set of commands using LSF
 
 =head1 SYNOPSIS
 
 Execute a set of commands using LSF
-   use Bio::PanGenome::JobRunner::LSF;
+   use Bio::Roary::JobRunner::LSF;
    
-   my $obj = Bio::PanGenome::JobRunner::LSF->new(
+   my $obj = Bio::Roary::JobRunner::LSF->new(
      commands_to_run   => ['ls', 'echo "abc"'],
    );
    $obj->run();
@@ -17,7 +17,7 @@ Execute a set of commands using LSF
 use Moose;
 use LSF;
 use LSF::JobManager;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 
 has 'commands_to_run' => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
 has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 500 );

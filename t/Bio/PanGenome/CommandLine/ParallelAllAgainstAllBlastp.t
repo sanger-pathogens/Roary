@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::ParallelAllAgainstAllBlastp');
+    use_ok('Bio::Roary::CommandLine::ParallelAllAgainstAllBlastp');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::ParallelAllAgainstAllBlastp';
+my $script_name = 'Bio::Roary::CommandLine::ParallelAllAgainstAllBlastp';
 my $cwd = getcwd();
 
 system('touch empty_file');

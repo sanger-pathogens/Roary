@@ -9,11 +9,11 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::ContigsToGeneIDsFromGFF');
+    use_ok('Bio::Roary::ContigsToGeneIDsFromGFF');
 }
 
 
-ok(my $obj = Bio::PanGenome::ContigsToGeneIDsFromGFF->new(
+ok(my $obj = Bio::Roary::ContigsToGeneIDsFromGFF->new(
   gff_file   => 't/data/query_1.gff'
 ),'Initialise contigs to gene ids obj');
 
@@ -41,7 +41,7 @@ is_deeply($obj->contig_to_ids,
 
 
 
-ok($obj = Bio::PanGenome::ContigsToGeneIDsFromGFF->new(
+ok($obj = Bio::Roary::ContigsToGeneIDsFromGFF->new(
   gff_file   => 't/data/query_1_alternative_patterns.gff'
 ),'Initialise contigs to gene ids obj with alternative ID patterns');
 is_deeply($obj->contig_to_ids,

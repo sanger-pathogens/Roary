@@ -1,13 +1,13 @@
-package Bio::PanGenome::FilterFullClusters;
+package Bio::Roary::FilterFullClusters;
 
 # ABSTRACT: Take an a clusters file from CD-hit and the fasta file and output a fasta file without full clusters
 
 =head1 SYNOPSIS
 
 Take an a clusters file from CD-hit and the fasta file and output a fasta file without full clusters
-   use Bio::PanGenome::FilterFullClusters;
+   use Bio::Roary::FilterFullClusters;
    
-   my $obj = Bio::PanGenome::FilterFullClusters->new(
+   my $obj = Bio::Roary::FilterFullClusters->new(
        clusters_filename        => $cluster_file,
        fasta_file           => $fasta_file,
        number_of_input_files => 10,
@@ -19,7 +19,7 @@ Take an a clusters file from CD-hit and the fasta file and output a fasta file w
 
 use Moose;
 use Bio::SeqIO;
-with 'Bio::PanGenome::ClustersRole';
+with 'Bio::Roary::ClustersRole';
 
 has 'number_of_input_files' => ( is => 'ro', isa => 'Int', required => 1 );
 has 'fasta_file'     => ( is => 'ro', isa => 'Str', required => 1 );

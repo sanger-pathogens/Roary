@@ -8,11 +8,11 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::Output::GroupsMultifastaProtein');
+    use_ok('Bio::Roary::Output::GroupsMultifastaProtein');
 }
 
 ok(
-    my $obj = Bio::PanGenome::Output::GroupsMultifastaProtein->new(
+    my $obj = Bio::Roary::Output::GroupsMultifastaProtein->new(
         nucleotide_fasta_file    => 't/data/nuc_multifasta.fa',
     ),
     'initialise creating the nuc fasta obj'

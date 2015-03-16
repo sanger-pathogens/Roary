@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::Blastp;
+package Bio::Roary::External::Blastp;
 
 # ABSTRACT: Wrapper around NCBIs blastp command
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::Blastp;
 
 Wrapper around NCBIs blastp command
 
-   use Bio::PanGenome::External::Blastp;
+   use Bio::Roary::External::Blastp;
    
-   my $blast_database= Bio::PanGenome::External::Blastp->new(
+   my $blast_database= Bio::Roary::External::Blastp->new(
      fasta_file => 'contigs.fa',
      blast_database => 'db',
      exec       => 'blastp',

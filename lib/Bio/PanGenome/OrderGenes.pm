@@ -1,13 +1,13 @@
-package Bio::PanGenome::OrderGenes;
+package Bio::Roary::OrderGenes;
 
 # ABSTRACT: Take in GFF files and create a matrix of what genes are beside what other genes
 
 =head1 SYNOPSIS
 
 Take in the analyse groups and create a matrix of what genes are beside what other genes
-   use Bio::PanGenome::OrderGenes;
+   use Bio::Roary::OrderGenes;
    
-   my $obj = Bio::PanGenome::OrderGenes->new(
+   my $obj = Bio::Roary::OrderGenes->new(
      analyse_groups_obj => $analyse_groups_obj,
      gff_files => ['file1.gff','file2.gff']
    );
@@ -16,13 +16,13 @@ Take in the analyse groups and create a matrix of what genes are beside what oth
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::ContigsToGeneIDsFromGFF;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
+use Bio::Roary::ContigsToGeneIDsFromGFF;
 use Graph;
 
 has 'gff_files'           => ( is => 'ro', isa => 'ArrayRef',  required => 1 );
-has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups',  required => 1 );
+has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
 has 'group_order'         => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_group_order');
 has 'group_graphs'        => ( is => 'ro', isa => 'Graph',  lazy => 1, builder => '_build_group_graphs');
 has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups_to_contigs');
@@ -61,7 +61,7 @@ sub _build__groups_to_file_contigs
   # Open each GFF file
   for my $filename (@{$self->gff_files})
   {
-    my $contigs_to_ids_obj = Bio::PanGenome::ContigsToGeneIDsFromGFF->new(gff_file   => $filename);
+    my $contigs_to_ids_obj = Bio::Roary::ContigsToGeneIDsFromGFF->new(gff_file   => $filename);
     
     # Loop over each contig in the GFF file
     for my $contig_name (keys %{$contigs_to_ids_obj->contig_to_ids})

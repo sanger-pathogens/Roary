@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::ProteinMuscleAlignmentFromNucleotides;
+package Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides;
 
 # ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
 
@@ -10,12 +10,12 @@ Take in a multifasta file of nucleotides, convert to proteins and align with mus
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::AnnotateGroups;
-use Bio::PanGenome::External::Muscle;
-use Bio::PanGenome::External::Revtrans;
-use Bio::PanGenome::Output::GroupsMultifastaProtein;
-use Bio::PanGenome::SortFasta;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::AnnotateGroups;
+use Bio::Roary::External::Muscle;
+use Bio::Roary::External::Revtrans;
+use Bio::Roary::Output::GroupsMultifastaProtein;
+use Bio::Roary::SortFasta;
+extends 'Bio::Roary::CommandLine::Common';
 
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -64,29 +64,29 @@ sub run {
     for my $fasta_file (@{$self->nucleotide_fasta_files})
     {
       
-      my $sort_fasta_before = Bio::PanGenome::SortFasta->new(
+      my $sort_fasta_before = Bio::Roary::SortFasta->new(
          input_filename   => $fasta_file,
        );
       $sort_fasta_before->sort_fasta->replace_input_with_output_file;
       
-      my $multifasta_protein_obj = Bio::PanGenome::Output::GroupsMultifastaProtein->new(
+      my $multifasta_protein_obj = Bio::Roary::Output::GroupsMultifastaProtein->new(
           nucleotide_fasta_file => $fasta_file,
           translation_table     => $self->translation_table
         );
       $multifasta_protein_obj->convert_nucleotide_to_protein();
       
-      my $seg = Bio::PanGenome::External::Muscle->new(
+      my $seg = Bio::Roary::External::Muscle->new(
         fasta_files => [$multifasta_protein_obj->output_filename],
         job_runner  => 'Local'
       );
       $seg->run();
       
-      my $sort_fasta_after_muscle = Bio::PanGenome::SortFasta->new(
+      my $sort_fasta_after_muscle = Bio::Roary::SortFasta->new(
          input_filename   => $multifasta_protein_obj->output_filename. '.aln',
        );
       $sort_fasta_after_muscle->sort_fasta->replace_input_with_output_file;
 
-      my $revtrans= Bio::PanGenome::External::Revtrans->new(
+      my $revtrans= Bio::Roary::External::Revtrans->new(
         nucleotide_filename => $fasta_file,
         protein_filename  => $multifasta_protein_obj->output_filename. '.aln',
         output_filename   => $fasta_file.'.aln',
@@ -94,7 +94,7 @@ sub run {
       );
       $revtrans->run();
       
-      my $sort_fasta_after_revtrans = Bio::PanGenome::SortFasta->new(
+      my $sort_fasta_after_revtrans = Bio::Roary::SortFasta->new(
          input_filename   => $fasta_file.'.aln',
        );
       $sort_fasta_after_revtrans->sort_fasta->replace_input_with_output_file;

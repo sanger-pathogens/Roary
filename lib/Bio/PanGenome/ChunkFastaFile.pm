@@ -1,13 +1,13 @@
-package Bio::PanGenome::ChunkFastaFile;
+package Bio::Roary::ChunkFastaFile;
 
 # ABSTRACT: Take in a FASTA file and chunk it up into smaller pieces.
 
 =head1 SYNOPSIS
 
 Take in a FASTA file and chunk it up into smaller pieces.
-   use Bio::PanGenome::ChunkFastaFile;
+   use Bio::Roary::ChunkFastaFile;
    
-   my $obj = Bio::PanGenome::ChunkFastaFile->new(
+   my $obj = Bio::Roary::ChunkFastaFile->new(
      fasta_file   => 'abc.fa',
    );
    $obj->sequence_file_names;
@@ -16,7 +16,7 @@ Take in a FASTA file and chunk it up into smaller pieces.
 
 use Moose;
 use Bio::SeqIO;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 use Cwd;
 use File::Temp;
 

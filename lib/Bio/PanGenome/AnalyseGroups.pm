@@ -1,13 +1,13 @@
-package Bio::PanGenome::AnalyseGroups;
+package Bio::Roary::AnalyseGroups;
 
 # ABSTRACT: Take in a groups file and the original FASTA files and create plots and stats
 
 =head1 SYNOPSIS
 
 Take in a groups file and the original FASTA files and create plots and stats 
-   use Bio::PanGenome::AnalyseGroups;
+   use Bio::Roary::AnalyseGroups;
    
-   my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+   my $plot_groups_obj = Bio::Roary::AnalyseGroups->new(
        fasta_files      => $fasta_files,
        groups_filename  => $groups_filename,
        output_filename  => $output_filename
@@ -17,7 +17,7 @@ Take in a groups file and the original FASTA files and create plots and stats
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 
 has 'fasta_files'          => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'groups_filename'      => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -95,7 +95,7 @@ sub _builder__groups_to_genes {
     my %genes_to_groups;
 
     open( my $fh, $self->groups_filename )
-      or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
+      or Bio::Roary::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
     while (<$fh>) {
         chomp;
         my $line = $_;
@@ -120,7 +120,7 @@ sub _builder__freq_groups_per_genome {
     my @group_count;
 
     open( my $fh, $self->groups_filename )
-      or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
+      or Bio::Roary::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
     while (<$fh>) {
         chomp;
         my $line = $_;

@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::QueryPanGenome;
+package Bio::Roary::CommandLine::QueryRoary;
 
 # ABSTRACT: Take in a groups file and the protein fasta files and output selected data
 
@@ -10,15 +10,15 @@ Take in a groups file and the protein fasta files and output selected data
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::Output::GroupsMultifastas;
-use Bio::PanGenome::Output::QueryGroups;
-use Bio::PanGenome::PrepareInputFiles;
-use Bio::PanGenome::Output::DifferenceBetweenSets;
-use Bio::PanGenome::AnnotateGroups;
-use Bio::PanGenome::GroupStatistics;
-use Bio::PanGenome::OrderGenes;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::AnalyseGroups;
+use Bio::Roary::Output::GroupsMultifastas;
+use Bio::Roary::Output::QueryGroups;
+use Bio::Roary::PrepareInputFiles;
+use Bio::Roary::Output::DifferenceBetweenSets;
+use Bio::Roary::AnnotateGroups;
+use Bio::Roary::GroupStatistics;
+use Bio::Roary::OrderGenes;
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -104,17 +104,17 @@ sub run {
         die $self->usage_text;
     }
     
-    my $prepare_input_files = Bio::PanGenome::PrepareInputFiles->new(
+    my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
       input_files   => $self->input_files,
     );
 
-    my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+    my $analyse_groups_obj = Bio::Roary::AnalyseGroups->new(
         fasta_files     => $prepare_input_files->fasta_files,
         groups_filename => $self->groups_filename,
     );
 
     if ( $self->action eq 'union' ) {
-        my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
+        my $query_groups = Bio::Roary::Output::QueryGroups->new(
             analyse_groups        => $analyse_groups_obj,
             output_union_filename => $self->output_filename,
             input_filenames       => $prepare_input_files->fasta_files
@@ -122,7 +122,7 @@ sub run {
         $query_groups->groups_union();
     }
     elsif ( $self->action eq 'intersection' ) {
-        my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
+        my $query_groups = Bio::Roary::Output::QueryGroups->new(
             analyse_groups               => $analyse_groups_obj,
             output_intersection_filename => $self->output_filename, 
             input_filenames => $prepare_input_files->fasta_files,
@@ -131,7 +131,7 @@ sub run {
         $query_groups->groups_intersection();
     }
     elsif ( $self->action eq 'complement' ) {
-        my $query_groups = Bio::PanGenome::Output::QueryGroups->new(
+        my $query_groups = Bio::Roary::Output::QueryGroups->new(
             analyse_groups             => $analyse_groups_obj,
             output_complement_filename => $self->output_filename, 
             input_filenames => $prepare_input_files->fasta_files,
@@ -140,7 +140,7 @@ sub run {
         $query_groups->groups_complement();
     }
     elsif ( $self->action eq 'gene_multifasta' && defined( $self->group_names ) ) {
-        my $group_multi_fastas = Bio::PanGenome::Output::GroupsMultifastas->new(
+        my $group_multi_fastas = Bio::Roary::Output::GroupsMultifastas->new(
             group_names          => $self->group_names,
             analyse_groups       => $analyse_groups_obj,
             output_filename_base => $self->output_filename
@@ -149,7 +149,7 @@ sub run {
     }
     elsif($self->action eq 'difference' && defined($self->input_set_one) && defined($self->input_set_two))
     {
-      my $difference_between_sets = Bio::PanGenome::Output::DifferenceBetweenSets->new(
+      my $difference_between_sets = Bio::Roary::Output::DifferenceBetweenSets->new(
           analyse_groups       => $analyse_groups_obj,
           input_filenames_sets => [ 
             $prepare_input_files->lookup_fasta_files_from_unknown_input_files($self->input_set_one),  
@@ -176,24 +176,24 @@ sub create_spreadsheets
 {
       my ($self, $groups_file, $fasta_files, $gff_files) = @_;
 
-      my $analyse_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+      my $analyse_groups_obj = Bio::Roary::AnalyseGroups->new(
           fasta_files     => $fasta_files,
           groups_filename => $groups_file,
       );
       
-      my $annotate_groups = Bio::PanGenome::AnnotateGroups->new(
+      my $annotate_groups = Bio::Roary::AnnotateGroups->new(
           gff_files       => $gff_files,
           output_filename => $groups_file.'_reannotated',
           groups_filename => $groups_file,
       );
       $annotate_groups->reannotate;
     
-      my $order_genes_obj = Bio::PanGenome::OrderGenes->new(
+      my $order_genes_obj = Bio::Roary::OrderGenes->new(
         analyse_groups_obj => $analyse_groups_obj,
         gff_files          => $gff_files,
       );
       
-      my $group_statistics = Bio::PanGenome::GroupStatistics->new(
+      my $group_statistics = Bio::Roary::GroupStatistics->new(
           output_filename     => $groups_file.'_statistics.csv',
           annotate_groups_obj => $annotate_groups,
           analyse_groups_obj  => $analyse_groups_obj,

@@ -8,13 +8,13 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::External::Makeblastdb');
+    use_ok('Bio::Roary::External::Makeblastdb');
 }
 
 my $cwd = getcwd();
 my $obj;
 
-ok($obj = Bio::PanGenome::External::Makeblastdb->new(
+ok($obj = Bio::Roary::External::Makeblastdb->new(
   fasta_file      => 't/data/some_fasta_file.fa',
   exec            => $cwd.'/t/bin/dummy_makeblastdb',
   mask_data       => 'masking_data_file'

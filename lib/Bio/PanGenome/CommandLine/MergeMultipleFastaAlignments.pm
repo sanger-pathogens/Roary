@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::MergeMultipleFastaAlignments;
+package Bio::Roary::CommandLine::MergeMultipleFastaAlignments;
 
 # ABSTRACT: Take in a list of alignment files with equal numbers of sequences and merge them.
 
@@ -10,8 +10,8 @@ Take in a list of alignment files with equal numbers of sequences and merge them
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::MergeMultifastaAlignments;
-extends 'Bio::PanGenome::CommandLine::Common';
+use Bio::Roary::MergeMultifastaAlignments;
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -56,7 +56,7 @@ sub run {
         die $self->usage_text;
     }
 
-    my $obj = Bio::PanGenome::MergeMultifastaAlignments->new(
+    my $obj = Bio::Roary::MergeMultifastaAlignments->new(
       multifasta_files => $self->fasta_files,
       output_filename  => $self->output_filename
     );

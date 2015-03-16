@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Bio::PanGenome::Main::PanGenomePostAnalysis;
+package Bio::Roary::Main::RoaryPostAnalysis;
 
 # ABSTRACT: Perform the post analysis on the pan genome
 # PODNAME: pan_genome_post_analysis
@@ -14,6 +14,6 @@ Perform the post analysis on the pan genome
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
 #BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
-use Bio::PanGenome::CommandLine::PanGenomePostAnalysis;
+use Bio::Roary::CommandLine::RoaryPostAnalysis;
 
-Bio::PanGenome::CommandLine::PanGenomePostAnalysis->new(args => \@ARGV, script_name => $0)->run;
+Bio::Roary::CommandLine::RoaryPostAnalysis->new(args => \@ARGV, script_name => $0)->run;

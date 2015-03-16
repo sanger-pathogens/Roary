@@ -1,11 +1,11 @@
-package Bio::PanGenome::JobRunner::Role;
+package Bio::Roary::JobRunner::Role;
 
 # ABSTRACT: A role to add job runner functionality
 
 =head1 SYNOPSIS
 
 A role to add job runner functionality
-   with 'Bio::PanGenome::JobRunner::Role';
+   with 'Bio::Roary::JobRunner::Role';
 
 =cut
 
@@ -20,7 +20,7 @@ has 'cpus'                    => ( is => 'ro', isa => 'Int',      default => 1 )
 
 sub _build__job_runner_class {
     my ($self) = @_;
-    my $job_runner_class = "Bio::PanGenome::JobRunner::" . $self->job_runner;
+    my $job_runner_class = "Bio::Roary::JobRunner::" . $self->job_runner;
     eval "require $job_runner_class";
     return $job_runner_class;
 }

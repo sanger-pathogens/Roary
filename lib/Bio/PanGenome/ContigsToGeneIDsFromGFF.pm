@@ -1,13 +1,13 @@
-package Bio::PanGenome::ContigsToGeneIDsFromGFF;
+package Bio::Roary::ContigsToGeneIDsFromGFF;
 
 # ABSTRACT: Parse a GFF and efficiently and extract ordered gene ids on each contig
 
 =head1 SYNOPSIS
 
 Parse a GFF and efficiently and extract ordered gene ids on each contig
-   use Bio::PanGenome::ContigsToGeneIDsFromGFF;
+   use Bio::Roary::ContigsToGeneIDsFromGFF;
    
-   my $obj = Bio::PanGenome::ContigsToGeneIDsFromGFF->new(
+   my $obj = Bio::Roary::ContigsToGeneIDsFromGFF->new(
      gff_file   => 'abc.gff'
    );
    $obj->contig_to_ids;
@@ -16,7 +16,7 @@ Parse a GFF and efficiently and extract ordered gene ids on each contig
 
 use Moose;
 use Bio::Tools::GFF;
-with 'Bio::PanGenome::ParseGFFAnnotationRole';
+with 'Bio::Roary::ParseGFFAnnotationRole';
 
 has 'contig_to_ids' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_contig_to_ids');
 

@@ -1,4 +1,4 @@
-package Bio::PanGenome::CommandLine::ExtractProteomeFromGff;
+package Bio::Roary::CommandLine::ExtractProteomeFromGff;
 
 # ABSTRACT: Take in GFF files and output the proteome
 
@@ -10,9 +10,9 @@ Take in a GFF file and output the proteome
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
-use Bio::PanGenome::ExtractProteomeFromGFF;
+use Bio::Roary::ExtractProteomeFromGFF;
 use File::Basename;
-extends 'Bio::PanGenome::CommandLine::Common';
+extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -70,7 +70,7 @@ sub run {
 
     for my $gff_file ( @{ $self->gff_files } ) {
         my ( $filename, $directories, $suffix ) = fileparse($gff_file);
-        my $obj = Bio::PanGenome::ExtractProteomeFromGFF->new(
+        my $obj = Bio::Roary::ExtractProteomeFromGFF->new(
             gff_file              => $gff_file,
             output_filename       => $filename . '.' . $self->output_suffix,
             apply_unknowns_filter => $self->apply_unknowns_filter,

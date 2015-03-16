@@ -9,11 +9,11 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::AnalyseGroups');
+    use_ok('Bio::Roary::AnalyseGroups');
 }
 
 ok(
-    my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+    my $plot_groups_obj = Bio::Roary::AnalyseGroups->new(
         fasta_files     => [ 't/data/example_1.faa', 't/data/example_2.faa' ],
         groups_filename => 't/data/example_groups'
     ),

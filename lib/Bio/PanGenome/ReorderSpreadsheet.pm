@@ -1,13 +1,13 @@
-package Bio::PanGenome::ReorderSpreadsheet;
+package Bio::Roary::ReorderSpreadsheet;
 
 # ABSTRACT: Take in a tree file and a spreadsheet and output a spreadsheet with reordered columns
 
 =head1 SYNOPSIS
 
 Take in a tree file and a spreadsheet and output a spreadsheet with reordered columns
-   use Bio::PanGenome::ReorderSpreadsheet;
+   use Bio::Roary::ReorderSpreadsheet;
    
-   my $obj = Bio::PanGenome::ReorderSpreadsheet->new(
+   my $obj = Bio::Roary::ReorderSpreadsheet->new(
        tree_file        => $tree_file,
        spreadsheet   => 'groups.csv'
      );
@@ -17,8 +17,8 @@ Take in a tree file and a spreadsheet and output a spreadsheet with reordered co
 
 use Moose;
 use Text::CSV;
-use Bio::PanGenome::SampleOrder;
-use Bio::PanGenome::GroupStatistics;
+use Bio::Roary::SampleOrder;
+use Bio::Roary::GroupStatistics;
 
 has 'tree_file'   => ( is => 'ro', isa => 'Str', required => 1 );
 has 'spreadsheet' => ( is => 'ro', isa => 'Str', required => 1 );
@@ -129,7 +129,7 @@ sub _build__num_fixed_headers
 sub _build__fixed_headers
 {
   my ($self) = @_;
-  my @fixed_headers = @{Bio::PanGenome::GroupStatistics->fixed_headers()};
+  my @fixed_headers = @{Bio::Roary::GroupStatistics->fixed_headers()};
   return \@fixed_headers;
 }
 
@@ -159,7 +159,7 @@ sub _build__output_spreadsheet_fh {
 
 sub _build__sample_order {
     my ($self) = @_;
-    my $obj = Bio::PanGenome::SampleOrder->new(
+    my $obj = Bio::Roary::SampleOrder->new(
         tree_file   => $self->tree_file,
         tree_format => $self->tree_format,
         search_strategy => $self->search_strategy,

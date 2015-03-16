@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::BlastIdentityFrequency;
+package Bio::Roary::Output::BlastIdentityFrequency;
 
 # ABSTRACT:  Take in blast results and find the percentage identity graph
 
 =head1 SYNOPSIS
 
 Take in blast results and find the percentage identity graph
-   use Bio::PanGenome::Output::BlastIdentityFrequency;
+   use Bio::Roary::Output::BlastIdentityFrequency;
    
-   my $obj = Bio::PanGenome::Output::BlastIdentityFrequency->new(
+   my $obj = Bio::Roary::Output::BlastIdentityFrequency->new(
        input_filename      => '_blast_results',
        output_filename  => 'blast_identity_frequency.Rtab',
      );
@@ -17,7 +17,7 @@ Take in blast results and find the percentage identity graph
 
 use Moose;
 use Bio::SeqIO;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 
 has 'input_filename'        => ( is => 'ro', isa => 'Str', default => '_blast_results' );
 has 'output_filename'       => ( is => 'ro', isa => 'Str', default => 'blast_identity_frequency.Rtab' );
@@ -29,7 +29,7 @@ sub _build__output_fh
 {
   my ($self) = @_;
   open( my $fh, '>', $self->output_filename )
-    or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw(
+    or Bio::Roary::Exceptions::CouldntWriteToFile->throw(
       error => "Couldnt write output file:" . $self->output_filename );
   return $fh;
 }

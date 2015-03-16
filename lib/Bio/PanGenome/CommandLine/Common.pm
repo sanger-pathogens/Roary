@@ -1,11 +1,11 @@
-package Bio::PanGenome::CommandLine::Common;
+package Bio::Roary::CommandLine::Common;
 # ABSTRACT: Common command line settings
 
 =head1 SYNOPSIS
 
 Common command line settings
 
-   extends 'Bio::PanGenome::CommandLine::Common';
+   extends 'Bio::Roary::CommandLine::Common';
 
 =cut
 

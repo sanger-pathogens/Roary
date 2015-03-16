@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::Revtrans;
+package Bio::Roary::External::Revtrans;
 
 # ABSTRACT: Wrapper around RevTrans
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::Revtrans;
 
 Take in a fasta file and create a temporary blast database.
 
-   use Bio::PanGenome::External::Revtrans;
+   use Bio::Roary::External::Revtrans;
    
-   my $blast_database= Bio::PanGenome::External::Revtrans->new(
+   my $blast_database= Bio::Roary::External::Revtrans->new(
      nucleotide_filename => 'contigs.fa',
      protein_filename  => 'proteins.faa'
      output_filename   => 'translated.fa.aln'

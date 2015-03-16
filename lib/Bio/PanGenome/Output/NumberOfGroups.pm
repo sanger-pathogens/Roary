@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::NumberOfGroups;
+package Bio::Roary::Output::NumberOfGroups;
 
 # ABSTRACT: Create raw output files of group counts for turning into plots
 
 =head1 SYNOPSIS
 
 # ABSTRACT: Create raw output files of group counts for turning into plots
-use Bio::PanGenome::Output::NumberOfGroups;
+use Bio::Roary::Output::NumberOfGroups;
 
-my $obj = Bio::PanGenome::Output::NumberOfGroups->new(
+my $obj = Bio::Roary::Output::NumberOfGroups->new(
     group_statistics_obj => $group_stats
   );
 $obj->create_files();
@@ -16,13 +16,13 @@ $obj->create_files();
 
 use Moose;
 use List::Util qw(shuffle);
-use Bio::PanGenome::AnnotateGroups;
-use Bio::PanGenome::GroupStatistics;
+use Bio::Roary::AnnotateGroups;
+use Bio::Roary::GroupStatistics;
 
-has 'group_statistics_obj' => ( is => 'ro', isa => 'Bio::PanGenome::GroupStatistics', required => 1 );
+has 'group_statistics_obj' => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics', required => 1 );
 has 'number_of_iterations' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_number_of_iterations' );
 has 'groups_to_contigs'    => ( is => 'ro', isa => 'Maybe[HashRef]' );
-has 'annotate_groups_obj'  => ( is => 'ro', isa => 'Bio::PanGenome::AnnotateGroups', required => 1 );
+has 'annotate_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 
 has 'output_raw_filename_conserved_genes' => ( is => 'ro', isa => 'Str', default => 'number_of_conserved_genes.Rtab' );
 has 'output_raw_filename_unique_genes'    => ( is => 'ro', isa => 'Str', default => 'number_of_unique_genes.Rtab' );

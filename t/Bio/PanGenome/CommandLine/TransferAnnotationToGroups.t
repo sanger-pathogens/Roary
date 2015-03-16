@@ -10,9 +10,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::CommandLine::TransferAnnotationToGroups');
+    use_ok('Bio::Roary::CommandLine::TransferAnnotationToGroups');
 }
-my $script_name = 'Bio::PanGenome::CommandLine::TransferAnnotationToGroups';
+my $script_name = 'Bio::Roary::CommandLine::TransferAnnotationToGroups';
 my $cwd         = getcwd();
 system('touch empty_file');
 my %scripts_and_expected_files = (

@@ -9,13 +9,13 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::InflateClusters');
+    use_ok('Bio::Roary::InflateClusters');
 }
 
 my $obj;
 
 
-ok( $obj = Bio::PanGenome::InflateClusters->new(
+ok( $obj = Bio::Roary::InflateClusters->new(
   clusters_filename  => 't/data/clustersfile',
   mcl_filename       => 't/data/mcl_file',
   output_file        => 'example.output'
@@ -26,7 +26,7 @@ is(read_file('example.output'),read_file('t/data/expected_inflated_results'), 'i
 unlink('example.output');
 
 
-ok( $obj = Bio::PanGenome::InflateClusters->new(
+ok( $obj = Bio::Roary::InflateClusters->new(
   clusters_filename  => 't/data/clusters_to_inflate',
   mcl_filename       => 't/data/clusters_to_inflate.mcl',
   output_file        => 'example.output'

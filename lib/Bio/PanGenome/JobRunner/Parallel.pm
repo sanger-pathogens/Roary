@@ -1,13 +1,13 @@
-package Bio::PanGenome::JobRunner::Parallel;
+package Bio::Roary::JobRunner::Parallel;
 
 # ABSTRACT: Use GNU Parallel
 
 =head1 SYNOPSIS
 
  Execute a set of commands using GNU parallel
-   use Bio::PanGenome::JobRunner::Parallel;
+   use Bio::Roary::JobRunner::Parallel;
    
-   my $obj = Bio::PanGenome::JobRunner::Local->new(
+   my $obj = Bio::Roary::JobRunner::Local->new(
      commands_to_run   => ['ls', 'echo "abc"'],
      max_jobs => 4
    );

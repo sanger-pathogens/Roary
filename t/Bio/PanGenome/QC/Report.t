@@ -8,7 +8,7 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::QC::Report');
+    use_ok('Bio::Roary::QC::Report');
 }
 
 my $kraken_data = [ 
@@ -18,7 +18,7 @@ my $kraken_data = [
 ];
 
 ok(
-	my $qc_report_obj = Bio::PanGenome::QC::Report->new( 
+	my $qc_report_obj = Bio::Roary::QC::Report->new( 
 		input_files  => [],
 		outfile      => "kraken_report.csv",
 		_kraken_data => $kraken_data,

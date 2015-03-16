@@ -9,16 +9,16 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::SampleOrder');
+    use_ok('Bio::Roary::SampleOrder');
 }
 
-ok(my $obj = Bio::PanGenome::SampleOrder->new(
+ok(my $obj = Bio::Roary::SampleOrder->new(
     tree_file        => 't/data/reorder_isolates.tre',
   ), 'initialise sample order object');
 
 is_deeply($obj->ordered_samples(),['query_1', 'query_3','query_4','query_2'],'order of sample names matches the tree');
 
-ok( $obj = Bio::PanGenome::SampleOrder->new(
+ok( $obj = Bio::Roary::SampleOrder->new(
     tree_file        => 't/data/raxml.tre',
   ), 'initialise sample order object with raxml tree');
 

@@ -9,11 +9,11 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::SequenceLengths');
+    use_ok('Bio::Roary::SequenceLengths');
 }
 
 ok(
-    my $obj = Bio::PanGenome::SequenceLengths->new(
+    my $obj = Bio::Roary::SequenceLengths->new(
         fasta_file => 't/data/example_1.faa',
     ),
     'Initialise object'

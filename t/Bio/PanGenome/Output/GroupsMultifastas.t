@@ -8,16 +8,16 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::Output::GroupsMultifastas');
+    use_ok('Bio::Roary::Output::GroupsMultifastas');
 }
 
-my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+my $plot_groups_obj = Bio::Roary::AnalyseGroups->new(
     fasta_files     => [ 't/data/example_1.faa', 't/data/example_2.faa' ],
     groups_filename => 't/data/example_groups'
 );
 
 ok(
-    my $obj = Bio::PanGenome::Output::GroupsMultifastas->new(
+    my $obj = Bio::Roary::Output::GroupsMultifastas->new(
         group_names    => [ 'group_2', 'group_5' ],
         analyse_groups => $plot_groups_obj
     ),

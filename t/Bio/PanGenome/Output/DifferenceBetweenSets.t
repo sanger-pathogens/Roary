@@ -8,15 +8,15 @@ BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::Output::DifferenceBetweenSets');
+    use_ok('Bio::Roary::Output::DifferenceBetweenSets');
 }
 
-my $plot_groups_obj = Bio::PanGenome::AnalyseGroups->new(
+my $plot_groups_obj = Bio::Roary::AnalyseGroups->new(
     fasta_files     => [ 't/data/query_1.fa', 't/data/query_2.fa','t/data/query_3.fa' ],
     groups_filename => 't/data/query_groups'
 );
 
-ok(my $obj = Bio::PanGenome::Output::DifferenceBetweenSets->new(
+ok(my $obj = Bio::Roary::Output::DifferenceBetweenSets->new(
     analyse_groups  => $plot_groups_obj,
     input_filenames_sets => [ ['t/data/query_1.fa'], ['t/data/query_2.fa','t/data/query_3.fa'] ]
   ),'initialise set difference obj');

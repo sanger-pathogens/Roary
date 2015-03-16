@@ -9,13 +9,13 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::ExtractProteomeFromGFFs');
+    use_ok('Bio::Roary::ExtractProteomeFromGFFs');
 }
 
 my $plot_groups_obj;
 
 ok(
-    $plot_groups_obj = Bio::PanGenome::ExtractProteomeFromGFFs->new(
+    $plot_groups_obj = Bio::Roary::ExtractProteomeFromGFFs->new(
         gff_files => [ 't/data/example_annotation.gff', 't/data/example_annotation_2.gff' ],
     ),
     'initialise object'

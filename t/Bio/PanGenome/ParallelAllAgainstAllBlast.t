@@ -10,12 +10,12 @@ $ENV{PATH} .= ":./bin";
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::PanGenome::ParallelAllAgainstAllBlast');
+    use_ok('Bio::Roary::ParallelAllAgainstAllBlast');
 }
 my $obj;
 my $cwd = getcwd();
 
-ok($obj = Bio::PanGenome::ParallelAllAgainstAllBlast->new(
+ok($obj = Bio::Roary::ParallelAllAgainstAllBlast->new(
   fasta_file       => 't/data/example_1.faa',
   blastp_exec      => $cwd.'/t/bin/dummy_blastp',
   makeblastdb_exec => $cwd.'/t/bin/dummy_makeblastdb',

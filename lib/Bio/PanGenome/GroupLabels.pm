@@ -1,13 +1,13 @@
-package Bio::PanGenome::GroupLabels;
+package Bio::Roary::GroupLabels;
 
 # ABSTRACT: Add labels to the groups
 
 =head1 SYNOPSIS
 
 Add labels to the groups
-   use Bio::PanGenome::GroupLabels;
+   use Bio::Roary::GroupLabels;
    
-   my $obj = Bio::PanGenome::GroupLabels->new(
+   my $obj = Bio::Roary::GroupLabels->new(
      groups_filename   => 'abc.groups',
      output_filename => 'output.groups'
    );
@@ -16,7 +16,7 @@ Add labels to the groups
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
+use Bio::Roary::Exceptions;
 
 has 'groups_filename' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_filename' => ( is => 'ro', isa => 'Str', default  => 'labelled_groups_file' );
@@ -28,14 +28,14 @@ has '_group_default_prefix' => ( is => 'ro', isa  => 'Str', default => 'group_' 
 sub _build__input_fh {
     my ($self) = @_;
     open( my $fh, $self->groups_filename )
-      or Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
+      or Bio::Roary::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
     return $fh;
 }
 
 sub _build__output_fh {
     my ($self) = @_;
     open( my $fh, '>', $self->output_filename )
-      or Bio::PanGenome::Exceptions::CouldntWriteToFile->throw(
+      or Bio::Roary::Exceptions::CouldntWriteToFile->throw(
         error => "Couldnt write output file:" . $self->output_filename );
     return $fh;
 }

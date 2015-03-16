@@ -1,13 +1,13 @@
-package Bio::PanGenome::Output::DifferenceBetweenSets;
+package Bio::Roary::Output::DifferenceBetweenSets;
 
 # ABSTRACT:  Given two sets of isolates and a group file, output whats unique in each and whats in common
 
 =head1 SYNOPSIS
 
 Given two sets of isolates and a group file, output whats unique in each and whats in common
-   use Bio::PanGenome::Output::DifferenceBetweenSets;
+   use Bio::Roary::Output::DifferenceBetweenSets;
    
-   my $obj = Bio::PanGenome::Output::DifferenceBetweenSets->new(
+   my $obj = Bio::Roary::Output::DifferenceBetweenSets->new(
        analyse_groups  => $analyse_groups,
        input_filenames_sets => 
        [
@@ -23,11 +23,11 @@ Given two sets of isolates and a group file, output whats unique in each and wha
 
 use Moose;
 use Bio::SeqIO;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::Output::QueryGroups;
+use Bio::Roary::Exceptions;
+use Bio::Roary::AnalyseGroups;
+use Bio::Roary::Output::QueryGroups;
 
-has 'analyse_groups'       => ( is => 'ro', isa => 'Bio::PanGenome::AnalyseGroups', required => 1 );
+has 'analyse_groups'       => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups', required => 1 );
 has 'input_filenames_sets' => ( is => 'ro', isa => 'ArrayRef[ArrayRef]',            required => 1 );
 has 'output_filename_base' => ( is => 'ro', isa => 'Str',                           default  => 'set_difference' );
 
@@ -41,7 +41,7 @@ sub _build__query_groups_objs {
     for my $file_name_set ( @{ $self->input_filenames_sets } ) {
         push(
             @query_groups_objs,
-            Bio::PanGenome::Output::QueryGroups->new(
+            Bio::Roary::Output::QueryGroups->new(
                 analyse_groups  => $self->analyse_groups,
                 input_filenames => $file_name_set
             )
@@ -51,7 +51,7 @@ sub _build__query_groups_objs {
     my @all_input_files = (@{ $self->input_filenames_sets->[0] },@{ $self->input_filenames_sets->[1] });
     push(
         @query_groups_objs,
-        Bio::PanGenome::Output::QueryGroups->new(
+        Bio::Roary::Output::QueryGroups->new(
             analyse_groups  => $self->analyse_groups,
             input_filenames => \@all_input_files
         )

@@ -1,10 +1,10 @@
-package Bio::PanGenome::ParseGFFAnnotationRole;
+package Bio::Roary::ParseGFFAnnotationRole;
 
 # ABSTRACT: A role for parsing a gff file efficiently
 
 =head1 SYNOPSIS
 
-with 'Bio::PanGenome::ParseGFFAnnotationRole';
+with 'Bio::Roary::ParseGFFAnnotationRole';
 
 =cut
 use Moose::Role;

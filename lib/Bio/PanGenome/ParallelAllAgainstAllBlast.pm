@@ -1,13 +1,13 @@
-package Bio::PanGenome::ParallelAllAgainstAllBlast;
+package Bio::Roary::ParallelAllAgainstAllBlast;
 
 # ABSTRACT: Run all against all blast in parallel
 
 =head1 SYNOPSIS
 
 Run blastp in parallel over a FASTA file of proteins
-   use Bio::PanGenome::ParallelAllAgainstAllBlast;
+   use Bio::Roary::ParallelAllAgainstAllBlast;
    
-   my $obj = Bio::PanGenome::ParallelAllAgainstAllBlast->new(
+   my $obj = Bio::Roary::ParallelAllAgainstAllBlast->new(
      fasta_file   => 'abc.fa',
    );
    $obj->run();
@@ -15,15 +15,15 @@ Run blastp in parallel over a FASTA file of proteins
 =cut
 
 use Moose;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::ChunkFastaFile;
-use Bio::PanGenome::External::Makeblastdb;
-use Bio::PanGenome::External::Blastp;
-use Bio::PanGenome::External::Segmasker;
+use Bio::Roary::Exceptions;
+use Bio::Roary::ChunkFastaFile;
+use Bio::Roary::External::Makeblastdb;
+use Bio::Roary::External::Blastp;
+use Bio::Roary::External::Segmasker;
 use Cwd;
 use File::Temp;
 use File::Basename;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'fasta_file'              => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'blast_results_file_name' => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build_blast_results_file_name' );
@@ -31,10 +31,10 @@ has 'makeblastdb_exec'        => ( is => 'ro', isa => 'Str',      default => 'ma
 has 'blastp_exec'             => ( is => 'ro', isa => 'Str',      default => 'blastp' );
 has 'segmasker_exec'          => ( is => 'ro', isa => 'Str',      default => 'segmasker' );
 has 'perc_identity'           => ( is => 'ro', isa => 'Num',      default => 98 );
-has '_chunk_fasta_file_obj'   => ( is => 'ro', isa => 'Bio::PanGenome::ChunkFastaFile', lazy => 1, builder => '_build__chunk_fasta_file_obj' );
+has '_chunk_fasta_file_obj'   => ( is => 'ro', isa => 'Bio::Roary::ChunkFastaFile', lazy => 1, builder => '_build__chunk_fasta_file_obj' );
 has '_sequence_file_names'    => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__sequence_file_names' );
-has '_makeblastdb_obj'        => ( is => 'ro', isa => 'Bio::PanGenome::External::Makeblastdb', lazy => 1, builder => '_build__makeblastdb_obj' );
-has '_segmasker_obj'          => ( is => 'ro', isa => 'Bio::PanGenome::External::Segmasker', lazy => 1, builder => '_build__segmasker_obj' );
+has '_makeblastdb_obj'        => ( is => 'ro', isa => 'Bio::Roary::External::Makeblastdb', lazy => 1, builder => '_build__makeblastdb_obj' );
+has '_segmasker_obj'          => ( is => 'ro', isa => 'Bio::Roary::External::Segmasker', lazy => 1, builder => '_build__segmasker_obj' );
 has '_blast_database'         => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__blast_database' );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',  default => 1 );
 
@@ -52,7 +52,7 @@ sub _build__blast_database {
 sub _build__segmasker_obj {
     my ($self) = @_;
     my $segmasker =
-      Bio::PanGenome::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec, job_runner => $self->job_runner, cpus  => $self->cpus );
+      Bio::Roary::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec, job_runner => $self->job_runner, cpus  => $self->cpus );
     $segmasker->run();
     return $segmasker;
 }
@@ -60,14 +60,14 @@ sub _build__segmasker_obj {
 sub _build__makeblastdb_obj {
     my ($self) = @_;
     my $blast_database =
-      Bio::PanGenome::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file, job_runner => $self->job_runner, cpus  => $self->cpus  );
+      Bio::Roary::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file, job_runner => $self->job_runner, cpus  => $self->cpus  );
     $blast_database->run();
     return $blast_database;
 }
 
 sub _build__chunk_fasta_file_obj {
     my ($self) = @_;
-    return Bio::PanGenome::ChunkFastaFile->new( fasta_file => $self->fasta_file, );
+    return Bio::Roary::ChunkFastaFile->new( fasta_file => $self->fasta_file, );
 }
 
 sub _build__sequence_file_names {
@@ -88,7 +88,7 @@ sub _build_blast_results_file_name {
 sub _combine_blast_results {
     my ( $self, $output_files ) = @_;
     for my $output_file ( @{$output_files} ) {
-        Bio::PanGenome::Exceptions::FileNotFound->throw( error => "Cant find blast results: " . $output_file )
+        Bio::Roary::Exceptions::FileNotFound->throw( error => "Cant find blast results: " . $output_file )
           unless ( -e $output_file );
     }
     my $output_files_param = join( ' ', @{$output_files} );
@@ -121,7 +121,7 @@ sub run {
         my $output_seq_results_file =
           join( '/', ( $self->_working_directory_name, $filename_without_directory . '.out' ) );
 
-        my $blast_database = Bio::PanGenome::External::Blastp->new(
+        my $blast_database = Bio::Roary::External::Blastp->new(
             fasta_file     => $filename,
             blast_database => $self->_blast_database,
             exec           => $self->blastp_exec,

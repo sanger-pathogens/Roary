@@ -1,13 +1,13 @@
-package Bio::PanGenome::IterativeCdhit;
+package Bio::Roary::IterativeCdhit;
 
 # ABSTRACT:  Run CDhit iteratively with reducing thresholds, removing full clusters each time
 
 =head1 SYNOPSIS
 
 Run CDhit iteratively with reducing thresholds, removing full clusters each time
-   use Bio::PanGenome::IterativeCdhit;
+   use Bio::Roary::IterativeCdhit;
    
-   my $obj = Bio::PanGenome::IterativeCdhit->new(
+   my $obj = Bio::Roary::IterativeCdhit->new(
      output_cd_hit_filename   => 'output_cd_hit_filename.fa',
      output_combined_filename => 'output_combined_filename.fa',
      number_of_input_files     => 5,
@@ -19,9 +19,9 @@ Run CDhit iteratively with reducing thresholds, removing full clusters each time
 
 use Moose;
 use Bio::SeqIO;
-use Bio::PanGenome::Exceptions;
-use Bio::PanGenome::External::Cdhit;
-use Bio::PanGenome::FilterFullClusters;
+use Bio::Roary::Exceptions;
+use Bio::Roary::External::Cdhit;
+use Bio::Roary::FilterFullClusters;
 use File::Copy;
 # CD hit is run locally
 
@@ -56,7 +56,7 @@ sub run {
         );
     }
 
-    my $cdhit_obj = Bio::PanGenome::External::Cdhit->new(
+    my $cdhit_obj = Bio::Roary::External::Cdhit->new(
         input_file                   => $self->output_combined_filename,
         output_base                  => $self->output_cd_hit_filename,
         _length_difference_cutoff    => 1,
@@ -72,7 +72,7 @@ sub filter_complete_clusters {
         $output_filtered_clustered_fasta,
         $greater_than_or_equal )
       = @_;
-    my $cdhit_obj = Bio::PanGenome::External::Cdhit->new(
+    my $cdhit_obj = Bio::Roary::External::Cdhit->new(
         input_file                   => $output_combined_filename,
         output_base                  => $output_cd_hit_filename,
         _length_difference_cutoff    => $percentage_match,
@@ -81,7 +81,7 @@ sub filter_complete_clusters {
     );
     $cdhit_obj->run();
 
-    my $filter_clusters = Bio::PanGenome::FilterFullClusters->new(
+    my $filter_clusters = Bio::Roary::FilterFullClusters->new(
         clusters_filename       => $cdhit_obj->clusters_filename,
         fasta_file              => $output_cd_hit_filename,
         number_of_input_files   => $number_of_input_files,

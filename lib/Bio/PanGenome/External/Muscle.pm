@@ -1,4 +1,4 @@
-package Bio::PanGenome::External::Muscle;
+package Bio::Roary::External::Muscle;
 
 # ABSTRACT: Wrapper around Muscle for sequence alignment
 
@@ -6,9 +6,9 @@ package Bio::PanGenome::External::Muscle;
 
 Wrapper around Muscle for sequence alignment
 
-   use Bio::PanGenome::External::Muscle;
+   use Bio::Roary::External::Muscle;
    
-   my $seg= Bio::PanGenome::External::Muscle->new(
+   my $seg= Bio::Roary::External::Muscle->new(
      fasta_files => [],
    );
    
@@ -21,7 +21,7 @@ Returns the path to the results file
 =cut
 
 use Moose;
-with 'Bio::PanGenome::JobRunner::Role';
+with 'Bio::Roary::JobRunner::Role';
 
 has 'fasta_files'   => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'exec'          => ( is => 'ro', isa => 'Str',      default  => 'muscle' );

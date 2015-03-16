@@ -1,4 +1,4 @@
-package Bio::PanGenome;
+package Bio::Roary;
 
 # ABSTRACT: Create a pan genome
 
@@ -10,20 +10,20 @@ Create a pan genome
 
 use Moose;
 use File::Copy;
-use Bio::PanGenome::ParallelAllAgainstAllBlast;
-use Bio::PanGenome::CombinedProteome;
-use Bio::PanGenome::External::Cdhit;
-use Bio::PanGenome::External::Mcl;
-use Bio::PanGenome::InflateClusters;
-use Bio::PanGenome::AnalyseGroups;
-use Bio::PanGenome::GroupLabels;
-use Bio::PanGenome::AnnotateGroups;
-use Bio::PanGenome::GroupStatistics;
-use Bio::PanGenome::Output::GroupsMultifastasNucleotide;
-use Bio::PanGenome::External::PostAnalysis;
-use Bio::PanGenome::FilterFullClusters;
-use Bio::PanGenome::External::IterativeCdhit;
-use Bio::PanGenome::Output::BlastIdentityFrequency;
+use Bio::Roary::ParallelAllAgainstAllBlast;
+use Bio::Roary::CombinedProteome;
+use Bio::Roary::External::Cdhit;
+use Bio::Roary::External::Mcl;
+use Bio::Roary::InflateClusters;
+use Bio::Roary::AnalyseGroups;
+use Bio::Roary::GroupLabels;
+use Bio::Roary::AnnotateGroups;
+use Bio::Roary::GroupStatistics;
+use Bio::Roary::Output::GroupsMultifastasNucleotide;
+use Bio::Roary::External::PostAnalysis;
+use Bio::Roary::FilterFullClusters;
+use Bio::Roary::External::IterativeCdhit;
+use Bio::Roary::Output::BlastIdentityFrequency;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -60,7 +60,7 @@ sub run {
     
     unlink($cdhit_groups) unless($self->dont_delete_files == 1);
 
-    my $combine_fasta_files = Bio::PanGenome::CombinedProteome->new(
+    my $combine_fasta_files = Bio::Roary::CombinedProteome->new(
         proteome_files  => $self->fasta_files,
         output_filename => $output_combined_filename,
     );
@@ -68,7 +68,7 @@ sub run {
 
     my $number_of_input_files = @{$self->input_files};
 
-    my $iterative_cdhit= Bio::PanGenome::External::IterativeCdhit->new(
+    my $iterative_cdhit= Bio::Roary::External::IterativeCdhit->new(
       output_cd_hit_filename           => $output_cd_hit_filename,
       output_combined_filename         => $output_combined_filename,
       number_of_input_files            => $number_of_input_files, 
@@ -79,7 +79,7 @@ sub run {
     
     $iterative_cdhit->run();
 
-    my $blast_obj = Bio::PanGenome::ParallelAllAgainstAllBlast->new(
+    my $blast_obj = Bio::Roary::ParallelAllAgainstAllBlast->new(
         fasta_file              => $output_cd_hit_filename,
         blast_results_file_name => $output_blast_results_filename,
         job_runner              => $self->job_runner,
@@ -90,12 +90,12 @@ sub run {
     );
     $blast_obj->run();
     
-    my $blast_identity_frequency_obj = Bio::PanGenome::Output::BlastIdentityFrequency->new(
+    my $blast_identity_frequency_obj = Bio::Roary::Output::BlastIdentityFrequency->new(
         input_filename      => $output_blast_results_filename,
       );
     $blast_identity_frequency_obj->create_file();
 
-    my $mcl = Bio::PanGenome::External::Mcl->new(
+    my $mcl = Bio::Roary::External::Mcl->new(
         blast_results   => $output_blast_results_filename,
         mcxdeblast_exec => $self->mcxdeblast_exec,
         mcl_exec        => $self->mcl_exec,
@@ -108,7 +108,7 @@ sub run {
     unlink($output_blast_results_filename) unless($self->dont_delete_files == 1);
     
 
-    my $post_analysis = Bio::PanGenome::External::PostAnalysis->new(
+    my $post_analysis = Bio::Roary::External::PostAnalysis->new(
         job_runner                  => $self->job_runner,
         cpus                        => $self->cpus,
         fasta_files                 => $self->fasta_files,
