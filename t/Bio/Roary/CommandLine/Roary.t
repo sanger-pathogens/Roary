@@ -12,7 +12,7 @@ with 'TestHelper';
 BEGIN {
     use Test::Most;
     use_ok('Bio::Roary::CommandLine::Roary');
-	use_ok('Bio::Roary::CommandLine::CreateRoary');
+	use_ok('Bio::Roary::CommandLine::CreatePanGenome');
     use Bio::Roary::SequenceLengths;
 }
 my $script_name = 'Bio::Roary::CommandLine::Roary';

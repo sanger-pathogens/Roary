@@ -1,4 +1,4 @@
-package Bio::Roary::CommandLine::CreateRoary;
+package Bio::Roary::CommandLine::CreatePanGenome;
 
 # ABSTRACT: Take in FASTA files of proteins and cluster them
 

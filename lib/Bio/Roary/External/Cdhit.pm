@@ -95,7 +95,6 @@ sub _find_exe {
 	  for my $exec (@{$executables})
 	  {
         my $exe = File::Spec->catfile($dir, $exec);
-		print $exe."\n";
         return $exe if -x $exe; 
       }
   }
