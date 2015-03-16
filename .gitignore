@@ -32,3 +32,4 @@ set_difference_unique_set_one_reannotated
 set_difference_unique_set_two_reannotated
 extras/
 bin/shred_assemblies
+Bio-PanGenome-*
