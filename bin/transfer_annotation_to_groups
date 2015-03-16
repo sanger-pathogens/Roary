@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Bio::PanGenome::Main::TransferAnnotationToGroups;
+package Bio::Roary::Main::TransferAnnotationToGroups;
 
 # ABSTRACT: Take in a groups file and a set of GFF files and transfer the consensus annotation
 # PODNAME: transfer_annotation_to_groups
@@ -14,6 +14,6 @@ Take in a groups file and a set of GFF files and transfer the consensus annotati
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
 #BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
-use Bio::PanGenome::CommandLine::TransferAnnotationToGroups;
+use Bio::Roary::CommandLine::TransferAnnotationToGroups;
 
-Bio::PanGenome::CommandLine::TransferAnnotationToGroups->new(args => \@ARGV, script_name => $0)->run;
+Bio::Roary::CommandLine::TransferAnnotationToGroups->new(args => \@ARGV, script_name => $0)->run;

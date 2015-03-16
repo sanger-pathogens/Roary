@@ -4,6 +4,8 @@ use Test::Most;
 use File::Slurp;
 use Data::Dumper;
 
+$ENV{PATH} .= ":./bin";
+
 
 sub mock_execute_script_and_check_output {
     my ( $script_name, $scripts_and_expected_files, $columns_to_exclude ) = @_;

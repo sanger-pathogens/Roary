@@ -1,0 +1,7 @@
+# Releasing a new version
+
+Update the version number in dist.ini
+Commit all changes.
+Tag with the current version.
+Push all changes, and on github.com submit,accepted pull request
+dzil release

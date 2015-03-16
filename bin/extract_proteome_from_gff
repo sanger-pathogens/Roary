@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Bio::PanGenome::Main::ExtractProteomeFromGFF;
+package Bio::Roary::Main::ExtractProteomeFromGFF;
 
 # ABSTRACT: Take in GFF files and output the proteome
 # PODNAME: extract_proteome_from_gff
@@ -14,6 +14,6 @@ Take in GFF files and output the proteome
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
 #BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
-use Bio::PanGenome::CommandLine::ExtractProteomeFromGff;
+use Bio::Roary::CommandLine::ExtractProteomeFromGff;
 
-Bio::PanGenome::CommandLine::ExtractProteomeFromGff->new(args => \@ARGV, script_name => $0)->run;
+Bio::Roary::CommandLine::ExtractProteomeFromGff->new(args => \@ARGV, script_name => $0)->run;
