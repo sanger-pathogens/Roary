@@ -86,18 +86,14 @@ One final clustering step is performed with CD-hit, with a sequence identity of 
 <h2>
 <a id="how-to-use-the-scripts" class="anchor" href="#how-to-use-the-scripts" aria-hidden="true"><span class="octicon octicon-link"></span></a> How to use the scripts</h2>
 
-<p><code>create_pan_genome -i 90 *.gff</code></p>
+<p><code>roary *.gff</code></p>
 
-<p>Run the pan genome pipeline with the chosen percentage identity.</p>
+<p>
+The gene_presence_absence.csv spreadsheet contains detailed information about the presence and absence of genes, listing the unique gene IDs, which can be used to lookup the original sequences. It also includes analysis on the number of isolates which contain a gene, the frequency of occurance, and a predicted ordering of the genes in the pan genome and the accessory genome.</p>
 
-<p><code>create_pan_genome -i 97 *.gff</code></p>
 
-<p>To get a multifasta files for each cluster, which get deposited in a directory called ‘pan_genome_sequences’ you can use the –e parameter. This creates 2 files per gene so can create large numbers of output files, so it should be used with care.</p>
-
-<p><code>create_pan_genome -e *.gff</code></p>
-
-<p>There are a number of tab files produced (*.Rtab) which can be processed with R. By default Rplots.pdf contains a graph for how the pan genome changes as more genomes are randomly added with the number of conserved genes, the number of new genes, the number of unique genes and the total number of genes in the pan genome. This can be used to see if the pan genome is closed and to estimate the number of new genes that are predicted to be for every new genome added to the pan genome.
-The group_statistics.csv spreadsheet contains detailed information about the presence and absence of genes, listing the unique gene IDs (based on the lane_id), which can be used to lookup the original sequences. It also includes analysis on the number of isolates which contain a gene, the frequency of occurance, and a predicted ordering of the genes in the pan genome and the accessory genome.</p>
+<p><code>roary -e *.gff</code></p>
+<p>To get multiFASTA alignment of only the core genes you can use the '-e' parameter. revtrans.py must be in your PATH.</p>
 
 <h2>
 <a id="output-files" class="anchor" href="#output-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output files</h2>
@@ -105,7 +101,7 @@ The group_statistics.csv spreadsheet contains detailed information about the pre
 <h3>
 <a id="spreadsheet" class="anchor" href="#spreadsheet" aria-hidden="true"><span class="octicon octicon-link"></span></a>Spreadsheet</h3>
 
-<p>A spreadsheet is created showing presence and absence of genes, plus some other information. It is called 'group_statistics.csv' and can be opened in Excel. The first column is the most frequently occurring gene name. If the same gene name is found in another group it is inserted into the second column. This can occur because the annotation and clustering methods use different thresholds and methods to assign a gene name to a protein. The third column contains the functional annotation from the first database used. They are searched in the following order: RefSeq, uniprotKB, Clusters, Conserved domain database, Tigrfams, and Pfam (A). Columns D, E and F contain the frequence of occurance of sequences within the genes, so that you can identify paralogs and conserved genes.
+<p>A spreadsheet is created showing presence and absence of genes, plus some other information. It is called 'gene_presence_absence.csv' and can be opened in Excel. The first column is the most frequently occurring gene name. If the same gene name is found in another group it is inserted into the second column. This can occur because the annotation and clustering methods use different thresholds and methods to assign a gene name to a protein. The third column contains the functional annotation from the first database used. They are searched in the following order: RefSeq, uniprotKB, Clusters, Conserved domain database, Tigrfams, and Pfam (A). Columns D, E and F contain the frequence of occurance of sequences within the genes, so that you can identify paralogs and conserved genes.
 Columns G and H allow you to order the genes based on the core+accessory de novo contig evidence. In Excel select Data-&gt;sort and sort on Column G followed by Column H. This the ordering of genes in iCANDY. Similarly Columns H and I contain the order of the accessory genome. A blank cell means its not in the accessory. This is the same ordering as the genes in the accessory.tab file used to generate the iCANDY figures.
 The QC column flags up two types of issues: the first is where there are two genes overlapping, one has annotation, and the other has none. So the gene without annotation is flagged. These are appear to be mispredictions by prodigal. the second is where 1 or 2 genes appear on a single contig with no links to another contig. These are marked as 'Investigate' because they can signify low copy number contamination if there are lots of them, or an interesting mobile element.
 Finally there is a matrix with presence and absence of each gene in each isolate. The unique gene ID back to the sequence and annotation is given in the column. If an isolate contains more than 1 sequence in the group it, they are separated by a tab in the same cell.</p>
@@ -284,7 +280,7 @@ There is also an aligned version of the nucleotides. The nucleotide sequences ar
 <h2>
 <a id="alignment-of-core-genes" class="anchor" href="#alignment-of-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Alignment of core genes</h2>
 
-<p>An alignment of the core genes is automatically created if you use the '-e' option in the create_pan_genome script. You can also use this as a standalone script if you wish. You can create a multifasta alignment of the core genes using the script pan_genome_core_alignment. The input is the spreadsheet containing the presence and absence of genes (group_statistics.csv) and the location of the directory with the multifasta alignments for each gene (pan_genome_sequences). The output file contains one sequence for each isolate, with the genes concatenated in the order in which they are found in the de novo assemblies. A core gene is defined as one which is found exactly once in every isolate. It is planned to automatically run this at the end of the pan genome pipeline, but for the moment its a standalone script.</p>
+<p>An alignment of the core genes is automatically created if you use the '-e' option in the roary script. You can also use this as a standalone script if you wish. You can create a multifasta alignment of the core genes using the script pan_genome_core_alignment. The input is the spreadsheet containing the presence and absence of genes (group_statistics.csv) and the location of the directory with the multifasta alignments for each gene (pan_genome_sequences). The output file contains one sequence for each isolate, with the genes concatenated in the order in which they are found in the de novo assemblies. A core gene is defined as one which is found exactly once in every isolate. It is planned to automatically run this at the end of the pan genome pipeline, but for the moment its a standalone script.</p>
 
 <p>When run from the directory where the pan genome exists, it should just work:</p>
 
