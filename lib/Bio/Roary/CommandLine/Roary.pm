@@ -163,9 +163,6 @@ sub usage_text {
 	
     # Run with 4 processors
     roary -p 4  *.gff
-	
-    # Run using LSF on a cluster
-    roary -j LSF *.gff
     
     # Provide an output filename
     roary -o results *.gff
