@@ -44,8 +44,6 @@ sub usage_text {
     # Run with 16 processors and 10GB of RAM
     bsub -q long -o log -e err -M10000 -R "select[mem>10000] rusage[mem=10000]" -n16 -R "span[hosts=1]" 'create_pan_genome -p 16  *.gff'
 	
-    # Run using LSF on a cluster (it bsubs for you)
-    create_pan_genome -j LSF *.gff
 
 	########### 
 	
