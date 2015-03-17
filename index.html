@@ -102,7 +102,7 @@ The gene_presence_absence.csv spreadsheet contains detailed information about th
 <a id="spreadsheet" class="anchor" href="#spreadsheet" aria-hidden="true"><span class="octicon octicon-link"></span></a>Spreadsheet</h3>
 
 <p>A spreadsheet is created showing presence and absence of genes, plus some other information. It is called 'gene_presence_absence.csv' and can be opened in Excel. The first column is the most frequently occurring gene name. If the same gene name is found in another group it is inserted into the second column. This can occur because the annotation and clustering methods use different thresholds and methods to assign a gene name to a protein. The third column contains the functional annotation from the first database used. They are searched in the following order: RefSeq, uniprotKB, Clusters, Conserved domain database, Tigrfams, and Pfam (A). Columns D, E and F contain the frequence of occurance of sequences within the genes, so that you can identify paralogs and conserved genes.
-Columns G and H allow you to order the genes based on the core+accessory de novo contig evidence. In Excel select Data-&gt;sort and sort on Column G followed by Column H. This the ordering of genes in iCANDY. Similarly Columns H and I contain the order of the accessory genome. A blank cell means its not in the accessory. This is the same ordering as the genes in the accessory.tab file used to generate the iCANDY figures.
+Columns G and H allow you to order the genes based on the core+accessory de novo contig evidence. In Excel select Data-&gt;sort and sort on Column G followed by Column H. Similarly Columns I and J contain the order of the accessory genome. A blank cell means its not in the accessory. This is the same ordering as the genes in the accessory.tab file used to generate the iCANDY figures.
 The QC column flags up two types of issues: the first is where there are two genes overlapping, one has annotation, and the other has none. So the gene without annotation is flagged. These are appear to be mispredictions by prodigal. the second is where 1 or 2 genes appear on a single contig with no links to another contig. These are marked as 'Investigate' because they can signify low copy number contamination if there are lots of them, or an interesting mobile element.
 Finally there is a matrix with presence and absence of each gene in each isolate. The unique gene ID back to the sequence and annotation is given in the column. If an isolate contains more than 1 sequence in the group it, they are separated by a tab in the same cell.</p>
 
@@ -307,7 +307,7 @@ There is also an aligned version of the nucleotides. The nucleotide sequences ar
 
 <p>The perl modules can also be installed from CPAN by running:</p>
 
-<p><code>cpanm Bio::PanGenome Bio::AutomatedAnnotation Bio::AssemblyImprovement</code></p>
+<p><code>cpanm Bio::Roary Bio::AutomatedAnnotation Bio::AssemblyImprovement</code></p>
 
 <h2>
 <a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
