@@ -24,11 +24,10 @@ has 'cpus'            => ( is => 'ro', isa => 'Int',      default => 1 );
 
 sub run {
     my ($self) = @_;
-    my ($fh, $filename) = tempfile();
-    write_file( $fh, join("\n", @{ $self->commands_to_run }) ) ;
-  
-    my $parallel_command = "cat $filename | parallel -j ".$self->cpus;
-    system($parallel_command);
+	
+	open(my $fh,"|-","parallel -j ".$self->cpus) || die "GNU Parallel failed";
+	print $fh join("\n", @{ $self->commands_to_run });
+	close $fh;
     1;
 }
 
