@@ -27,7 +27,7 @@ my %scripts_and_expected_files = (
          [ 'empty_file', 't/data/empty_file' ],   
 );
 
-mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files );
+mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files );
 
 ok( -e 'number_of_unique_genes.Rtab', 'number_of_unique_genes.Rtab exists');
 ok( -e 'number_of_new_genes.Rtab', 'number_of_new_genes exists');
@@ -55,7 +55,7 @@ system('touch empty_file');
          [ 'empty_file', 't/data/empty_file' ],   
 );
 
-mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files );
+mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files );
 
 ok( -e 'number_of_unique_genes.Rtab', 'number_of_unique_genes.Rtab exists');
 ok( -e 'number_of_new_genes.Rtab', 'number_of_new_genes exists');

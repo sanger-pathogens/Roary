@@ -24,14 +24,11 @@ my %scripts_and_expected_files;
 system('touch empty_file');
 
 %scripts_and_expected_files = (
-      ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
-        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
+
       ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
       ' -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-      ' -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
-        [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
       ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
       ' -t 1 -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
@@ -43,6 +40,17 @@ system('touch empty_file');
 mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
 cleanup_files();
 
+%scripts_and_expected_files = (
+' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+  [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
+' -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+  [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
+  );
+
+mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
+cleanup_files();
+  
+  
 SKIP: 
 {
 
