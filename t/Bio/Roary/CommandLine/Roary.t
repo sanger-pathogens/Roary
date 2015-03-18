@@ -23,6 +23,7 @@ local $ENV{PATH} = "$ENV{PATH}:./bin";
 my %scripts_and_expected_files;
 system('touch empty_file');
 
+
 %scripts_and_expected_files = (
 
       ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
@@ -40,6 +41,7 @@ system('touch empty_file');
 mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
 cleanup_files();
 
+
 %scripts_and_expected_files = (
 ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
   [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
@@ -49,7 +51,6 @@ cleanup_files();
 
 mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
 cleanup_files();
-  
   
 SKIP: 
 {
