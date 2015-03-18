@@ -2,7 +2,10 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp;
+use File::Slurp::Tiny qw(read_file write_file);
+use Moose;
+BEGIN { unshift( @INC, './t/lib' ) }
+with 'TestHelper';
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -14,7 +17,6 @@ BEGIN {
 
 my $obj;
 
-
 ok($obj = Bio::Roary::AnnotateGroups->new(
   gff_files   => ['t/data/query_1.gff','t/data/query_2.gff','t/data/query_3.gff'],
   groups_filename => 't/data/query_groups',
@@ -22,7 +24,7 @@ ok($obj = Bio::Roary::AnnotateGroups->new(
 
 ok($obj->reannotate,'reannotate');
 
-is(read_file('reannotated_groups_file'), read_file('t/data/expected_reannotated_groups_file'), 'groups reannotated as expected');
+compare_files('reannotated_groups_file', 't/data/expected_reannotated_groups_file', 'groups reannotated as expected');
 
 unlink('reannotated_groups_file');
 

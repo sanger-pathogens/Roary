@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Moose;
 use Data::Dumper;
-use File::Slurp;
+use File::Slurp::Tiny qw(read_file write_file);
 use Cwd;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -58,7 +58,7 @@ my %scripts_and_expected_files = (
       [ 'empty_file2', 't/data/empty_file' ],
 );
 
-mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files );
 
 unlink('set_difference_unique_set_two')                if ( -e 'set_difference_unique_set_two' );
 unlink('set_difference_common_set')                    if ( -e 'set_difference_common_set' );

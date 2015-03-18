@@ -2,7 +2,9 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp;
+use Moose;
+BEGIN { unshift( @INC, './t/lib' ) }
+with 'TestHelper';
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -25,9 +27,9 @@ ok($obj->groups_set_one_unique,'create set one unique');
 ok($obj->groups_set_two_unique,'create set two unique');
 ok($obj->groups_in_common,'create common set unique');
 
-is(read_file('set_difference_unique_set_one'),read_file('t/data/expected_set_difference_unique_set_one'),'set one file content as expected');
-is(read_file('set_difference_unique_set_two'),read_file('t/data/expected_set_difference_unique_set_two'),'set two file content as expected');
-is(read_file('set_difference_common_set'),read_file('t/data/expected_set_difference_common_set'),'common set file content as expected');
+compare_files('set_difference_unique_set_one','t/data/expected_set_difference_unique_set_one','set one file content as expected');
+compare_files('set_difference_unique_set_two','t/data/expected_set_difference_unique_set_two','set two file content as expected');
+compare_files('set_difference_common_set','t/data/expected_set_difference_common_set','common set file content as expected');
 
 unlink('set_difference_unique_set_one');
 unlink('set_difference_unique_set_two');

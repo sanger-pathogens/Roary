@@ -2,7 +2,10 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp;
+use File::Slurp::Tiny qw(read_file write_file read_lines);
+use Moose;
+BEGIN { unshift( @INC, './t/lib' ) }
+with 'TestHelper';
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -26,9 +29,9 @@ ok($obj->groups_union(), 'create the union file');
 ok($obj->groups_intersection(), 'create the intersection file');
 ok($obj->groups_complement(), 'create the complement file');
 
-is(read_file('union_of_groups.gg'), read_file('t/data/expected_union_of_groups.gg'), 'contents of the union groups as expected');
-is(read_file('intersection_of_groups.gg'), read_file('t/data/expected_intersection_of_groups.gg'), 'contents of the intersection groups as expected');
-is(read_file('complement_of_groups.gg'), read_file('t/data/expected_complement_of_groups.gg'), 'contents of the complement groups as expected');
+compare_files('union_of_groups.gg','t/data/expected_union_of_groups.gg', 'contents of the union groups as expected');
+compare_files('intersection_of_groups.gg', 't/data/expected_intersection_of_groups.gg', 'contents of the intersection groups as expected');
+compare_files('complement_of_groups.gg', 't/data/expected_complement_of_groups.gg', 'contents of the complement groups as expected');
 
 # test varying core definition
 ok($obj = Bio::Roary::Output::QueryGroups->new(
@@ -40,8 +43,8 @@ ok($obj = Bio::Roary::Output::QueryGroups->new(
 ok($obj->groups_intersection(), 'create the intersection file');
 ok($obj->groups_complement(), 'create the complement file');
 
-is(read_file('intersection_of_groups.gg'), read_file('t/data/expected_intersection_of_groups_core0.66.gg'), 'contents of the intersection groups as expected');
-is(read_file('complement_of_groups.gg'), read_file('t/data/expected_complement_of_groups_core0.66.gg'), 'contents of the complement groups as expected');
+compare_files('intersection_of_groups.gg', 't/data/expected_intersection_of_groups_core0.66.gg', 'contents of the intersection groups as expected');
+compare_files('complement_of_groups.gg', 't/data/expected_complement_of_groups_core0.66.gg', 'contents of the complement groups as expected');
 
 
 unlink('union_of_groups.gg');
@@ -49,3 +52,4 @@ unlink('intersection_of_groups.gg');
 unlink('complement_of_groups.gg');
 
 done_testing();
+
