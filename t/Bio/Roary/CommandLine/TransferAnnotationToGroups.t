@@ -22,6 +22,6 @@ my %scripts_and_expected_files = (
         [ 'empty_file', 't/data/empty_file' ],
 );
 
-mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files );
 
 done_testing();

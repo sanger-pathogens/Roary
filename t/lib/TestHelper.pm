@@ -1,10 +1,18 @@
 package TestHelper;
 use Moose::Role;
 use Test::Most;
-use File::Slurp::Tiny qw(read_file write_file);
 use Data::Dumper;
+use File::Slurp::Tiny qw(read_file write_file read_lines);
 
 $ENV{PATH} .= ":./bin";
+
+sub compare_files
+{
+	my($actual_file, $expected_file, $comment) = @_;
+	my @actual_lines   = sort(read_lines($actual_file));
+	my @expected_lines = sort(read_lines($expected_file));
+	is_deeply(\@actual_lines, \@expected_lines, $comment);
+}
 
 
 sub mock_execute_script_and_check_output {
