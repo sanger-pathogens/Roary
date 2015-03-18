@@ -224,6 +224,7 @@ sub _filter_coordinates_from_string
   for my $line (sort @lines)
   {
     next if($line =~ /(variation|misc_feature|feature)/);
+	$line =~ s!group_[\d]+!group_XX!gi;
     $modified_file_contents .= $line."\n";
   }
   return $modified_file_contents;
