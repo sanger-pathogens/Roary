@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python2.7
+# PODNAME: revtrans
 #
 # $Id: revtrans.py,v 1.10 2005/06/09 09:58:54 raz Exp $
 #
