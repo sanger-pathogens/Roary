@@ -134,7 +134,7 @@ sub mock_execute_script_and_check_output_sorted_groups {
             }
             else
             {
-				compare_files($actual_output_file_name,$expected_output_file_name,"Actual and expected sorted output match for '$script_parameters'");
+				compare_groups_files($actual_output_file_name,$expected_output_file_name,"Actual and expected sorted output match for '$script_parameters'");
             }
             unlink($actual_output_file_name);
         }
