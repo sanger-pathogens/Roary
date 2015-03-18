@@ -105,9 +105,7 @@ sub mock_execute_script_and_check_output_sorted {
             }
             else
             {
-              my @actual_content_sorted = sort(read_file($actual_output_file_name));
-              my @expected_content_sorted = sort(read_file($expected_output_file_name));
-              is_deeply(\@actual_content_sorted, \@expected_content_sorted, "Actual and expected sorted output match for '$script_parameters'");
+				compare_files($actual_output_file_name,$expected_output_file_name,"Actual and expected sorted output match for '$script_parameters'");
             }
             unlink($actual_output_file_name);
         }
