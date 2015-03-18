@@ -1,7 +1,7 @@
 package TestHelper;
 use Moose::Role;
 use Test::Most;
-use File::Slurp;
+use File::Slurp::Tiny qw(read_file write_file);
 use Data::Dumper;
 
 $ENV{PATH} .= ":./bin";

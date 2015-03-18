@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use File::Path qw( remove_tree);
 use Data::Dumper;
-use File::Slurp;
+use File::Slurp::Tiny qw(read_file write_file);
 
 BEGIN { unshift( @INC, './lib' ) }
 

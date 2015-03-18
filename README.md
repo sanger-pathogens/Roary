@@ -45,5 +45,5 @@ Add the following lines to your $HOME/.bashrc file, or to /etc/profile.d/roary.s
    `export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib`
 
 ###Install perl dependancies
-   `cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp Graph Moose Moose::Role Text::CSV`
+   `cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV`
    

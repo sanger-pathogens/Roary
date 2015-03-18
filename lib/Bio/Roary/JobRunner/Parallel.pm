@@ -16,7 +16,7 @@ package Bio::Roary::JobRunner::Parallel;
 =cut
 
 use Moose;
-use File::Slurp;
+use File::Slurp::Tiny qw(read_file write_file);
 use File::Temp qw/ tempfile /;
 
 has 'commands_to_run' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
