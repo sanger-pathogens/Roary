@@ -4,6 +4,7 @@ use Data::Dumper;
 use File::Slurp::Tiny qw(read_file write_file);
 use File::Path qw( remove_tree);
 use Cwd;
+use File::Which;
 
 BEGIN { unshift( @INC, './lib' ) }
 BEGIN { unshift( @INC, './t/lib' ) }
@@ -38,31 +39,38 @@ system('touch empty_file');
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
 );
+
 mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
 cleanup_files();
 
-%scripts_and_expected_files = (
-  ' -j Local --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
-    [ 'pan_genome_sequences/flgM.fa.aln', 't/data/flgM.fa.aln' ],
-);
-mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
-ok(-e 'core_gene_alignment.aln', 'Core gene alignment exists');
+SKIP: 
+{
 
-ok(my $seq_len = Bio::Roary::SequenceLengths->new(
-  fasta_file   => 'core_gene_alignment.aln',
-), 'Check size of the core_gene_alignment.aln init');
+  skip "revtrans.py not installed", 11 unless ( which('revtrans.py'));
 
-is($seq_len->sequence_lengths->{'11111_1#11'}, 58389, 'length of first sequence');
-
-ok(-e 'accessory.tab');
-ok(-e 'core_accessory.tab');
-ok(-e 'number_of_conserved_genes.Rtab');
-ok(-e 'number_of_genes_in_pan_genome.Rtab');
-ok(-e 'number_of_new_genes.Rtab');
-ok(-e 'number_of_unique_genes.Rtab');
-ok(-e 'blast_identity_frequency.Rtab');
-
-cleanup_files();
+  %scripts_and_expected_files = (
+    ' -j Local --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+      [ 'pan_genome_sequences/flgM.fa.aln', 't/data/flgM.fa.aln' ],
+  );
+  mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+  ok(-e 'core_gene_alignment.aln', 'Core gene alignment exists');
+  
+  ok(my $seq_len = Bio::Roary::SequenceLengths->new(
+    fasta_file   => 'core_gene_alignment.aln',
+  ), 'Check size of the core_gene_alignment.aln init');
+  
+  is($seq_len->sequence_lengths->{'11111_1#11'}, 58389, 'length of first sequence');
+  
+  ok(-e 'accessory.tab');
+  ok(-e 'core_accessory.tab');
+  ok(-e 'number_of_conserved_genes.Rtab');
+  ok(-e 'number_of_genes_in_pan_genome.Rtab');
+  ok(-e 'number_of_new_genes.Rtab');
+  ok(-e 'number_of_unique_genes.Rtab');
+  ok(-e 'blast_identity_frequency.Rtab');
+  
+  cleanup_files();
+}
 done_testing();
 
 sub cleanup_files
