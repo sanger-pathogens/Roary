@@ -13,6 +13,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::Roary;
 use Bio::Roary::PrepareInputFiles;
 use Bio::Roary::QC::Report;
+use File::Which; 
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'              => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -85,14 +86,36 @@ sub BUILD {
     $self->cpus($cpus)                         if ( defined($cpus) );
     $self->perc_identity($perc_identity)       if ( defined($perc_identity) );
     $self->apply_unknowns_filter($apply_unknowns_filter)     if ( defined($apply_unknowns_filter) );
-    $self->output_multifasta_files($output_multifasta_files) if ( defined($output_multifasta_files) );
+    if ( defined($output_multifasta_files) )
+	{
+		if(which('revtrans.py'))
+		{
+		  $self->output_multifasta_files($output_multifasta_files) ;
+	    }
+	    else
+		{
+			print "WARNING: revtrans.py not found in your PATH so cannot generate multiFASTA alignments, skipping for now.\n";
+		}
+	}
     $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
     $self->dont_split_groups($dont_split_groups)             if ( defined($dont_split_groups) );
     $self->dont_create_rplots(0)                             if (defined($create_rplots) );
     $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
     $self->translation_table($translation_table)             if (defined($translation_table) );
     $self->group_limit($group_limit)                         if ( defined($group_limit) );
-    $self->run_qc($run_qc) if ( defined( $run_qc ) );
+    
+	if ( defined( $run_qc ) )
+	{
+		if(which('kraken') && which('kraken-report'))
+		{
+		    $self->run_qc($run_qc) ;
+	    }
+		else
+		{
+			print "WARNING: kraken or kraken-report not found in your PATH so cannot run QC, skipping for now.\n";
+		}
+	}
+	
     $self->core_definition( $core_definition/100 ) if ( defined($core_definition) );
 
     for my $filename ( @{ $self->args } ) {
@@ -104,6 +127,9 @@ sub BUILD {
     $self->fasta_files( $self->args );
 
 }
+
+
+
 
 sub run {
     my ($self) = @_;
