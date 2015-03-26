@@ -19,6 +19,7 @@ has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'outfile'     => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 10 );
 has 'dont_delete' => ( is => 'ro', isa => 'Bool',     default  => 0 );
+has 'max_recursion' => ( is => 'ro', isa => 'Int',    default  => 5 );
 
 has '_outfile_handle'     => ( is => 'ro', lazy_build => 1 );
 has '_neighbourhood_size' => ( is => 'ro', isa => 'Int', default => 5 );
@@ -87,7 +88,7 @@ sub split_groups {
 		my @group = split( /\s+/, $line );
 
 		if( $self->_contains_paralogs( \@group ) ){
-			my @true_orthologs = @{ $self->_true_orthologs( \@group ) };
+			my @true_orthologs = @{ $self->_true_orthologs( \@group,$self->max_recursion ) };
 			push( @newgroups,  @true_orthologs);
 		}
 		else {
@@ -103,52 +104,6 @@ sub split_groups {
 		print $outfile_handle $group_str;
 	}
 	close( $outfile_handle );
-}
-
-sub split_groups_old {
-	my ( $self ) = @_;
-
-	$self->_make_tmp_dir;
-
-	# iteratively
-	for my $x ( 0..($self->iterations - 1) ){
-		my ( $in_groups, $out_groups ) = $self->_get_files_for_iteration( $x ); 
-
-		# read in groups, check paralogs and split
-		my @newgroups;
-		my $any_paralogs = 0;
-		open( my $group_handle, '<', $in_groups );
-		while( my $line = <$group_handle> ){
-			my @group = split( /\s+/, $line );
-
-			if( $self->_contains_paralogs( \@group ) ){
-				$self->_set_genes_to_groups( $in_groups );
-				my @true_orthologs = @{ $self->_true_orthologs_old( \@group ) };
-				push( @newgroups,  @true_orthologs);
-				$any_paralogs = 1;
-			}
-			else {
-				push( @newgroups, \@group );
-			}
-		}
-		close( $group_handle );
-
-		# check if next iteration required, move output if not
-		unless ($any_paralogs){
-			move $in_groups, $self->outfile; # input file will be the same as new output file if no splitting has been performed
-			last;
-		}
-
-		# write split groups to file
-		open( my $outfile_handle, '>', $out_groups );
-		for my $g ( @newgroups ) {
-			my $group_str = join( "\t", @{ $g } ) . "\n";
-			print $outfile_handle $group_str;
-		}
-		close( $outfile_handle );
-	}
-
-	remove_tree( $self->_tmp_dir ) unless ( $self->dont_delete );
 }
 
 sub _set_genes_to_groups {
@@ -221,7 +176,7 @@ sub _find_paralogs {
 }
 
 sub _true_orthologs {
-	my ( $self, $gs ) = @_;
+	my ( $self, $gs, $max_recursion ) = @_;
 
 	# first, create CGN hash for group
 	my %cgns;
@@ -262,61 +217,14 @@ sub _true_orthologs {
 
 	my @new_groups;
 	for my $g ( @split_groups ){
-		if( $self->_contains_paralogs( $g ) ){
-			my @true_orthologs = @{ $self->_true_orthologs( $g ) };
+		if( $self->_contains_paralogs( $g ) &&  $max_recursion > 0){
+			my @true_orthologs = @{ $self->_true_orthologs( $g,$max_recursion - 1) };
 			push( @new_groups,  @true_orthologs);
 		}
 		else {
 			push( @new_groups, $g );
 		}
 	}
-
-	# sort
-	if ( $self->_do_sorting ){
-		my @sorted_new_groups;
-		for my $gr ( @new_groups ){
-			my @s_gr = sort @{ $gr };
-			push( @sorted_new_groups, \@s_gr );
-		}
-		return \@sorted_new_groups;
-	}
-
-	return \@new_groups;
-}
-
-sub _true_orthologs_old {
-	my ( $self, $group ) = @_;
-
-	# first, create CGN hash for group
-	my %cgns;
-	for my $g ( @{ $group } ){
-		$cgns{$g} = $self->_parse_gene_neighbourhood( $g );
-	}
-
-	# finding paralogs in the group
-	my @paralogs = @{ $self->_find_paralogs( $group ) };
-	my @paralog_cgns;
-	for my $p ( @paralogs ){
-		push( @paralog_cgns, $cgns{$p} );
-	}
-
-	# create data structure to hold new groups
-	my @new_groups;
-	for my $p ( @paralogs ){
-		push( @new_groups, [ $p ] );
-	}
-	push( @new_groups, [] ); # extra "leftovers" array to gather genes that don't share CGN with anything
-
-	# cluster other members of the group to their closest match
-	for my $g ( @{ $group } ){
-		next if ( grep {$_ eq $g} @paralogs );
-		my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns );
-		push( @{ $new_groups[$closest] }, $g );
-	}
-
-	# check for "leftovers", remove if absent
-	my $last = pop @new_groups;
-	push( @new_groups, $last ) if ( @$last > 0 );
 
 	# sort
 	if ( $self->_do_sorting ){
