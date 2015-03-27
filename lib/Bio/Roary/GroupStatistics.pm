@@ -185,13 +185,15 @@ sub create_spreadsheet {
 
     $self->_text_csv_obj->print( $self->_output_fh, $self->_header );
 
-    my @sorted_groups = sort {
-          $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$b} )
-      <=> $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$a} )
-      ||  $a cmp $b  
-        } @{ $self->annotate_groups_obj->_groups };
+    #for each group count the nubmer of files
+	my %num_files_in_groups;
+	for my $group (@{ $self->annotate_groups_obj->_groups })
+	{
+	  my $num_files = $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$group});
+	  $num_files_in_groups{$group} = $num_files;
+	}
 
-    for my $group (@sorted_groups){
+    for my $group (sort {$num_files_in_groups{$b}<=>$num_files_in_groups{$a} || $a cmp $b} keys %num_files_in_groups){
         $self->_text_csv_obj->print( $self->_output_fh, $self->_row($group) );
     }
     close( $self->_output_fh );
