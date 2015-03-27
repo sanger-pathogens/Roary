@@ -20,7 +20,7 @@ use Bio::Roary::AnnotateGroups;
 use Bio::Roary::GroupStatistics;
 
 has 'group_statistics_obj' => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics', required => 1 );
-has 'number_of_iterations' => ( is => 'ro', isa => 'Int', default => 100);
+has 'number_of_iterations' => ( is => 'ro', isa => 'Int', default => 10);
 has 'groups_to_contigs'    => ( is => 'ro', isa => 'Maybe[HashRef]' );
 has 'annotate_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 
@@ -89,7 +89,7 @@ sub _single_iteration_gene_expansion {
         }
 
         for my $group ( keys %existing_groups ) {
-            if ( $existing_groups{$group} == $files_counter ) {
+            if ( $existing_groups{$group} >= $files_counter ) {
                 $conserved_groups_counter++;
             }
 
