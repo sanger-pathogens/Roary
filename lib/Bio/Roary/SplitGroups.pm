@@ -12,6 +12,9 @@ use Moose;
 use Bio::Roary::AnalyseGroups;
 use File::Path qw(make_path remove_tree);
 use File::Copy qw(move);
+use File::Temp;
+use File::Basename;
+use Cwd;
 
 
 has 'groupfile'   => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -19,7 +22,7 @@ has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'outfile'     => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 10 );
 has 'dont_delete' => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'max_recursion' => ( is => 'ro', isa => 'Int',    default  => 5 );
+has 'max_recursion' => ( is => 'ro', isa => 'Int',    default  => 2 );
 
 has '_outfile_handle'     => ( is => 'ro', lazy_build => 1 );
 has '_neighbourhood_size' => ( is => 'ro', isa => 'Int', default => 5 );
@@ -30,6 +33,10 @@ has '_tmp_dir'         => ( is => 'ro', isa => 'Str',      default => 'split_gro
 has '_analyse_groups_obj' => ( is => 'ro', lazy_build => 1 );
 has '_genes_to_files'     => ( is => 'ro', lazy_build => 1 );
 has '_genes_to_groups'    => ( is => 'rw', isa => 'HashRef' );
+
+has '_gene_files_temp_dir_obj' =>
+  ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
+
 
 has '_do_sorting' => ( is => 'rw', isa => 'Bool', default => 0 ); # set to 1 for testing only
 
@@ -42,6 +49,7 @@ sub _build__outfile_handle {
 
 sub _build__analyse_groups_obj {
 	my ( $self ) = @_;
+    $self->_pre_filter_fasta_files();
 
 	return Bio::Roary::AnalyseGroups->new(
 		fasta_files     => $self->fasta_files,
@@ -73,6 +81,17 @@ sub _make_tmp_dir {
 	unless ( -e $dir ) {
 		make_path($dir) or die "Cannot make dir: $dir\n" ;
 	}
+}
+
+sub _pre_filter_fasta_files
+{
+  my ( $self ) = @_;
+  for my $fasta_file( @{$self->fasta_files})
+  {
+	my ( $filename, $directories, $suffix ) = fileparse( $fasta_file, qr/\.[^.]*/ );
+  	system('grep \> '.$fasta_file.' > '.$self->_gene_files_temp_dir_obj."/".$filename.$suffix );
+  }
+  return 1;
 }
 
 sub split_groups {
@@ -282,7 +301,9 @@ sub _parse_gene_neighbourhood {
 
 	my $nh_size   = $self->_neighbourhood_size;
 	my $gene_file = $self->_genes_to_files->{ $gene_id };
-	my $grep_cmd  = "grep '>' $gene_file | grep -B $nh_size -A $nh_size $gene_id | grep -v $gene_id";
+	my ( $filename, $directories, $suffix ) = fileparse( $gene_file, qr/\.[^.]*/ );
+	my $filtered_gene_file = $self->_gene_files_temp_dir_obj."/".$filename.$suffix ;
+	my $grep_cmd  = "grep '>' $filtered_gene_file | grep -B $nh_size -A $nh_size $gene_id | grep -v $gene_id";
 
 	open( GREP, '-|', $grep_cmd );
 	my @neighbourhood;
