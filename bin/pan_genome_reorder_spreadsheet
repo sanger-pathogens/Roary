@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Bio::PanGenome::Main::PanGenomeReorderSpreadsheet;
+package Bio::Roary::Main::RoaryReorderSpreadsheet;
 
 # ABSTRACT: Take in a tree and a spreadsheet and output a reordered spreadsheet
 # PODNAME: pan_genome_reorder_spreadsheet
@@ -14,6 +14,6 @@ Take in a tree and a spreadsheet and output a reordered spreadsheet
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
 #BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
-use Bio::PanGenome::CommandLine::PanGenomeReorderSpreadsheet;
+use Bio::Roary::CommandLine::RoaryReorderSpreadsheet;
 
-Bio::PanGenome::CommandLine::PanGenomeReorderSpreadsheet->new(args => \@ARGV, script_name => $0)->run;
+Bio::Roary::CommandLine::RoaryReorderSpreadsheet->new(args => \@ARGV, script_name => $0)->run;
