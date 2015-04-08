@@ -21,7 +21,7 @@ with 'Bio::Roary::ParseGFFAnnotationRole';
 has 'contig_to_ids' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_contig_to_ids');
 
 has 'overlapping_hypothetical_protein_ids' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_overlapping_hypothetical_protein_ids');
-has '_genes_annotation' => ( is => 'rw', isa => 'HashRef', default => sub{{}});
+has '_genes_annotation' => ( is => 'rw', isa => 'ArrayRef', default => sub{[]});
 
 has '_min_nucleotide_overlap_percentage' => ( is => 'ro', isa => 'Int', default => 10);
 
@@ -30,7 +30,7 @@ sub _build_contig_to_ids
 {
   my ($self) = @_;
   my %contigs_to_ids;
-  my %genes_annotation;
+  my @genes_annotation;
   
   open( my $fh, '-|', $self->_gff_fh_input_string ) or die "Couldnt open GFF file";
   while(<$fh>)
@@ -52,23 +52,29 @@ sub _build_contig_to_ids
     push(@{$contigs_to_ids{$annotation_elements[0]}}, $id_name);
     
     if($line =~/product=["']?([^;,"']+)[,"']?;?/i)
-	
     {
-      $genes_annotation{$id_name}{product} = $1;
+	  my %gene_data; 
+      $gene_data{product} = $1;
+	  $gene_data{id_name} = $id_name;
       if($line =~ /UniProtKB/ || $line =~ /RefSeq/ || $line =~ /protein motif/)
       {
-        $genes_annotation{$id_name}{database_annotation_exists} = 1;
+        $gene_data{database_annotation_exists} = 1;
       }
+	  else
+	  {
+	  	$gene_data{database_annotation_exists} = 0;
+	  }
       
-      $genes_annotation{$id_name}{contig}  = $annotation_elements[0];
-      $genes_annotation{$id_name}{start}   = $annotation_elements[1];
-      $genes_annotation{$id_name}{end}     = $annotation_elements[2];
+      $gene_data{contig}  = $annotation_elements[0];
+      $gene_data{start}   = $annotation_elements[1];
+      $gene_data{end}     = $annotation_elements[2];
+	  push(@genes_annotation,\%gene_data);
     }
 
   }
   close($fh);
   
-  $self->_genes_annotation(\%genes_annotation);
+  $self->_genes_annotation(\@genes_annotation);
   return \%contigs_to_ids;
 }
 
@@ -78,36 +84,31 @@ sub _build_overlapping_hypothetical_protein_ids
   $self->contig_to_ids;
   
   my %overlapping_protein_ids;
-
-  for my $id_name (keys %{$self->_genes_annotation})
+  
+  #Checking to see if the current feature is hypotheitical and if the next one has annotation
+  for(my $i = 0; $i< (@{$self->_genes_annotation} -1) ; $i++ )
   {
-    next if($self->_genes_annotation->{$id_name}->{database_annotation_exists});
-    next unless($self->_genes_annotation->{$id_name}->{product} =~ /hypothetical/i);
-    
-    my $start_coord = $self->_genes_annotation->{$id_name}->{start};
-    my $end_coord   = $self->_genes_annotation->{$id_name}->{end}  ;
-    
-    # look for overlapping annotation which isnt a hypothetical protein
-    for my $comparison_id_name (keys %{$self->_genes_annotation})
-    {
-      next if($self->_genes_annotation->{$id_name}->{contig} ne $self->_genes_annotation->{$comparison_id_name}->{contig});
-      next if($id_name eq $comparison_id_name);
-      next if($self->_genes_annotation->{$comparison_id_name}->{product} =~ /hypothetical/i);
-      
-      my $comparison_start_coord = $self->_genes_annotation->{$comparison_id_name}->{start};
-      my $comparison_end_coord   = $self->_genes_annotation->{$comparison_id_name}->{end};
-
+	  my $current_feature = $self->_genes_annotation->[$i];
+	  my $next_feature = $self->_genes_annotation->[$i+1];
+	  
+	  next if($current_feature->{database_annotation_exists} == 1);
+	  next unless($current_feature->{product} =~ /hypothetical/i);
+	  next unless($next_feature->{database_annotation_exists} == 1);
+	  
+	  my $start_coord = $current_feature->{start} ;
+      my $end_coord   = $current_feature->{end} ;
+	  my $comparison_start_coord =$next_feature->{start} ;
+	  my $comparison_end_coord   =$next_feature->{end} ;
       if($comparison_start_coord < $end_coord  && $comparison_end_coord > $start_coord )
       {
         my $percent_overlap = $self->_percent_overlap($start_coord, $end_coord , $comparison_start_coord,$comparison_end_coord);
         if($percent_overlap >= $self->_min_nucleotide_overlap_percentage)
         {
-          $overlapping_protein_ids{$id_name}++;
-          last;
+          $overlapping_protein_ids{$current_feature->{id_name}}++;
         }
       }
-    }
   }
+  
   return \%overlapping_protein_ids;
 }
 
