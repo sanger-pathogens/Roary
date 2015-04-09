@@ -21,7 +21,7 @@ use Cwd;
 has 'groupfile'   => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'outfile'     => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 10 );
+has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 5 );
 has 'dont_delete' => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has '_outfile_handle'     => ( is => 'ro', lazy_build => 1 );
