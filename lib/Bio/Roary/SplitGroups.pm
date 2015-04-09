@@ -100,22 +100,17 @@ sub _build__genes_to_neighbourhood
 	
 	for(my $i =0; $i< @genes; $i++)
 	{
-		for(my $back = 1; $back <= $self->_neighbourhood_size; $back++)
+		for(my $offset = 1; $offset <= $self->_neighbourhood_size; $offset++)
 		{
-			if($i -$back >= 0)
+			if($i -$offset >= 0)
 			{
-			   push(@{$genes_to_neighbourhood{$genes[$i]}}, $genes[$i - $back ]);
+			   push(@{$genes_to_neighbourhood{$genes[$i]}}, $genes[$i - $offset ]);
+		    }
+			if($i +$offset <@genes)
+			{
+			   push(@{$genes_to_neighbourhood{$genes[$i]}}, $genes[$i + $offset ]);
 		    }
 		}
-		
-		for(my $forward = 1; $forward <= $self->_neighbourhood_size; $forward++)
-		{
-			if($i +$forward <@genes)
-			{
-			   push(@{$genes_to_neighbourhood{$genes[$i]}}, $genes[$i + $forward ]);
-		    }
-		}
-		
 	}
   }
   return \%genes_to_neighbourhood;
