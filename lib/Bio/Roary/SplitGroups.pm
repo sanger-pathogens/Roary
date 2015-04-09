@@ -23,7 +23,6 @@ has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'outfile'     => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 10 );
 has 'dont_delete' => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'max_recursion' => ( is => 'ro', isa => 'Int',    default  => 2 );
 
 has '_outfile_handle'     => ( is => 'ro', lazy_build => 1 );
 has '_neighbourhood_size' => ( is => 'ro', isa => 'Int', default => 5 );
@@ -258,9 +257,16 @@ sub _true_orthologs {
 
 	# finding paralogs in the group
 	my @paralogs = @{ $self->_find_paralogs( $group ) };
-	my @paralog_cgns;
+	my @paralog_cgns_groups;
 	for my $p ( @paralogs ){
-		push( @paralog_cgns, $cgns{$p} );
+		my %paralog_groups ;
+		for my $paralog_gene (@{$cgns{$p}})
+		{
+			my $gene_paralog_group = $self->_genes_to_groups->{$paralog_gene};
+			next unless( defined($gene_paralog_group));
+			$paralog_groups{$self->_genes_to_groups->{$paralog_gene}}++;
+		}
+		push( @paralog_cgns_groups, \%paralog_groups );
 	}
 
 	# create data structure to hold new groups
@@ -273,7 +279,7 @@ sub _true_orthologs {
 	# cluster other members of the group to their closest match
 	for my $g ( @{ $group } ){
 		next if ( grep {$_ eq $g} @paralogs );
-		my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns );
+		my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns_groups );
 		push( @{ $new_groups[$closest] }, $g );
 	}
 
@@ -316,20 +322,12 @@ sub _shared_cgn_score {
 
 	my $total_shared = 0;
 	for my $i ( @{ $cgn1 } ){
-		for my $j ( @{ $cgn2 } ){
-			$total_shared += $self->_same_group( $i, $j );
-		}
+		my $input_group = $self->_genes_to_groups->{$i};
+		next unless(defined($input_group));
+		$total_shared++ if($cgn2->{$input_group});
 	}
 	my $score = $total_shared/scalar @{ $cgn1 };
 	return $score;
-}
-
-sub _same_group {
-	my ( $self, $gene1, $gene2 ) = @_;
-	my $g1 = $self->_genes_to_groups->{$gene1};
-	my $g2 = $self->_genes_to_groups->{$gene2};
-	return 1 if ( defined $g1 && defined $g2 && $g1 eq $g2 );
-	return 0;
 }
 
 sub _parse_gene_neighbourhood {
