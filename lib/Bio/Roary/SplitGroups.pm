@@ -35,6 +35,8 @@ has '_analyse_groups_obj' => ( is => 'ro', lazy_build => 1 );
 has '_genes_to_files'     => ( is => 'ro', lazy_build => 1 );
 has '_genes_to_groups'    => ( is => 'rw', isa => 'HashRef' );
 
+has '_first_gene_of_group_which_doesnt_have_paralogs'    => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
+
 has '_genes_to_neighbourhood' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build__genes_to_neighbourhood' );
 
 
@@ -137,8 +139,13 @@ sub split_groups {
 		while( my $line = <$group_handle> ){
 			my @group = split( /\s+/, $line );
 
-			if(@group == 1)
+			if($self->_first_gene_of_group_which_doesnt_have_paralogs->{$group[0]})
 			{
+				push( @newgroups, \@group );
+			}
+			elsif(@group == 1)
+			{
+				$self->_first_gene_of_group_which_doesnt_have_paralogs->{$group[0]}++;
 				push( @newgroups, \@group );
 			}
 			elsif( $self->_contains_paralogs( \@group ) ){
@@ -147,6 +154,7 @@ sub split_groups {
 				$any_paralogs = 1;
 			}
 			else {
+				$self->_first_gene_of_group_which_doesnt_have_paralogs->{$group[0]}++;
 				push( @newgroups, \@group );
 			}
 		}
