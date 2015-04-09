@@ -14,15 +14,15 @@ use File::Path qw(make_path remove_tree);
 use File::Copy qw(move);
 use File::Temp;
 use File::Basename;
+use File::Slurp::Tiny 'read_lines';
 use Cwd;
 
 
 has 'groupfile'   => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'fasta_files' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'outfile'     => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 10 );
+has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 5 );
 has 'dont_delete' => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'max_recursion' => ( is => 'ro', isa => 'Int',    default  => 2 );
 
 has '_outfile_handle'     => ( is => 'ro', lazy_build => 1 );
 has '_neighbourhood_size' => ( is => 'ro', isa => 'Int', default => 5 );
@@ -33,6 +33,11 @@ has '_tmp_dir'         => ( is => 'ro', isa => 'Str',      default => 'split_gro
 has '_analyse_groups_obj' => ( is => 'ro', lazy_build => 1 );
 has '_genes_to_files'     => ( is => 'ro', lazy_build => 1 );
 has '_genes_to_groups'    => ( is => 'rw', isa => 'HashRef' );
+
+has '_first_gene_of_group_which_doesnt_have_paralogs'    => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
+
+has '_genes_to_neighbourhood' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build__genes_to_neighbourhood' );
+
 
 has '_gene_files_temp_dir_obj' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
@@ -49,8 +54,7 @@ sub _build__outfile_handle {
 
 sub _build__analyse_groups_obj {
 	my ( $self ) = @_;
-    $self->_pre_filter_fasta_files();
-
+	
 	return Bio::Roary::AnalyseGroups->new(
 		fasta_files     => $self->fasta_files,
 		groups_filename => $self->groupfile
@@ -83,15 +87,33 @@ sub _make_tmp_dir {
 	}
 }
 
-sub _pre_filter_fasta_files
+sub _build__genes_to_neighbourhood
 {
   my ( $self ) = @_;
+  my %genes_to_neighbourhood;
   for my $fasta_file( @{$self->fasta_files})
   {
 	my ( $filename, $directories, $suffix ) = fileparse( $fasta_file, qr/\.[^.]*/ );
-  	system('grep \> '.$fasta_file.' > '.$self->_gene_files_temp_dir_obj."/".$filename.$suffix );
+  	system('grep \> '.$fasta_file.'| sed  \'s/>//\' >'.$self->_gene_files_temp_dir_obj."/".$filename.$suffix ) ;
+	
+	my @genes = read_lines($self->_gene_files_temp_dir_obj."/".$filename.$suffix, chomp => 1 );
+	
+	for(my $i =0; $i< @genes; $i++)
+	{
+		for(my $offset = 1; $offset <= $self->_neighbourhood_size; $offset++)
+		{
+			if($i -$offset >= 0)
+			{
+			   push(@{$genes_to_neighbourhood{$genes[$i]}}, $genes[$i - $offset ]);
+		    }
+			if($i +$offset <@genes)
+			{
+			   push(@{$genes_to_neighbourhood{$genes[$i]}}, $genes[$i + $offset ]);
+		    }
+		}
+	}
   }
-  return 1;
+  return \%genes_to_neighbourhood;
 }
 
 sub split_groups {
@@ -106,17 +128,27 @@ sub split_groups {
 		# read in groups, check paralogs and split
 		my @newgroups;
 		my $any_paralogs = 0;
+		$self->_set_genes_to_groups( $in_groups );
 		open( my $group_handle, '<', $in_groups );
 		while( my $line = <$group_handle> ){
 			my @group = split( /\s+/, $line );
 
-			if( $self->_contains_paralogs( \@group ) ){
-				$self->_set_genes_to_groups( $in_groups );
+			if($self->_first_gene_of_group_which_doesnt_have_paralogs->{$group[0]})
+			{
+				push( @newgroups, \@group );
+			}
+			elsif(@group == 1)
+			{
+				$self->_first_gene_of_group_which_doesnt_have_paralogs->{$group[0]}++;
+				push( @newgroups, \@group );
+			}
+			elsif( $self->_contains_paralogs( \@group ) ){
 				my @true_orthologs = @{ $self->_true_orthologs( \@group ) };
 				push( @newgroups,  @true_orthologs);
 				$any_paralogs = 1;
 			}
 			else {
+				$self->_first_gene_of_group_which_doesnt_have_paralogs->{$group[0]}++;
 				push( @newgroups, \@group );
 			}
 		}
@@ -220,9 +252,16 @@ sub _true_orthologs {
 
 	# finding paralogs in the group
 	my @paralogs = @{ $self->_find_paralogs( $group ) };
-	my @paralog_cgns;
+	my @paralog_cgns_groups;
 	for my $p ( @paralogs ){
-		push( @paralog_cgns, $cgns{$p} );
+		my %paralog_groups ;
+		for my $paralog_gene (@{$cgns{$p}})
+		{
+			my $gene_paralog_group = $self->_genes_to_groups->{$paralog_gene};
+			next unless( defined($gene_paralog_group));
+			$paralog_groups{$self->_genes_to_groups->{$paralog_gene}}++;
+		}
+		push( @paralog_cgns_groups, \%paralog_groups );
 	}
 
 	# create data structure to hold new groups
@@ -235,7 +274,7 @@ sub _true_orthologs {
 	# cluster other members of the group to their closest match
 	for my $g ( @{ $group } ){
 		next if ( grep {$_ eq $g} @paralogs );
-		my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns );
+		my $closest = $self->_closest_cgn( $cgns{$g}, \@paralog_cgns_groups );
 		push( @{ $new_groups[$closest] }, $g );
 	}
 
@@ -278,39 +317,19 @@ sub _shared_cgn_score {
 
 	my $total_shared = 0;
 	for my $i ( @{ $cgn1 } ){
-		for my $j ( @{ $cgn2 } ){
-			$total_shared += $self->_same_group( $i, $j );
-		}
+		my $input_group = $self->_genes_to_groups->{$i};
+		next unless(defined($input_group));
+		$total_shared++ if($cgn2->{$input_group});
 	}
 	my $score = $total_shared/scalar @{ $cgn1 };
 	return $score;
 }
 
-sub _same_group {
-	my ( $self, $gene1, $gene2 ) = @_;
-	my $g1 = $self->_genes_to_groups->{$gene1};
-	my $g2 = $self->_genes_to_groups->{$gene2};
-	return 1 if ( defined $g1 && defined $g2 && $g1 eq $g2 );
-	return 0;
-}
-
 sub _parse_gene_neighbourhood {
 	my ( $self, $gene_id ) = @_;
 
-	my $nh_size   = $self->_neighbourhood_size;
-	my $gene_file = $self->_genes_to_files->{ $gene_id };
-	my ( $filename, $directories, $suffix ) = fileparse( $gene_file, qr/\.[^.]*/ );
-	my $filtered_gene_file = $self->_gene_files_temp_dir_obj."/".$filename.$suffix ;
-	my $grep_cmd  = "grep '>' $filtered_gene_file | grep -B $nh_size -A $nh_size $gene_id | grep -v $gene_id";
+    return $self->_genes_to_neighbourhood->{$gene_id };
 
-	open( GREP, '-|', $grep_cmd );
-	my @neighbourhood;
-	while( my $line = <GREP> ){
-		chomp $line;
-		$line =~ s/^>//;
-		push( @neighbourhood, $line );
-	}
-	return \@neighbourhood;
 }
 
 no Moose;
