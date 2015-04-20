@@ -12,20 +12,19 @@ Roary takes annotated assemblies as input in GFF3 format, such as those produced
 ##Installation - Ubuntu/Debian
 Assuming you have root on your system, all the dependancies can be installed using apt and cpanm.
 
-   `sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus`
-   
-   `sudo cpanm Bio::Roary`
-   
+```
+sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus
+sudo cpanm Bio::Roary
+```   
 
 ##Installation - OSX using homebrew
 Assuming you have homebrew setup and installed on your OSX system, tap the science keg and install the dependancies, then install the perl modules:
 
-   `brew tap homebrew/science`
-   
-   `brew install bedtools cd-hit blast mcl muscle parallel`
-   
-   `cpanm Bio::Roary`
-
+```
+brew tap homebrew/science
+brew install bedtools cd-hit blast mcl muscle parallel
+cpanm Bio::Roary
+```
 
 ##Installation - With bundled binaries
 
@@ -36,17 +35,23 @@ https://github.com/sanger-pathogens/Roary/archive/v2.0.0.tar.gz
 ###Extract
 Choose somewhere to put it, for example in your home directory (no root access required):
 
-  `cd $HOME`
-  `tar zxvf v2.0.0.tar.gz`
-  `ls Roary-*`
+```
+cd $HOME
+tar zxvf v2.0.0.tar.gz
+ls Roary-*
+```
 
 ###Add to your Environment
 
 Add the following lines to your $HOME/.bashrc file, or to /etc/profile.d/roary.sh to make it available to all users:
 
-   `export PATH=$PATH:$HOME/Roary-x.x.x/bin`
-   `export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib`
+```
+export PATH=$PATH:$HOME/Roary-x.x.x/bin
+export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
+```
 
 ###Install perl dependancies
-   `cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV`
-   
+
+```
+cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV
+```
