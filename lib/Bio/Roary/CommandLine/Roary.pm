@@ -116,6 +116,11 @@ sub BUILD {
 		}
 	}
 	
+	if($self->cpus > 1)
+	{
+		$self->job_runner('Parallel');
+	}
+	
     $self->core_definition( $core_definition/100 ) if ( defined($core_definition) );
 
     for my $filename ( @{ $self->args } ) {
