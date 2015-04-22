@@ -82,6 +82,7 @@ sub run {
       );
     
     my $merge_alignments_obj = Bio::Roary::MergeMultifastaAlignments->new(
+	  sample_names     => $core_genes_obj->sample_names,
       multifasta_files => $gene_files->ordered_gene_files(),
       output_filename  => $self->output_filename
     );
