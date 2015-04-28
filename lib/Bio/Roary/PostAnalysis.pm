@@ -101,6 +101,7 @@ sub _build__number_of_groups_obj
     group_statistics_obj => $self->_group_statistics_obj,
     groups_to_contigs    => $self->_order_genes_obj->groups_to_contigs,
     annotate_groups_obj  => $self->_annotate_groups_obj,
+	core_definition      => $self->core_definition
   );
 }
 

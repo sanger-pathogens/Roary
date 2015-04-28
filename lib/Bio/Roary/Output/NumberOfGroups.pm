@@ -23,6 +23,7 @@ has 'group_statistics_obj' => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics'
 has 'number_of_iterations' => ( is => 'ro', isa => 'Int', default => 10);
 has 'groups_to_contigs'    => ( is => 'ro', isa => 'Maybe[HashRef]' );
 has 'annotate_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
+has 'core_definition'      => ( is => 'ro', isa => 'Num', default  => 1.0 );
 
 has 'output_raw_filename_conserved_genes' => ( is => 'ro', isa => 'Str', default => 'number_of_conserved_genes.Rtab' );
 has 'output_raw_filename_unique_genes'    => ( is => 'ro', isa => 'Str', default => 'number_of_unique_genes.Rtab' );
@@ -89,7 +90,7 @@ sub _single_iteration_gene_expansion {
         }
 
         for my $group ( keys %existing_groups ) {
-            if ( $existing_groups{$group} >= $files_counter ) {
+            if ( $existing_groups{$group} >= ($files_counter*$self->core_definition) ) {
                 $conserved_groups_counter++;
             }
 

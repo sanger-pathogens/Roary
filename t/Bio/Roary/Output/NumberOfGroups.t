@@ -53,6 +53,20 @@ ok(-e 'number_of_unique_genes.Rtab', 'check raw output file created');
 is(read_file('t/data/expected_number_of_unique_genes.tab'), read_file('number_of_unique_genes.Rtab'), 'Content of unique groups tab file as expected');
 unlink('number_of_unique_genes.Rtab');
 
+
+# Vary the core
+ok($obj = Bio::Roary::Output::NumberOfGroups->new(
+  group_statistics_obj => $group_statistics,
+  annotate_groups_obj      => $annotate_groups,
+  core_definition => 0.6
+  ),"initialise object with 60 percent core definition");
+ok($obj->create_output_files, 'create the raw output files for 60 percent core def');
+is(read_file('t/data/expected_number_of_conserved_genes_0.6.tab'), read_file('number_of_conserved_genes.Rtab'), 'Content of conserved genes with 60 percent core def');
+
+unlink('number_of_conserved_genes.Rtab');
+unlink('number_of_new_genes.Rtab');
+unlink('number_of_genes_in_pan_genome.Rtab');
+unlink('number_of_unique_genes.Rtab');
 unlink('group_statitics.csv');
 
 done_testing();
