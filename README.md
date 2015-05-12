@@ -30,14 +30,14 @@ cpanm Bio::Roary
 
 ###Download
 Download the latest software from 
-https://github.com/sanger-pathogens/Roary/archive/v2.0.0.tar.gz
+https://github.com/sanger-pathogens/Roary/tarball/master
 
 ###Extract
 Choose somewhere to put it, for example in your home directory (no root access required):
 
 ```
 cd $HOME
-tar zxvf v2.0.0.tar.gz
+tar zxvf sanger-pathogens-Roary-xxxxxx.tar.gz
 ls Roary-*
 ```
 
