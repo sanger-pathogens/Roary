@@ -39,6 +39,7 @@ has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default => 0 )
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 1 );
+has 'verbose'                     => ( is => 'rw', isa => 'Bool', default => 0 );
 
 has '_error_message'    => ( is => 'rw', isa => 'Str' );
 has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -46,7 +47,7 @@ has 'run_qc'            => ( is => 'rw', isa => 'Bool', default => 0 );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $create_rplots,$group_limit, $dont_run_qc, $max_threads, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $core_definition, $help );
+    my ( $fasta_files,$verbose, $create_rplots,$group_limit, $dont_run_qc, $max_threads, $dont_delete_files, $dont_split_groups, $perc_identity, $output_filename, $job_runner, $makeblastdb_exec,$mcxdeblast_exec,$mcl_exec, $blastp_exec, $apply_unknowns_filter, $cpus,$output_multifasta_files, $verbose_stats, $translation_table, $run_qc, $core_definition, $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -67,8 +68,9 @@ sub BUILD {
         't|translation_table=i'     => \$translation_table,
         'group_limit=i'             => \$group_limit,
         'qc|run_qc'                 => \$run_qc,
-		'dont_run_qc'                => \$dont_run_qc,
+		'dont_run_qc'               => \$dont_run_qc,
         'cd|core_definition=i'      => \$core_definition,
+		'v|verbose'                 => \$verbose,
         'h|help'                    => \$help,
     );
     
@@ -99,10 +101,11 @@ sub BUILD {
 	}
     $self->dont_delete_files($dont_delete_files)             if ( defined($dont_delete_files) );
     $self->dont_split_groups($dont_split_groups)             if ( defined($dont_split_groups) );
-    $self->dont_create_rplots(0)                             if (defined($create_rplots) );
+    $self->dont_create_rplots(0)                             if ( defined($create_rplots) );
     $self->verbose_stats($verbose_stats)                     if ( defined $verbose_stats );
-    $self->translation_table($translation_table)             if (defined($translation_table) );
+    $self->translation_table($translation_table)             if ( defined($translation_table) );
     $self->group_limit($group_limit)                         if ( defined($group_limit) );
+	$self->verbose($verbose)                                 if ( defined($verbose) );
     
 	if ( defined( $run_qc ) )
 	{
@@ -145,18 +148,23 @@ sub run {
         die $self->usage_text;
     }
     
+	print "Extracting proteins from GFF files\n" if($self->verbose);
     my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
       input_files           => $self->fasta_files,
       job_runner            => $self->job_runner,
       apply_unknowns_filter => $self->apply_unknowns_filter,
       cpus                  => $self->cpus,
-      translation_table     => $self->translation_table
+      translation_table     => $self->translation_table,
+	  verbose               => $self->verbose
     );
 
     if( $self->run_qc ){
+		print "Running Kraken on each input assembly\n" if($self->verbose);
         my $qc_input_files = Bio::Roary::QC::Report->new(
             input_files => $self->fasta_files,
-            job_runner  => $self->job_runner
+            job_runner  => $self->job_runner,
+			cpus        => $self->cpus,
+			verbose     => $self->verbose
         );
         $qc_input_files->report;
     }
@@ -178,6 +186,7 @@ sub run {
         translation_table       => $self->translation_table,
         group_limit             => $self->group_limit,
         core_definition         => $self->core_definition,
+		verbose                 => $self->verbose
       );
     $pan_genome_obj->run();
 }
@@ -213,6 +222,9 @@ sub usage_text {
     
     # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
     roary --translation_table 1 *.gff 
+
+    # Verbose output to STDOUT so that you know whats happening as it goes along
+    roary -v *.gff
 
     # Include full annotation and inference in group statistics
     roary --verbose_stats *.gff

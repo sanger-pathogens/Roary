@@ -58,6 +58,9 @@ sub usage_text {
     
     # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
     create_pan_genome --translation_table 1 *.gff 
+	
+    # Verbose output to STDOUT so that you know whats happening as it goes along
+    create_pan_genome -v *.gff
 
     # Include full annotation and inference in group statistics
     create_pan_genome --verbose_stats *.gff

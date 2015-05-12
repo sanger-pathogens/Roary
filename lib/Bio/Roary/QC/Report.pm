@@ -20,6 +20,8 @@ has 'outfile'          => ( is => 'rw', isa => 'Str',      default => 'qc_report
 has '_kraken_data'     => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 has '_header'          => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
 has 'job_runner'       => ( is => 'rw', isa => 'Str',      default => 'Local' );
+has 'verbose'          => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'cpus'             => ( is => 'rw', isa => 'Int',  default => 1 );
 
 has '_tmp_directory_obj' => ( is => 'rw', lazy_build => 1 );
 has '_tmp_directory'   =>   ( is => 'rw', lazy_build => 1, isa => 'Str', );
