@@ -40,6 +40,7 @@ has '_extract_proteome_obj' => (
 );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'translation_table'     => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'verbose'               => ( is => 'rw', isa => 'Bool', default => 0 );
 
 has '_fasta_filter_obj' =>
   ( is => 'ro', isa => 'Bio::Roary::FilterUnknowsFromFasta', lazy => 1, builder => '_fasta_filter_obj' );
@@ -75,7 +76,8 @@ sub _build__extract_proteome_obj {
         job_runner            => $self->job_runner,
         apply_unknowns_filter => $self->apply_unknowns_filter,
         translation_table     => $self->translation_table,
-        cpus                  => $self->cpus 
+        cpus                  => $self->cpus,
+		verbose               => $self->verbose
     );
 }
 

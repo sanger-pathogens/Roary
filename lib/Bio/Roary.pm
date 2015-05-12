@@ -44,6 +44,7 @@ has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  =
 has 'translation_table'           => ( is => 'rw', isa => 'Int',      default  => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
 has 'core_definition'             => ( is => 'rw', isa => 'Num',      default  => 1.0 );
+has 'verbose'                     => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -60,6 +61,7 @@ sub run {
     
     unlink($cdhit_groups) unless($self->dont_delete_files == 1);
 
+	print "Combine proteins into a single file\n" if($self->verbose);
     my $combine_fasta_files = Bio::Roary::CombinedProteome->new(
         proteome_files  => $self->fasta_files,
         output_filename => $output_combined_filename,
@@ -68,6 +70,7 @@ sub run {
 
     my $number_of_input_files = @{$self->input_files};
 
+	print "Iteratively run cd-hit\n" if($self->verbose);
     my $iterative_cdhit= Bio::Roary::External::IterativeCdhit->new(
       output_cd_hit_filename           => $output_cd_hit_filename,
       output_combined_filename         => $output_combined_filename,
@@ -79,6 +82,7 @@ sub run {
     
     $iterative_cdhit->run();
 
+	print "Parallel all against all blast\n" if($self->verbose);
     my $blast_obj = Bio::Roary::ParallelAllAgainstAllBlast->new(
         fasta_file              => $output_cd_hit_filename,
         blast_results_file_name => $output_blast_results_filename,
@@ -95,6 +99,7 @@ sub run {
       );
     $blast_identity_frequency_obj->create_file();
 
+	print "Cluster with MCL\n" if($self->verbose);
     my $mcl = Bio::Roary::External::Mcl->new(
         blast_results   => $output_blast_results_filename,
         mcxdeblast_exec => $self->mcxdeblast_exec,
@@ -126,6 +131,7 @@ sub run {
         translation_table           => $self->translation_table,
         group_limit                 => $self->group_limit,
         core_definition             => $self->core_definition,
+		verbose                     => $self->verbose,
     );
     $post_analysis->run();
 
