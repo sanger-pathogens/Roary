@@ -81,11 +81,16 @@ then this is the only way to use Roary on your machine. You need to first instal
 
 <h2>
 <a id="method" class="anchor" href="#inputfiles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input Files</h2>
-<p>Roary takes GFF3 files as input. They must contain the nucleotide sequence at the end of the file. On NCBI's website, GFF3 files only contain annotation and not the nucleotide so cannot be used.</p>
+<p>Roary takes GFF3 files as input. They must contain the nucleotide sequence at the end of the file. On NCBI's website, GFF3 files only contain annotation and not the nucleotide sequence so cannot be used, however there is a work around.</p>
 <ul>
     <li>All GFF3 files created by <a href="http://www.vicbioinformatics.com/software.prokka.shtml">Prokka</a> are valid.</li>
 </ul>
 
+<h3><a id="genbank_files" class="anchor" href="#genbank_files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Converting Genbank files to GFF3</h3>
+<p>The simpliest way is to go to <a href="http://www.ncbi.nlm.nih.gov/Traces/wgs/?term=embl">GenBanks WGS page</a>, which includes all RefSeq and draft genomes. Search for what you want. Click on the 'Prefix' of the assembly, making sure it is annotated with proteins (number greater than 0 in the proteins column).  Click the 'Download' tab and download the GenBank file called "*.gbff.gz".  On the command line you can use a script which is part of BioPerl to convert the gbff to a GFF3 file.
+<code>bp_genbank2gff3.pl CVEE01.1.gbff.gz</code>
+</p>
+<p>Alternatively you can download the Full genbank record of an entry and convert it using the bp_genbank2gff3.pl script. Please ensure that the nucleotide sequence is at the end of the file.</p>
 
 <h2>
 <a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Method</h2>
