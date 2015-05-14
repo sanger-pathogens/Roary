@@ -74,6 +74,12 @@ sub BUILD {
         'h|help'                    => \$help,
     );
     
+
+    print "\nPlease cite Roary if you use any of the results it produces:
+    \"Roary: Rapid large-scale prokaryote pan genome analysis\",
+    Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Jacqueline A. Keane, Julian Parkhill,
+    bioRxiv doi: http://dx.doi.org/10.1101/019315\n\n";
+    
     $self->help($help) if(defined($help));
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide a GFF file");
@@ -141,7 +147,7 @@ sub BUILD {
 
 sub run {
     my ($self) = @_;
-
+    
     ( !$self->help ) or die $self->usage_text;
     if ( defined( $self->_error_message ) ) {
         print $self->_error_message . "\n";
