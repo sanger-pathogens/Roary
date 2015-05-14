@@ -1,4 +1,4 @@
-#!/software/pathogen/external/apps/usr/local/bin/Rscript
+#!/usr/bin/env Rscript
 # ABSTRACT: Create R plots
 # PODNAME: create_plots.R
 
