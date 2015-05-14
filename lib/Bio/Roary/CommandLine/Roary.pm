@@ -85,6 +85,10 @@ sub BUILD {
     Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Jacqueline A. Keane, Julian Parkhill,
     bioRxiv doi: http://dx.doi.org/10.1101/019315\n\n";
 
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
     $self->help($help) if ( defined($help) );
     if(@{$self->args} == 0)
     {
@@ -115,10 +119,7 @@ sub BUILD {
     $self->verbose_stats($verbose_stats)         if ( defined $verbose_stats );
     $self->translation_table($translation_table) if ( defined($translation_table) );
     $self->group_limit($group_limit)             if ( defined($group_limit) );
-    if ( defined($verbose) ) {
-        $self->verbose($verbose);
-        $self->logger->level($DEBUG);
-    }
+
 
     if ( defined($run_qc) ) {
         if ( which('kraken') && which('kraken-report') ) {
