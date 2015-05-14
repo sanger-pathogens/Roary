@@ -194,6 +194,8 @@ sub _filter_fasta_sequences
   my $temp_output_file = $filename.'.tmp.filtered.fa';
   my $out_fasta_obj = Bio::SeqIO->new( -file => ">".$temp_output_file, -format => 'Fasta');
   my $fasta_obj     = Bio::SeqIO->new( -file => $filename, -format => 'Fasta');
+  
+  my $sequence_found = 0;
 
   while(my $seq = $fasta_obj->next_seq())
   {
@@ -203,7 +205,14 @@ sub _filter_fasta_sequences
     }
     $seq->desc(undef);
     $out_fasta_obj->write_seq($seq);
+    $sequence_found = 1;
   }
+  
+  if($sequence_found == 0)
+  {
+      $self->logger->error("Could not extract any protein sequences from ".$self->gff_file.". Does the file contain the assembly as well as the annotation?");
+  }
+  
   # Replace the original file.
   move($temp_output_file, $filename);
   return 1;
