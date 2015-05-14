@@ -88,7 +88,7 @@ then this is the only way to use Roary on your machine. You need to first instal
 
 <h3><a id="genbank_files" class="anchor" href="#genbank_files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Converting Genbank files to GFF3</h3>
 <p>The simpliest way is to go to <a href="http://www.ncbi.nlm.nih.gov/Traces/wgs/?term=embl">GenBanks WGS page</a>, which includes all RefSeq and draft genomes. Search for what you want. Click on the 'Prefix' of the assembly, making sure it is annotated with proteins (number greater than 0 in the proteins column).  Click the 'Download' tab and download the GenBank file called "*.gbff.gz".  On the command line you can use a script which is part of BioPerl to convert the gbff to a GFF3 file.
-<code>bp_genbank2gff3.pl CVEE01.1.gbff.gz</code>
+</p><p><code>bp_genbank2gff3.pl *.gbff.gz</code>
 </p>
 <p>Alternatively you can download the Full genbank record of an entry and convert it using the bp_genbank2gff3.pl script. Please ensure that the nucleotide sequence is at the end of the file.</p>
 
