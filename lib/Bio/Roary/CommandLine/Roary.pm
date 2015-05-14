@@ -41,7 +41,6 @@ has 'group_limit'             => ( is => 'rw', isa => 'Num', default => 50000 );
 has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 1 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 
-has '_error_message' => ( is => 'rw', isa => 'Str' );
 has 'run_qc' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
@@ -93,6 +92,7 @@ sub BUILD {
     if(@{$self->args} == 0)
     {
         $self->logger->error("Error: You need to provide a GFF file");
+        die $self->usage_text;
     }
     $self->output_filename($output_filename)   if ( defined($output_filename) );
     $self->job_runner($job_runner)             if ( defined($job_runner) );
@@ -139,7 +139,7 @@ sub BUILD {
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
             $self->logger->error("Error: Cant access file $filename");
-            last;
+            die $self->usage_text;
         }
     }
     $self->fasta_files( $self->args );
@@ -150,10 +150,6 @@ sub run {
     my ($self) = @_;
 
     ( !$self->help ) or die $self->usage_text;
-    if ( defined( $self->_error_message ) ) {
-        print $self->_error_message . "\n";
-        die $self->usage_text;
-    }
 
     $self->logger->info("Extracting proteins from GFF files");
     my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
