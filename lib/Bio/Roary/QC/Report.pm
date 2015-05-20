@@ -168,7 +168,9 @@ sub _parse_kraken_reports
     for my $kraken_report(@{$kraken_report_files})
     {
         push(@report_rows, $self->_parse_kraken_report($kraken_report));
+        unlink($kraken_report);
     }
+    
     return \@report_rows;
 }
 
