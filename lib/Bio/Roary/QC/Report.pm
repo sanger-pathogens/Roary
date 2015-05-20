@@ -109,6 +109,12 @@ sub _run_kraken_on_nuc_files
         cpus            => $self->cpus
 	);
     $kraken_runner_obj->run();
+    
+    for my $filename(@{$nuc_files})
+    {
+        unlink($filename);
+    }
+    
     return \@kraken_output_files;
 }
 
@@ -138,6 +144,10 @@ sub _run_kraken_report_on_kraken_files
         cpus            => $self->cpus
 	);
     $kraken_runner_obj->run();
+    for my $filename(@{$kraken_files})
+    {
+        unlink($filename);
+    }
     return \@kraken_report_output_files;
 }
 
