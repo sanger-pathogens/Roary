@@ -87,6 +87,13 @@ SKIP:
         $kraken_report_files, 'check kraken report files are created from kraken files' );
         
     is_deeply([['query_1','Staphylococcus', 'Staphylococcus aureus'],['query_2','Staphylococcus', 'Staphylococcus aureus']],$qc_report_obj->_parse_kraken_reports($kraken_report_files),'check output report');
+    
+    
+    ok( $qc_report_obj->report, 'report generated with real data' );
+    ok( -e 'kraken_report.csv', 'report file exists with real data' );
+    is( read_file('kraken_report.csv'), read_file("t/data/exp_qc_report_real.csv"), 'report file correct' );
+    unlink('kraken_report.csv');
+    
 }
 
 done_testing();
