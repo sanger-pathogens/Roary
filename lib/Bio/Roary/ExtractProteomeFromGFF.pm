@@ -35,6 +35,7 @@ has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
+has '_tags_to_filter' => ( is => 'ro', isa => 'Str',             default => '(CDS|ncRNA|tRNA|tmRNA|rRNA)' );
 
 sub _build_fasta_file
 {
@@ -90,8 +91,10 @@ sub _create_bed_file_from_gff {
     my $cmd =
         'sed -n \'/##gff-version 3/,/##FASTA/p\' '
       . $self->gff_file
+      .' | awk \'BEGIN {FS="\t"};{ if ($3 ~/'. $self->_tags_to_filter. '/) print $0;}\' '
       . ' | grep -v \'^#\' | awk \'{if ($5 - $4 >= '.$self->min_gene_size_in_nucleotides.') print $1"\t"($4-1)"\t"($5)"\t"$9"\t1\t"$7}\' | sed \'s/ID=//\' | sed \'s/;[^\t]*\t/\t/g\' > '
       . $self->_bed_output_filename;
+    $self->logger->debug($cmd);
     system($cmd);
 }
 
@@ -102,6 +105,7 @@ sub _create_nucleotide_fasta_file_from_gff {
       . $self->gff_file
       . ' | grep -v \'##FASTA\' > '
       . $self->_nucleotide_fasta_file_from_gff_filename;
+    $self->logger->debug($cmd);
     system($cmd);
 }
 
@@ -119,10 +123,12 @@ sub _extract_nucleotide_regions {
       . ' -fo '
       . $self->_extracted_nucleotide_fasta_file_from_bed_filename
       . ' -name > /dev/null 2>&1';
-      system($cmd);
-      unlink($self->_nucleotide_fasta_file_from_gff_filename);
-      unlink($self->_bed_output_filename);
-      unlink($self->_nucleotide_fasta_file_from_gff_filename.'.fai');
+      
+    $self->logger->debug($cmd);
+    system($cmd);
+    unlink($self->_nucleotide_fasta_file_from_gff_filename);
+    unlink($self->_bed_output_filename);
+    unlink($self->_nucleotide_fasta_file_from_gff_filename.'.fai');
 }
 
 sub _cleanup_fasta {
@@ -170,15 +176,13 @@ sub _convert_nucleotide_to_protein
   unlink($self->_extracted_nucleotide_fasta_file_from_bed_filename);
 }
 
-
-
 sub _does_sequence_contain_too_many_unknowns
 {
   my ($self, $sequence_obj) = @_;
   my $maximum_number_of_Xs = int(($sequence_obj->length()*$self->maximum_percentage_of_unknowns)/100);
   my $number_of_Xs_found = () = $sequence_obj->seq() =~ /X/g;
   if($number_of_Xs_found  > $maximum_number_of_Xs)
-  {
+  { 
     return 1;
   }
   else
@@ -194,6 +198,8 @@ sub _filter_fasta_sequences
   my $temp_output_file = $filename.'.tmp.filtered.fa';
   my $out_fasta_obj = Bio::SeqIO->new( -file => ">".$temp_output_file, -format => 'Fasta');
   my $fasta_obj     = Bio::SeqIO->new( -file => $filename, -format => 'Fasta');
+  
+  my $sequence_found = 0;
 
   while(my $seq = $fasta_obj->next_seq())
   {
@@ -203,7 +209,14 @@ sub _filter_fasta_sequences
     }
     $seq->desc(undef);
     $out_fasta_obj->write_seq($seq);
+    $sequence_found = 1;
   }
+  
+  if($sequence_found == 0)
+  {
+      $self->logger->error("Could not extract any protein sequences from ".$self->gff_file.". Does the file contain the assembly as well as the annotation?");
+  }
+  
   # Replace the original file.
   move($temp_output_file, $filename);
   return 1;

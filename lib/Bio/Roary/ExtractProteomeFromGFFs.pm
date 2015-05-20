@@ -25,8 +25,9 @@ has 'fasta_files'              => ( is => 'ro', isa => 'ArrayRef', lazy => 1, bu
 has 'fasta_files_to_gff_files' =>
   ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_fasta_files_to_gff_files' );
 has 'apply_unknowns_filter'    => ( is => 'rw', isa => 'Bool', default => 1 );
-has '_queue'                  => ( is => 'rw', isa => 'Str',  default => 'small' );
-has 'translation_table'     => ( is => 'rw', isa => 'Int',  default => 11 );
+has '_queue'                   => ( is => 'rw', isa => 'Str',  default => 'small' );
+has 'translation_table'        => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'verbose'                  => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub _build__extract_proteome_objects
 {
@@ -55,6 +56,7 @@ sub _build_fasta_files_to_gff_files {
     my @commands_to_run;
     for my $filename ( @{ $self->gff_files } ) 
     {
+		print "Extracting proteins from $filename\n" if($self->verbose);
         my($gff_filename_without_directory, $directories, $suffix) = fileparse($filename);
         my $output_suffix = "proteome.faa";
         

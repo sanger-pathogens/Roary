@@ -57,12 +57,15 @@ has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::
 has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::Roary::SplitGroups', lazy_build => 1 );
 
 has 'verbose_stats' => ( is => 'rw', isa => 'Bool', default => 0 ); 
+has 'verbose'       => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub run {
     my ($self) = @_;
 
+    print "Reinflate clusters\n" if($self->verbose);
     $self->_inflate_clusters_obj->inflate();
 
+	print "Split groups with paralogs\n" if($self->verbose);
     ## SPLIT GROUPS WITH PARALOGS ##
     if ( $self->dont_split_groups ){
       move( $self->_output_inflate_unsplit_clusters_filename, $self->_output_inflate_clusters_filename );
@@ -71,15 +74,22 @@ sub run {
       $self->_split_groups_obj->split_groups;
     }
 
+	print "Labelling the groups\n" if($self->verbose);
     $self->_group_labels_obj->add_labels();
+	print "Transfering the annotation to the groups\n" if($self->verbose);
     $self->_annotate_groups_obj->reannotate;
+	print "Creating the spreadsheet with gene presence and absence\n" if($self->verbose);
     $self->_group_statistics_obj->create_spreadsheet;
+	print "Creating tab files for R\n" if($self->verbose);
     $self->_number_of_groups_obj->create_output_files;
     system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
+	print "Create EMBL files\n" if($self->verbose);
     $self->_create_embl_files;
     
+	print "Creating files with the nucleotide sequences for every cluster\n" if($self->verbose && $self->output_multifasta_files);
     $self->_groups_multifastas_nuc_obj->create_files() if($self->output_multifasta_files);
 
+	print "Cleaning up files\n" if($self->verbose);
     $self->_delete_intermediate_files;
 }
 
@@ -101,6 +111,7 @@ sub _build__number_of_groups_obj
     group_statistics_obj => $self->_group_statistics_obj,
     groups_to_contigs    => $self->_order_genes_obj->groups_to_contigs,
     annotate_groups_obj  => $self->_annotate_groups_obj,
+	core_definition      => $self->core_definition
   );
 }
 

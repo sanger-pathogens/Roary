@@ -37,6 +37,7 @@ has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 1.0 );
+has 'verbose'                     => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
@@ -44,7 +45,7 @@ sub BUILD {
     my ( 
       $output_filename, $dont_create_rplots, $dont_delete_files, $dont_split_groups, $output_pan_geneome_filename, 
       $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $core_definition,
-      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit
+      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit,$verbose
     );
 
 
@@ -66,6 +67,7 @@ sub BUILD {
         't|translation_table=i'   => \$translation_table,
         'group_limit=i'           => \$group_limit,
         'cd|core_definition=f'    => \$core_definition,
+		'v|verbose'               => \$verbose,
         'h|help'                  => \$help,
     );
     
@@ -86,6 +88,7 @@ sub BUILD {
     $self->cpus($cpus)                                               if ( defined($cpus) );
     $self->group_limit($group_limit)                                 if ( defined($group_limit) );
     $self->core_definition( $core_definition/100 )                   if ( defined($core_definition) );
+	$self->verbose($verbose)                                         if ( defined($verbose) );
 }
 
 sub run {
@@ -110,12 +113,20 @@ sub run {
       dont_split_groups               =>  $self->dont_split_groups,
       verbose_stats                   =>  $self->verbose_stats,
       group_limit                     =>  $self->group_limit,
+	  verbose                         =>  $self->verbose,
       );                                                             
     $obj->run();
+	
+    if($self->dont_delete_files == 0)
+    {
+		unlink('_inflated_unsplit_mcl_groups');
+        remove_tree('split_groups');
+    }
 
 
     if($self->output_multifasta_files == 1)
     {
+		print "Aligning each cluster\n" if($self->verbose);
       my $output_gene_files = $self->_find_input_files;
       my $seg = Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides->new(
         fasta_files         => $output_gene_files,
@@ -174,6 +185,7 @@ sub usage_text {
       -c <output_clusters_filename>   
       -f <file_of_proteins>              
       -i <file_of_gffs> 
+	  -v <verbose output flag>
       --processors <number of processors>
       --verbose_stats
       --core_definition <percentage of genomes required to qualify gene as core>        

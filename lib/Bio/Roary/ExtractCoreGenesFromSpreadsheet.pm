@@ -18,7 +18,6 @@ use Moose;
 use Text::CSV;
 use Bio::Roary::GroupStatistics;
 use POSIX;
-
 use Data::Dumper;
 
 has 'spreadsheet'            => ( is => 'ro', isa  => 'Str',      required => 1 );
@@ -27,6 +26,7 @@ has '_csv_parser'            => ( is => 'ro', isa  => 'Text::CSV',lazy     => 1,
 has '_input_spreadsheet_fh'  => ( is => 'ro', lazy => 1,          builder  => '_build__input_spreadsheet_fh' );
 has 'ordered_core_genes'     => ( is => 'ro', isa  => 'ArrayRef', lazy     => 1, builder  => '_build_ordered_core_genes' );
 has 'core_definition'        => ( is => 'ro', isa => 'Num', default => 1 );
+has 'sample_names'           => ( is => 'rw', isa => 'ArrayRef', default => sub {[]} );
 
 has '_number_of_isolates'                 => ( is => 'rw', isa  => 'Int');
 has '_gene_column'                        => ( is => 'rw', isa  => 'Int');
@@ -92,6 +92,16 @@ sub _setup_column_mappings
   $self->_genome_fragement_column($columns_of_interest_mappings{'Genome Fragment'});
   $self->_order_within_fragement_column($columns_of_interest_mappings{'Order within Fragment'});
   $self->_update_number_of_isolates($header_row);
+  
+  # Get the sample_names
+  my @fixed_headers = @{Bio::Roary::GroupStatistics->fixed_headers()};
+  my $length_of_fixed_headers = @fixed_headers;
+  my @sample_names;
+  for(my $i = $length_of_fixed_headers; $i < @{$header_row}; $i++)
+  {
+	  push(@sample_names,$header_row->[$i]);
+  }
+  $self->sample_names(\@sample_names);
 }
 
 sub _ordered_core_genes
