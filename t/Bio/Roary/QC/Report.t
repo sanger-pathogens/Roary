@@ -44,7 +44,7 @@ ok(
         outfile     => "kraken_report.csv",
         job_runner  => "Local",
         kraken_db   => 't/data/kraken_test/',
-        verbose  => 1,
+        verbose  => 0,
     ),
     'QC report object created with data'
 );
@@ -86,7 +86,7 @@ SKIP:
     is_deeply( [ $qc_report_obj->_tmp_directory . '/query_1.kraken.report', $qc_report_obj->_tmp_directory . '/query_2.kraken.report' ],
         $kraken_report_files, 'check kraken report files are created from kraken files' );
         
-    is_deeply([['query_1','Staphylococcus', 'aureus'],['query_2','Staphylococcus', 'aureus']],$qc_report_obj->_parse_kraken_reports($kraken_report_files),'check output report');
+    is_deeply([['query_1','Staphylococcus', 'Staphylococcus aureus'],['query_2','Staphylococcus', 'Staphylococcus aureus']],$qc_report_obj->_parse_kraken_reports($kraken_report_files),'check output report');
 }
 
 done_testing();

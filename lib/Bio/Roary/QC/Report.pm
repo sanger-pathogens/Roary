@@ -69,7 +69,7 @@ sub _kraken_cmd {
 	my $kcmd = $self->kraken_exec . 
     " --fasta-input ".
 	" --db " . $self->kraken_db . 
-	" --output $kraken_output $a";
+	" --output $kraken_output $a  > /dev/null 2>&1";
 	return $kcmd;
 }
 
