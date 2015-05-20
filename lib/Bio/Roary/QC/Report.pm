@@ -168,6 +168,10 @@ sub _parse_kraken_reports
     for my $kraken_report(@{$kraken_report_files})
     {
         push(@report_rows, $self->_parse_kraken_report($kraken_report));
+    }
+    
+    for my $kraken_report(@{$kraken_report_files})
+    {
         unlink($kraken_report);
     }
     
@@ -178,7 +182,7 @@ sub _parse_kraken_report {
 	my ( $self, $kraken_report ) = @_;
 
 	# parse report
-	open( REPORT, '<', $kraken_report );
+	open( my $report_fh, '<', $kraken_report );
     
     my $sample_name = $kraken_report;
     $sample_name =~ s/.report$//;
@@ -186,7 +190,7 @@ sub _parse_kraken_report {
     my($sample_base_name, $dirs, $suffix) = fileparse($sample_name);
     
 	my ( $top_genus, $top_species );
-	while ( <REPORT> ){
+	while ( <$report_fh> ){
 		my @parts = split( "\t" );
 		chomp @parts;
 
@@ -195,6 +199,7 @@ sub _parse_kraken_report {
 
 		last if (defined $top_genus && defined $top_species);
 	}
+    close($report_fh);
 
 	$top_genus   ||= "not_found";
 	$top_genus   =~ s/^\s+//g;
