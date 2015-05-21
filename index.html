@@ -38,7 +38,7 @@
 <h2><a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation - Ubuntu/Debian</h2>
 <p>Assuming you have root on your system, all the dependancies can be installed using apt and cpanm.</p>
 <p><code>sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus</code></p>
-<p><code>sudo cpanm Bio::Roary</code></p>
+<p><code>sudo cpanm -f Bio::Roary</code></p>
    
 
 <h2><a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation - OSX using homebrew</h2>
@@ -46,7 +46,7 @@
 
 <p><code>brew tap homebrew/science</code></p>
 <p><code>brew install bedtools cd-hit blast mcl muscle parallel</code></p>
-<p><code>cpanm Bio::Roary</code></p>
+<p><code>cpanm -f Bio::Roary</code></p>
 
 
 <h2><a id="method" class="anchor" href="#vm" aria-hidden="true"><span class="octicon octicon-link"></span></a>Virtual Machine</h2>
@@ -89,7 +89,7 @@ then this is the only way to use Roary on your machine. You need to first instal
 <h3><a id="genbank_files" class="anchor" href="#genbank_files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting compatible files from GenBank</h3>
 <p>Install Bio-RetrieveAssemblies which will allow you to <a href="http://www.ncbi.nlm.nih.gov/Traces/wgs/?term=embl">download WGS assemblies from GenBank</a>. As these files are annotated with a variety of methods, you will get noisier results than if you reannotated the FASTA files with Prokka.</p>
 
-<p><code>sudo cpanm Bio::RetrieveAssemblies</code></p>
+<p><code>sudo cpanm -f Bio::RetrieveAssemblies</code></p>
 
 <p>To download all Salmonella typhi annotated assemblies as GFF3 files:</p>
 <p><code>retrieve_assemblies -a -f gff typhi</code></p>
@@ -343,7 +343,7 @@ There is also an aligned version of the nucleotides. The nucleotide sequences ar
 
 <p>The perl modules can also be installed from CPAN by running:</p>
 
-<p><code>cpanm Bio::Roary Bio::AutomatedAnnotation Bio::AssemblyImprovement</code></p>
+<p><code>cpanm -f Bio::Roary Bio::AutomatedAnnotation Bio::AssemblyImprovement</code></p>
 
 <h2>
 <a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
