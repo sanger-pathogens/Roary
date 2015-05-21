@@ -25,6 +25,7 @@ ok(
         input_files  => [],
         outfile      => "kraken_report.csv",
         _kraken_data => $kraken_data,
+        kraken_db    => 't/data/kraken_test/',
         job_runner   => "Local"
     ),
     'QC report object created with no input gff files'
@@ -98,20 +99,4 @@ SKIP:
 
 
 done_testing();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

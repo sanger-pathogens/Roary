@@ -16,14 +16,14 @@ with 'Bio::Roary::JobRunner::Role';
 has 'input_files'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'kraken_exec'        => ( is => 'ro', isa => 'Str',      default => 'kraken' );
 has 'kraken_report_exec' => ( is => 'ro', isa => 'Str',      default => 'kraken-report' );
-has 'kraken_db'          => ( is => 'ro', isa => 'Str',      default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
+has 'kraken_db'          => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'outfile'            => ( is => 'rw', isa => 'Str',      default => 'qc_report.csv' );
 has '_kraken_data'       => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 has '_header'            => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
 has 'kraken_memory'      => ( is => 'rw', isa => 'Int',      default => 2000 );
 
 has '_tmp_directory_obj' => ( is => 'rw', lazy_build => 1 );
-has '_tmp_directory'     =>   ( is => 'rw', lazy_build => 1, isa => 'Str', );
+has '_tmp_directory'     => ( is => 'rw', lazy_build => 1, isa => 'Str', );
 
 
 sub _nuc_fasta_filename
@@ -173,7 +173,7 @@ sub _parse_kraken_reports
     for my $kraken_report(@{$kraken_report_files})
     {
         unlink($kraken_report);
-    }
+    }   
     
     return \@report_rows;
 }
