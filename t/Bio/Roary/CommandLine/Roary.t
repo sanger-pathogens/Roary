@@ -71,7 +71,8 @@ SKIP:
     fasta_file   => 'core_gene_alignment.aln',
   ), 'Check size of the core_gene_alignment.aln init');
   
-  is($seq_len->sequence_lengths->{'11111_1#11'}, 58389, 'length of first sequence');
+  my @keys = keys %{$seq_len->sequence_lengths};
+  is($seq_len->sequence_lengths->{$keys[0]}, 58389, 'length of first sequence');
   
   ok(-e 'accessory.tab');
   ok(-e 'core_accessory.tab');
