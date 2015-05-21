@@ -24,11 +24,11 @@ has 'outfile'     => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'iterations'  => ( is => 'ro', isa => 'Int',      default  => 5 );
 has 'dont_delete' => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
-has '_outfile_handle'     => ( is => 'ro', lazy_build => 1 );
 has '_neighbourhood_size' => ( is => 'ro', isa => 'Int', default => 5 );
 
 has '_group_filelist'  => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
-has '_tmp_dir'         => ( is => 'ro', isa => 'Str',      default => 'split_groups' );
+has '_tmp_dir_object' => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
+has '_tmp_dir'        => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__tmp_dir' );
 
 has '_analyse_groups_obj' => ( is => 'ro', lazy_build => 1 );
 has '_genes_to_files'     => ( is => 'ro', lazy_build => 1 );
@@ -45,11 +45,9 @@ has '_gene_files_temp_dir_obj' =>
 
 has '_do_sorting' => ( is => 'rw', isa => 'Bool', default => 0 ); # set to 1 for testing only
 
-sub _build__outfile_handle {
-	my ( $self ) = @_;
-
-	open( my $fh, '>', $self->outfile );
-	return $fh;
+sub _build__tmp_dir {
+    my ($self) = @_;
+    return $self->_tmp_dir_object->dirname();
 }
 
 sub _build__analyse_groups_obj {
@@ -77,14 +75,6 @@ sub _build__group_filelist {
 	push( @filelist, $self->outfile );
 
 	return \@filelist;
-}
-
-sub _make_tmp_dir {
-	my ( $self ) = @_;
-	my $dir = $self->_tmp_dir;
-	unless ( -e $dir ) {
-		make_path($dir) or die "Cannot make dir: $dir\n" ;
-	}
 }
 
 sub _build__genes_to_neighbourhood
@@ -118,8 +108,6 @@ sub _build__genes_to_neighbourhood
 
 sub split_groups {
 	my ( $self ) = @_;
-
-	$self->_make_tmp_dir;
 
 	# iteratively
 	for my $x ( 0..($self->iterations - 1) ){
@@ -168,8 +156,6 @@ sub split_groups {
 		}
 		close( $outfile_handle );
 	}
-
-	remove_tree( $self->_tmp_dir ) unless ( $self->dont_delete );
 }
 
 sub _set_genes_to_groups {
@@ -177,8 +163,8 @@ sub _set_genes_to_groups {
 
 	my %genes2groups;
 	my $c = 0;
-	open( GFH, '<', $groupfile );
-	while( my $line = <GFH> ){
+	open( my $gfh, '<', $groupfile );
+	while( my $line = <$gfh> ){
 		chomp $line;
 		my @genes = split( /\s+/, $line );
 		for my $g ( @genes ){
@@ -186,6 +172,7 @@ sub _set_genes_to_groups {
 		}
 		$c++;
 	}
+    close($gfh);
 	$self->_genes_to_groups( \%genes2groups );
 }
 

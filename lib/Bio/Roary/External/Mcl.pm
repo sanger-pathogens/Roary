@@ -64,7 +64,7 @@ sub _command_to_run {
         " ",
         (
             $self->mcxdeblast_exec, '-m9', '--score='.$self->_score,
-            '--line-mode=abc', $self->blast_results, 
+            '--line-mode=abc', $self->blast_results, '2> /dev/null',
             '|', $self->mcl_exec, '-', '--abc',
             '-I', $self->_inflation_value, '-o', $self->output_file, 
             $self->_logging

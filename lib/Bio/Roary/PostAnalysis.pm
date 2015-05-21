@@ -218,6 +218,11 @@ sub _delete_intermediate_files
   my ($self) = @_;
   return if($self->dont_delete_files == 1);
   
+  for my $fasta_file (@{$self->fasta_files})
+  {
+      unlink($fasta_file) if(-e $fasta_file);
+  }
+  
   unlink($self->_output_mcl_filename)              ;
   unlink($self->_output_inflate_clusters_filename) ;
   unlink($self->_output_group_labels_filename)     ;
