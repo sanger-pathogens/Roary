@@ -14,7 +14,7 @@ Assuming you have root on your system, all the dependancies can be installed usi
 
 ```
 sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus
-sudo cpanm Bio::Roary
+sudo cpanm -f Bio::Roary
 ```   
 
 ##Installation - OSX using homebrew and Linux using linuxbrew
@@ -23,7 +23,7 @@ Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.s
 ```
 brew tap homebrew/science
 brew install bedtools cd-hit blast mcl muscle parallel
-cpanm Bio::Roary
+cpanm -f Bio::Roary
 ```
 
 ##Installation - With bundled binaries
