@@ -59,8 +59,18 @@ ok(!(-e 'query_1.gff.proteome.faa'),'Check protein query_1.gff.proteome.faa is c
 ok(!(-e 'query_2.gff.proteome.faa'),'Check protein query_2.gff.proteome.faa is cleaned up');
 ok(!(-e 'query_5.gff.proteome.faa'),'Check protein query_5.gff.proteome.faa is cleaned up');
 
+
+%scripts_and_expected_files = (
+'-j Local --dont_delete_files t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+  [  'empty_file', 't/data/empty_file'  ],
+  );
+mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
+ok((-e 'query_1.gff.proteome.faa'),'Check protein query_1.gff.proteome.faa is not cleaned up');
+ok((-e 'query_2.gff.proteome.faa'),'Check protein query_2.gff.proteome.faa is not cleaned up');
+ok((-e 'query_5.gff.proteome.faa'),'Check protein query_5.gff.proteome.faa is not cleaned up'); 
+
 cleanup_files();
-  
+ 
 SKIP: 
 {
 
@@ -95,8 +105,18 @@ done_testing();
 sub cleanup_files
 {
   remove_tree('pan_genome_sequences');
+  unlink('_blast_results');
   unlink('_clustered');
   unlink('_clustered.bak.clstr');
+  unlink('_clustered.clstr');
+  unlink('_combined_files');
+  unlink('_combined_files.groups');
+  unlink('_fasta_files');
+  unlink('_gff_files');
+  unlink('_inflated_mcl_groups');
+  unlink('_inflated_unsplit_mcl_groups');
+  unlink('_labeled_mcl_groups');
+  unlink('_uninflated_mcl_groups');
   unlink('accessory.header.embl');
   unlink('accessory.header.tab');
   unlink('accessory.tab');
@@ -122,4 +142,5 @@ sub cleanup_files
   unlink('query_5.gff.proteome.faa');
   unlink('real_data_1.gff.proteome.faa');
   unlink('real_data_2.gff.proteome.faa');
+
 }
