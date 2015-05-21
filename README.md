@@ -17,8 +17,8 @@ sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus
 sudo cpanm Bio::Roary
 ```   
 
-##Installation - OSX using homebrew
-Assuming you have homebrew setup and installed on your OSX system, tap the science keg and install the dependancies, then install the perl modules:
+##Installation - OSX using homebrew and Linux using linuxbrew
+Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.sh/linuxbrew/) (Linux) setup and installed on your system:
 
 ```
 brew tap homebrew/science
@@ -54,6 +54,11 @@ export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 ```
 cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV Log::Log4perl File::Which
 ```
+
+##Installation - with Windows
+Roary wont run natively on Windows but we have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on [Bio-Linux 8](http://environmentalomics.org/bio-linux/).  You need to first install [VirtualBox](https://www.virtualbox.org/), then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.
+
+[Virtual Machine with Roary installed](ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova)
 
 #When things go wrong
 ###cdhit seg faults
