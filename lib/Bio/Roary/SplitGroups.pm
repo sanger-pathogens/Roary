@@ -156,8 +156,6 @@ sub split_groups {
 		}
 		close( $outfile_handle );
 	}
-
-	remove_tree( $self->_tmp_dir ) unless ( $self->dont_delete );
 }
 
 sub _set_genes_to_groups {
