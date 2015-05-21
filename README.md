@@ -42,7 +42,6 @@ ls Roary-*
 ```
 
 ###Add to your Environment
-
 Add the following lines to your $HOME/.bashrc file, or to /etc/profile.d/roary.sh to make it available to all users:
 
 ```
@@ -55,3 +54,15 @@ export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 ```
 cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV Log::Log4perl File::Which
 ```
+
+#When things go wrong
+###cdhit seg faults
+Old versions of cdhit have a bug, so you need to use at least version 4.6.1.  The cdhit packages for Ubuntu 12.04 seem to be effected, so [installing from the source](http://cd-hit.org/) is the only option. 
+
+###I installed the homebrew Kraken package and now theres an error when I run the tests or QC
+Theres a bug and you'll need to [install it from source](https://ccb.jhu.edu/software/kraken/) on older versions of OSX (like Mountain Lion).  
+
+###Why dont you bundle a Kraken database for the QC?
+Its massive (2.7GB) and changes as RefSeq is updated.  The [authors](https://ccb.jhu.edu/software/kraken/) have prebuilt databases and details about how to make your own.
+
+
