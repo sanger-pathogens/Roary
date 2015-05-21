@@ -53,6 +53,12 @@ cleanup_files();
   );
 
 mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
+
+# Make sure faa files are cleaned up automatically
+ok(!(-e 'query_1.gff.proteome.faa'),'Check protein query_1.gff.proteome.faa is cleaned up');
+ok(!(-e 'query_2.gff.proteome.faa'),'Check protein query_2.gff.proteome.faa is cleaned up');
+ok(!(-e 'query_5.gff.proteome.faa'),'Check protein query_5.gff.proteome.faa is cleaned up');
+
 cleanup_files();
   
 SKIP: 
@@ -89,32 +95,31 @@ done_testing();
 sub cleanup_files
 {
   remove_tree('pan_genome_sequences');
+  unlink('_clustered');
+  unlink('_clustered.bak.clstr');
+  unlink('accessory.header.embl');
+  unlink('accessory.header.tab');
+  unlink('accessory.tab');
+  unlink('blast_identity_frequency.Rtab');
   unlink('clustered_proteins');
+  unlink('core_accessory.header.embl');
+  unlink('core_accessory.header.tab');
+  unlink('core_accessory.tab');
+  unlink('core_gene_alignment.aln');  
   unlink('database_masking.asnb');
   unlink('example_1.faa.tmp.filtered.fa');
   unlink('example_2.faa.tmp.filtered.fa');
   unlink('example_3.faa.tmp.filtered.fa');
   unlink('gene_presence_absence.csv');
-  unlink('query_1.gff.proteome.faa');
-  unlink('query_2.gff.proteome.faa');
-  unlink('query_3.gff.proteome.faa');
-  unlink('_clustered');
-  unlink('_clustered.bak.clstr');
-  unlink('pan_genome.fa');
-  unlink('core_accessory.header.tab');
-  unlink('accessory.header.tab');
-  unlink('accessory.tab');
-  unlink('core_accessory.tab');
   unlink('number_of_conserved_genes.Rtab');
   unlink('number_of_genes_in_pan_genome.Rtab');
   unlink('number_of_new_genes.Rtab');
   unlink('number_of_unique_genes.Rtab');
+  unlink('pan_genome.fa');
+  unlink('query_1.gff.proteome.faa');
+  unlink('query_2.gff.proteome.faa');
+  unlink('query_3.gff.proteome.faa');
   unlink('query_5.gff.proteome.faa');
-  unlink('core_gene_alignment.aln');  
-  unlink('blast_identity_frequency.Rtab');
   unlink('real_data_1.gff.proteome.faa');
   unlink('real_data_2.gff.proteome.faa');
-  unlink('accessory.header.embl');
-  unlink('core_accessory.header.embl');
-
 }
