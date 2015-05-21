@@ -94,6 +94,16 @@ then this is the only way to use Roary on your machine. You need to first instal
 <p>To download all Salmonella typhi annotated assemblies as GFF3 files:</p>
 <p><code>retrieve_assemblies -a -f gff typhi</code></p>
 
+<h2><a id="faq" class="anchor" href="#faq" aria-hidden="true"><span class="octicon octicon-link"></span></a>When things go wrong with the installation</h2>
+<h3><a id="cdhitseqfault" class="anchor" href="#cdhitsegfault" aria-hidden="true"><span class="octicon octicon-link"></span></a>cdhit seg faults</h3>
+<p>Old versions of cdhit have a bug, so you need to use at least version 4.6.1. 
+The cdhit packages for Ubuntu 12.04 seem to be effected, so <a href="http://cd-hit.org/">installing from the source</a> is the only option.</p>
+
+<h3><a id="krakenhomebrew" class="anchor" href="#krakenhomebrew" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kraken installed via homebrew throws an error.</h3>
+<p>Theres a bug and you'll need to <a href="https://ccb.jhu.edu/software/kraken/">install it from source</a> on older versions of OSX (like Mountain Lion).</p>
+
+<h3><a id="krakendb" class="anchor" href="#krakendb" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why dont you bundle a Kraken database for the QC?</h3>
+<p>Its massive (2.7GB currently) and changes as RefSeq is updated. The authors have <a href="https://ccb.jhu.edu/software/kraken/">prebuilt databases</a> and details about how to make your own.</p>
 
 <h2>
 <a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Method</h2>
