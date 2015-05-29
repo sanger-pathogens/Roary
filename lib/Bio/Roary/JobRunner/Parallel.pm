@@ -32,7 +32,7 @@ sub run {
     {
        $self->logger->info($command_to_run);
     }
-	open(my $fh,"|-","parallel -j ".$self->cpus) || die "GNU Parallel failed";
+	open(my $fh,"|-","parallel --gnu -j ".$self->cpus) || die "GNU Parallel failed";
 	print $fh join("\n", @{ $self->commands_to_run });
 	close $fh;
     1;
