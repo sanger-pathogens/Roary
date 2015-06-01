@@ -23,19 +23,19 @@ use File::Temp;
 use File::Copy;
 use Bio::Tools::GFF;
 with 'Bio::Roary::JobRunner::Role';
+with 'Bio::Roary::BedFromGFFRole';
 
 has 'gff_file'                       => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'apply_unknowns_filter'          => ( is => 'rw', isa => 'Bool', default  => 1 );
 has 'maximum_percentage_of_unknowns' => ( is => 'ro', isa => 'Num',  default  => 5 );
-has 'min_gene_size_in_nucleotides'   => ( is => 'ro', isa => 'Int',  default  => 120 );
+has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
 
 has 'fasta_file'      => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_file' );
-has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
+
 
 has '_working_directory' => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
 has 'translation_table' => ( is => 'rw', isa => 'Int', default => 11 );
-has '_tags_to_filter'   => ( is => 'ro', isa => 'Str', default => '(CDS|ncRNA|tRNA|tmRNA|rRNA)' );
 
 sub _build_fasta_file {
     my ($self) = @_;
@@ -58,10 +58,7 @@ sub _build_output_filename {
     return join( '/', ( $self->_working_directory_name, $filename . '.faa' ) );
 }
 
-sub _bed_output_filename {
-    my ($self) = @_;
-    return join( '.', ( $self->output_filename, 'intermediate.bed' ) );
-}
+
 
 sub _cleanup_intermediate_files {
     my ($self) = @_;
@@ -84,34 +81,6 @@ sub _unfiltered_output_filename {
     return join( '.', ( $self->output_filename, 'unfiltered.fa' ) );
 }
 
-sub _create_bed_file_from_gff {
-    my ($self) = @_;
-
-    open( my $bed_fh, '>', $self->_bed_output_filename );
-    my $gffio = Bio::Tools::GFF->new( -file => $self->gff_file, -gff_version => 3 );
-    while ( my $feature = $gffio->next_feature() ) {
-
-        next unless defined($feature);
-
-        # Only interested in a few tags
-        my $tags_regex = $self->_tags_to_filter;
-        next if !( $feature->primary_tag =~ /$tags_regex/ );
-
-        # Must have an ID tag
-        next unless ( $feature->has_tag('ID') );
-
-        #filter out small genes
-        next if ( ( $feature->end - $feature->start ) < $self->min_gene_size_in_nucleotides );
-
-        my ( $gene_id, @junk ) = $feature->get_tag_values('ID');
-        $gene_id =~ s!["']!!g;
-        next if ( $gene_id eq "" );
-
-        my $strand = ($feature->strand > 0)? '+':'-' ;
-        print {$bed_fh} join( "\t", ( $feature->seq_id, $feature->start -1, $feature->end, $gene_id, 1, $strand ) ) . "\n";
-    }
-    $gffio->close();
-}
 
 sub _create_nucleotide_fasta_file_from_gff {
     my ($self) = @_;

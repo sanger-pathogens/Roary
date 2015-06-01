@@ -26,7 +26,7 @@ my $annotate_groups = Bio::Roary::AnnotateGroups->new(
   groups_filename => 't/data/query_groups',
 );
 
-$annotate_groups->reannotate;
+ok($annotate_groups->reannotate);
 
 ok(
     $obj = Bio::Roary::Output::GroupsMultifastasNucleotide->new(
@@ -53,7 +53,7 @@ ok(
     ),
     'initialise creating multiple fastas'
 );
-my $exp_stderr = "Number of clusters (8) exceeds limit (4). Multifastas not created. Please check the spreadsheet for contamination from different species.\n";
+my $exp_stderr = "Number of clusters (8) exceeds limit (4). Multifastas not created. Please check the spreadsheet for contamination from different species or increase the --group_limit parameter.\n";
 stderr_is { $obj->create_files() } $exp_stderr, 'multifasta creation fails when group limit exceeded';
 
 done_testing();

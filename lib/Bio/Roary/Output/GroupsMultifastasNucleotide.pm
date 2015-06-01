@@ -51,7 +51,7 @@ sub create_files {
     my $num_groups = $self->_number_of_groups;
     my $limit      = $self->group_limit;
     if ( $num_groups > $limit ){
-      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created. Please check the spreadsheet for contamination from different species.\n";
+      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created. Please check the spreadsheet for contamination from different species or increase the --group_limit parameter.\n";
       return 1;
     }
 
