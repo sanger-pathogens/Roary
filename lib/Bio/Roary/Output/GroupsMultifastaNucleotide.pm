@@ -20,6 +20,8 @@ use File::Path qw(make_path);
 use File::Basename;
 use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
+use Bio::Tools::GFF;
+with 'Bio::Roary::BedFromGFFRole';
 
 has 'gff_file'         => ( is => 'ro', isa => 'Str',                           required => 1 );
 # Not implemented
@@ -31,10 +33,9 @@ has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  =
 has 'fasta_file'   => ( is => 'ro', isa => 'Str',        lazy => 1, builder => '_build_fasta_file' );
 has '_input_seqio' => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__input_seqio' );
 
-has '_output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__output_filename' );
+has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
 
-
-sub _build__output_filename
+sub _build_output_filename
 {
   my ($self) = @_;
   my ( $filename, $directories, $suffix ) = fileparse($self->gff_file);
@@ -87,18 +88,10 @@ sub _group_seq_io_obj
 
 sub _extracted_nucleotide_fasta_file_from_bed_filename {
     my ($self) = @_;
-    return join( '.', ( $self->_output_filename, 'intermediate.extracted.fa' ) );
+    return join( '.', ( $self->output_filename, 'intermediate.extracted.fa' ) );
 }
 
-sub _create_bed_file_from_gff {
-    my ($self) = @_;
-    my $cmd =
-        'sed -n \'/##gff-version 3/,/##FASTA/p\' '
-      . $self->gff_file
-      . ' | grep -v \'^#\' | awk \'{print $1"\t"($4-1)"\t"($5)"\t"$9"\t1\t"$7}\' | sed \'s/ID=//\' | sed \'s/;[^\t]*\t/\t/g\' > '
-      . $self->_bed_output_filename;
-    system($cmd);
-}
+
 
 sub _create_nucleotide_fasta_file_from_gff {
     my ($self) = @_;
@@ -112,12 +105,7 @@ sub _create_nucleotide_fasta_file_from_gff {
 
 sub _nucleotide_fasta_file_from_gff_filename {
     my ($self) = @_;
-    return join( '.', ( $self->_output_filename, 'intermediate.fa' ) );
-}
-
-sub _bed_output_filename {
-    my ($self) = @_;
-    return join( '.', ( $self->_output_filename, 'intermediate.bed' ) );
+    return join( '.', ( $self->output_filename, 'intermediate.fa' ) );
 }
 
 sub _extract_nucleotide_regions {
