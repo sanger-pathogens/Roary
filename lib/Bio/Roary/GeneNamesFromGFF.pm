@@ -26,40 +26,44 @@ has 'ids_to_product' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 sub _build_ids_to_gene_name {
     my ($self) = @_;
     my %id_to_gene_name;
-    
-    open( my $fh, '-|', $self->_gff_fh_input_string ) or die "Couldnt open GFF file";
-    while(<$fh>)
-    {
-      chomp;
-      my $line = $_;   
-      my $id_name;
-      if($line =~/ID=["']?([^;"']+)["']?;?/i)
-      {
-        $id_name = $1;
-        $id_name =~ s!"!!g;
-      }
-      else
-      {
-        next;
-      }
-      
-      if($line =~/gene=["']?([^;"']+)["']?;?/i)
-      {
-          my $gene_name = $1;
-          $gene_name =~ s!"!!g;
-          next if ( $gene_name eq "" );
-          $id_to_gene_name{$id_name} = $gene_name;
-      }
-      
-      if($line =~/product=["']?([^;,"']+)[,"']?;?/i)
-      {
-              my $product = $1;
-              $self->ids_to_product->{$id_name} = $product;
-      }
-      
+
+    my $gffio = Bio::Tools::GFF->new( -file => $self->gff_file, -gff_version => 3 );
+    while ( my $feature = $gffio->next_feature() ) {
+        my $gene_id = $self->_get_feature_id($feature);
+        next unless ($gene_id);
+
+        if ( $feature->has_tag('gene') ) {
+            my ( $gene_name, @junk ) = $feature->get_tag_values('gene');
+            $gene_name =~ s!"!!g;
+            if ( $gene_name ne "" ) {
+                $id_to_gene_name{$gene_id} = $gene_name;
+            }
+        }
+        if ( $feature->has_tag('product') ) {
+            my ( $product, @junk ) = $feature->get_tag_values('product');
+            $self->ids_to_product->{$gene_id} = $product;
+        }
+
     }
-    close($fh);
+
     return \%id_to_gene_name;
+}
+
+sub _get_feature_id {
+    my ( $self, $feature ) = @_;
+    my ( $gene_id, @junk );
+    if ( $feature->has_tag('ID') ) {
+        ( $gene_id, @junk ) = $feature->get_tag_values('ID');
+    }
+    elsif ( $feature->has_tag('locus_tag') ) {
+        ( $gene_id, @junk ) = $feature->get_tag_values('locus_tag');
+    }
+    else {
+        return undef;
+    }
+    $gene_id =~ s!["']!!g;
+    return undef if ( $gene_id eq "" );
+    return $gene_id;
 }
 
 no Moose;

@@ -54,4 +54,26 @@ unlink('genbank1.gff.proteome.faa');
 unlink('genbank2.gff.proteome.faa');
 unlink('genbank3.gff.proteome.faa');
 
+
+
+
+ok(
+    $plot_groups_obj = Bio::Roary::ExtractProteomeFromGFFs->new(
+        gff_files => [ 't/data/locus_tag_gffs/query_1.gff', 't/data/locus_tag_gffs/query_2.gff', 't/data/locus_tag_gffs/query_3.gff' ],
+    ),
+    'initialise object with locus tag id gff files'
+);
+@sorted_fasta_files = sort( @{ $plot_groups_obj->fasta_files() } );
+@sorted_expected_files = sort( ( 'query_1.gff.proteome.faa', 'query_2.gff.proteome.faa', 'query_3.gff.proteome.faa' ) );
+
+is_deeply( \@sorted_fasta_files, \@sorted_expected_files, 'locus tag id files created output' );
+
+for my $filename (@sorted_expected_files) {
+    is( read_file($filename), read_file( 't/data/locus_tag_gffs/' . $filename . '.expected' ), "content of proteome $filename as expected" );
+}
+
+unlink('query_1.gff.proteome.faa');
+unlink('query_2.gff.proteome.faa');
+unlink('query_3.gff.proteome.faa');
+
 done_testing();

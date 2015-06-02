@@ -34,14 +34,11 @@ sub _create_bed_file_from_gff {
         next if !( $feature->primary_tag =~ /$tags_regex/ );
 
         # Must have an ID tag
-        next unless ( $feature->has_tag('ID') );
+        my $gene_id = $self->_get_feature_id($feature);
+        next unless($gene_id);
 
         #filter out small genes
         next if ( ( $feature->end - $feature->start ) < $self->min_gene_size_in_nucleotides );
-
-        my ( $gene_id, @junk ) = $feature->get_tag_values('ID');
-        $gene_id =~ s!["']!!g;
-        next if ( $gene_id eq "" );
 
         my $strand = ($feature->strand > 0)? '+':'-' ;
         print {$bed_fh} join( "\t", ( $feature->seq_id, $feature->start -1, $feature->end, $gene_id, 1, $strand ) ) . "\n";
@@ -49,6 +46,25 @@ sub _create_bed_file_from_gff {
     $gffio->close();
 }
 
-
+sub _get_feature_id
+{
+    my ($self, $feature) = @_;
+    my ( $gene_id, @junk ) ;
+    if ( $feature->has_tag('ID') )
+    {
+         ( $gene_id, @junk ) = $feature->get_tag_values('ID');
+    }
+    elsif($feature->has_tag('locus_tag'))
+    {
+        ( $gene_id, @junk ) = $feature->get_tag_values('locus_tag');
+    }
+    else
+    {
+        return undef;
+    }
+    $gene_id =~ s!["']!!g;
+    return undef if ( $gene_id eq "" );
+    return $gene_id ;
+}
 
 1;

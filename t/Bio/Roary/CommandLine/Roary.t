@@ -70,6 +70,16 @@ ok((-e 'query_2.gff.proteome.faa'),'Check protein query_2.gff.proteome.faa is no
 ok((-e 'query_5.gff.proteome.faa'),'Check protein query_5.gff.proteome.faa is not cleaned up'); 
 
 cleanup_files();
+
+%scripts_and_expected_files = (
+'-j Local --dont_delete_files t/data/locus_tag_gffs/query_1.gff t/data/locus_tag_gffs/query_2.gff t/data/locus_tag_gffs/query_3.gff ' =>
+  [  'empty_file', 't/data/empty_file'  ],
+  );
+mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
+
+for my $filename (('query_1.gff.proteome.faa','query_2.gff.proteome.faa','query_3.gff.proteome.faa')) {
+    is( read_file($filename), read_file( 't/data/locus_tag_gffs/' . $filename . '.expected' ), "content of proteome $filename as expected" );
+}
  
 SKIP: 
 {
