@@ -10,6 +10,7 @@ Create a pan genome
 
 use Moose;
 use File::Copy;
+use Bio::Perl;
 use Bio::Roary::ParallelAllAgainstAllBlast;
 use Bio::Roary::CombinedProteome;
 use Bio::Roary::External::Cdhit;
