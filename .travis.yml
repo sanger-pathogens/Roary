@@ -1,0 +1,16 @@
+language: perl
+addons:
+  apt:
+    packages:
+    - "g++"
+    - "libdb-dev"
+    - "libssl-dev"
+    - "ncbi-blast+"
+    - "mcl"
+    - "muscle"
+python:
+  - "5.14.4"
+sudo: false
+install:
+  - "source ./install_dependencies.sh"
+script: "dzil test"
