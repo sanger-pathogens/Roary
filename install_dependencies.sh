@@ -26,17 +26,13 @@ cd build
 build_dir=$(pwd)
 
 # Install apt packages
-if [ ! -z ${TRAVIS:-} ] && [ "$TRAVIS" = 'true' ]; then
-  echo "Using Travis's apt plugin"
-else
-  sudo apt-get update -q
-  sudo apt-get install -y -q g++ \
-                             libdb-dev \
-                             libssl-dev \
-                             ncbi-blast+ \
-                             mcl \
-                             muscle
-fi
+sudo apt-get update -q
+sudo apt-get install -y -q g++ \
+                           libdb-dev \
+                           libssl-dev \
+                           ncbi-blast+ \
+                           mcl \
+                           muscle
 
 download () {
   download_url=$1
