@@ -154,6 +154,11 @@ sub run {
 
     ( !$self->help ) or die $self->usage_text;
 
+    $self->logger->info("Fixing input GFF files"); 
+    my $reformat_input_files = Bio::Roary::ReformatInputGFFs->( gff_files => $self->fasta_files, logger => $self->logger );
+	$reformat_input_files->fix_duplicate_gene_ids();
+	$self->fasta_files($reformat_input_files->fixed_gff_files);
+
     $self->logger->info("Extracting proteins from GFF files");
     my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
         input_files           => $self->fasta_files,
