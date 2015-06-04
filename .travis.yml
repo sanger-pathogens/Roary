@@ -1,7 +1,7 @@
 language: perl
 sudo: required
 perl:
-  - "5.14.4"
+  - "5.14"
 install:
   - "source ./install_dependencies.sh"
 script: "dzil test"
