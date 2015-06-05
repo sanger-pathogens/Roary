@@ -15,6 +15,7 @@ BEGIN {
 
 
 my $obj;
+remove_tree('fixed_input_files');
 ok($obj = Bio::Roary::ReformatInputGFFs->new(gff_files => ['t/data/reformat_input_gffs/query_1.gff']), 'initialise with one input gff');
 ok($obj->fix_duplicate_gene_ids, 'fix duplicates with one input gff');
 is_deeply($obj->fixed_gff_files, ['t/data/reformat_input_gffs/query_1.gff'] ,'list of gff files with one input gff, nothing should change');
@@ -56,9 +57,6 @@ is_deeply(read_file('fixed_input_files/query_2.gff'),  read_file('t/data/reforma
 is_deeply(read_file('fixed_input_files/query_3.gff'),  read_file('t/data/reformat_input_gffs/expected_fixed_query_3.gff'),  'fixed file should have expected changes');
 remove_tree('fixed_input_files');
 
-
-#ID missing - copy locus tag and fix
-#proposed ID has a clash 
 
 done_testing();
 

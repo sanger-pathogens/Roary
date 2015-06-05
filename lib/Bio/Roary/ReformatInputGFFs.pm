@@ -46,20 +46,28 @@ sub fix_duplicate_gene_ids {
 
         my $ids_seen      = 0;
         my $ids_from_file = $self->_get_ids_for_gff_file($file);
-        for my $gene_id ( @{$ids_from_file} ) {
-            if ( $gene_ids_seen_before{$gene_id} ) {			
-                $self->logger->warn(
-"File $file contains duplicate gene IDs, attempting to fix by adding a suffix and putting new gff in the fixed_input_files directory."
-                );
-                my $updated_file = $self->_add_suffix_to_gene_ids_and_return_new_file($file);
-                push( @{ $self->fixed_gff_files }, $updated_file );
-                $ids_seen = 1;
-                last;
-            }
-			$gene_ids_seen_before{$gene_id}++;
+
+        if ( @{$ids_from_file} < 1 ) {
+            $self->logger->warn(
+                "Input GFF file doesnt contain annotation we can use so excluding it from the analysis: $file"
+            );
         }
-        if ( $ids_seen == 0 ) {
-            push( @{ $self->fixed_gff_files }, $file );
+        else {
+            for my $gene_id ( @{$ids_from_file} ) {
+                if ( $gene_ids_seen_before{$gene_id} ) {
+                    $self->logger->warn(
+  "Input file contains duplicate gene IDs, attempting to fix by adding a unique suffix.  New GFF in the fixed_input_files directory.  $file "
+                    );
+                    my $updated_file = $self->_add_suffix_to_gene_ids_and_return_new_file($file);
+                    push( @{ $self->fixed_gff_files }, $updated_file ) if ( defined($updated_file) );
+                    $ids_seen = 1;
+                    last;
+                }
+                $gene_ids_seen_before{$gene_id}++;
+            }
+            if ( $ids_seen == 0 ) {
+                push( @{ $self->fixed_gff_files }, $file );
+            }
         }
     }
     return 1;
@@ -82,33 +90,36 @@ sub _add_suffix_to_gene_ids_and_return_new_file {
             $found_fasta = 1;
         }
 
-        if ( $line =~ /\#/ || $found_fasta == 1) {
+        if ( $line =~ /\#/ || $found_fasta == 1 ) {
             print {$out_gff_fh} $line;
-			next;
+            next;
         }
 
         my @cells = split( /\t/, $line );
-		my @tags = split( /;/, $cells[8] );
-		my $found_id = 0; 
-		for(my $i =0; $i < @tags; $i++)
-		{
-			if($tags[$i] =~ /^(ID=["']?)([^;"']+)(["']?)/)
-			{
-	            my $current_id = $2;
-	            $current_id .= '___' . $self->suffix_counter;
-	            $tags[$i] = $1 . $current_id . $3;
-				$self->suffix_counter( $self->suffix_counter + 1 );
-				$found_id++;
-				last;
-			}
-		}
-		if( $found_id ==0)
-		{
-			push(@tags, 'ID=id___' . $self->suffix_counter );
+        my @tags  = split( /;/,  $cells[8] );
+        my $found_id = 0;
+        for ( my $i = 0 ; $i < @tags ; $i++ ) {
+            if ( $tags[$i] =~ /^(ID=["']?)([^;"']+)(["']?)/ ) {
+                my $current_id = $2;
+                $current_id .= '___' . $self->suffix_counter;
+                $tags[$i] = $1 . $current_id . $3;
+                $self->suffix_counter( $self->suffix_counter + 1 );
+                $found_id++;
+                last;
+            }
+        }
+        if ( $found_id == 0 ) {
+            push( @tags, 'ID=id___' . $self->suffix_counter );
             $self->suffix_counter( $self->suffix_counter + 1 );
         }
-		$cells[8] = join(';',@tags);
+        $cells[8] = join( ';', @tags );
         print {$out_gff_fh} join( "\t", @cells );
+    }
+
+    if ( $found_fasta == 0 ) {
+        $self->logger->warn(
+            "Input GFF file doesnt appear to have the FASTA sequence at the end of the file so is being excluded from the analysis: $input_file" );
+        return undef;
     }
     close($out_gff_fh);
     close($input_gff_fh);
