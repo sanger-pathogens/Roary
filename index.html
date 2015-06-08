@@ -143,9 +143,6 @@ The QC column flags up two types of issues: the first is where there are two gen
 Finally there is a matrix with presence and absence of each gene in each isolate. The unique gene ID back to the sequence and annotation is given in the column. If an isolate contains more than 1 sequence in the group it, they are separated by a tab in the same cell.</p>
 
 
-<h3>
-<a id="pan_reference" class="anchor" href="#pan_reference" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pan Genome reference FASTA</h3>
-<p>A FASTA file is automatically created which contains a single representative nucleotide sequence from each cluster in the pan genome. It is called <em>pan_genome_reference.fa</em>.</p>
 
 <h3>
 <a id="rtab-files" class="anchor" href="#rtab-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rtab files</h3>
@@ -169,10 +166,12 @@ Finally there is a matrix with presence and absence of each gene in each isolate
 <p>This is the number of genes which are found in exactly 1 isolate.</p>
 
 <h3>
-<a id="multifasta-files-of-each-gene" class="anchor" href="#multifasta-files-of-each-gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multifasta files of each gene</h3>
+<a id="multifasta-files-of-each-gene" class="anchor" href="#multifasta-files-of-each-gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multifasta files of each gene and Pan Genome Reference FASTA</h3>
 
 <p>If you pass in the flag '-e' multifasta files containing nucleotide sequences will be generated for each gene. They will all reside in a sub directory called 'pan_genome_sequences'. The naming scheme for the files is: the number of sequences in the file, followed by the gene name. You can use seaview to open the sequence and take a look at it.
 There is also an aligned version of the nucleotides. The nucleotide sequences are translated to proteins (translation table 11), aligned with muscle, then reverse translated back to nucleotides with revtrans [revtrans]. The resulting file ends with '.aln'.</p>
+<p>A FASTA file is automatically created which contains a single representative nucleotide sequence from each cluster in the pan genome. It is called <em>pan_genome_reference.fa</em>.</p>
+
 
 <h2>
 <a id="querying-the-pan-genome" class="anchor" href="#querying-the-pan-genome" aria-hidden="true"><span class="octicon octicon-link"></span></a>Querying the pan genome</h2>
