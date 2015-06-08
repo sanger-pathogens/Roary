@@ -27,7 +27,9 @@ system('touch empty_file');
 %scripts_and_expected_files = (
 
       ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
+        [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],    
+      ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+          [ 'pan_genome_reference.fa', 't/data/expected_pan_genome_reference.fa' ],  
       ' -j Local -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
       ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
@@ -152,5 +154,7 @@ sub cleanup_files
   unlink('query_5.gff.proteome.faa');
   unlink('real_data_1.gff.proteome.faa');
   unlink('real_data_2.gff.proteome.faa');
+  unlink('pan_genome_reference.fa');
+  
 
 }

@@ -20,6 +20,7 @@ use Bio::Roary::Output::NumberOfGroups;
 use Bio::Roary::OrderGenes;
 use Bio::Roary::Output::EmblGroups;
 use Bio::Roary::SplitGroups;
+use Bio::Roary::Output::OneGenePerGroupFasta;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -45,6 +46,7 @@ has 'accessory_tab_output_filename'      => ( is => 'ro', isa => 'Str', default 
 has 'core_accessory_ordering_key'        => ( is => 'ro', isa => 'Str', default  => 'core_accessory_overall_order_filtered' );
 has 'accessory_ordering_key'             => ( is => 'ro', isa => 'Str', default  => 'accessory_overall_order_filtered' );
 has 'core_definition'                    => ( is => 'ro', isa => 'Num', default  => 1.0 );
+has 'pan_genome_reference_filename'      => ( is => 'ro', isa => 'Str', default  => 'pan_genome_reference.fa' );
 
 has '_inflate_clusters_obj'  => ( is => 'ro', isa => 'Bio::Roary::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
 has '_group_labels_obj'      => ( is => 'ro', isa => 'Bio::Roary::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
@@ -53,6 +55,7 @@ has '_analyse_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups'
 has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::Roary::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
 has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
 has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
+has '_one_gene_per_group_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::OneGenePerGroupFasta', lazy => 1, builder => '_build__one_gene_per_group_obj' );
 has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
 has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::Roary::SplitGroups', lazy_build => 1 );
 
@@ -85,12 +88,24 @@ sub run {
     system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
 	print "Create EMBL files\n" if($self->verbose);
     $self->_create_embl_files;
+	
+	print "Create Pan genome reference\n" if($self->verbose);
+	$self->_one_gene_per_group_obj->create_file();
     
 	print "Creating files with the nucleotide sequences for every cluster\n" if($self->verbose && $self->output_multifasta_files);
     $self->_groups_multifastas_nuc_obj->create_files() if($self->output_multifasta_files);
 
 	print "Cleaning up files\n" if($self->verbose);
     $self->_delete_intermediate_files;
+}
+
+sub _build__one_gene_per_group_obj
+{
+	my($self) = @_;
+	return Bio::Roary::Output::OneGenePerGroupFasta->new(
+		analyse_groups  => $self->_analyse_groups_obj,
+		output_filename => $self->pan_genome_reference_filename
+	);
 }
 
 sub _build__split_groups_obj {
