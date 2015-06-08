@@ -2,6 +2,10 @@ language: perl
 sudo: required
 perl:
   - "5.14"
+env:
+  - PARALLEL_VERSION=20150522
+  - PARALLEL_VERSION=20141022
+  - PARALLEL_VERSION=20130922
 install:
   - "source ./install_dependencies.sh"
 script: "dzil test"
