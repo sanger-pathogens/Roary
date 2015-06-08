@@ -109,7 +109,7 @@ sub _add_suffix_to_gene_ids_and_return_new_file {
             }
         }
         if ( $found_id == 0 ) {
-            push( @tags, 'ID=id___' . $self->suffix_counter );
+            unshift( @tags, 'ID=id___' . $self->suffix_counter );
             $self->suffix_counter( $self->suffix_counter + 1 );
         }
         $cells[8] = join( ';', @tags );
