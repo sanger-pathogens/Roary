@@ -24,9 +24,11 @@ use Bio::Tools::GFF;
 with 'Bio::Roary::BedFromGFFRole';
 
 has 'gff_file'         => ( is => 'ro', isa => 'Str',                           required => 1 );
-# Not implemented
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
 has 'output_directory' => ( is => 'ro', isa => 'Str',                           required => 1 );
+has 'pan_reference_groups_seen' => ( is => 'rw', isa => 'HashRef',              required => 1 );
+has 'pan_reference_filename' => ( is => 'ro', isa  => 'Str',                    default  => 'pan_genome_reference.fa' );
+
 has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
@@ -55,6 +57,13 @@ sub populate_files {
         {
           my $current_group =  $self->annotate_groups->_ids_to_groups->{$input_seq->display_id};
 
+          if(! defined($self->pan_reference_groups_seen->{$current_group}))
+		  {
+		  	my $pan_output_seq = $self->_pan_genome_reference_io_obj($current_group);
+			$pan_output_seq->write_seq($input_seq);
+			$self->pan_reference_groups_seen->{$current_group} = 1;
+		  }
+
           my $number_of_genes = @{$self->annotate_groups->_groups_to_id_names->{$current_group}};
           # Theres no need to align a single sequence
           next if($self->output_multifasta_files == 0 && $number_of_genes == 1);
@@ -77,6 +86,14 @@ sub _group_file_name
   my $group_file_name = join('/',($self->output_directory, $filename ));
   return $group_file_name;
 }
+
+
+sub _pan_genome_reference_io_obj
+{
+  my ($self) = @_;
+  return Bio::SeqIO->new( -file => ">>".$self->pan_reference_filename, -format => 'Fasta' );
+}
+
 
 sub _group_seq_io_obj
 {

@@ -18,7 +18,6 @@ use Bio::Roary::Output::DifferenceBetweenSets;
 use Bio::Roary::AnnotateGroups;
 use Bio::Roary::GroupStatistics;
 use Bio::Roary::OrderGenes;
-use Bio::Roary::Output::OneGenePerGroupFasta;
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -114,14 +113,7 @@ sub run {
         groups_filename => $self->groups_filename,
     );
 
-	if ( $self->action eq 'one_gene_per_group' ) {
-	    my $one_gene_per_fasta = Bio::Roary::Output::OneGenePerGroupFasta->new(
-	        analyse_groups  => $analyse_groups_obj,
-	        output_filename => $self->output_filename
-	    );
-	    $one_gene_per_fasta->create_file();
-	}
-    elsif ( $self->action eq 'union' ) {
+	if ( $self->action eq 'union' ) {
         my $query_groups = Bio::Roary::Output::QueryGroups->new(
             analyse_groups        => $analyse_groups_obj,
             output_union_filename => $self->output_filename,

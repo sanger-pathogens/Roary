@@ -28,8 +28,6 @@ system('touch empty_file');
 
       ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],    
-      ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-          [ 'pan_genome_reference.fa', 't/data/expected_pan_genome_reference.fa' ],  
       ' -j Local -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
       ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
@@ -109,6 +107,13 @@ SKIP:
   ok(-e 'number_of_new_genes.Rtab');
   ok(-e 'number_of_unique_genes.Rtab');
   ok(-e 'blast_identity_frequency.Rtab');
+  
+  cleanup_files();
+  %scripts_and_expected_files = (
+    '-j Local --dont_split_groups --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+          [ 'pan_genome_reference.fa', 't/data/expected_pan_genome_reference.fa' ],  
+  );
+  mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
   
   cleanup_files();
 }
