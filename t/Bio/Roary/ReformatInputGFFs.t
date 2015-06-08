@@ -62,7 +62,7 @@ ok($obj = Bio::Roary::ReformatInputGFFs->new(gff_files => ['t/data/reformat_inpu
 ok(my $fixed_file = $obj->_add_suffix_to_gene_ids_and_return_new_file('t/data/reformat_input_gffs/real_1.gff'), 'fix duplicates');
 ok(( -e 'fixed_input_files/real_1.gff'), 'fixed file should exist');
 is_deeply(read_file('fixed_input_files/real_1.gff'),  read_file('t/data/reformat_input_gffs/expected_real_1.gff'),  'fixed file should have expected changes');
-#remove_tree('fixed_input_files');
+remove_tree('fixed_input_files');
 
 
 done_testing();

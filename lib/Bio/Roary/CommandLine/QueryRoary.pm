@@ -30,7 +30,7 @@ has 'group_names'     => ( is => 'rw', isa => 'ArrayRef' );
 has 'input_set_one'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'input_set_two'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'pan_genome_results' );
-has 'action'          => ( is => 'rw', isa => 'Str', default => 'one_gene_per_group' );
+has 'action'          => ( is => 'rw', isa => 'Str', default => 'union' );
 has 'core_definition' => ( is => 'rw', isa => 'Num', default => 1.0 );
 
 has '_error_message' => ( is => 'rw', isa => 'Str' );
@@ -113,7 +113,7 @@ sub run {
         groups_filename => $self->groups_filename,
     );
 
-    if ( $self->action eq 'union' ) {
+	if ( $self->action eq 'union' ) {
         my $query_groups = Bio::Roary::Output::QueryGroups->new(
             analyse_groups        => $analyse_groups_obj,
             output_union_filename => $self->output_filename,
@@ -209,11 +209,8 @@ sub usage_text {
     Usage: query_pan_genome [options]
     Take in a groups file and GFF files and output selected data
     
-    # Create a FASTA file with one gene per group (representative pan genome)
-    query_pan_genome -a one_gene_per_group -g clustered_proteins example.gff
-    
     # Provide an output filename
-    query_pan_genome  -a one_gene_per_group -g clustered_proteins -o results.fa *.gff
+    query_pan_genome  -a union -g clustered_proteins -o results.fa *.gff
     
     # Create multifasta files for each group/gene passed in
     query_pan_genome  -a gene_multifasta -g clustered_proteins -n gryA,mecA,abc *.gff

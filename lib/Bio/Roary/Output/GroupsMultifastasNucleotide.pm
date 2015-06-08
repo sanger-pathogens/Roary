@@ -57,6 +57,7 @@ sub create_files {
 
     make_path($self->output_directory);
     
+	my %pan_reference_groups_seen;
     # if its output_multifasta_files == false then you want to create the core genome and delete all intermediate multifasta files
     for my $gff_file ( @{ $self->gff_files } ) 
     {
@@ -65,7 +66,8 @@ sub create_files {
           group_names          => $self->group_names,
           output_directory     => $self->output_directory,
           annotate_groups      => $self->annotate_groups,
-          output_multifasta_files => $self->output_multifasta_files
+          output_multifasta_files => $self->output_multifasta_files,
+		  pan_reference_groups_seen => \%pan_reference_groups_seen
       );
       $gff_multifasta->populate_files;
     }
