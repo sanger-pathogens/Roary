@@ -42,6 +42,13 @@ has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder 
 
 has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
 
+
+sub BUILD {
+    my ($self) = @_;
+	$self->_makeblastdb_obj();
+}
+
+
 sub _build__blast_database {
     my ($self) = @_;
     return $self->_makeblastdb_obj->output_database;
@@ -106,6 +113,7 @@ sub run {
     my ($self) = @_;
     my @expected_output_files;
     my @commands_to_run;
+	
     for my $filename ( @{ $self->_sequence_file_names } ) {
         my ( $filename_without_directory, $directories, $suffix ) = fileparse($filename);
         my $output_seq_results_file =

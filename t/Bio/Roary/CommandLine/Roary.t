@@ -28,13 +28,13 @@ system('touch empty_file');
 
       ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
-      ' -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+      ' -j Local -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
       ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],     
       ' -t 1 -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
         [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-      ' --dont_split_groups t/data/genbank_gbff/genbank1.gff t/data/genbank_gbff/genbank2.gff t/data/genbank_gbff/genbank3.gff' =>
+      ' -j Local --dont_split_groups t/data/genbank_gbff/genbank1.gff t/data/genbank_gbff/genbank2.gff t/data/genbank_gbff/genbank3.gff' =>
         [ 'gene_presence_absence.csv', 't/data/genbank_gbff/genbank_gene_presence_absence.csv' ],
       '-h' =>
         [ 'empty_file', 't/data/empty_file' ],
@@ -46,7 +46,7 @@ cleanup_files();
 
 
 %scripts_and_expected_files = (
-' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
+' -j Local --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
   [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
 ' -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' =>
   [ 'clustered_proteins', 't/data/clustered_proteins_pan_genome' ],
@@ -72,12 +72,12 @@ ok((-e 'query_5.gff.proteome.faa'),'Check protein query_5.gff.proteome.faa is no
 cleanup_files();
 
 %scripts_and_expected_files = (
-'-j Local --dont_delete_files t/data/locus_tag_gffs/query_1.gff t/data/locus_tag_gffs/query_2.gff t/data/locus_tag_gffs/query_3.gff ' =>
+'-j Local --dont_delete_files t/data/locus_tag_gffs/query_1.gff t/data/locus_tag_gffs/query_2.gff t/data/locus_tag_gffs/query_5.gff ' =>
   [  'empty_file', 't/data/empty_file'  ],
   );
 mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [0,6,7,8,9] );
 
-for my $filename (('query_1.gff.proteome.faa','query_2.gff.proteome.faa','query_3.gff.proteome.faa')) {
+for my $filename (('query_1.gff.proteome.faa','query_2.gff.proteome.faa','query_5.gff.proteome.faa')) {
     is( read_file($filename), read_file( 't/data/locus_tag_gffs/' . $filename . '.expected' ), "content of proteome $filename as expected" );
 }
  

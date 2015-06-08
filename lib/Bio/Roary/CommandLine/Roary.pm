@@ -13,6 +13,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::Roary;
 use Bio::Roary::PrepareInputFiles;
 use Bio::Roary::QC::Report;
+use Bio::Roary::ReformatInputGFFs;
 use File::Which;
 extends 'Bio::Roary::CommandLine::Common';
 
@@ -153,6 +154,16 @@ sub run {
     my ($self) = @_;
 
     ( !$self->help ) or die $self->usage_text;
+
+    $self->logger->info("Fixing input GFF files"); 
+    my $reformat_input_files = Bio::Roary::ReformatInputGFFs->new( gff_files => $self->fasta_files, logger => $self->logger );
+	$reformat_input_files->fix_duplicate_gene_ids();
+	if(@{$reformat_input_files->fixed_gff_files} == 0)
+	{
+		$self->logger->error("All input files have been excluded from analysis. Please check you have valid GFF files, with annotation and a FASTA sequence at the end. Better still, reannotate your FASTA file with PROKKA.");
+		die();
+	}
+	$self->fasta_files($reformat_input_files->fixed_gff_files);
 
     $self->logger->info("Extracting proteins from GFF files");
     my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(

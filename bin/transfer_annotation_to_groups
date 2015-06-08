@@ -13,7 +13,6 @@ Take in a groups file and a set of GFF files and transfer the consensus annotati
 
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
-#BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
 use Bio::Roary::CommandLine::TransferAnnotationToGroups;
 
 Bio::Roary::CommandLine::TransferAnnotationToGroups->new(args => \@ARGV, script_name => $0)->run;

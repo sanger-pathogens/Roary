@@ -13,7 +13,6 @@ Iteratively run cdhit
 
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
-#BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
 use Bio::Roary::CommandLine::IterativeCdhit;
 
 Bio::Roary::CommandLine::IterativeCdhit->new(args => \@ARGV, script_name => $0)->run;
