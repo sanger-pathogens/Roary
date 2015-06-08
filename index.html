@@ -142,6 +142,11 @@ Columns G and H allow you to order the genes based on the core+accessory de novo
 The QC column flags up two types of issues: the first is where there are two genes overlapping, one has annotation, and the other has none. So the gene without annotation is flagged. These are appear to be mispredictions by prodigal. the second is where 1 or 2 genes appear on a single contig with no links to another contig. These are marked as 'Investigate' because they can signify low copy number contamination if there are lots of them, or an interesting mobile element.
 Finally there is a matrix with presence and absence of each gene in each isolate. The unique gene ID back to the sequence and annotation is given in the column. If an isolate contains more than 1 sequence in the group it, they are separated by a tab in the same cell.</p>
 
+
+<h3>
+<a id="pan_reference" class="anchor" href="#pan_reference" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pan Genome reference FASTA</h3>
+<p>A FASTA file is automatically created which contains a single representative nucleotide sequence from each cluster in the pan genome. It is called <em>pan_genome_reference.fa</em>.</p>
+
 <h3>
 <a id="rtab-files" class="anchor" href="#rtab-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rtab files</h3>
 
@@ -199,16 +204,6 @@ There is also an aligned version of the nucleotides. The nucleotide sequences ar
 
 <p><code>set_difference_common_set</code></p>
 
-<h3>
-<a id="create-a-fasta-file-with-one-gene-per-group" class="anchor" href="#create-a-fasta-file-with-one-gene-per-group" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a FASTA file with one gene per group</h3>
-
-<p>This action will take the first protein sequence from every group and output it to a FASTA file. It will give you a flavour of whats in the whole pan genome.</p>
-
-<p><code>query_pan_genome -a one_gene_per_group -g clustered_proteins *.gff</code></p>
-
-<p>You can also provide an output file name.</p>
-
-<p><code>query_pan_genome  -a one_gene_per_group -g clustered_proteins -o results.fa *.gff</code></p>
 
 <h3>
 <a id="create-multifasta-files-for-a-list-of-genes" class="anchor" href="#create-multifasta-files-for-a-list-of-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create multiFASTA files for a list of genes</h3>
