@@ -146,19 +146,7 @@ update_perl_path "$BEDTOOLS_BUILD_DIR/lib"
 cd $start_dir
 cpanm Dist::Zilla
 dzil authordeps --missing | cpanm
-cpanm Array::Utils \
-      BioPerl \
-      Exception::Class \
-      File::Find::Rule \
-      File::Grep \
-      File::Slurp::Tiny \
-      Graph \
-      Moose \
-      Moose::Role \
-      Test::Output \
-      Text::CSV \
-      Log::Log4perl \
-      File::Which
+dzil listdeps --missing | cpanm
 
 cd $start_dir
 
