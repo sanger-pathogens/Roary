@@ -19,11 +19,17 @@ has '_queue'                  => ( is => 'rw', isa => 'Str',  default => 'normal
 has 'dont_wait'               => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',      default => 1 );
 has 'logger'                  => ( is => 'ro', lazy => 1, builder => '_build_logger');
+has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub _build_logger
 {
     my ($self) = @_;
-    Log::Log4perl->easy_init($ERROR);
+    my $level = $ERROR;
+    if($self->verbose)
+    {
+       $level = $DEBUG;
+    }
+    Log::Log4perl->easy_init($level);
     my $logger = get_logger();
     return $logger;
 }

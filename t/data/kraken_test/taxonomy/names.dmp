@@ -1,0 +1,77 @@
+1	|	all	|		|	synonym	|
+1	|	root	|		|	scientific name	|
+2	|	Bacteria	|	Bacteria <prokaryote>	|	scientific name	|
+2	|	Monera	|	Monera <Bacteria>	|	in-part	|
+2	|	Procaryotae	|	Procaryotae <Bacteria>	|	in-part	|
+2	|	Prokaryota	|	Prokaryota <Bacteria>	|	in-part	|
+2	|	Prokaryotae	|	Prokaryotae <Bacteria>	|	in-part	|
+2	|	bacteria	|	bacteria <blast2>	|	blast name	|
+2	|	eubacteria	|		|	genbank common name	|
+2	|	not Bacteria Haeckel 1894	|		|	synonym	|
+2	|	prokaryote	|	prokaryote <Bacteria>	|	in-part	|
+2	|	prokaryotes	|	prokaryotes <Bacteria>	|	in-part	|
+1239	|	Bacillus/Clostridium group	|		|	synonym	|
+1239	|	Clostridium group firmicutes	|		|	synonym	|
+1239	|	Firmacutes	|		|	synonym	|
+1239	|	Firmicutes	|		|	scientific name	|
+1239	|	Firmicutes corrig. Gibbons and Murray 1978	|		|	authority	|
+1239	|	Gram positive bacteria	|		|	misspelling	|
+1239	|	Gram-positive bacteria	|		|	genbank common name	|
+1239	|	Low G+C firmicutes	|		|	synonym	|
+1239	|	clostridial firmicutes	|		|	synonym	|
+1239	|	firmicutes	|	firmicutes <blast1239>	|	blast name	|
+1239	|	low G+C Gram-positive bacteria	|		|	common name	|
+1239	|	low GC Gram+	|	low GC gram-positives<blast31968>	|	common name	|
+1279	|	"Aurococcus" Winslow and Rogers 1906	|		|	authority	|
+1279	|	Aurococcus	|		|	synonym	|
+1279	|	Staphylococcus	|		|	scientific name	|
+1279	|	Staphylococcus Rosenbach 1884	|		|	authority	|
+1280	|	"Micrococcus aureus" (Rosenbach 1884) Zopf 1885	|		|	authority	|
+1280	|	"Micrococcus pyogenes" Lehmann and Neumann 1896	|		|	authority	|
+1280	|	"Staphlococcus pyogenes citreus" Passet 1885	|		|	authority	|
+1280	|	"Staphylococcus pyogenes aureus" Rosenbach 1884	|		|	authority	|
+1280	|	ATCC 12600	|		|	type material	|
+1280	|	ATCC 12600-U	|		|	type material	|
+1280	|	CCM 885	|		|	type material	|
+1280	|	CCUG 1800	|		|	type material	|
+1280	|	CIP 65.8	|		|	type material	|
+1280	|	DSM 20231	|		|	type material	|
+1280	|	HAMBI 66	|		|	type material	|
+1280	|	JCM 20624	|		|	type material	|
+1280	|	Micrococcus aureus	|		|	synonym	|
+1280	|	Micrococcus pyogenes	|		|	synonym	|
+1280	|	NBRC 100910	|		|	type material	|
+1280	|	NCAIM B.01065	|		|	type material	|
+1280	|	NCCB 72047	|		|	type material	|
+1280	|	NCTC 8532	|		|	type material	|
+1280	|	Staphilococcus aureus	|		|	misspelling	|
+1280	|	Staphlococcus pyogenes citreus	|		|	synonym	|
+1280	|	Staphylococcus aureus	|		|	scientific name	|
+1280	|	Staphylococcus aureus Rosenbach 1884	|		|	authority	|
+1280	|	Staphylococcus pyogenes aureus	|		|	synonym	|
+1280	|	Staphylococus aureus	|		|	misspelling	|
+1280	|	Streptococcus aureus	|		|	misnomer	|
+1385	|	Bacillales	|		|	scientific name	|
+1385	|	Bacillales Prevot 1953	|		|	authority	|
+1385	|	Bacillus/Staphylococcus group	|		|	synonym	|
+46170	|	Staphylococcus aureus aureus	|		|	equivalent name	|
+46170	|	Staphylococcus aureus subsp. aureus	|		|	scientific name	|
+46170	|	Staphylococcus aureus subsp. aureus Rosenbach 1884	|		|	authority	|
+90964	|	Staphylococcaceae	|		|	scientific name	|
+90964	|	Staphylococcaceae Schleifer and Bell 2010	|		|	authority	|
+90964	|	Staphylococceae	|		|	includes	|
+90964	|	Staphylococceae Prevot 1940	|		|	includes	|
+90964	|	Staphylococcus group	|		|	synonym	|
+91061	|	Bacilli	|		|	scientific name	|
+91061	|	Bacilli Ludwig et al. 2010	|		|	authority	|
+91061	|	Bacillus/Lactobacillus/Streptococcus group	|		|	synonym	|
+91061	|	Firmibacteria	|		|	synonym	|
+91061	|	Firmibacteria Murray 1988	|		|	authority	|
+131567	|	biota	|		|	synonym	|
+131567	|	cellular organisms	|		|	scientific name	|
+663951	|	Staphylococcus aureus subsp. aureus 0528	|		|	misspelling	|
+663951	|	Staphylococcus aureus subsp. aureus 0582	|		|	synonym	|
+663951	|	Staphylococcus aureus subsp. aureus TW20	|		|	scientific name	|
+663951	|	Staphylococcus aureus subsp. aureus str. TW20	|		|	equivalent name	|
+663951	|	Staphylococcus aureus subsp. aureus strain TW20	|		|	equivalent name	|
+2000000000	|	Staphylococcus aureus	|		|	scientific name	|

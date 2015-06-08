@@ -45,6 +45,7 @@ has 'accessory_tab_output_filename'      => ( is => 'ro', isa => 'Str', default 
 has 'core_accessory_ordering_key'        => ( is => 'ro', isa => 'Str', default  => 'core_accessory_overall_order_filtered' );
 has 'accessory_ordering_key'             => ( is => 'ro', isa => 'Str', default  => 'accessory_overall_order_filtered' );
 has 'core_definition'                    => ( is => 'ro', isa => 'Num', default  => 1.0 );
+has 'pan_genome_reference_filename'      => ( is => 'ro', isa => 'Str', default  => 'pan_genome_reference.fa' );
 
 has '_inflate_clusters_obj'  => ( is => 'ro', isa => 'Bio::Roary::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
 has '_group_labels_obj'      => ( is => 'ro', isa => 'Bio::Roary::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
@@ -217,6 +218,11 @@ sub _delete_intermediate_files
 {
   my ($self) = @_;
   return if($self->dont_delete_files == 1);
+  
+  for my $fasta_file (@{$self->fasta_files})
+  {
+      unlink($fasta_file) if(-e $fasta_file);
+  }
   
   unlink($self->_output_mcl_filename)              ;
   unlink($self->_output_inflate_clusters_filename) ;

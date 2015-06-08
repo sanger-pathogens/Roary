@@ -19,7 +19,6 @@ use Bio::Roary::Exceptions;
 use Bio::Roary::ChunkFastaFile;
 use Bio::Roary::External::Makeblastdb;
 use Bio::Roary::External::Blastp;
-use Bio::Roary::External::Segmasker;
 use Cwd;
 use File::Temp;
 use File::Basename;
@@ -34,7 +33,6 @@ has 'perc_identity'           => ( is => 'ro', isa => 'Num',      default => 98 
 has '_chunk_fasta_file_obj'   => ( is => 'ro', isa => 'Bio::Roary::ChunkFastaFile', lazy => 1, builder => '_build__chunk_fasta_file_obj' );
 has '_sequence_file_names'    => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__sequence_file_names' );
 has '_makeblastdb_obj'        => ( is => 'ro', isa => 'Bio::Roary::External::Makeblastdb', lazy => 1, builder => '_build__makeblastdb_obj' );
-has '_segmasker_obj'          => ( is => 'ro', isa => 'Bio::Roary::External::Segmasker', lazy => 1, builder => '_build__segmasker_obj' );
 has '_blast_database'         => ( is => 'ro', isa => 'Str',      lazy => 1, builder => '_build__blast_database' );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',  default => 1 );
 
@@ -44,23 +42,22 @@ has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder 
 
 has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
 
+
+sub BUILD {
+    my ($self) = @_;
+	$self->_makeblastdb_obj();
+}
+
+
 sub _build__blast_database {
     my ($self) = @_;
     return $self->_makeblastdb_obj->output_database;
 }
 
-sub _build__segmasker_obj {
-    my ($self) = @_;
-    my $segmasker =
-      Bio::Roary::External::Segmasker->new( fasta_file => $self->fasta_file, exec => $self->segmasker_exec, job_runner => $self->job_runner, cpus  => $self->cpus );
-    $segmasker->run();
-    return $segmasker;
-}
-
 sub _build__makeblastdb_obj {
     my ($self) = @_;
     my $blast_database =
-      Bio::Roary::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, mask_data => $self->_segmasker_obj->output_file, job_runner => $self->job_runner, cpus  => $self->cpus  );
+      Bio::Roary::External::Makeblastdb->new( fasta_file => $self->fasta_file, exec => $self->makeblastdb_exec, job_runner => $self->job_runner, cpus  => $self->cpus  );
     $blast_database->run();
     return $blast_database;
 }
@@ -116,6 +113,7 @@ sub run {
     my ($self) = @_;
     my @expected_output_files;
     my @commands_to_run;
+	
     for my $filename ( @{ $self->_sequence_file_names } ) {
         my ( $filename_without_directory, $directories, $suffix ) = fileparse($filename);
         my $output_seq_results_file =

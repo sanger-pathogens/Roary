@@ -116,7 +116,7 @@ sub _build__ids_to_verbose_stats {
         my @matches_hash = fgrep { /ID=/i } @{ $self->_filtered_gff_files };
         my @matches;
         foreach my $m ( @matches_hash ){
-            push( @matches, values $m->{matches} );
+            push( @matches, values %{$m->{matches}} );
         }
         # chomp @matches;
         

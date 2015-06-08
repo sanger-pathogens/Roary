@@ -13,6 +13,7 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Bio::Roary;
 use Bio::Roary::PrepareInputFiles;
 use Bio::Roary::QC::Report;
+use Bio::Roary::ReformatInputGFFs;
 use File::Which;
 extends 'Bio::Roary::CommandLine::Common';
 
@@ -40,8 +41,8 @@ has 'translation_table'       => ( is => 'rw', isa => 'Int', default => 11 );
 has 'group_limit'             => ( is => 'rw', isa => 'Num', default => 50000 );
 has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 1 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'kraken_db'               => ( is => 'rw', isa => 'Str',  default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
 
-has '_error_message' => ( is => 'rw', isa => 'Str' );
 has 'run_qc' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
@@ -52,7 +53,7 @@ sub BUILD {
         $max_threads,           $dont_delete_files, $dont_split_groups,       $perc_identity, $output_filename,
         $job_runner,            $makeblastdb_exec,  $mcxdeblast_exec,         $mcl_exec,      $blastp_exec,
         $apply_unknowns_filter, $cpus,              $output_multifasta_files, $verbose_stats, $translation_table,
-        $run_qc,                $core_definition,   $help
+        $run_qc,                $core_definition,   $help, $kraken_db,
     );
 
     GetOptionsFromArray(
@@ -77,6 +78,7 @@ sub BUILD {
         'dont_run_qc'               => \$dont_run_qc,
         'cd|core_definition=i'      => \$core_definition,
         'v|verbose'                 => \$verbose,
+        'k|kraken_db=s'             => \$kraken_db,
         'h|help'                    => \$help,
     );
 
@@ -93,6 +95,7 @@ sub BUILD {
     if(@{$self->args} == 0)
     {
         $self->logger->error("Error: You need to provide a GFF file");
+        die $self->usage_text;
     }
     $self->output_filename($output_filename)   if ( defined($output_filename) );
     $self->job_runner($job_runner)             if ( defined($job_runner) );
@@ -119,6 +122,7 @@ sub BUILD {
     $self->verbose_stats($verbose_stats)         if ( defined $verbose_stats );
     $self->translation_table($translation_table) if ( defined($translation_table) );
     $self->group_limit($group_limit)             if ( defined($group_limit) );
+    $self->kraken_db($kraken_db)                 if ( defined($kraken_db) );
 
 
     if ( defined($run_qc) ) {
@@ -139,7 +143,7 @@ sub BUILD {
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
             $self->logger->error("Error: Cant access file $filename");
-            last;
+            die $self->usage_text;
         }
     }
     $self->fasta_files( $self->args );
@@ -150,10 +154,16 @@ sub run {
     my ($self) = @_;
 
     ( !$self->help ) or die $self->usage_text;
-    if ( defined( $self->_error_message ) ) {
-        print $self->_error_message . "\n";
-        die $self->usage_text;
-    }
+
+    $self->logger->info("Fixing input GFF files"); 
+    my $reformat_input_files = Bio::Roary::ReformatInputGFFs->new( gff_files => $self->fasta_files, logger => $self->logger );
+	$reformat_input_files->fix_duplicate_gene_ids();
+	if(@{$reformat_input_files->fixed_gff_files} == 0)
+	{
+		$self->logger->error("All input files have been excluded from analysis. Please check you have valid GFF files, with annotation and a FASTA sequence at the end. Better still, reannotate your FASTA file with PROKKA.");
+		die();
+	}
+	$self->fasta_files($reformat_input_files->fixed_gff_files);
 
     $self->logger->info("Extracting proteins from GFF files");
     my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
@@ -171,7 +181,8 @@ sub run {
             input_files => $self->fasta_files,
             job_runner  => $self->job_runner,
             cpus        => $self->cpus,
-            verbose     => $self->verbose
+            verbose     => $self->verbose,
+            kraken_db   => $self->kraken_db
         );
         $qc_input_files->report;
     }
@@ -242,7 +253,7 @@ sub usage_text {
 
     # Generate QC report detailing top genus and species for each assembly
 	# Requires Kraken to be installed
-    roary -qc *.gff
+    roary -k /path/to/kraken_database/ -qc *.gff
 
     # This help message
     roary -h

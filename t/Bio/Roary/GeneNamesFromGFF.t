@@ -50,4 +50,26 @@ is_deeply(
     'ids to gene names as expected again'
 );
 
+
+ok(
+    $obj = Bio::Roary::GeneNamesFromGFF->new(
+        gff_file => 't/data/locus_tag_gffs/query_1.gff'
+    ),
+    'initialise a GFF file with locus tags only'
+);
+
+is_deeply(
+    $obj->ids_to_gene_name,
+    {
+              'abc_00005' => 'speH',
+              'abc_00007' => 'argF',
+              'abc_00001' => 'different',
+              'abc_00016' => 'yfnB',
+              'abc_00008' => 'arcC1'
+            },
+    'ids to gene names with GFF file with locus tags only'
+);
+
+
+
 done_testing();

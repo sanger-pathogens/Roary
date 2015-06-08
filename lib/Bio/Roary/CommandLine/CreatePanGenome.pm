@@ -65,8 +65,11 @@ sub usage_text {
     # Include full annotation and inference in group statistics
     create_pan_genome --verbose_stats *.gff
 
-    # Increase the groups/clusters limit (default 50,000). Please check the QC results before running this
+    # Increase the groups/clusters limit (default 50,000). Please check the QC results before running this!
     create_pan_genome --group_limit 60000  *.gff
+    
+    # Use a different Kraken database
+    roary -k /path/to/kraken_database/  *.gff
 
     # This help message
     create_pan_genome -h

@@ -51,12 +51,13 @@ sub create_files {
     my $num_groups = $self->_number_of_groups;
     my $limit      = $self->group_limit;
     if ( $num_groups > $limit ){
-      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created. Please check the spreadsheet for contamination from different species.\n";
+      print STDERR "Number of clusters ($num_groups) exceeds limit ($limit). Multifastas not created. Please check the spreadsheet for contamination from different species or increase the --group_limit parameter.\n";
       return 1;
     }
 
     make_path($self->output_directory);
     
+	my %pan_reference_groups_seen;
     # if its output_multifasta_files == false then you want to create the core genome and delete all intermediate multifasta files
     for my $gff_file ( @{ $self->gff_files } ) 
     {
@@ -65,7 +66,8 @@ sub create_files {
           group_names          => $self->group_names,
           output_directory     => $self->output_directory,
           annotate_groups      => $self->annotate_groups,
-          output_multifasta_files => $self->output_multifasta_files
+          output_multifasta_files => $self->output_multifasta_files,
+		  pan_reference_groups_seen => \%pan_reference_groups_seen
       );
       $gff_multifasta->populate_files;
     }
