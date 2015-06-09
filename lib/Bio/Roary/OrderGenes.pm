@@ -106,8 +106,6 @@ sub _build_group_order
       my $group_from = $groups_on_contig->[$i -1];
       my $group_to = $groups_on_contig->[$i];
       $group_order{$group_from}{$group_to}++;
-      # TODO: remove because you only need half the matix
-      #$group_order{$group_to}{$group_from}++;
     }
     if(@{$groups_on_contig} == 1)
     {
@@ -343,42 +341,9 @@ sub _create_accessory_graph
 		}
     }
   }
-  #$self->_remove_weak_edges_from_graph($graph);
+
   return $graph;
 }
-
-sub _remove_weak_edges_from_graph
-{
-  my($self, $graph) = @_;
-  
-  for my $current_group (keys %{$self->group_order()})
-  {
-    next unless($graph->has_vertex($current_group));
-    
-    my $largest = 0;
-    for my $group_to (keys %{$self->group_order->{$current_group}})
-    {
-      if($largest < $self->group_order->{$current_group}->{$group_to})
-      {
-        $largest = $self->group_order->{$current_group}->{$group_to};
-      }
-    }
-    my $threshold_link = int($largest*$self->_percentage_of_largest_weak_threshold);
-    next if($threshold_link  <= 1);
-    
-    for my $group_to (keys %{$self->group_order->{$current_group}})
-    {
-      if($self->group_order->{$current_group}->{$group_to} < $threshold_link  && $graph->has_edge($current_group,$group_to))
-      {
-        $graph->delete_edge($current_group, $group_to);
-      }
-    }
-  }
-  
-}
-
-
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
