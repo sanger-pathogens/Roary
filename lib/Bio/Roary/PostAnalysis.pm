@@ -135,6 +135,7 @@ sub _build__order_genes_obj
   return Bio::Roary::OrderGenes->new(
     analyse_groups_obj => $self->_analyse_groups_obj,
     gff_files          => $self->input_files,
+	core_definition    => $self->core_definition
   );
 }
 

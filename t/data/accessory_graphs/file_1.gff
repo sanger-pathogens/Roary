@@ -1,0 +1,13 @@
+##gff-version 3
+##sequence-region contig01 1 1500
+contig01	abc	CDS	1	90	.	-	0	ID=1_A
+contig01	abc	CDS	100	190	.	+	0	ID=1_B
+contig01	abc	CDS	200	290	.	+	0	ID=1_C
+contig01	abc	CDS	300	390	.	-	0	ID=1_E
+contig01	abc	CDS	400	490	.	+	0	ID=1_F
+contig01	abc	CDS	500	590	.	+	0	ID=1_F_insertion
+contig01	abc	CDS	600	690	.	+	0	ID=1_G
+contig01	abc	CDS	700	790	.	+	0	ID=1_H
+##FASTA
+>contig01
+ACTGGCCGCCTAATAATAAAAACTCTAAAAGTTGTAATTTAAAATAGTTCTTTAAATTAT

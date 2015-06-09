@@ -25,7 +25,7 @@ use Graph::Writer::Dot;
 has 'gff_files'           => ( is => 'ro', isa => 'ArrayRef',  required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
 
-
+has 'core_definition'           => ( is => 'ro', isa => 'Num', default  => 1.0 );
 has 'pan_graph_filename'        => ( is => 'ro', isa => 'Str',  default => 'core_accessory_graph.dot' );
 has 'accessory_graph_filename'  => ( is => 'ro', isa => 'Str',  default => 'accessory_graph.dot' );
 
@@ -107,7 +107,7 @@ sub _build_group_order
       my $group_to = $groups_on_contig->[$i];
       $group_order{$group_from}{$group_to}++;
       # TODO: remove because you only need half the matix
-      $group_order{$group_to}{$group_from}++;
+      #$group_order{$group_to}{$group_from}++;
     }
     if(@{$groups_on_contig} == 1)
     {
@@ -154,61 +154,32 @@ sub _add_groups_to_graph
 sub _reorder_connected_components
 {
    my($self, $graph_groups) = @_;
-   
    my @ordered_graph_groups;
-   
    my @paths_and_weights;
    
    for my $graph_group( @{$graph_groups})
    {
-     
-     my $graph = Graph->new(undirected => 1);
-     my %groups;
-     $groups{$_}++ for (@{$graph_group});
-     
-     my $total_weight =0;
-     my $number_of_edges = 0;
-     for my $current_group (keys %groups)
-     {
-       for my $group_to (keys %{$self->group_order->{$current_group}})
+       my %groups;
+       $groups{$_}++ for (@{$graph_group});
+	   my $edge_sum = 0;
+	   
+       for my $current_group (keys %groups)
        {
-         next if(! defined($groups{$group_to}));
-         next if($graph->has_edge($group_to,$current_group));
-         my $current_weight = $self->group_order->{$current_group}->{$group_to} ;
-         $current_weight = $self->number_of_files if($current_weight > $self->number_of_files);
-         my $weight = ($self->number_of_files - $current_weight) +1;
-
-         $graph->add_weighted_edge($current_group,$group_to, $weight);
-         $total_weight += $weight;
-         $number_of_edges++;
+           for my $group_to (keys %{$self->group_order->{$current_group}})
+           {
+			   next unless defined($groups{ $group_to });
+			   $edge_sum += $self->group_order->{$current_group}->{$group_to};
+		   }
        }
-     }
-     
-     my $average_weight ;
-     if($number_of_edges <= 0)
-     {
-       $average_weight = $self->number_of_files;
-     }
-     else
-     {
-       $average_weight = $total_weight/$number_of_edges;
-     }
-
-     my $minimum_spanning_tree = $graph->minimum_spanning_tree;
-     my $dfs_obj = Graph::Traversal::DFS->new($minimum_spanning_tree);
-     my @reordered_dfs_groups = $dfs_obj->dfs;
-
-     push(@paths_and_weights, { 
-       path           => \@reordered_dfs_groups,
-       average_weight => $average_weight 
-     });
-     
+	   
+       push(@paths_and_weights, { 
+         path           => $graph_group,
+         average_weight => $edge_sum
+       });
+	   
    }
-   
    my @ordered_paths_and_weights =  sort { $a->{average_weight} <=> $b->{average_weight} } @paths_and_weights;
-   
    @ordered_graph_groups = map { $_->{path}} @ordered_paths_and_weights;
-    
    return \@ordered_graph_groups;
 }
 
@@ -226,6 +197,7 @@ sub _build_groups_to_contigs
   my $accessory_graph = $self->_create_accessory_graph;
   my @group_graphs = $accessory_graph->connected_components();
   my $reordered_graphs = $self->_reorder_connected_components(\@group_graphs);
+  
   $self->_save_graph_to_file($accessory_graph,$self->accessory_graph_filename);
   
   for my $contig_groups (@{$reordered_graphs})
@@ -242,7 +214,7 @@ sub _build_groups_to_contigs
     }
     $counter++;
   }
-  
+
   # Core + accessory
   my @group_graphs_all = $self->group_graphs->connected_components();
   my $reordered_graphs_all = $self->_reorder_connected_components(\@group_graphs_all);
@@ -304,31 +276,48 @@ sub _create_accessory_graph
   my $graph = Graph->new(undirected => 1);
   
   my %core_groups;
-  
+  my %inbound_sum;
   for my $current_group (keys %{$self->group_order()})
   {
-    my $sum_of_weights = 0;
+	my $outbound_links_sum = 0;
     for my $group_to (keys %{$self->group_order->{$current_group}})
     {
-      $sum_of_weights += $self->group_order->{$current_group}->{$group_to};
+		$outbound_links_sum += $self->group_order->{$current_group}->{$group_to};
+		$inbound_sum{$group_to} += $self->group_order->{$current_group}->{$group_to};
     }
-    if($sum_of_weights >= $self->number_of_files )
+	
+    if($outbound_links_sum >= ($self->number_of_files * $self->core_definition) )
     {
-      $core_groups{$current_group}++;
+  	  $core_groups{$current_group} = $outbound_links_sum;
     }
   }
   
+  for my $current_group (keys %inbound_sum)
+  {
+	  if($inbound_sum{$current_group} >= ($self->number_of_files * $self->core_definition))
+	  {
+	  	$core_groups{$current_group} = $inbound_sum{$current_group};
+	  }
+  }
+  
+
   for my $current_group (keys %{$self->group_order()})
   {
     next if(defined($core_groups{$current_group}));
     for my $group_to (keys %{$self->group_order->{$current_group}})
     {
-      next if(defined($core_groups{$group_to}));
-      my $weight =  ($self->number_of_files - $self->group_order->{$current_group}->{$group_to}) +1;
-      $graph->add_weighted_edge($current_group,$group_to, $weight);
+		if(defined($core_groups{$group_to}))
+		{
+			$graph->add_vertex($current_group);
+		}
+		else
+		{
+	        my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
+	        $graph->add_weighted_edge($current_group,$group_to, $weight);
+		}
     }
   }
-  $self->_remove_weak_edges_from_graph($graph);
+  #$self->_remove_weak_edges_from_graph($graph);
   return $graph;
 }
 
