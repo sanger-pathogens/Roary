@@ -172,10 +172,36 @@ sub _reorder_connected_components
 		   }
        }
 	   
-       push(@paths_and_weights, { 
-         path           => $graph_group,
-         average_weight => $edge_sum
-       });
+	   if(@{$graph_group} < 4)
+	   {
+           push(@paths_and_weights, { 
+             path           => $graph_group,
+             average_weight => $edge_sum
+           });
+	   }
+	   else
+	   {
+	     my $graph = Graph->new(undirected => 1);
+         for my $current_group (keys %groups)
+         {
+             for my $group_to (keys %{$self->group_order->{$current_group}})
+             {
+	     		   if($groups{$group_to})
+	     		   {
+	     			   my $weight = 1/$self->group_order->{$current_group}->{$group_to};
+	     		   	   $graph->add_weighted_edge($current_group,$group_to, $weight);
+	     		   }
+	     	   } 
+	     }
+	     my $minimum_spanning_tree = $graph->minimum_spanning_tree;
+	     my $dfs_obj = Graph::Traversal::DFS->new($minimum_spanning_tree);
+	     my @reordered_dfs_groups = $dfs_obj->dfs;
+	     
+         push(@paths_and_weights, { 
+           path           => \@reordered_dfs_groups,
+           average_weight => $edge_sum
+         });
+       }
 	   
    }
    my @ordered_paths_and_weights =  sort { $a->{average_weight} <=> $b->{average_weight} } @paths_and_weights;
