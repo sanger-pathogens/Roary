@@ -23,5 +23,9 @@ ok(my $obj = Bio::Roary::OrderGenes->new(
   gff_files   => ['t/data/query_1.gff','t/data/query_2.gff','t/data/query_3.gff'],
 ),'Initialise order genes object');
 
+ok($obj->groups_to_contigs, 'build the graph');
+ok(-e 'core_accessory_graph.dot', 'core accessory graph created');
+ok(-e 'accessory_graph.dot', 'accessory graph created');
+
 
 done_testing();

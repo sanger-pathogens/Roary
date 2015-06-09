@@ -20,9 +20,15 @@ use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
 use Bio::Roary::ContigsToGeneIDsFromGFF;
 use Graph;
+use Graph::Writer::Dot;
 
 has 'gff_files'           => ( is => 'ro', isa => 'ArrayRef',  required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
+
+
+has 'pan_graph_filename'        => ( is => 'ro', isa => 'Str',  default => 'core_accessory_graph.dot' );
+has 'accessory_graph_filename'  => ( is => 'ro', isa => 'Str',  default => 'accessory_graph.dot' );
+
 has 'group_order'         => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_group_order');
 has 'group_graphs'        => ( is => 'ro', isa => 'Graph',  lazy => 1, builder => '_build_group_graphs');
 has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',  lazy => 1, builder => '_build_groups_to_contigs');
@@ -121,6 +127,14 @@ sub _build_group_graphs
 }
 
 
+sub _save_graph_to_file
+{
+	my($self, $graph, $output_filename) = @_;
+    my $writer = Graph::Writer::Dot->new();
+    $writer->write_graph($graph, $output_filename);
+	return 1;
+}
+
 sub _add_groups_to_graph
 {
   my($self) = @_;
@@ -212,6 +226,7 @@ sub _build_groups_to_contigs
   my $accessory_graph = $self->_create_accessory_graph;
   my @group_graphs = $accessory_graph->connected_components();
   my $reordered_graphs = $self->_reorder_connected_components(\@group_graphs);
+  $self->_save_graph_to_file($accessory_graph,$self->accessory_graph_filename);
   
   for my $contig_groups (@{$reordered_graphs})
   {
@@ -231,6 +246,7 @@ sub _build_groups_to_contigs
   # Core + accessory
   my @group_graphs_all = $self->group_graphs->connected_components();
   my $reordered_graphs_all = $self->_reorder_connected_components(\@group_graphs_all);
+  $self->_save_graph_to_file($self->group_graphs,$self->pan_graph_filename);
   
   $overall_counter = 1;
   $counter = 1;
