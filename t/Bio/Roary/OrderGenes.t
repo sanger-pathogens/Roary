@@ -46,7 +46,7 @@ sub order_genes_obj
 	),"Initialise order genes object for $groups_filename" );
 	
 	ok($obj->groups_to_contigs, 'build the graph');
-	check_all_groups_in_output_graph($groups_filename,$obj->groups_to_contigs);
+	check_all_groups_in_output_graph($groups_filename,$obj->groups_to_contigs,$core_definition);
 	ok(-e 'core_accessory_graph.dot', 'core accessory graph created');
 	ok(-e 'accessory_graph.dot', 'accessory graph created');
 	
@@ -55,7 +55,7 @@ sub order_genes_obj
 
 sub check_all_groups_in_output_graph
 {
-	my($groups_filename, $groups_to_contigs) = @_;
+	my($groups_filename, $groups_to_contigs,$core_definition) = @_;
 	
 	open(my $groups_in, $groups_filename);
 	while(<$groups_in>)
@@ -69,7 +69,7 @@ sub check_all_groups_in_output_graph
 		# Check to see if the accessory groups are tagged properly
 		$attributes =~ s/ //gi;
 		my @sequence_ids = split(/\t/,$attributes);
-		if(@sequence_ids == 3)
+		if(@sequence_ids >= 3*$core_definition)
 		{
 			ok(! defined($groups_to_contigs->{$group}->{accessory_label}), "group $group is core so shouldnt have any accessory labels");
 		}
