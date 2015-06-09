@@ -59,8 +59,8 @@ sub run {
     my $cdhit_obj = Bio::Roary::External::Cdhit->new(
         input_file                   => $self->output_combined_filename,
         output_base                  => $self->output_cd_hit_filename,
-        _length_difference_cutoff    => 1,
-        _sequence_identity_threshold => 1,
+        _length_difference_cutoff    => $self->lower_bound_percentage,
+        _sequence_identity_threshold => $self->lower_bound_percentage,
         cpus                         => $self->cpus,
     );
     $cdhit_obj->run();
