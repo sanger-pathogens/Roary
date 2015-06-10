@@ -16,7 +16,7 @@ use Bio::Roary::QC::Report;
 extends 'Bio::Roary::CommandLine::Roary';
 
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default => 'Local' );
-has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 0.99 );
 has 'run_qc'                      => ( is => 'rw', isa => 'Bool', default => 1 );
