@@ -31,7 +31,7 @@ has 'mcl_exec'                => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter'   => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'                    => ( is => 'rw', isa => 'Int', default => 1 );
 has 'output_multifasta_files' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'perc_identity'           => ( is => 'rw', isa => 'Num', default => 98 );
+has 'perc_identity'           => ( is => 'rw', isa => 'Num', default => 95 );
 has 'dont_delete_files'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_create_rplots'      => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_run_qc'             => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -39,7 +39,7 @@ has 'dont_split_groups'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'       => ( is => 'rw', isa => 'Int', default => 11 );
 has 'group_limit'             => ( is => 'rw', isa => 'Num', default => 50000 );
-has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 1 );
+has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'kraken_db'               => ( is => 'rw', isa => 'Str',  default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
 
@@ -232,11 +232,11 @@ sub usage_text {
     # Create multifasta alignement of each gene (Warning: Thousands of files are created)
     roary -e --dont_delete_files *.gff
 	
-    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates
+    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates (default 99%)
     roary -e --core_definition 98 *.gff
 	
-    # Set the blastp percentage identity threshold (default 98%).
-    roary -i 95 *.gff
+    # Set the blastp percentage identity threshold (default 95%).
+    roary -i 98 *.gff
     
     # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
     roary --translation_table 1 *.gff 

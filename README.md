@@ -54,7 +54,7 @@ export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 ###Install perl dependancies
 
 ```
-cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV Log::Log4perl File::Which
+cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV Log::Log4perl File::Which Graph::Writer::Dot Test::Files
 ```
 
 ##Installation - with Windows

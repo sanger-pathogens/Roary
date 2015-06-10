@@ -6,6 +6,7 @@ use File::Path qw( remove_tree);
 use Cwd;
 use File::Which;
 
+
 BEGIN { unshift( @INC, './lib' ) }
 BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
@@ -98,7 +99,7 @@ SKIP:
   ), 'Check size of the core_gene_alignment.aln init');
   
   my @keys = keys %{$seq_len->sequence_lengths};
-  is($seq_len->sequence_lengths->{$keys[0]}, 58389, 'length of first sequence');
+  is($seq_len->sequence_lengths->{$keys[0]}, 64764, 'length of first sequence');
   
   ok(-e 'accessory.tab');
   ok(-e 'core_accessory.tab');
