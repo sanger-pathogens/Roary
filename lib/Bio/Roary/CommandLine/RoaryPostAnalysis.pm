@@ -133,7 +133,8 @@ sub run {
         job_runner          => $self->job_runner,
         translation_table   => $self->translation_table,
         core_definition     => $self->core_definition,
-        cpus                => $self->cpus
+        cpus                => $self->cpus,
+		verbose             => $self->verbose,
       );
       $seg->run();
 	

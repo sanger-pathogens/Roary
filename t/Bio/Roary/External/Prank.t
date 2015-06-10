@@ -22,7 +22,7 @@ ok(my $obj = Bio::Roary::External::Prank->new(
 
 is(
     $obj->_command_to_run,
-    'prank -d=t/data/prank_input.fa -o=t/data/prank_input.fa.aln -codon -F -quiet -once > /dev/null 2>&1 && mv t/data/prank_input.fa.aln.best.fas t/data/prank_input.fa.aln',
+    'prank -d=t/data/prank_input.fa -o=t/data/prank_input.fa.aln -codon -F -quiet -once > /dev/null 2>&1 && mv t/data/prank_input.fa.aln*.fas t/data/prank_input.fa.aln',
     'Command constructed as expected'
 );
 

@@ -23,7 +23,7 @@ my $cwd = getcwd();
 local $ENV{PATH} = "$ENV{PATH}:./bin";
 my %scripts_and_expected_files;
 system('touch empty_file');
-
+cleanup_files();
 
 %scripts_and_expected_files = (
 
@@ -88,10 +88,11 @@ SKIP:
   skip "prank not installed", 11 unless ( which('prank'));
 
   %scripts_and_expected_files = (
-    ' -j Local --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+    '-j Local --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
       [ 'pan_genome_sequences/flgM.fa.aln', 't/data/flgM.fa.aln' ],
   );
   mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+  
   ok(-e 'core_gene_alignment.aln', 'Core gene alignment exists');
   
   ok(my $seq_len = Bio::Roary::SequenceLengths->new(
@@ -99,7 +100,7 @@ SKIP:
   ), 'Check size of the core_gene_alignment.aln init');
   
   my @keys = keys %{$seq_len->sequence_lengths};
-  is($seq_len->sequence_lengths->{$keys[0]}, 64764, 'length of first sequence');
+  is($seq_len->sequence_lengths->{$keys[0]}, 64986, 'length of first sequence');
   
   ok(-e 'accessory.tab');
   ok(-e 'core_accessory.tab');
@@ -115,7 +116,7 @@ SKIP:
           [ 'pan_genome_reference.fa', 't/data/expected_pan_genome_reference.fa' ],  
   );
   mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
-  
+ 
   cleanup_files();
 }
 done_testing();
@@ -123,6 +124,7 @@ done_testing();
 sub cleanup_files
 {
   remove_tree('pan_genome_sequences');
+  remove_tree('fixed_input_files');
   unlink('_blast_results');
   unlink('_clustered');
   unlink('_clustered.bak.clstr');
@@ -161,6 +163,6 @@ sub cleanup_files
   unlink('real_data_1.gff.proteome.faa');
   unlink('real_data_2.gff.proteome.faa');
   unlink('pan_genome_reference.fa');
-  
-
+  unlink('accessory_graph.dot');
+  unlink('core_accessory_graph.dot');
 }

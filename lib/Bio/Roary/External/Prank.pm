@@ -35,7 +35,7 @@ sub _build__memory_required_in_mb {
 sub _command_to_run {
     my ($self) = @_;
 
-    return join( ' ', ( $self->exec, "-d=" . $self->input_filename, "-o=" . $self->output_filename, '-codon', '-F', '-quiet', '-once', '> /dev/null 2>&1', '&&', 'mv', $self->output_filename.'.best.fas', $self->output_filename ) );
+    return join( ' ', ( $self->exec, "-d=" . $self->input_filename, "-o=" . $self->output_filename, '-codon', '-F', '-quiet', '-once', '> /dev/null 2>&1', '&&', 'mv', $self->output_filename.'*.fas', $self->output_filename ) );
 }
 
 sub run {
