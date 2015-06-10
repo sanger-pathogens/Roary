@@ -109,11 +109,11 @@ sub BUILD {
       if ( defined($apply_unknowns_filter) );
 
     if ( defined($output_multifasta_files) ) {
-        if ( which('revtrans.py') ) {
+        if ( which('prank') ) {
             $self->output_multifasta_files($output_multifasta_files);
         }
         else {
-            $self->logger->warn("revtrans.py not found in your PATH so cannot generate multiFASTA alignments, skipping for now.");
+            $self->logger->warn("prank not found in your PATH so cannot generate multiFASTA alignments, skipping for now.");
         }
     }
     $self->dont_delete_files($dont_delete_files) if ( defined($dont_delete_files) );
@@ -226,7 +226,6 @@ sub usage_text {
     roary -o results *.gff
     
     # Create a MultiFASTA alignment of core genes, so that you can build a phylogenetic tree
-	# Requires RevTrans.py to be installed
     roary -e *.gff
 	
     # Create multifasta alignement of each gene (Warning: Thousands of files are created)

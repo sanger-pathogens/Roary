@@ -85,7 +85,7 @@ for my $filename (('query_1.gff.proteome.faa','query_2.gff.proteome.faa','query_
 SKIP: 
 {
 
-  skip "revtrans.py not installed", 11 unless ( which('revtrans.py'));
+  skip "prank not installed", 11 unless ( which('prank'));
 
   %scripts_and_expected_files = (
     ' -j Local --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>

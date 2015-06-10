@@ -30,7 +30,7 @@ my %scripts_and_expected_files = (
 SKIP: 
 {
 
-  skip "revtrans.py not installed", 2 unless ( which('revtrans.py'));
+  skip "prank not installed", 2 unless ( which('prank'));
   mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 }
 

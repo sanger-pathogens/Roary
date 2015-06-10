@@ -11,8 +11,7 @@ Take in a multifasta file of nucleotides, convert to proteins and align with mus
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::Roary::AnnotateGroups;
-use Bio::Roary::External::Muscle;
-use Bio::Roary::External::Revtrans;
+use Bio::Roary::External::Prank;
 use Bio::Roary::Output::GroupsMultifastaProtein;
 use Bio::Roary::SortFasta;
 extends 'Bio::Roary::CommandLine::Common';
@@ -68,39 +67,19 @@ sub run {
          input_filename   => $fasta_file,
        );
       $sort_fasta_before->sort_fasta->replace_input_with_output_file;
-      
-      my $multifasta_protein_obj = Bio::Roary::Output::GroupsMultifastaProtein->new(
-          nucleotide_fasta_file => $fasta_file,
-          translation_table     => $self->translation_table
-        );
-      $multifasta_protein_obj->convert_nucleotide_to_protein();
-      
-      my $seg = Bio::Roary::External::Muscle->new(
-        fasta_files => [$multifasta_protein_obj->output_filename],
-        job_runner  => 'Local'
-      );
-      $seg->run();
-      
-      my $sort_fasta_after_muscle = Bio::Roary::SortFasta->new(
-         input_filename   => $multifasta_protein_obj->output_filename. '.aln',
-       );
-      $sort_fasta_after_muscle->sort_fasta->replace_input_with_output_file;
-
-      my $revtrans= Bio::Roary::External::Revtrans->new(
-        nucleotide_filename => $fasta_file,
-        protein_filename  => $multifasta_protein_obj->output_filename. '.aln',
-        output_filename   => $fasta_file.'.aln',
-        translation_table => $self->translation_table
-      );
-      $revtrans->run();
-      
+	  
+	  my $prank_obj = Bio::Roary::External::Prank->new(
+	    input_filename      => $fasta_file,
+	    output_filename => $fasta_file.'.aln',
+	    job_runner      => 'Local'
+	  );
+	  $prank_obj->run();
+	  
       my $sort_fasta_after_revtrans = Bio::Roary::SortFasta->new(
          input_filename   => $fasta_file.'.aln',
        );
       $sort_fasta_after_revtrans->sort_fasta->replace_input_with_output_file;
-      
-      unlink($multifasta_protein_obj->output_filename);
-      unlink($multifasta_protein_obj->output_filename. '.aln');
+      unlink($fasta_file);
     }
 }
 
@@ -113,9 +92,6 @@ sub usage_text {
     
     # Transfer the annotation from the GFF files to the group file
     protein_muscle_alignment_from_nucleotides protein_fasta_1.faa protein_fasta_2.faa
-    
-    # Use a different translation table (default 11)
-    protein_muscle_alignment_from_nucleotides -t 1 protein_fasta_1.faa protein_fasta_2.faa
     
     # This help message
     protein_muscle_alignment_from_nucleotides -h
