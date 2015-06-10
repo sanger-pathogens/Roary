@@ -3,6 +3,7 @@ use Moose::Role;
 use Test::Most;
 use Data::Dumper;
 use File::Slurp::Tiny qw(read_file write_file read_lines);
+use Test::Files;
 
 $ENV{PATH} .= ":./bin";
 
@@ -79,7 +80,8 @@ sub mock_execute_script_and_check_output {
             }
             else
             {
-              is(read_file($actual_output_file_name), read_file($expected_output_file_name), "Actual and expected output match for '$script_parameters'");
+              compare_ok($actual_output_file_name, $expected_output_file_name, "Actual and expected output match for '$script_parameters'");
+			  
             }
             unlink($actual_output_file_name);
         }
