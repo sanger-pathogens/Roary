@@ -35,7 +35,7 @@ sub _build__memory_required_in_mb {
 sub _command_to_run {
     my ($self) = @_;
 
-    return join( ' ', ( $self->exec, "-d=" . $self->input_filename, "-o=" . $self->output_filename, '-codon', '-F', '-quiet' ) );
+    return join( ' ', ( $self->exec, "-d=" . $self->input_filename, "-o=" . $self->output_filename, '-codon', '-F', '-quiet', '-once', '> /dev/null 2>&1', '&&', 'mv', $self->output_filename.'.best.fas', $self->output_filename ) );
 }
 
 sub run {
@@ -43,6 +43,7 @@ sub run {
     my @commands_to_run;
 
     push( @commands_to_run, $self->_command_to_run() );
+	$self->logger->info("Running command: ".$self->_command_to_run());
 
     my $job_runner_obj = $self->_job_runner_class->new(
         commands_to_run => \@commands_to_run,

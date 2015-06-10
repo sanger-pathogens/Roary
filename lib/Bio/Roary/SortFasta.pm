@@ -20,6 +20,7 @@ use Bio::SeqIO;
 
 has 'input_filename'  => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
+has 'make_multiple_of_three' => ( is => 'ro', isa => 'Bool', default => 0);
 
 has '_input_seqio'  => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__input_seqio' );
 has '_output_seqio' => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__output_seqio' );
@@ -45,6 +46,19 @@ sub sort_fasta {
     
     my %input_sequences;
     while ( my $input_seq = $self->_input_seqio->next_seq() ) {
+		
+		if($self->make_multiple_of_three)
+		{
+			my $seq_length = $input_seq->length();
+			if($seq_length % 3 == 1)
+			{
+				 $input_seq->seq($input_seq->seq()."NN");
+			}
+			elsif($seq_length % 3 == 2)
+			{
+				$input_seq->seq($input_seq->seq()."N");
+			}
+		}
        $input_sequences{$input_seq->display_id} = $input_seq;
     }
     

@@ -20,24 +20,28 @@ extends 'Bio::Roary::CommandLine::Common';
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'translation_table'  => ( is => 'rw', isa => 'Int',      default => 11 );
 
 has 'nucleotide_fasta_files'  => ( is => 'rw', isa => 'ArrayRef' );
 has '_error_message'          => ( is => 'rw', isa => 'Str' );
+has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $nucleotide_fasta_files, $help,$translation_table );
+    my ( $nucleotide_fasta_files, $help,$verbose );
 
     GetOptionsFromArray(
         $self->args,
-        't|translation_table=i'     => \$translation_table,
+		'v|verbose'                 => \$verbose,
         'h|help'              => \$help,
     );
+	
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
 
     $self->help($help) if(defined($help));
-    $self->translation_table($translation_table)             if (defined($translation_table) );
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide at least 1 FASTA file");
     }
@@ -65,13 +69,16 @@ sub run {
       
       my $sort_fasta_before = Bio::Roary::SortFasta->new(
          input_filename   => $fasta_file,
+		 make_multiple_of_three => 1,
        );
       $sort_fasta_before->sort_fasta->replace_input_with_output_file;
 	  
 	  my $prank_obj = Bio::Roary::External::Prank->new(
-	    input_filename      => $fasta_file,
+	    input_filename  => $fasta_file,
 	    output_filename => $fasta_file.'.aln',
-	    job_runner      => 'Local'
+	    job_runner      => 'Local',
+		logger          => $self->logger,
+		verbose         => $self->verbose
 	  );
 	  $prank_obj->run();
 	  
