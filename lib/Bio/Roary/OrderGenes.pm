@@ -300,45 +300,29 @@ sub _create_accessory_graph
   my $graph = Graph->new(undirected => 1);
   
   my %core_groups;
-  my %inbound_sum;
-  for my $current_group (keys %{$self->group_order()})
+  my %group_freq;
+  for my $groups_on_contig (@{$self->_groups_to_file_contigs})
   {
-	my $outbound_links_sum = 0;
-    for my $group_to (keys %{$self->group_order->{$current_group}})
+    for my $current_group ( @{$groups_on_contig})
     {
-		$outbound_links_sum += $self->group_order->{$current_group}->{$group_to};
-		$inbound_sum{$group_to} += $self->group_order->{$current_group}->{$group_to};
-    }
-	
-    if($outbound_links_sum >= ($self->number_of_files * $self->core_definition) )
-    {
-  	  $core_groups{$current_group} = $outbound_links_sum;
-    }
+		$group_freq{$current_group}++;
+	}
   }
   
-  for my $current_group (keys %inbound_sum)
-  {
-	  if($inbound_sum{$current_group} >= ($self->number_of_files * $self->core_definition))
-	  {
-	  	$core_groups{$current_group} = $inbound_sum{$current_group};
-	  }
-  }
-  
-
   for my $current_group (keys %{$self->group_order()})
   {
-    next if(defined($core_groups{$current_group}));
+    next if($group_freq{$current_group} >= ($self->number_of_files * $self->core_definition));
     for my $group_to (keys %{$self->group_order->{$current_group}})
     {
-		if(defined($core_groups{$group_to}))
+		if($group_freq{$group_to} >= ($self->number_of_files * $self->core_definition))
 		{
 			$graph->add_vertex($current_group);
 		}
 		else
 		{
-	        my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
-	        $graph->add_weighted_edge($current_group,$group_to, $weight);
-		}
+			my $weight = 1.0/($self->group_order->{$current_group}->{$group_to} );
+			$graph->add_weighted_edge($current_group,$group_to, $weight);
+    	}
     }
   }
 

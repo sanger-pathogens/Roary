@@ -25,6 +25,15 @@ my $one_branch_50    = order_genes_obj('t/data/accessory_graphs/one_branch',0.5)
 my $two_graphs_100   = order_genes_obj('t/data/accessory_graphs/two_graphs',1);
 my $two_graphs_50    = order_genes_obj('t/data/accessory_graphs/two_graphs',0.5);
 
+my $single_gene_100 = order_genes_obj('t/data/accessory_graphs/single_gene_contig',1);
+my $single_gene_50  = order_genes_obj('t/data/accessory_graphs/single_gene_contig',0.5);
+
+my $core_deletion_100 = order_genes_obj('t/data/accessory_graphs/core_deletion',1);
+my $core_deletion_50  = order_genes_obj('t/data/accessory_graphs/core_deletion',0.5);
+
+my $core_island_100 = order_genes_obj('t/data/accessory_graphs/core_island',1);
+my $core_island_50  = order_genes_obj('t/data/accessory_graphs/core_island',0.5);
+
 cleanup();
 done_testing();
 
