@@ -26,8 +26,6 @@ has 'output_filename'      => ( is => 'ro', isa => 'Str',      default  => 'summ
 has '_number_of_isolates'  => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_builder__number_of_isolates' );
 has '_genes_to_file'       => ( is => 'rw', isa => 'HashRef' );
 has '_files_to_genes'      => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__files_to_genes' );
-has '_freq_groups_per_genome' =>
-  ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_builder__freq_groups_per_genome' );
 has '_groups_to_genes'     => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_genes' );
 has '_genes_to_groups'     => ( is => 'rw', isa => 'HashRef' );
 
@@ -40,7 +38,6 @@ sub BUILD {
     $self->_groups_to_genes;
     # This triggers _genes_to_file to be built
     $self->_files_to_genes;
-    $self->_freq_groups_per_genome;
 }
 
 sub _builder__groups
@@ -114,30 +111,6 @@ sub _builder__groups_to_genes {
     
     return \%groups_to_genes;
 }
-
-sub _builder__freq_groups_per_genome {
-    my ($self) = @_;
-    my @group_count;
-
-    open( my $fh, $self->groups_filename )
-      or Bio::Roary::Exceptions::FileNotFound->throw( error => "Group file not found:" . $self->groups_filename );
-    while (<$fh>) {
-        chomp;
-        my $line = $_;
-
-        # Remove the group name
-        $line =~ s!^(.+: )?!!;
-        my @elements = split( /[\s\t]+/, $line );
-        my $number_of_files_in_group = $self->_count_num_files_in_group( \@elements );
-        $number_of_files_in_group = ( $number_of_files_in_group * 100 / $self->_number_of_isolates );
-        push( @group_count, $number_of_files_in_group );
-
-    }
-    close($fh);
-    my @sorted_group_count = sort { $b <=> $a } @group_count;
-    return \@sorted_group_count;
-}
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
