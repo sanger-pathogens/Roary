@@ -37,7 +37,7 @@
 
 <h2><a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation - Ubuntu/Debian</h2>
 <p>Assuming you have root on your system, all the dependancies can be installed using apt and cpanm.</p>
-<p><code>sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus</code></p>
+<p><code>sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank</code></p>
 <p><code>sudo cpanm -f Bio::Roary</code></p>
    
 
@@ -45,7 +45,7 @@
 <p>Assuming you have homebrew setup and installed on your OSX system (or Linuxbrew on Linux), tap the science keg and install the dependancies, then install the perl modules:</p>
 
 <p><code>brew tap homebrew/science</code></p>
-<p><code>brew install bedtools cd-hit blast mcl muscle parallel</code></p>
+<p><code>brew install bedtools cd-hit blast mcl prank parallel</code></p>
 <p><code>cpanm -f Bio::Roary</code></p>
 
 
@@ -111,13 +111,13 @@ The cdhit packages for Ubuntu 12.04 seem to be effected, so <a href="http://cd-h
 <p>A pan genome pipeline has been created which takes the GFF3 files created by <a href="http://www.vicbioinformatics.com/software.prokka.shtml">Prokka</a> and clusters the predicted proteins to allow for the full genomic variation of the input set to be explored.</p>
 
 <p>The inputs to the pan genome pipeline are a set of annotation files with corresponding nucleotide sequences in GFF3 format. Predicted coding regions are extracted and converted to protein sequences. Sequences where more than 5% of nucleotides are unknown or which are less than 120 nucleotides (standard cutoff used by the large centres [commonannotation]) are excluded from further analysis. Sequences must have a start or stop codon, and any without them are filtered out [fasta_grep]. CD-hit [cdhit] is used to iteratively perform a first pass clustering. This substantially reduces the running time of later steps. Beginning with a sequence identity of 100% and a matching length of 100%, the protein sequences are then clustered. If a sequence is found in every isolate, it is said to be a conserved gene and the cluster is added to the final results. All of these sequences are then removed and not considered for blast analysis. CD-hit is repeated again with a lower threshold, reducing by 0.1% down to the user defined threshold (defaults to 98%), with conserved clusters removed at each stage.
-One final clustering step is performed with CD-hit, with a sequence identity of 100% leaving one representative sequence for each cluster in a protein FASTA file. A blast database is created from this FASTA file. Low complexity regions are first masked out with SegMasker [ncbi_blast_plus], and a protein blast database is created with makeblastdb [ncbi_blast_plus]. The FASTA file is chunked up and compared to the blast database to perform an all against all blast (in parallel. The combined blast results are then fed into MCL[mcl] which clusters the input sequences. It uses a normalised bit store (bit scores normalized by length of the HSP). The clusters are then re-inflated with the final CD-hit clustering results, and with the iterative CD-hit conserved clusters. The clusters are labeled with the most commonly occurring gene names assigned to the sequences in the cluster. If there is no annotated gene name, a unique identified is generated. The functional annotation is also recorded for each cluster.</p>
+One final clustering step is performed with CD-hit, with a sequence identity of 100% leaving one representative sequence for each cluster in a protein FASTA file. A blast database is created from this FASTA file. Low complexity regions are first masked out with SegMasker [ncbi_blast_plus], and a protein blast database is created with makeblastdb [ncbi_blast_plus]. The FASTA file is chunked up and compared to the blast database to perform an all against all blast (in parallel[gnuparallel]). The combined blast results are then fed into MCL[mcl] which clusters the input sequences. It uses a normalised bit store (bit scores normalized by length of the HSP). The clusters are then re-inflated with the final CD-hit clustering results, and with the iterative CD-hit conserved clusters. The clusters are labeled with the most commonly occurring gene names assigned to the sequences in the cluster. If there is no annotated gene name, a unique identified is generated. The functional annotation is also recorded for each cluster.</p>
 
 <p>The ordering of each protein, on each contig, in each de novo assembly, is noted. It is then used to create a graph of the ordering of the clusters, which provides a reasonable relative ordering of the clusters. Each edge is weighted by the number of isolates that the ordering is found in. Multiple graphs are created for each of connected groups (e.g. chromosome and plasmids would be on separate graphs). To reduce the impact of spurious links, which can be caused by misassemblies and misclustering, the graph is filtered to remove weak edges. For a given node, all edges not within 90% of the strongest edge are removed. This greatly improves the contiguation of mobile elements, but it has the downside of disconnecting low frequency variation found within those elements. Representing a complex graph on a straight line is a nontrivial task. The graphs are then simplified to minimum spanning trees and traversed using depth first search. The graphs are ordered by the average edge weight for the resulting path. This is used to plot the presence and absence of genes to isolates against a tree for the whole pan genome. The same process is repeated, but with the conserved clusters removed from the graph, to generate an overview of the accessory regions.</p>
 
 <p>From the graphs quality information can be derived about the clusters. If there are a large number of disconnected graphs, each with a small number of genes and found in low frequency in the isolates, it can indicate low copy number contamination of the isolate. This is usually overwhelmingly apparent. A small number of these can be biologically very interesting, for example a drug resistance gene being inserted at an IS element. If there are very large numbers of genes on contiguous blocks it can also indicate contamination by another organism, again this is very straight forward to spot visually. A further quality control step is performed where the quality of the predicted proteins is accessed based on the predicted annotation. If two genes are overlapping by more than 10% (minimum 4 nucleotides) in different open reading frames it could indicate a mis-prediction. If one of the proteins is marked as a hypothetical protein, and the other has a predicted function, the hypothetical protein is flagged as potentially erroneous.</p>
 
-<p>Multiple output files are created by the pipeline. A spreadsheet detailing the presence and absence of each gene in each isolate, statistics, functional annotation, qc information and sorting information is created. A FASTA file with one representative sequence from each cluster is created to allow for mapping to the pan genome. A multiple sequence file of all the nucleotide sequences for each cluster is created. It is also aligned using muscle to create a multiple sequence alignment file. Tab delimited files are created for post processing using R. Isolates are added in a random order 100 times and the number of unique genes, number of conserved genes, number of genes in the pan genome, and number of new genes, are noted.</p>
+<p>Multiple output files are created by the pipeline. A spreadsheet detailing the presence and absence of each gene in each isolate, statistics, functional annotation, qc information and sorting information is created. A FASTA file with one representative sequence from each cluster is created to allow for mapping to the pan genome. A multiple sequence file of all the nucleotide sequences for each cluster is created. It is also codon aligned using PRANK to create a multiple sequence alignment file. Tab delimited files are created for post processing using R. Isolates are added in a random order 100 times and the number of unique genes, number of conserved genes, number of genes in the pan genome, and number of new genes, are noted.</p>
 
 <h2>
 <a id="how-to-use-the-scripts" class="anchor" href="#how-to-use-the-scripts" aria-hidden="true"><span class="octicon octicon-link"></span></a> How to use the scripts</h2>
@@ -129,7 +129,6 @@ The gene_presence_absence.csv spreadsheet contains detailed information about th
 
 
 <p><code>roary -e *.gff</code></p>
-<p>To get multiFASTA alignment of only the core genes you can use the '-e' parameter. revtrans.py must be in your PATH.</p>
 
 <h2>
 <a id="output-files" class="anchor" href="#output-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output files</h2>
@@ -169,7 +168,7 @@ Finally there is a matrix with presence and absence of each gene in each isolate
 <a id="multifasta-files-of-each-gene" class="anchor" href="#multifasta-files-of-each-gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multifasta files of each gene and Pan Genome Reference FASTA</h3>
 
 <p>If you pass in the flag '-e' multifasta files containing nucleotide sequences will be generated for each gene. They will all reside in a sub directory called 'pan_genome_sequences'. The naming scheme for the files is: the number of sequences in the file, followed by the gene name. You can use seaview to open the sequence and take a look at it.
-There is also an aligned version of the nucleotides. The nucleotide sequences are translated to proteins (translation table 11), aligned with muscle, then reverse translated back to nucleotides with revtrans [revtrans]. The resulting file ends with '.aln'.</p>
+There is also an aligned version of the nucleotides. The nucleotide sequences are codon aligned with Prank[prank]. The resulting file ends with '.aln'.</p>
 <p>A FASTA file is automatically created which contains a single representative nucleotide sequence from each cluster in the pan genome. It is called <em>pan_genome_reference.fa</em>.</p>
 
 
@@ -356,9 +355,11 @@ There is also an aligned version of the nucleotides. The nucleotide sequences ar
 
 <p><code>[fasta_grep] https://github.com/sanger-pathogens/fasta_grep</code></p>
 
-<p><code>[revtrans] Rasmus Wernersson and Anders Gorm Pedersen, RevTrans - Constructing alignments of coding DNA from aligned amino acid sequences. Nucl. Acids Res., 2003, 31(13), 3537-3539.</code></p>
+<p><code>[prank]Loytynoja, Ari. Phylogeny-aware alignment with PRANK. Methods in molecular biology (Clifton, N.J.) 1079:155-170 (2014).</code></p>
 
 <p><code>[prokka] Seemann T. Prokka: rapid prokaryotic genome annotation. Bioinformatics. 2014 Jul 15;30(14):2068-9. PMID:24642063</code></p>
+
+<p><code>[gnuparallel] Tange, O. GNU Parallel - The Command-Line Power Tool. ;login: The USENIX Magazine. 36(1):42-47 (2011).</code></p>
       </section>
     </div>
 
