@@ -15,7 +15,7 @@ Roary takes annotated assemblies as input in GFF3 format, such as those produced
 Assuming you have root on your system, all the dependancies can be installed using apt and cpanm (only tested on Ubuntu 14.04).
 
 ```
-sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus prank
+sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank
 sudo cpanm -f Bio::Roary
 ```   
 
@@ -30,7 +30,7 @@ Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.s
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl muscle parallel prank
+brew install bedtools cd-hit blast mcl parallel prank
 cpanm -f Bio::Roary
 ```
 
