@@ -7,6 +7,14 @@
 
 Roary is a high speed stand alone pan genome pipeline, which takes annotated assemblies in GFF3 format (produced by Prokka) and calculates the pan genome.  Using a standard desktop PC, it can analyse datasets with thousands of samples, something which is computationally infeasible with existing methods, without compromising the quality of the results.  128 samples can be analysed in under 1 hour using 1 GB of RAM and a single processor. To perform this analysis using existing methods would take weeks and hundreds of GB of RAM.
 
+##Current citation
+    "Roary: Rapid large-scale prokaryote pan genome analysis",
+    Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Jacqueline A. Keane, Julian Parkhill,
+    bioRxiv doi: http://dx.doi.org/10.1101/019315
+
+##Read the draft paper
+[Roary: Rapid large-scale prokaryote pan genome analysis](http://dx.doi.org/10.1101/019315)
+
 ##Input
 Roary takes annotated assemblies as input in GFF3 format, such as those produced by [Prokka](http://www.vicbioinformatics.com/software.prokka.shtml).
 
@@ -15,7 +23,7 @@ Roary takes annotated assemblies as input in GFF3 format, such as those produced
 Assuming you have root on your system, all the dependancies can be installed using apt and cpanm (only tested on Ubuntu 14.04).
 
 ```
-sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus prank
+sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank
 sudo cpanm -f Bio::Roary
 ```   
 
@@ -30,7 +38,7 @@ Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.s
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl muscle parallel prank
+brew install bedtools cd-hit blast mcl parallel prank
 cpanm -f Bio::Roary
 ```
 
