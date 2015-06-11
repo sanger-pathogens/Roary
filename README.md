@@ -19,6 +19,12 @@ sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus p
 sudo cpanm -f Bio::Roary
 ```   
 
+###Older versions of Ubuntu/Debian (12.04 and below)
+Assuming you are running BASH, run this script, then copy and paste the last few lines into your BASH profile, as per the instructions.  Not all the packages Roary requires are available on older versions of Ubuntu/Debian or the versions dont support features Roary requires.  So this script will build them from source in the current working directory and install missing dependancies using apt and cpanm. This script is run automatically by our [continous integration server](https://travis-ci.org/andrewjpage/Roary) which runs on Ubuntu 12.04.
+```
+./install_dependencies.sh
+```
+
 ##Installation - OSX using homebrew and Linux using linuxbrew
 Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.sh/linuxbrew/) (Linux) setup and installed on your system:
 
@@ -71,5 +77,3 @@ Theres a bug and you'll need to [install it from source](https://ccb.jhu.edu/sof
 
 ###Why dont you bundle a Kraken database for the QC?
 Its massive (2.7GB) and changes as RefSeq is updated.  The [authors](https://ccb.jhu.edu/software/kraken/) have prebuilt databases and details about how to make your own.
-
-
