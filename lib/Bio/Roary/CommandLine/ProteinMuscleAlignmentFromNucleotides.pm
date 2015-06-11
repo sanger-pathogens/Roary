@@ -83,7 +83,8 @@ sub run {
 	  $prank_obj->run();
 	  
       my $sort_fasta_after_revtrans = Bio::Roary::SortFasta->new(
-         input_filename   => $fasta_file.'.aln',
+         input_filename      => $fasta_file.'.aln',
+		 remove_nnn_from_end => 1,
        );
       $sort_fasta_after_revtrans->sort_fasta->replace_input_with_output_file;
       unlink($fasta_file);
