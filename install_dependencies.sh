@@ -135,7 +135,7 @@ if [ -e "$PRANK_BUILD_DIR/src/prank" ]; then
   echo "prank already built, skipping"
 else
   echo "Building prank"
-  make
+  src/make
 fi
 
 # Add things to PATH
