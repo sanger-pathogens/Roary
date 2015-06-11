@@ -19,16 +19,14 @@ my $cwd         = getcwd();
 system('touch empty_file');
 system('cp t/data/nuc_to_be_aligned.fa t/data/f.fa');
 my %scripts_and_expected_files = (
-    't/data/f.fa' =>
-      [ 't/data/f.fa.aln', 't/data/expected_nuc_multifasta.fa.aln' ],
-    '-h' =>
-      [ 'empty_file', 't/data/empty_file' ],
+    't/data/f.fa' => [ 't/data/f.fa.aln', 't/data/expected_nuc_multifasta.fa.aln' ],
+    '-h'          => [ 'empty_file',      't/data/empty_file' ],
 );
 
-SKIP: 
+SKIP:
 {
-  skip "prank not installed", 2 unless ( which('prank'));
-  mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+    skip "prank not installed", 2 unless ( which('prank') );
+    mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 }
 
 done_testing();
