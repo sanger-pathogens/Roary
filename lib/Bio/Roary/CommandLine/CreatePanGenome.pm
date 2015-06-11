@@ -70,6 +70,9 @@ sub usage_text {
     
     # Use a different Kraken database
     roary -k /path/to/kraken_database/  *.gff
+	
+    # print out the version number and exit
+    create_pan_genome --version
 
     # This help message
     create_pan_genome -h
