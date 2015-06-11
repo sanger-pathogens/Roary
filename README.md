@@ -63,6 +63,9 @@ export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV Log::Log4perl File::Which Graph::Writer::Dot Test::Files
 ```
 
+##Installation - Ancient versions of Linux
+If none of the above options work, you'll have to install the depedancies from source or from your distributions packaging system.  You should probably ask your system administrator for assistance if you havent done this kind of thing before.
+
 ##Installation - with Windows
 Roary wont run natively on Windows but we have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on [Bio-Linux 8](http://environmentalomics.org/bio-linux/).  You need to first install [VirtualBox](https://www.virtualbox.org/), then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.
 
