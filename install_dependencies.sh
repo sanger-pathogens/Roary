@@ -4,6 +4,8 @@ set -x
 set -eu
 
 start_dir=$(pwd)
+ROARY_LIB_DIR="${start_dir}/lib"
+ROARY_BIN_DIR="${start_dir}/bin"
 
 PARALLEL_VERSION=${PARALLEL_VERSION:-"20150522"}
 PARALLEL_DOWNLOAD_FILENAME="parallel-${PARALLEL_VERSION}.tar.bz2"
@@ -18,6 +20,10 @@ CDHIT_LONG_VERSION="4.6.3-2015-0515"
 CDHIT_DOWNLOAD_FILENAME="cd-hit-${CDHIT_SHORT_VERSION}.tar.gz"
 CDHIT_URL="https://github.com/weizhongli/cdhit/releases/download/V${CDHIT_SHORT_VERSION}/cd-hit-v${CDHIT_LONG_VERSION}.tar.gz"
 
+PRANK_VERSION="0.140603"
+PRANK_DOWNLOAD_FILENAME="prank-msa-master.tar.gz"
+PRANK_URL="https://github.com/ariloytynoja/prank-msa/archive/master.tar.gz"
+
 # Make an install location
 if [ ! -d 'build' ]; then
   mkdir build
@@ -31,8 +37,7 @@ sudo apt-get install -y -q g++ \
                            libdb-dev \
                            libssl-dev \
                            ncbi-blast+ \
-                           mcl \
-                           muscle
+                           mcl
 
 download () {
   download_url=$1
@@ -56,6 +61,10 @@ download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
 # Download cd-hit
 CDHIT_DOWNLOAD_PATH="$(pwd)/${CDHIT_DOWNLOAD_FILENAME}"
 download $CDHIT_URL $CDHIT_DOWNLOAD_PATH
+
+# Downlaod prank
+PRANK_DOWNLOAD_PATH="$(pwd)/${PRANK_DOWNLOAD_FILENAME}"
+download $PRANK_URL $PRANK_DOWNLOAD_PATH
 
 untar () {
   to_untar=$1
@@ -85,6 +94,10 @@ untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
 # Untar cd-hit
 CDHIT_BUILD_DIR="$(pwd)/cd-hit-v${CDHIT_LONG_VERSION}"
 untar $CDHIT_DOWNLOAD_PATH $CDHIT_BUILD_DIR
+
+# Untar prank
+PRANK_BUILD_DIR="$(pwd)/prank-msa-master"
+untar $PRANK_DOWNLOAD_PATH $PRANK_BUILD_DIR
 
 # Build parallel
 cd $PARALLEL_BUILD_DIR
@@ -117,10 +130,22 @@ else
   make
 fi
 
+# Build prank
+cd $PRANK_BUILD_DIR
+
+if [ -e "$PRANK_BUILD_DIR/src/prank" ]; then
+  echo "prank already built, skipping"
+else
+  echo "Building prank"
+  cd src
+  make
+fi
+
 # Add things to PATH
 update_path () {
   new_dir=$1
   if [[ ! "$PATH" =~ (^|:)"${new_dir}"(:|$) ]]; then
+	echo "export PATH=${new_dir}:${PATH}"
     export PATH=${new_dir}:${PATH}
   fi
 }
@@ -132,16 +157,20 @@ BEDTOOLS_BIN_DIR="$BEDTOOLS_BUILD_DIR/bin"
 update_path $BEDTOOLS_BIN_DIR
 CDHIT_BIN_DIR="$CDHIT_BUILD_DIR"
 update_path $CDHIT_BIN_DIR
+PRANK_BIN_DIR="$PRANK_BUILD_DIR/src"
+update_path $PRANK_BIN_DIR
 
 update_perl_path () {
   new_dir=$1
   PERL5LIB=${PERL5LIB-$new_dir}
   if [[ ! "$PERL5LIB" =~ (^|:)"${new_dir}"(:|$) ]]; then
+	echo "export PERL5LIB=${new_dir}:${PERL5LIB}"
     export PERL5LIB=${new_dir}:${PERL5LIB}
   fi
 }
 
-update_perl_path "$BEDTOOLS_BUILD_DIR/lib"
+BEDTOOLS_LIB_DIR="$BEDTOOLS_BUILD_DIR/lib"
+update_perl_path $BEDTOOLS_LIB_DIR
 
 cd $start_dir
 cpanm Dist::Zilla
@@ -149,6 +178,10 @@ dzil authordeps --missing | cpanm
 dzil listdeps --missing | cpanm
 
 cd $start_dir
+
+echo "Add the following lines to one of these files ~/.bashrc or ~/.bash_profile or ~/.profile"
+echo "export PATH=${ROARY_BIN_DIR}:${PARALLEL_BIN_DIR}:${BEDTOOLS_BIN_DIR}:${CDHIT_BIN_DIR}:${PRANK_BIN_DIR}:${PATH}"
+echo "export PERL5LIB=${ROARY_LIB_DIR}:${BEDTOOLS_LIB_DIR}:${PERL5LIB}"
 
 set +eu
 set +x

@@ -12,19 +12,25 @@ Roary takes annotated assemblies as input in GFF3 format, such as those produced
 
 
 ##Installation - Ubuntu/Debian
-Assuming you have root on your system, all the dependancies can be installed using apt and cpanm.
+Assuming you have root on your system, all the dependancies can be installed using apt and cpanm (only tested on Ubuntu 14.04).
 
 ```
-sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus
+sudo apt-get install bedtools cd-hit ncbi-blast+ mcl muscle parallel cpanminus prank
 sudo cpanm -f Bio::Roary
 ```   
+
+###Older versions of Ubuntu/Debian (12.04 and below)
+Assuming you are running BASH, run this script, then copy and paste the last few lines into your BASH profile, as per the instructions.  Not all the packages Roary requires are available on older versions of Ubuntu/Debian or the versions dont support features Roary requires.  So this script will build them from source in the current working directory and install missing dependancies using apt and cpanm. This script is run automatically by our [continous integration server](https://travis-ci.org/andrewjpage/Roary) which runs on Ubuntu 12.04.
+```
+./install_dependencies.sh
+```
 
 ##Installation - OSX using homebrew and Linux using linuxbrew
 Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.sh/linuxbrew/) (Linux) setup and installed on your system:
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl muscle parallel
+brew install bedtools cd-hit blast mcl muscle parallel prank
 cpanm -f Bio::Roary
 ```
 
@@ -57,6 +63,9 @@ export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp::Tiny Graph Moose Moose::Role Text::CSV Log::Log4perl File::Which Graph::Writer::Dot Test::Files
 ```
 
+##Installation - Ancient versions of Linux
+If none of the above options work, you'll have to install the depedancies from source or from your distributions packaging system.  You should probably ask your system administrator for assistance if you havent done this kind of thing before.
+
 ##Installation - with Windows
 Roary wont run natively on Windows but we have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on [Bio-Linux 8](http://environmentalomics.org/bio-linux/).  You need to first install [VirtualBox](https://www.virtualbox.org/), then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.
 
@@ -71,5 +80,3 @@ Theres a bug and you'll need to [install it from source](https://ccb.jhu.edu/sof
 
 ###Why dont you bundle a Kraken database for the QC?
 Its massive (2.7GB) and changes as RefSeq is updated.  The [authors](https://ccb.jhu.edu/software/kraken/) have prebuilt databases and details about how to make your own.
-
-
