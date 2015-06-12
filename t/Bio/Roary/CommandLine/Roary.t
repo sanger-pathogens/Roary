@@ -82,8 +82,8 @@ SKIP:
     skip "prank not installed", 11 unless ( which('prank') );
 
     %scripts_and_expected_files =
-      ( '-j Local --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
-          [ 'pan_genome_sequences/flgM.fa.aln', 't/data/flgM.fa.aln' ], );
+      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+          [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH.fa.aln' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
     ok( -e 'core_gene_alignment.aln', 'Core gene alignment exists' );
@@ -108,7 +108,7 @@ SKIP:
 
     cleanup_files();
     %scripts_and_expected_files =
-      ( '-j Local --dont_split_groups --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+      ( '-j Local --dont_delete_files --dont_split_groups --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
           [ 'pan_genome_reference.fa', 't/data/expected_pan_genome_reference.fa' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
