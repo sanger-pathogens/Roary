@@ -1,4 +1,4 @@
-"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragement","Accessory Order with Fragment","QC","query_1","query_2","query_5"
+"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragment","Accessory Order with Fragment","QC","query_1","query_2","query_5"
 "hly","","Alpha-toxin","2","2","1","1","1",,,"","1_1","2_1___1",""
 "group_10","","hypothetical protein","2","2","1","1","8",,,"","abc_00010","abc_00010___10",""
 "group_11","","C4-dicarboxylate transporter/malic acid transport protein","2","2","1","1","7",,,"","abc_00011","abc_00011___11",""

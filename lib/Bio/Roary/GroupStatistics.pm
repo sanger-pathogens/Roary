@@ -52,7 +52,7 @@ sub _build__text_csv_obj {
 sub fixed_headers {
     my ($self) = @_;
     my @header =
-      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Genome Fragment','Order within Fragment', 'Accessory Fragement','Accessory Order with Fragment', 'QC' );
+      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Genome Fragment','Order within Fragment', 'Accessory Fragment','Accessory Order with Fragment', 'QC' );
     return \@header;
 }
 

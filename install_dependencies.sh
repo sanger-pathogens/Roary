@@ -37,9 +37,7 @@ sudo apt-get install -y -q g++ \
                            libdb-dev \
                            libssl-dev \
                            ncbi-blast+ \
-                           mcl \
-                           exonerate \
-                           mafft 
+                           mcl
 
 download () {
   download_url=$1
