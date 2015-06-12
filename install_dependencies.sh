@@ -38,8 +38,8 @@ sudo apt-get install -y -q g++ \
                            libssl-dev \
                            ncbi-blast+ \
                            mcl \
-						   exonerate \
-						   mafft 
+                           exonerate \
+                           mafft 
 
 download () {
   download_url=$1
