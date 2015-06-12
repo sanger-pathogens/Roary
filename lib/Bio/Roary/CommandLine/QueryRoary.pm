@@ -31,7 +31,7 @@ has 'input_set_one'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'input_set_two'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'pan_genome_results' );
 has 'action'          => ( is => 'rw', isa => 'Str', default => 'union' );
-has 'core_definition' => ( is => 'rw', isa => 'Num', default => 1.0 );
+has 'core_definition' => ( is => 'rw', isa => 'Num', default => 0.99 );
 
 has '_error_message' => ( is => 'rw', isa => 'Str' );
 
@@ -162,7 +162,7 @@ sub run {
       
       for my $differences_group_filename(($difference_between_sets->groups_set_one_unique_filename,$difference_between_sets->groups_set_two_unique_filename,$difference_between_sets->groups_in_common_filename))
       {
-        $self->create_spreadsheets($differences_group_filename, $prepare_input_files->fasta_files, $prepare_input_files->fasta_files);
+        $self->create_spreadsheets($differences_group_filename, $prepare_input_files->fasta_files, $self->input_files);
       }
 
     }
@@ -191,6 +191,10 @@ sub create_spreadsheets
       my $order_genes_obj = Bio::Roary::OrderGenes->new(
         analyse_groups_obj => $analyse_groups_obj,
         gff_files          => $gff_files,
+		core_definition    => $self->core_definition,
+		pan_graph_filename => 'set_difference_core_accessory_graph.dot',
+		accessory_graph_filename  => 'set_difference_accessory_graph.dot',
+		
       );
       
       my $group_statistics = Bio::Roary::GroupStatistics->new(
@@ -222,12 +226,12 @@ sub usage_text {
     query_pan_genome -a complement *.gff
     
     # Difference between sets 
-    query_pan_genome -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff *.gff
+    query_pan_genome -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff
 
     # Provide an output filename
     query_pan_genome -a union -o results.fa *.gff
 	
-    # Change the core definition to 95%, default is a gene must be in 100% of isolates to be core
+    # Change the core definition to 95%, default is a gene must be in 99% of isolates to be core
     query_pan_genome -a union -c 95 *.gff
 
     # This help message
