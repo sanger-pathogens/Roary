@@ -27,7 +27,10 @@ has 'gff_file'         => ( is => 'ro', isa => 'Str',                           
 has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
 has 'output_directory' => ( is => 'ro', isa => 'Str',                           required => 1 );
 has 'pan_reference_groups_seen' => ( is => 'rw', isa => 'HashRef',              required => 1 );
-has 'pan_reference_filename' => ( is => 'ro', isa  => 'Str',                    default  => 'pan_genome_reference.fa' );
+has 'number_of_gff_files'    => ( is => 'ro', isa => 'Int', required => 1 );
+has 'pan_reference_filename' => ( is => 'ro', isa  => 'Str',default  => 'pan_genome_reference.fa' );
+has 'dont_delete_files'      => ( is => 'ro', isa => 'Bool',default  => 0 );
+has 'core_definition'        => ( is => 'ro', isa => 'Num', default  => 1.0 );
 
 has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
@@ -65,8 +68,8 @@ sub populate_files {
 		  }
 
           my $number_of_genes = @{$self->annotate_groups->_groups_to_id_names->{$current_group}};
-          # Theres no need to align a single sequence
-          next if($self->output_multifasta_files == 0 && $number_of_genes == 1);
+          # Theres no need to align noncore files
+          next if($self->dont_delete_files == 0 && $number_of_genes < ($self->core_definition * $self->number_of_gff_files ));
           
           my $output_seq = $self->_group_seq_io_obj($current_group,$number_of_genes);
           $output_seq->write_seq($input_seq);

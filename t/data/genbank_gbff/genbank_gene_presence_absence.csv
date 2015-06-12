@@ -1,4 +1,4 @@
-"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragement","Accessory Order with Fragment","QC","genbank1","genbank2","genbank3"
+"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragment","Accessory Order with Fragment","QC","genbank1","genbank2","genbank3"
 "group_10","","side tail fiber protein","2","2","1","1","2",,,"","","ERS325340_00003.p01","ERS325326_00003.p01"
 "group_11","","secreted effector protein","2","2","1","1","1",,,"","","ERS325340_00004.p01","ERS325326_00004.p01"
 "group_9","","transcriptional regulator NarP","2","2","1","1","3",,,"","","ERS325340_00001.p01","ERS325326_00001.p01"
