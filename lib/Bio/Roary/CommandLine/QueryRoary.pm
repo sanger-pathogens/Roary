@@ -56,7 +56,7 @@ sub BUILD {
     
     $self->output_filename($output_filename) if ( defined($output_filename) );
     $self->action($action)                   if ( defined($action) );
-    $self->core_definition($core_definition) if ( defined($core_definition) );
+	$self->core_definition( $core_definition / 100 ) if ( defined($core_definition) );
     if ( defined($groups_filename) && ( -e $groups_filename ) ) {
         $self->groups_filename($groups_filename);
     }
@@ -209,23 +209,26 @@ sub usage_text {
     Usage: query_pan_genome [options]
     Take in a groups file and GFF files and output selected data
     
-    # Provide an output filename
-    query_pan_genome  -a union -g clustered_proteins -o results.fa *.gff
-    
     # Create multifasta files for each group/gene passed in
-    query_pan_genome  -a gene_multifasta -g clustered_proteins -n gryA,mecA,abc *.gff
+    query_pan_genome -a gene_multifasta -n gryA,mecA,abc *.gff
     
     # Union
-    query_pan_genome  -a union -g clustered_proteins *.gff
+    query_pan_genome -a union *.gff
     
     # Intersection
-    query_pan_genome  -a intersection -g clustered_proteins *.gff
+    query_pan_genome -a intersection *.gff
 
     # Complement (Union minus Intersection)
-    query_pan_genome  -a complement -g clustered_proteins *.gff
+    query_pan_genome -a complement *.gff
     
     # Difference between sets 
-    query_pan_genome  -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff  -g clustered_proteins
+    query_pan_genome -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff *.gff
+
+    # Provide an output filename
+    query_pan_genome -a union -o results.fa *.gff
+	
+    # Change the core definition to 95%, default is a gene must be in 100% of isolates to be core
+    query_pan_genome -a union -c 95 *.gff
 
     # This help message
     query_pan_genome -h
