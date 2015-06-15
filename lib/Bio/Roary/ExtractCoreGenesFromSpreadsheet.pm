@@ -18,7 +18,6 @@ use Moose;
 use Text::CSV;
 use Bio::Roary::GroupStatistics;
 use POSIX;
-use Data::Dumper;
 
 has 'spreadsheet'            => ( is => 'ro', isa  => 'Str',      required => 1 );
 
