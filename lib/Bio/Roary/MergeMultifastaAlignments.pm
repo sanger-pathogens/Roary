@@ -19,11 +19,12 @@ sequences are in the correct order.
 use Moose;
 use Bio::SeqIO;
 
-has 'multifasta_files'  => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
-has 'sample_names'      => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
-has 'output_filename'   => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
-has '_output_seqio_obj' => ( is => 'ro', isa => 'Bio::SeqIO', lazy     => 1, builder => '_build__output_seqio_obj' );
-has '_gene_lengths'     => ( is => 'rw', isa => 'HashRef',    lazy     => 1, builder => '_build__gene_lengths'  );
+has 'multifasta_files'       => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
+has 'sample_names'           => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
+has 'sample_names_to_genes'  => ( is => 'rw', isa => 'HashRef',    required => 1 );
+has 'output_filename'        => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
+has '_output_seqio_obj'      => ( is => 'ro', isa => 'Bio::SeqIO', lazy     => 1, builder => '_build__output_seqio_obj' );
+has '_gene_lengths'          => ( is => 'rw', isa => 'HashRef',    lazy     => 1, builder => '_build__gene_lengths'  );
 
 sub _input_seq_io_obj {
     my ( $self, $filename ) = @_;
@@ -59,7 +60,7 @@ sub _sequence_for_sample_from_gene_file
 	my $seq_record;
     while($seq_record = $seq_io->next_seq)
 	{
-      if($seq_record->display_id =~ /($sample_name)_[\d]+$/ )
+      if($self->sample_names_to_genes->{$sample_name}->{$seq_record->display_id} )
 	  {
 		  return $seq_record->seq;
 	  }
@@ -96,17 +97,6 @@ sub merge_files {
 		$self->_output_seqio_obj->write_seq($seq_io);
 	}
 	return 1;
-}
-
-
-sub _strip_id_from_name {
-    my ( $self, $name_with_id_at_end ) = @_;
-    if ( $name_with_id_at_end =~ /(.+)_[\d]+$/ ) {
-        return $1;
-    }
-    else {
-        return $name_with_id_at_end;
-    }
 }
 
 no Moose;
