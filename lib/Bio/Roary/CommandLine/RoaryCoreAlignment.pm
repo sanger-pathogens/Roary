@@ -59,7 +59,17 @@ sub BUILD {
     }
 
     $self->output_filename( $output_filename ) if ( defined($output_filename) );
-    $self->core_definition( $core_definition/100 ) if ( defined($core_definition) ); 
+    if ( defined($core_definition) ) 
+	{
+		if($core_definition > 1)
+		{
+			$self->core_definition( $core_definition/100 );
+		}
+		else
+		{
+			$self->core_definition( $core_definition );
+		}
+	}
 }
 
 sub run {
@@ -80,11 +90,12 @@ sub run {
         multifasta_directory => $self->multifasta_base_directory,
         ordered_genes        => $core_genes_obj->ordered_core_genes,
       );
-    
+	 
     my $merge_alignments_obj = Bio::Roary::MergeMultifastaAlignments->new(
-	  sample_names     => $core_genes_obj->sample_names,
-      multifasta_files => $gene_files->ordered_gene_files(),
-      output_filename  => $self->output_filename
+	  sample_names          => $core_genes_obj->sample_names,
+      multifasta_files      => $gene_files->ordered_gene_files(),
+      output_filename       => $self->output_filename,
+	  sample_names_to_genes => $core_genes_obj->sample_names_to_genes
     );
     $merge_alignments_obj->merge_files;
 }

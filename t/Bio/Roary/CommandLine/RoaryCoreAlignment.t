@@ -17,7 +17,7 @@ system('touch empty_file');
 my %scripts_and_expected_files = (
     '-m t/data/core_alignment -s t/data/core_alignment.csv' =>
       [ 'core_gene_alignment.aln', 't/data/expected_core_gene_alignment.aln' ],
-    '-m t/data/core_alignment -s t/data/core_alignment_core0.66.csv --core_definition 66' => 
+    '-m t/data/core_alignment -s t/data/core_alignment_core0.66.csv --core_definition 0.66' => 
       [ 'core_gene_alignment.aln', 't/data/expected_core_gene_alignment_core0.66.aln' ],
     '-h' =>
       [ 'empty_file', 't/data/empty_file' ],

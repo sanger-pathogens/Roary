@@ -111,6 +111,14 @@ SKIP:
       ( '-j Local --dont_delete_files --dont_split_groups --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
           [ 'pan_genome_reference.fa', 't/data/expected_pan_genome_reference.fa' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+	
+	
+    %scripts_and_expected_files =
+      ( '-j Local --output_multifasta_files t/data/core_alignment_gene_lookup/query_1.gff t/data/core_alignment_gene_lookup/query_2.gff t/data/core_alignment_gene_lookup/query_3.gff' =>
+          [ 'core_gene_alignment.aln', 't/data/core_alignment_gene_lookup/expected_core_gene_alignment.aln' ], );
+    mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+	
+	
 
     cleanup_files();
 }
