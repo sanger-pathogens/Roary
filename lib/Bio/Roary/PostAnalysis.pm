@@ -20,6 +20,7 @@ use Bio::Roary::Output::NumberOfGroups;
 use Bio::Roary::OrderGenes;
 use Bio::Roary::Output::EmblGroups;
 use Bio::Roary::SplitGroups;
+use Bio::Roary::AccessoryBinaryFasta;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -54,6 +55,7 @@ has '_analyse_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups'
 has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::Roary::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
 has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
 has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
+has '_accessory_binary_fasta' => ( is => 'ro', isa => 'Bio::Roary::AccessoryBinaryFasta',  lazy => 1, builder => '_build__accessory_binary_fasta' );
 has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
 has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::Roary::SplitGroups', lazy_build => 1 );
 
@@ -77,13 +79,21 @@ sub run {
 
 	print "Labelling the groups\n" if($self->verbose);
     $self->_group_labels_obj->add_labels();
+	
 	print "Transfering the annotation to the groups\n" if($self->verbose);
     $self->_annotate_groups_obj->reannotate;
+	
+	print "Creating accessory binary gene presence and absence fasta\n" if($self->verbose);
+    $self->_accessory_binary_fasta->create_accessory_binary_fasta;
+	
 	print "Creating the spreadsheet with gene presence and absence\n" if($self->verbose);
     $self->_group_statistics_obj->create_spreadsheet;
+	
 	print "Creating tab files for R\n" if($self->verbose);
     $self->_number_of_groups_obj->create_output_files;
+
     system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
+	
 	print "Create EMBL files\n" if($self->verbose);
     $self->_create_embl_files;
     
@@ -92,6 +102,16 @@ sub run {
 
 	print "Cleaning up files\n" if($self->verbose);
     $self->_delete_intermediate_files;
+}
+
+sub _build__accessory_binary_fasta
+{
+    my ($self) = @_;
+    return Bio::Roary::AccessoryBinaryFasta->new(
+	    input_files         => $self->fasta_files,
+        annotate_groups_obj => $self->_annotate_groups_obj,
+        analyse_groups_obj  => $self->_analyse_groups_obj,
+    );
 }
 
 sub _build__split_groups_obj {

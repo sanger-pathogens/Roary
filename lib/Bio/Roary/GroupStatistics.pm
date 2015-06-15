@@ -38,37 +38,6 @@ has '_files_to_groups'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, bui
 has '_verbose'           => ( is => 'ro', isa => 'Bool', default => 0 );
 
 
-
-
-sub create_accessory_binary_fasta
-{
-	my ($self, $filename) = @_;
-  my %output_sequences;
-  my $out_seq_io = Bio::SeqIO->new( -file => ">".$filename, -format => 'Fasta' );
-  
-  for my $filename ( @{ $self->_sorted_file_names } ) {
-  	$output_sequence = '';
-      my $sample_name = $filename;
-      $sample_name =~ s!\.gff\.proteome\.faa!!;
-  	
-  	for $group (keys %{$self->_groups_to_files})
-  	{
-  		 my $group_to_file_genes = $self->_groups_to_files->{$group}->{$filename};
-  		 if ( defined($group_to_file_genes) && @{$group_to_file_genes} > 0 ) {
-  			 $output_sequence.='A';
-  		 }
-  		 else
-  		 {
-  		 			 $output_sequence.='C';
-  		 }
-  	}
-  	
-  	$out_seq_io->write_seq(Bio::Seq->new(-display_id => $sample_name, -seq => $output_sequence));
-  	
-  }
-}
-	
-
 sub _build__output_fh {
     my ($self) = @_;
     open( my $fh, '>', $self->output_filename )
