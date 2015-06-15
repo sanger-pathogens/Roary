@@ -22,8 +22,6 @@ use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
 use POSIX;
 
-use Data::Dumper;
-
 has 'analyse_groups'        => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups', required => 1 );
 has 'input_filenames'       => ( is => 'ro', isa => 'ArrayRef',                      required => 1 );
 has 'output_union_filename' => ( is => 'ro', isa => 'Str',                           default  => 'union_of_groups.gg' );

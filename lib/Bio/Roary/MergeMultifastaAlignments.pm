@@ -99,16 +99,6 @@ sub merge_files {
 }
 
 
-sub _strip_id_from_name {
-    my ( $self, $name_with_id_at_end ) = @_;
-    if ( $name_with_id_at_end =~ /(.+)_[\d]+$/ ) {
-        return $1;
-    }
-    else {
-        return $name_with_id_at_end;
-    }
-}
-
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
