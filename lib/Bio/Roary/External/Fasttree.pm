@@ -20,10 +20,15 @@ use Moose;
 with 'Bio::Roary::JobRunner::Role';
 
 has 'input_file'                   => ( is => 'ro', isa => 'Str',  required => 1 );
-has 'output_file'                  => ( is => 'ro', isa => 'Str',  default  => 'output.tre' );
+has 'output_file'                  => ( is => 'ro', isa => 'Str',  lazy     => 1,  builder => '_build_output_file' );
 has 'exec'                         => ( is => 'ro', isa => 'Str',  default  => 'FastTree' );
 has 'alt_exec'                     => ( is => 'ro', isa => 'Str',  default  => 'fasttree' );
 
+sub _build_output_file
+{
+    my ($self) = @_;
+	return $self->input_file.".newick";
+}
 
 sub _command_to_run {
     my ($self) = @_;

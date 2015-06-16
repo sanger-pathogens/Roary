@@ -21,6 +21,7 @@ use Bio::Roary::OrderGenes;
 use Bio::Roary::Output::EmblGroups;
 use Bio::Roary::SplitGroups;
 use Bio::Roary::AccessoryBinaryFasta;
+use Bio::Roary::External::Fasttree;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -28,12 +29,14 @@ has 'output_filename'             => ( is => 'rw', isa => 'Str',      default  =
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  => 'pan_genome.fa' );
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'gene_presence_absence.csv' );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
+has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  => 0 ); 
+has 'verbose'                     => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'dont_split_groups'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default => 1 );
-has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default => 50000 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default  => 1 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
 
 has '_output_mcl_filename'               => ( is => 'ro', isa => 'Str', default  => '_uninflated_mcl_groups' );
 has '_output_inflate_unsplit_clusters_filename'  => ( is => 'ro', isa => 'Str', default  => '_inflated_unsplit_mcl_groups' );
@@ -48,19 +51,19 @@ has 'accessory_ordering_key'             => ( is => 'ro', isa => 'Str', default 
 has 'core_definition'                    => ( is => 'ro', isa => 'Num', default  => 1.0 );
 has 'pan_genome_reference_filename'      => ( is => 'ro', isa => 'Str', default  => 'pan_genome_reference.fa' );
 
-has '_inflate_clusters_obj'  => ( is => 'ro', isa => 'Bio::Roary::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
-has '_group_labels_obj'      => ( is => 'ro', isa => 'Bio::Roary::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
-has '_annotate_groups_obj'   => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups',         lazy => 1, builder => '_build__annotate_groups_obj' );
-has '_analyse_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',          lazy => 1, builder => '_build__analyse_groups_obj' );
-has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::Roary::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
-has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
-has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
-has '_accessory_binary_fasta' => ( is => 'ro', isa => 'Bio::Roary::AccessoryBinaryFasta',  lazy => 1, builder => '_build__accessory_binary_fasta' );
-has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
-has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::Roary::SplitGroups', lazy_build => 1 );
 
-has 'verbose_stats' => ( is => 'rw', isa => 'Bool', default => 0 ); 
-has 'verbose'       => ( is => 'rw', isa => 'Bool', default => 0 );
+has '_inflate_clusters_obj'       => ( is => 'ro', isa => 'Bio::Roary::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
+has '_group_labels_obj'           => ( is => 'ro', isa => 'Bio::Roary::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
+has '_annotate_groups_obj'        => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups',         lazy => 1, builder => '_build__annotate_groups_obj' );
+has '_analyse_groups_obj'         => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',          lazy => 1, builder => '_build__analyse_groups_obj' );
+has '_order_genes_obj'            => ( is => 'ro', isa => 'Bio::Roary::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
+has '_group_statistics_obj'       => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
+has '_number_of_groups_obj'       => ( is => 'ro', isa => 'Bio::Roary::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
+has '_accessory_binary_fasta'     => ( is => 'ro', isa => 'Bio::Roary::AccessoryBinaryFasta',   lazy => 1, builder => '_build__accessory_binary_fasta' );
+has '_groups_multifastas_nuc_obj' => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
+has '_split_groups_obj'           => ( is => 'ro', isa => 'Bio::Roary::SplitGroups',            lazy => 1, builder => '_build__split_groups_obj' );
+has '_accessory_binary_tree'      => ( is => 'ro', isa => 'Bio::Roary::External::Fasttree',     lazy => 1, builder => '_build__accessory_binary_tree' );
+
 
 sub run {
     my ($self) = @_;
@@ -86,6 +89,9 @@ sub run {
 	print "Creating accessory binary gene presence and absence fasta\n" if($self->verbose);
     $self->_accessory_binary_fasta->create_accessory_binary_fasta;
 	
+	print "Creating accessory binary gene presence and absence tree\n" if($self->verbose);
+	$self->_accessory_binary_tree->run;
+	
 	print "Creating the spreadsheet with gene presence and absence\n" if($self->verbose);
     $self->_group_statistics_obj->create_spreadsheet;
 	
@@ -102,6 +108,15 @@ sub run {
 
 	print "Cleaning up files\n" if($self->verbose);
     $self->_delete_intermediate_files;
+}
+
+sub _build__accessory_binary_tree
+{
+	my ( $self ) = @_;
+    return Bio::Roary::External::Fasttree->new(
+	    input_file          => $self->_accessory_binary_fasta->output_filename,
+        verbose             => $self->verbose
+    );
 }
 
 sub _build__accessory_binary_fasta
