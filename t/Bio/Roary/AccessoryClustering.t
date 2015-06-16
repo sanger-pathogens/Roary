@@ -84,6 +84,21 @@ is_deeply(
 @sample_weights = values %{ $obj->samples_weight };
 is_deeply( \@sample_weights, [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 'sample weights' );
 
+
+
+$obj = Bio::Roary::AccessoryClustering->new(
+    input_file => 't/data/large_accessory_binary_genes.fa'
+);
+
+ok( my @clusters = keys %{ $obj->clusters_to_samples }, "build the clusters for large_accessory_binary_genes.fa" );
+ok( $obj->samples_weight,      "build samples weights for large_accessory_binary_genes.fa" );
+ok( $obj->samples_to_clusters, "build samples to clusters for large_accessory_binary_genes.fa" );
+
+ok(
+    ( @clusters >= 24 && @clusters <= 35 ? 1 : 0 ),
+    "check number of clusters as expected, allowing for some variation for large_accessory_binary_genes.fa"
+);
+
 unlink('_accessory_clusters');
 unlink('_accessory_clusters.clstr');
 done_testing();
