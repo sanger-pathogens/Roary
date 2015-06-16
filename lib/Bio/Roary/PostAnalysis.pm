@@ -22,6 +22,7 @@ use Bio::Roary::Output::EmblGroups;
 use Bio::Roary::SplitGroups;
 use Bio::Roary::AccessoryBinaryFasta;
 use Bio::Roary::External::Fasttree;
+use Bio::Roary::AccessoryClustering;
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -31,6 +32,7 @@ has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  =
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  => 0 ); 
 has 'verbose'                     => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'cpus'                        => ( is => 'ro', isa => 'Int',      default  => 1 );
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
@@ -63,6 +65,7 @@ has '_accessory_binary_fasta'     => ( is => 'ro', isa => 'Bio::Roary::Accessory
 has '_groups_multifastas_nuc_obj' => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
 has '_split_groups_obj'           => ( is => 'ro', isa => 'Bio::Roary::SplitGroups',            lazy => 1, builder => '_build__split_groups_obj' );
 has '_accessory_binary_tree'      => ( is => 'ro', isa => 'Bio::Roary::External::Fasttree',     lazy => 1, builder => '_build__accessory_binary_tree' );
+has '_accessory_clustering'       => ( is => 'ro', isa => 'Bio::Roary::AccessoryClustering',     lazy => 1, builder => '_build__accessory_clustering' );
 
 
 sub run {
@@ -108,6 +111,15 @@ sub run {
 
 	print "Cleaning up files\n" if($self->verbose);
     $self->_delete_intermediate_files;
+}
+
+sub _build__accessory_clustering
+{
+	my ( $self ) = @_;
+    return Bio::Roary::AccessoryClustering->new(
+        input_file => $self->_accessory_binary_fasta->output_filename,
+        cpus       => $self->cpus,
+      );
 }
 
 sub _build__accessory_binary_tree

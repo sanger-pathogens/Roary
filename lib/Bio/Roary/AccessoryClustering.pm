@@ -5,25 +5,24 @@ package Bio::Roary::AccessoryClustering;
 =head1 SYNOPSIS
 
 Take an a clusters file from CD-hit and the fasta file and output a fasta file without full clusters
-   use Bio::Roary::FilterFullClusters;
+   use Bio::Roary::AccessoryClustering;
    
-   my $obj = Bio::Roary::FilterFullClusters->new(
-       clusters_filename        => $cluster_file,
-       fasta_file           => $fasta_file,
-       number_of_input_files => 10,
-       output_file => 'filtered_file'
+   my $obj = Bio::Roary::AccessoryClustering->new(
+       input_file        => 'accessory_binary_genes.fa',
+       identity           => 0.96,
+       cpus => 10,
      );
-   $obj->filter_full_clusters_from_fasta();
+   $obj->samples_weight();
 
 =cut
 
 use Moose;
 use Bio::Roary::External::Cdhit;
-use List::MoreUtils qw(uniq);
 with 'Bio::Roary::ClustersRole';
 
 has 'input_file'              => ( is => 'ro', isa => 'Str',     required => 1 );
 has 'identity'                => ( is => 'ro', isa => 'Num',     default  => 0.95 );
+has 'cpus'                    => ( is => 'ro', isa => 'Int',      default  => 1 );
 has '_output_cd_hit_filename' => ( is => 'ro', isa => 'Str',     default  => '_accessory_clusters' );
 has 'clusters_to_samples'     => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build_clusters_to_samples' );
 has 'samples_to_clusters'     => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build_samples_to_clusters' );
@@ -67,6 +66,7 @@ sub _build_clusters_to_samples {
         output_base                  => $self->_output_cd_hit_filename,
         _length_difference_cutoff    => 1,
         _sequence_identity_threshold => $self->identity,
+		cpus                         => $self->cpus
     );
     $cdhit_obj->run();
     my $clusterd_genes = $self->_clustered_genes;
