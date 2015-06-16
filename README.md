@@ -23,7 +23,7 @@ Roary takes annotated assemblies as input in GFF3 format, such as those produced
 Assuming you have root on your system, all the dependancies can be installed using apt and cpanm (only tested on Ubuntu 14.04).
 
 ```
-sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft exonerate
+sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft exonerate fasttree
 sudo cpanm -f Bio::Roary
 ```   
 
@@ -38,11 +38,12 @@ Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.s
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl parallel prank mafft exonerate
+brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree
 sudo cpanm -f Bio::Roary
 ```
 
 ##Installation - With bundled binaries
+As a last resort we have included precompiled binaries of the dependancies. They might work, if they dont, you'll need to install the dependancies from source. If your running an ancient version of Linux or OSX (more than 3 years since release) its unlikely to work.
 
 ###Download
 Download the latest software from 
@@ -73,14 +74,16 @@ sudo cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep Fil
 
 ##Installation - Ancient versions of Linux
 If none of the above options work, you'll have to install the depedancies from source or from your distributions packaging system.  You should probably ask your system administrator for assistance if you havent done this kind of thing before.
+
 ### Ancient versions of perl
-The code will not work with perl 5.8 or below. It might work with some old versions like 5.10 and 5.12, but we dont test to see if the code runs on these versions, and your on your own when something goes wrong.  We would suggest you upgrade to a slightly more recent version of perl or use perlbrew, which allows you to install a different version of perl in your home directory.
+The code will not work with perl 5.8 or below (pre-modern perl). It might work with some old versions like 5.10 (released 6 years ago) and 5.12 (released 5 years ago), but we dont test to see if the code runs on these versions, and your on your own when something goes wrong.  We would suggest you upgrade to a slightly more recent version of perl or use perlbrew, which allows you to install a different version of perl in your home directory.
 
 ##Installation - with Windows
 Roary wont run natively on Windows but we have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on [Bio-Linux 8](http://environmentalomics.org/bio-linux/).  You need to first install [VirtualBox](https://www.virtualbox.org/), then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.
 
 ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
 
+More importantly though, if your trying to do bioinformatics on Windows, your not going to get very far and you should seriously consider upgrading to Linux.
 
 #Versions of software we test against
 * Perl 5.14, 5.16, 5.18 

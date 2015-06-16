@@ -8,7 +8,7 @@ ROARY_LIB_DIR="${start_dir}/lib"
 ROARY_BIN_DIR="${start_dir}/bin"
 
 PARALLEL_VERSION=${PARALLEL_VERSION:-"20150522"}
-PARALLEL_DOWNLOAD_FILENAME="parallel-${PARALLEL_VERSION}.tar.bz2"
+PARALLEL_DOWNLOAD_FILENAME="parallel-${PARALLEL_VERSION}.tar.bz2" 
 PARALLEL_URL="http://ftp.gnu.org/gnu/parallel/${PARALLEL_DOWNLOAD_FILENAME}"
 
 BEDTOOLS_VERSION="2.24.0"
@@ -37,7 +37,8 @@ sudo apt-get install -y -q g++ \
                            libdb-dev \
                            libssl-dev \
                            ncbi-blast+ \
-                           mcl
+                           mcl \
+                           fasttree
 
 download () {
   download_url=$1
