@@ -275,6 +275,8 @@ sub _delete_intermediate_files
   unlink($self->_input_cd_hit_groups_file)         ;
   unlink('database_masking.asnb')                  ;
   unlink('_clustered')                             ;
+  unlink('_accessory_clusters')                    ;
+  unlink('_accessory_clusters.clstr')              ;
 }
 
 no Moose;

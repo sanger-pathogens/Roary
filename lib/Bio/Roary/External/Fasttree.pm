@@ -19,10 +19,11 @@ Wrapper to run cd-hit
 use Moose;
 with 'Bio::Roary::JobRunner::Role';
 
-has 'input_file'                   => ( is => 'ro', isa => 'Str',  required => 1 );
-has 'output_file'                  => ( is => 'ro', isa => 'Str',  lazy     => 1,  builder => '_build_output_file' );
-has 'exec'                         => ( is => 'ro', isa => 'Str',  default  => 'FastTree' );
-has 'alt_exec'                     => ( is => 'ro', isa => 'Str',  default  => 'fasttree' );
+has 'input_file'                   => ( is => 'ro', isa => 'Str', required => 1 );
+has 'output_file'                  => ( is => 'ro', isa => 'Str', lazy     => 1,  builder => '_build_output_file' );
+has 'exec'                         => ( is => 'ro', isa => 'Str', default  => 'FastTree' );
+has 'alt_exec'                     => ( is => 'ro', isa => 'Str', default  => 'fasttree' );
+has '_logging'                     => ( is => 'ro', isa => 'Str', default  => '2> /dev/null' );
 
 sub _build_output_file
 {
@@ -34,9 +35,11 @@ sub _command_to_run {
     my ($self) = @_;
 
 	my $executable = $self->_find_exe([$self->exec, $self->alt_exec]);
+    my $logging_str = "";
+	$logging_str = $self->_logging if($self->verbose);
 
     return join(
-        ' ', ($executable, '-fastest', '-nt', $self->input_file, '>', $self->output_file)
+        ' ', ($executable, '-fastest', '-nt', $self->input_file, '>', $self->output_file, $logging_str)
     );
 }
 

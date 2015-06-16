@@ -1,7 +1,12 @@
 language: perl
 sudo: required
 perl:
+  - "5.10"
+  - "5.12"
   - "5.14"
+  - "5.16"
+  - "5.18"
+  - "5.20"
 env:
   - PARALLEL_VERSION=20150522
   - PARALLEL_VERSION=20141022

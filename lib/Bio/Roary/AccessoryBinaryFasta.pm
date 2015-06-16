@@ -23,8 +23,8 @@ has 'input_files'            => ( is => 'ro', isa => 'ArrayRef',                
 has 'annotate_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'analyse_groups_obj'     => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
 has 'output_filename'        => ( is => 'ro', isa => 'Str',                        default  => 'accessory_binary_genes.fa' );
-has 'lower_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 1 );
-has 'upper_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 1 );
+has 'lower_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 5 );
+has 'upper_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 5 );
 has 'groups_to_files'        => ( is => 'ro', isa => 'HashRef',                    lazy     => 1, builder => '_build__groups_to_files' );
 has '_lower_bound_value'     => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__lower_bound_value' );
 has '_upper_bound_value'     => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__upper_bound_value' );
