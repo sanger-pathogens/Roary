@@ -16,7 +16,7 @@ Roary is a high speed stand alone pan genome pipeline, which takes annotated ass
 [Roary: Rapid large-scale prokaryote pan genome analysis](http://dx.doi.org/10.1101/019315)
 
 ##Input
-Roary takes annotated assemblies as input in GFF3 format, such as those produced by [Prokka](http://www.vicbioinformatics.com/software.prokka.shtml).
+Roary takes annotated assemblies as input in GFF3 format, such as those produced by [Prokka](https://github.com/tseemann/prokka/).  You should try and give each genome a unique prefix (--prefix option in prokka) so that the IDs are globally unique. Roary will fix any clashes, but it will be less intuitive than if you do it yourself.  Files downloaded from GenBank should already have unique IDs.
 
 
 ##Installation - Ubuntu/Debian
@@ -73,11 +73,23 @@ sudo cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep Fil
 
 ##Installation - Ancient versions of Linux
 If none of the above options work, you'll have to install the depedancies from source or from your distributions packaging system.  You should probably ask your system administrator for assistance if you havent done this kind of thing before.
+### Ancient versions of perl
+The code will not work with perl 5.8 or below. It might work with some old versions like 5.10 and 5.12, but we dont test to see if the code runs on these versions, and your on your own when something goes wrong.  We would suggest you upgrade to a slightly more recent version of perl or use perlbrew, which allows you to install a different version of perl in your home directory.
 
 ##Installation - with Windows
 Roary wont run natively on Windows but we have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on [Bio-Linux 8](http://environmentalomics.org/bio-linux/).  You need to first install [VirtualBox](https://www.virtualbox.org/), then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.
 
 ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
+
+
+#Versions of software we test against
+* Perl 5.14, 5.16, 5.18 
+* cdhit 4.6.1
+* ncbi blast+ 2.2.30
+* mcl 14-137
+* bedtools 2.20.1
+* prank 130410
+* GNU parallel 20130922, 20141022, 20150122
 
 #When things go wrong
 ###cdhit seg faults
