@@ -25,6 +25,7 @@ has 'analyse_groups_obj'     => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups'
 has 'output_filename'        => ( is => 'ro', isa => 'Str',                        default  => 'accessory_binary_genes.fa' );
 has 'lower_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 5 );
 has 'upper_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 5 );
+has 'max_accessory_to_include' => ( is => 'ro', isa => 'Int',                      default  => 4000 );
 has 'groups_to_files'        => ( is => 'ro', isa => 'HashRef',                    lazy     => 1, builder => '_build__groups_to_files' );
 has '_lower_bound_value'     => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__lower_bound_value' );
 has '_upper_bound_value'     => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__upper_bound_value' );
@@ -66,7 +67,9 @@ sub create_accessory_binary_fasta {
         my $sample_name     = $filename;
         $sample_name =~ s!\.gff\.proteome\.faa!!;
 
+		my $gene_count = 0;
         for my $group ( sort keys %{ $self->groups_to_files } ) {
+			last if($gene_count > $self->max_accessory_to_include);
 
             my @files = keys %{ $self->groups_to_files->{$group} };
 
@@ -79,6 +82,8 @@ sub create_accessory_binary_fasta {
             else {
                 $output_sequence .= 'C';
             }
+			$gene_count++;
+			
         }
 		next if($output_sequence eq '');
         $out_seq_io->write_seq( Bio::Seq->new( -display_id => $sample_name, -seq => $output_sequence ) );
