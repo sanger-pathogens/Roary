@@ -40,7 +40,7 @@ sub _build__gene_lengths
 {
    my ($self) = @_;
    my %gene_lengths;
-   for my $filename (@{$self->multifasta_files})
+   for my $filename (sort @{$self->multifasta_files})
    {
        my $seq_io = $self->_input_seq_io_obj($filename);
 	   next unless(defined($seq_io ));
@@ -80,7 +80,7 @@ sub _create_merged_sequence_for_sample
 {
 	my ($self, $sample_name) = @_;
 	my $merged_sequence = '';
-	for my $gene_file (@{$self->multifasta_files})
+	for my $gene_file (sort @{$self->multifasta_files})
 	{
 		$merged_sequence .= $self->_sequence_for_sample_from_gene_file($sample_name,$gene_file);
 	}
