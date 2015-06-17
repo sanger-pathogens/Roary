@@ -12,7 +12,7 @@ Take an a clusters file from CD-hit and the fasta file and output a fasta file w
        identity           => 0.96,
        cpus => 10,
      );
-   $obj->samples_weight();
+   $obj->sample_weights();
 
 =cut
 
@@ -21,25 +21,25 @@ use Bio::Roary::External::Cdhit;
 with 'Bio::Roary::ClustersRole';
 
 has 'input_file'              => ( is => 'ro', isa => 'Str',     required => 1 );
-has 'identity'                => ( is => 'ro', isa => 'Num',     default  => 0.95 );
+has 'identity'                => ( is => 'ro', isa => 'Num',     default  => 0.90 );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',      default  => 1 );
 has '_output_cd_hit_filename' => ( is => 'ro', isa => 'Str',     default  => '_accessory_clusters' );
 has 'clusters_to_samples'     => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build_clusters_to_samples' );
 has 'samples_to_clusters'     => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build_samples_to_clusters' );
-has 'samples_weight'          => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build_samples_weight' );
+has 'sample_weights'          => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build_sample_weights' );
 has 'clusters_filename'       => ( is => 'ro', isa => 'Str',     lazy     => 1, builder => '_build_clusters_filename' );
 has 'clusters'                => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build__clusters' );
 
-sub _build_samples_weight {
+sub _build_sample_weights {
     my ($self) = @_;
-    my %samples_weight;
+    my %sample_weights;
     for my $cluster_name ( keys %{ $self->clusters_to_samples } ) {
         my $cluster_size = @{ $self->clusters_to_samples->{$cluster_name} };
         for my $sample_name ( @{ $self->clusters_to_samples->{$cluster_name} } ) {
-            $samples_weight{$sample_name} = 1 / $cluster_size;
+            $sample_weights{$sample_name} = 1 / $cluster_size;
         }
     }
-    return \%samples_weight;
+    return \%sample_weights;
 }
 
 sub _build_samples_to_clusters {

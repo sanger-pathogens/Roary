@@ -96,7 +96,7 @@ sub run {
 	$self->_accessory_binary_tree->run;
 	
 	print "Creating accessory gene presence and absence clusters\n" if($self->verbose);
-	$self->_accessory_clustering->samples_weight;
+	$self->_accessory_clustering->sample_weights;
 	
 	print "Creating the spreadsheet with gene presence and absence\n" if($self->verbose);
     $self->_group_statistics_obj->create_spreadsheet;
@@ -175,6 +175,7 @@ sub _build__group_statistics_obj
       analyse_groups_obj  => $self->_analyse_groups_obj,
       groups_to_contigs   => $self->_order_genes_obj->groups_to_contigs,
       _verbose            => $self->verbose_stats,
+	  sample_weights      => $self->_accessory_clustering->sample_weights
   );
 }
 

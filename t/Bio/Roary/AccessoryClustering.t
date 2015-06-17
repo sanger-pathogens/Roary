@@ -26,7 +26,7 @@ for my $percentage_identity ( keys %{$identity_to_num_clusters} ) {
         "initialise object with identity of $percentage_identity"
     );
     ok( my @clusters = keys %{ $obj->clusters_to_samples }, "build the clusters for $percentage_identity" );
-    ok( $obj->samples_weight,      "build samples weights for $percentage_identity" );
+    ok( $obj->sample_weights,      "build samples weights for $percentage_identity" );
     ok( $obj->samples_to_clusters, "build samples to clusters for $percentage_identity" );
 
     my $min_cluster_size = $identity_to_num_clusters->{$percentage_identity}->[0];
@@ -57,7 +57,7 @@ is_deeply(
     },
     'samples to clusters'
 );
-my @sample_weights = values %{ $obj->samples_weight };
+my @sample_weights = values %{ $obj->sample_weights };
 is_deeply( \@sample_weights, [ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ], 'sample weights' );
 
 $obj = Bio::Roary::AccessoryClustering->new(
@@ -81,7 +81,7 @@ is_deeply(
     },
     'samples to clusters'
 );
-@sample_weights = values %{ $obj->samples_weight };
+@sample_weights = values %{ $obj->sample_weights };
 is_deeply( \@sample_weights, [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 'sample weights' );
 
 
@@ -91,7 +91,7 @@ $obj = Bio::Roary::AccessoryClustering->new(
 );
 
 ok( my @clusters = keys %{ $obj->clusters_to_samples }, "build the clusters for large_accessory_binary_genes.fa" );
-ok( $obj->samples_weight,      "build samples weights for large_accessory_binary_genes.fa" );
+ok( $obj->sample_weights,      "build samples weights for large_accessory_binary_genes.fa" );
 ok( $obj->samples_to_clusters, "build samples to clusters for large_accessory_binary_genes.fa" );
 
 ok(

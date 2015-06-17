@@ -36,7 +36,7 @@ sub _command_to_run {
 
 	my $executable = $self->_find_exe([$self->exec, $self->alt_exec]);
     my $logging_str = "";
-	$logging_str = $self->_logging if($self->verbose);
+	$logging_str = $self->_logging if(! $self->verbose);
 
     return join(
         ' ', ($executable, '-fastest', '-nt', $self->input_file, '>', $self->output_file, $logging_str)
