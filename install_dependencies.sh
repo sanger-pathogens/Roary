@@ -24,6 +24,18 @@ PRANK_VERSION="0.140603"
 PRANK_DOWNLOAD_FILENAME="prank-msa-master.tar.gz"
 PRANK_URL="https://github.com/ariloytynoja/prank-msa/archive/master.tar.gz"
 
+BLAST_VERSION="2.2.30"
+BLAST_DOWNLOAD_FILENAME="ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz"
+BLAST_URL="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/${BLAST_DOWNLOAD_FILENAME}"
+
+MCL_VERSION="14-137"
+MCL_DOWNLOAD_FILENAME="mcl-${MCL_VERSION}.tar.gz"
+MCL_URL="http://micans.org/mcl/src/mcl-${MCL_VERSION}.tar.gz"
+
+FASTTREE_VERSION="2.1.8"
+FASTTREE_DOWNLOAD_FILENAME="FastTree-${FASTTREE_VERSION}.c"
+FASTTREE_URL="http://microbesonline.org/fasttree/FastTree-${FASTTREE_VERSION}.c"
+
 # Make an install location
 if [ ! -d 'build' ]; then
   mkdir build
@@ -56,9 +68,21 @@ download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
 CDHIT_DOWNLOAD_PATH="$(pwd)/${CDHIT_DOWNLOAD_FILENAME}"
 download $CDHIT_URL $CDHIT_DOWNLOAD_PATH
 
-# Downlaod prank
+# Download prank
 PRANK_DOWNLOAD_PATH="$(pwd)/${PRANK_DOWNLOAD_FILENAME}"
 download $PRANK_URL $PRANK_DOWNLOAD_PATH
+
+# Download blast
+BLAST_DOWNLOAD_PATH="$(pwd)/${BLAST_DOWNLOAD_FILENAME}"
+download $BLAST_URL $BLAST_DOWNLOAD_PATH
+
+# Download mcl
+MCL_DOWNLOAD_PATH="$(pwd)/${MCL_DOWNLOAD_FILENAME}"
+download $MCL_URL $MCL_DOWNLOAD_PATH
+
+# Download fasttree
+FASTTREE_DOWNLOAD_PATH="$(pwd)/${FASTTREE_DOWNLOAD_FILENAME}"
+download $FASTTREE_URL $FASTTREE_DOWNLOAD_PATH
 
 untar () {
   to_untar=$1
@@ -93,6 +117,19 @@ untar $CDHIT_DOWNLOAD_PATH $CDHIT_BUILD_DIR
 # Untar prank
 PRANK_BUILD_DIR="$(pwd)/prank-msa-master"
 untar $PRANK_DOWNLOAD_PATH $PRANK_BUILD_DIR
+
+# Untar blast
+BLAST_BUILD_DIR="$(pwd)/ncbi-blast-${BLAST_VERSION}+-src"
+untar $BLAST_DOWNLOAD_PATH $BLAST_BUILD_DIR
+
+# Untar mcl
+MCL_BUILD_DIR="$(pwd)/mcl-${MCL_VERSION}"
+untar $MCL_DOWNLOAD_PATH $MCL_BUILD_DIR
+
+# Move source file into its own directory
+FASTTREE_BUILD_DIR="$(pwd)/fasttree"
+mkdir $FASTTREE_BUILD_DIR
+mv $FASTTREE_DOWNLOAD_FILENAME $FASTTREE_BUILD_DIR
 
 # Build parallel
 cd $PARALLEL_BUILD_DIR
@@ -136,6 +173,26 @@ else
   make
 fi
 
+# Build MCL
+cd $MCL_BUILD_DIR
+if [ -e "$MCL_BUILD_DIR/src/shmcl/mcl" ]; then
+  echo "MCL already built, skipping"
+else
+  echo "Building MCL"
+  ./configure
+  make
+fi
+
+# Build FastTree
+cd $FASTTREE_BUILD_DIR
+if [ -e "$FASTTREE_BUILD_DIR/FastTree" ]; then
+  echo "FastTree already built, skipping"
+else
+  echo "Building FastTree"
+  gcc -o FastTree FastTree-${FASTTREE_VERSION}.c -lm
+fi
+
+
 # Add things to PATH
 update_path () {
   new_dir=$1
@@ -155,6 +212,17 @@ update_path $CDHIT_BIN_DIR
 PRANK_BIN_DIR="$PRANK_BUILD_DIR/src"
 update_path $PRANK_BIN_DIR
 
+BLAST_BIN_DIR="$BLAST_BUILD_DIR/bin"
+update_path $BLAST_BIN_DIR
+
+MCL_BIN_DIR="$MCL_BUILD_DIR/src/shmcl"
+update_path $MCL_BIN_DIR
+MCL_BIN_DIR_2="$MCL_BUILD_DIR/src/alien/oxygen/src/mcxdeblast"
+update_path $MCL_BIN_DIR_2
+
+FASTTREE_BIN_DIR=$FASTTREE_BUILD_DIR
+update_path $FASTTREE_BIN_DIR
+
 update_perl_path () {
   new_dir=$1
   PERL5LIB=${PERL5LIB-$new_dir}
@@ -168,14 +236,14 @@ BEDTOOLS_LIB_DIR="$BEDTOOLS_BUILD_DIR/lib"
 update_perl_path $BEDTOOLS_LIB_DIR
 
 cd $start_dir
-cpanm Dist::Zilla
-dzil authordeps --missing | cpanm --no-notest
-dzil listdeps --missing | cpanm --no-notest
+cpanm --no-test Dist::Zilla 
+dzil authordeps --missing | cpanm --no-test
+dzil listdeps --missing | cpanm --no-test
 
 cd $start_dir
 
 echo "Add the following lines to one of these files ~/.bashrc or ~/.bash_profile or ~/.profile"
-echo "export PATH=${ROARY_BIN_DIR}:${PARALLEL_BIN_DIR}:${BEDTOOLS_BIN_DIR}:${CDHIT_BIN_DIR}:${PRANK_BIN_DIR}:${PATH}"
+echo "export PATH=${ROARY_BIN_DIR}:${PARALLEL_BIN_DIR}:${BEDTOOLS_BIN_DIR}:${CDHIT_BIN_DIR}:${PRANK_BIN_DIR}:${BLAST_BIN_DIR}:${MCL_BIN_DIR}:${MCL_BIN_DIR_2}:${FASTTREE_BIN_DIR}:${PATH}"
 echo "export PERL5LIB=${ROARY_LIB_DIR}:${BEDTOOLS_LIB_DIR}:${PERL5LIB}"
 
 set +eu
