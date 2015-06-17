@@ -236,9 +236,9 @@ BEDTOOLS_LIB_DIR="$BEDTOOLS_BUILD_DIR/lib"
 update_perl_path $BEDTOOLS_LIB_DIR
 
 cd $start_dir
-cpanm --no-test Dist::Zilla 
-dzil authordeps --missing | cpanm --no-test
-dzil listdeps --missing | cpanm --no-test
+cpanm --notest Dist::Zilla 
+dzil authordeps --missing | cpanm --notest
+dzil listdeps --missing | cpanm --notest
 
 cd $start_dir
 
