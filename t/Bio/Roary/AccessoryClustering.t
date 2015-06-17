@@ -95,7 +95,7 @@ ok( $obj->sample_weights,      "build samples weights for large_accessory_binary
 ok( $obj->samples_to_clusters, "build samples to clusters for large_accessory_binary_genes.fa" );
 
 ok(
-    ( @clusters >= 24 && @clusters <= 35 ? 1 : 0 ),
+    ( @clusters >= 6 && @clusters <= 14 ? 1 : 0 ),
     "check number of clusters as expected, allowing for some variation for large_accessory_binary_genes.fa"
 );
 

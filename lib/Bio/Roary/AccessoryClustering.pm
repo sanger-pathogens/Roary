@@ -21,7 +21,7 @@ use Bio::Roary::External::Cdhit;
 with 'Bio::Roary::ClustersRole';
 
 has 'input_file'              => ( is => 'ro', isa => 'Str',     required => 1 );
-has 'identity'                => ( is => 'ro', isa => 'Num',     default  => 0.90 );
+has 'identity'                => ( is => 'ro', isa => 'Num',     default  => 0.9 );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',      default  => 1 );
 has '_output_cd_hit_filename' => ( is => 'ro', isa => 'Str',     default  => '_accessory_clusters' );
 has 'clusters_to_samples'     => ( is => 'ro', isa => 'HashRef', lazy     => 1, builder => '_build_clusters_to_samples' );
