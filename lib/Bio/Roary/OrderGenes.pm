@@ -21,19 +21,21 @@ use Bio::Roary::AnalyseGroups;
 use Bio::Roary::ContigsToGeneIDsFromGFF;
 use Graph;
 use Graph::Writer::Dot;
+use File::Basename;
 
 has 'gff_files'                => ( is => 'ro', isa => 'ArrayRef',                  required => 1 );
 has 'analyse_groups_obj'       => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups', required => 1 );
 has 'core_definition'          => ( is => 'ro', isa => 'Num',                       default  => 1.0 );
 has 'pan_graph_filename'       => ( is => 'ro', isa => 'Str',                       default  => 'core_accessory_graph.dot' );
 has 'accessory_graph_filename' => ( is => 'ro', isa => 'Str',                       default  => 'accessory_graph.dot' );
+has 'sample_weights'           => ( is => 'ro', isa => 'Maybe[HashRef]');
 has 'group_order'              => ( is => 'ro', isa => 'HashRef',                   lazy     => 1, builder => '_build_group_order' );
 has 'group_graphs'             => ( is => 'ro', isa => 'Graph',                     lazy     => 1, builder => '_build_group_graphs' );
 has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',                   lazy     => 1, builder => '_build_groups_to_contigs' );
-has '_groups_to_file_contigs' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__groups_to_file_contigs' );
-has '_groups'         => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_groups' );
-has 'number_of_files' => ( is => 'ro', isa => 'Int',     lazy => 1, builder => '_build_number_of_files' );
-has '_groups_qc' => ( is => 'ro', isa => 'HashRef', default => sub { {} } );
+has '_groups_to_file_contigs'  => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build__groups_to_file_contigs' );
+has '_groups'                  => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_groups' );
+has 'number_of_files'          => ( is => 'ro', isa => 'Int',     lazy => 1, builder => '_build_number_of_files' );
+has '_groups_qc'               => ( is => 'ro', isa => 'HashRef', default => sub { {} } );
 has '_percentage_of_largest_weak_threshold' => ( is => 'ro', isa => 'Num', default => 0.9 );
 
 sub _build_number_of_files {
@@ -52,12 +54,16 @@ sub _build_groups {
 
 sub _build__groups_to_file_contigs {
     my ($self) = @_;
-    my @groups_to_contigs;
+    
     my @overlapping_hypothetical_gene_ids;
-
+    my %samples_to_groups_contigs;
     # Open each GFF file
     for my $filename ( @{ $self->gff_files } ) {
+		my @groups_to_contigs;
         my $contigs_to_ids_obj = Bio::Roary::ContigsToGeneIDsFromGFF->new( gff_file => $filename );
+
+		my ( $sample_name, $directories, $suffix ) = fileparse($filename);
+		$sample_name =~ s/\.gff//gi;
 
         # Loop over each contig in the GFF file
         for my $contig_name ( keys %{ $contigs_to_ids_obj->contig_to_ids } ) {
@@ -78,9 +84,10 @@ sub _build__groups_to_file_contigs {
             }
             push( @groups_to_contigs, \@groups_on_contig );
         }
+		$samples_to_groups_contigs{$sample_name} = \@groups_to_contigs;
     }
 
-    return \@groups_to_contigs;
+    return \%samples_to_groups_contigs;
 
 }
 
@@ -88,18 +95,37 @@ sub _build_group_order {
     my ($self) = @_;
     my %group_order;
 
-    for my $groups_on_contig ( @{ $self->_groups_to_file_contigs } ) {
-        for ( my $i = 1 ; $i < @{$groups_on_contig} ; $i++ ) {
-            my $group_from = $groups_on_contig->[ $i - 1 ];
-            my $group_to   = $groups_on_contig->[$i];
-            $group_order{$group_from}{$group_to}++;
+    for my $sample_name (keys %{$self->_groups_to_file_contigs})
+	{
+		my $groups_to_file_contigs = $self->_groups_to_file_contigs->{$sample_name};
+        for my $groups_on_contig ( @{ $groups_to_file_contigs } ) {
+            for ( my $i = 1 ; $i < @{$groups_on_contig} ; $i++ ) {
+                my $group_from = $groups_on_contig->[ $i - 1 ];
+                my $group_to   = $groups_on_contig->[$i];
+				
+				if(defined($self->sample_weights) && $self->sample_weights->{$sample_name})
+				{
+					$group_order{$group_from}{$group_to}+= $self->sample_weights->{$sample_name};
+				}
+				else
+				{
+                    $group_order{$group_from}{$group_to}++;
+     			}
+            }
+            if ( @{$groups_on_contig} == 1 ) {
+                my $group_from = $groups_on_contig->[0];
+                my $group_to   = $groups_on_contig->[0];
+				if(defined($self->sample_weights) && $self->sample_weights->{$sample_name})
+				{
+					$group_order{$group_from}{$group_to}+= $self->sample_weights->{$sample_name};
+				}
+				else
+				{
+                    $group_order{$group_from}{$group_to}++;
+     			}
+            }
         }
-        if ( @{$groups_on_contig} == 1 ) {
-            my $group_from = $groups_on_contig->[0];
-            my $group_to   = $groups_on_contig->[0];
-            $group_order{$group_from}{$group_to}++;
-        }
-    }
+	}
 
     return \%group_order;
 }
@@ -145,7 +171,7 @@ sub _reorder_connected_components {
             }
         }
 
-        if ( @{$graph_group} < 4 ) {
+        if ( @{$graph_group} < 3 ) {
             push(
                 @paths_and_weights,
                 {
@@ -167,7 +193,6 @@ sub _reorder_connected_components {
             my $minimum_spanning_tree = $graph->minimum_spanning_tree;
             my $dfs_obj               = Graph::Traversal::DFS->new($minimum_spanning_tree);
             my @reordered_dfs_groups  = $dfs_obj->dfs;
-
             push(
                 @paths_and_weights,
                 {
@@ -266,9 +291,16 @@ sub _create_accessory_graph {
 
     my %core_groups;
     my %group_freq;
-    for my $groups_on_contig ( @{ $self->_groups_to_file_contigs } ) {
-        for my $current_group ( @{$groups_on_contig} ) {
-            $group_freq{$current_group}++;
+	
+
+    for my $sample_name (keys %{$self->_groups_to_file_contigs})
+	{
+		my $groups_to_file_contigs = $self->_groups_to_file_contigs->{$sample_name};
+		
+        for my $groups_on_contig ( @{ $groups_to_file_contigs } ) {
+            for my $current_group ( @{$groups_on_contig} ) {
+                $group_freq{$current_group}++;
+            }
         }
     }
 

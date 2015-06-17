@@ -175,7 +175,6 @@ sub _build__group_statistics_obj
       analyse_groups_obj  => $self->_analyse_groups_obj,
       groups_to_contigs   => $self->_order_genes_obj->groups_to_contigs,
       _verbose            => $self->verbose_stats,
-	  sample_weights      => $self->_accessory_clustering->sample_weights
   );
 }
 
@@ -186,7 +185,8 @@ sub _build__order_genes_obj
   return Bio::Roary::OrderGenes->new(
     analyse_groups_obj => $self->_analyse_groups_obj,
     gff_files          => $self->input_files,
-	core_definition    => $self->core_definition
+	core_definition    => $self->core_definition,
+	sample_weights      => $self->_accessory_clustering->sample_weights
   );
 }
 

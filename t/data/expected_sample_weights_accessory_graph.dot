@@ -1,0 +1,15 @@
+digraph g
+{
+
+  /* list of nodes */
+  "group_A";
+  "group_B";
+  "group_C";
+  "group_G";
+  "group_H";
+
+  /* list of edges */
+  "group_A" -> "group_B" [weight = "2"];
+  "group_C" -> "group_B" [weight = "2"];
+  "group_G" -> "group_H" [weight = "2"];
+}

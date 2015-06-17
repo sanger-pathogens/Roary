@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -33,6 +34,25 @@ my $core_deletion_50  = order_genes_obj('t/data/accessory_graphs/core_deletion',
 
 my $core_island_100 = order_genes_obj('t/data/accessory_graphs/core_island',1);
 my $core_island_50  = order_genes_obj('t/data/accessory_graphs/core_island',0.5);
+
+
+cleanup();
+my $analyse_groups = Bio::Roary::AnalyseGroups->new(
+    fasta_files     => ['t/data/accessory_graphs/file_1.fa', 't/data/accessory_graphs/file_2.fa', 't/data/accessory_graphs/file_3.fa'],
+    groups_filename => 't/data/accessory_graphs/core_island');
+
+ok(my $obj = Bio::Roary::OrderGenes->new(
+  analyse_groups_obj => $analyse_groups,
+  gff_files   => ['t/data/accessory_graphs/file_1.gff','t/data/accessory_graphs/file_2.gff','t/data/accessory_graphs/file_3.gff'],
+  core_definition =>  1,
+  sample_weights => {'file_1' => 0.5, 'file_2' => 1, 'file_3' => 0.1 }
+),"Initialise order genes object for sample weights" );
+ok($obj->groups_to_contigs, 'build the graph for sample weights');
+ok(-e 'core_accessory_graph.dot', 'core accessory graph created for sample weights');
+ok(-e 'accessory_graph.dot', 'accessory graph created for sample weights');
+
+compare_ok( 'accessory_graph.dot', 't/data/expected_sample_weights_accessory_graph.dot', 'graph weights changed');
+compare_ok( 'core_accessory_graph.dot', 't/data/expected_sample_weights_core_accessory_graph.dot', 'graph weights changed');
 
 cleanup();
 done_testing();
