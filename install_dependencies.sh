@@ -31,6 +31,8 @@ fi
 cd build
 build_dir=$(pwd)
 
+
+
 download () {
   download_url=$1
   download_path=$2
@@ -167,8 +169,8 @@ update_perl_path $BEDTOOLS_LIB_DIR
 
 cd $start_dir
 cpanm Dist::Zilla
-dzil authordeps --missing | cpanm
-dzil listdeps --missing | cpanm
+dzil authordeps --missing | cpanm --no-notest
+dzil listdeps --missing | cpanm --no-notest
 
 cd $start_dir
 
