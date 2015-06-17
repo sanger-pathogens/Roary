@@ -36,23 +36,28 @@ sudo cpanm -f Bio::Roary
 ```   
 
 ##CentOS/RedHat
-Most of the dependancies can be installed from RPMs. We dont use RHEL/CentOS, so if you have a neater way, please let us know. If this doesnt work, contact your system administrator.
+Most of the dependancies can be installed from RPMs. We dont use RHEL/CentOS, which is why these instructions arent pretty, please let us know how to clean them up. If this doesnt work, contact your system administrator.
 
-Add a repository and install some applications:
+Add nonstandard repositories:
 ```
+sudo yum install epel-release
 sudo rpm --import http://rpm.agresearch.co.nz/RPM-GPG-KEY-agresearch
 sudo wget -O  /etc/yum.repos.d/agr-free.repo 'http://rpm.agresearch.co.nz/agr-free.repo'
-sudo yum install BEDTools cd-hit exonerate mafft FastTree
+sudo rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+sudo rpm -Uvh http://www.elrepo.org/elrepo-release-6-6.el6.elrepo.noarch.rpm
 ```
 
-Search and download RPMs for the dependancies from http://rpm.pbone.net/ and install with 'rpm -i':
-* parallel 
+```
+sudo yum install BEDTools cd-hit exonerate mafft FastTree parallel
+curl -L https://raw.githubusercontent.com/miyagawa/cpanminus/master/cpanm | perl - --sudo App::cpanminus
+```
+
+Search and download RPM from http://rpm.pbone.net/ and install with 'rpm -i':
 * ncbi-blast+ 
-* cpanminus
 
 Download and install [PRANK](http://wasabiapp.org/software/prank/prank_installation/). 
 
-Install Roary from CPAN
+Install Roary from CPAN:
 ```
 sudo cpanm -f Bio::Roary
 ```
