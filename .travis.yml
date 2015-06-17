@@ -1,5 +1,16 @@
 language: perl
-sudo: required
+sudo: false
+cache: apt
+addons:
+  apt:
+    packages:
+    - git
+    - g++
+    - libdb-dev
+    - libssl-dev
+    - ncbi-blast+
+    - mcl
+    - fasttree
 perl:
   - "5.10"
   - "5.12"

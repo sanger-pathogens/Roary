@@ -31,15 +31,6 @@ fi
 cd build
 build_dir=$(pwd)
 
-# Install apt packages
-sudo apt-get update -q
-sudo apt-get install -y -q g++ \
-                           libdb-dev \
-                           libssl-dev \
-                           ncbi-blast+ \
-                           mcl \
-                           fasttree
-
 download () {
   download_url=$1
   download_path=$2
@@ -75,6 +66,7 @@ untar () {
   else
     echo "Untarring $to_untar to $expected_directory"
     tar xzvf $to_untar
+    rm $to_untar
   fi
 }
 
