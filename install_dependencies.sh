@@ -119,7 +119,7 @@ PRANK_BUILD_DIR="$(pwd)/prank-msa-master"
 untar $PRANK_DOWNLOAD_PATH $PRANK_BUILD_DIR
 
 # Untar blast
-BLAST_BUILD_DIR="$(pwd)/ncbi-blast-${BLAST_VERSION}+-src"
+BLAST_BUILD_DIR="$(pwd)/ncbi-blast-${BLAST_VERSION}+"
 untar $BLAST_DOWNLOAD_PATH $BLAST_BUILD_DIR
 
 # Untar mcl
@@ -217,7 +217,7 @@ update_path $BLAST_BIN_DIR
 
 MCL_BIN_DIR="$MCL_BUILD_DIR/src/shmcl"
 update_path $MCL_BIN_DIR
-MCL_BIN_DIR_2="$MCL_BUILD_DIR/src/alien/oxygen/src/mcxdeblast"
+MCL_BIN_DIR_2="$MCL_BUILD_DIR/src/alien/oxygen/src"
 update_path $MCL_BIN_DIR_2
 
 FASTTREE_BIN_DIR=$FASTTREE_BUILD_DIR
