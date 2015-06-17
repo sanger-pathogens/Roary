@@ -15,6 +15,7 @@ BEGIN {
 my $cwd = getcwd();
 my $obj;
 
+
 ok(
     $obj = Bio::Roary::External::Mcl->new(
         blast_results   => 'some_blast_results',
