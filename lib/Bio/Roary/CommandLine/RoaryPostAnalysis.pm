@@ -117,7 +117,8 @@ sub run {
       verbose_stats                   =>  $self->verbose_stats,
       group_limit                     =>  $self->group_limit,
 	  verbose                         =>  $self->verbose,
-	  cpus                => $self->cpus,
+	  cpus                            =>  $self->cpus,
+	  logger                          =>  $self->logger,
       );                                                             
     $obj->run();
 	

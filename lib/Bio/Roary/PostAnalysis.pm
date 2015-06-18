@@ -23,6 +23,7 @@ use Bio::Roary::SplitGroups;
 use Bio::Roary::AccessoryBinaryFasta;
 use Bio::Roary::External::Fasttree;
 use Bio::Roary::AccessoryClustering;
+use Log::Log4perl qw(:easy);
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -66,15 +67,23 @@ has '_groups_multifastas_nuc_obj' => ( is => 'ro', isa => 'Bio::Roary::Output::G
 has '_split_groups_obj'           => ( is => 'ro', isa => 'Bio::Roary::SplitGroups',            lazy => 1, builder => '_build__split_groups_obj' );
 has '_accessory_binary_tree'      => ( is => 'ro', isa => 'Bio::Roary::External::Fasttree',     lazy => 1, builder => '_build__accessory_binary_tree' );
 has '_accessory_clustering'       => ( is => 'ro', isa => 'Bio::Roary::AccessoryClustering',     lazy => 1, builder => '_build__accessory_clustering' );
+has 'logger'                          => ( is => 'ro', lazy => 1, builder => '_build_logger');
 
+sub _build_logger
+{
+    my ($self) = @_;
+    Log::Log4perl->easy_init(level => $ERROR);
+    my $logger = get_logger();
+    return $logger;
+}
 
 sub run {
     my ($self) = @_;
 
-    print "Reinflate clusters\n" if($self->verbose);
+    $self->logger->info( "Reinflate clusters" );
     $self->_inflate_clusters_obj->inflate();
 
-	print "Split groups with paralogs\n" if($self->verbose);
+	$self->logger->info( "Split groups with paralogs" );
     ## SPLIT GROUPS WITH PARALOGS ##
     if ( $self->dont_split_groups ){
       move( $self->_output_inflate_unsplit_clusters_filename, $self->_output_inflate_clusters_filename );
@@ -83,36 +92,39 @@ sub run {
       $self->_split_groups_obj->split_groups;
     }
 
-	print "Labelling the groups\n" if($self->verbose);
+	$self->logger->info( "Labelling the groups" );
     $self->_group_labels_obj->add_labels();
 	
-	print "Transfering the annotation to the groups\n" if($self->verbose);
+	$self->logger->info( "Transfering the annotation to the groups" );
     $self->_annotate_groups_obj->reannotate;
 	
-	print "Creating accessory binary gene presence and absence fasta\n" if($self->verbose);
+	$self->logger->info( "Creating accessory binary gene presence and absence fasta" );
     $self->_accessory_binary_fasta->create_accessory_binary_fasta;
 	
-	print "Creating accessory binary gene presence and absence tree\n" if($self->verbose);
+	$self->logger->info( "Creating accessory binary gene presence and absence tree" );
 	$self->_accessory_binary_tree->run;
 	
-	print "Creating accessory gene presence and absence clusters\n" if($self->verbose);
+	$self->logger->info( "Creating accessory gene presence and absence clusters" );
 	$self->_accessory_clustering->sample_weights;
 	
-	print "Creating the spreadsheet with gene presence and absence\n" if($self->verbose);
+	$self->logger->info( "Creating the spreadsheet with gene presence and absence" );
     $self->_group_statistics_obj->create_spreadsheet;
 	
-	print "Creating tab files for R\n" if($self->verbose);
+	$self->logger->info( "Creating tab files for R" );
     $self->_number_of_groups_obj->create_output_files;
 
     system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
 	
-	print "Create EMBL files\n" if($self->verbose);
+	$self->logger->info( "Create EMBL files" );
     $self->_create_embl_files;
     
-	print "Creating files with the nucleotide sequences for every cluster\n" if($self->verbose && $self->output_multifasta_files);
-    $self->_groups_multifastas_nuc_obj->create_files() if($self->output_multifasta_files);
+	if($self->output_multifasta_files)
+	{
+	  $self->logger->info( "Creating files with the nucleotide sequences for every cluster" );
+      $self->_groups_multifastas_nuc_obj->create_files();
+    }
 
-	print "Cleaning up files\n" if($self->verbose);
+	$self->logger->info( "Cleaning up files" );
     $self->_delete_intermediate_files;
 }
 

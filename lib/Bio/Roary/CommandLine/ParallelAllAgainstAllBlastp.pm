@@ -87,6 +87,7 @@ sub run {
     if(@{$self->fasta_files} > 1)
     {
       $output_combined_filename = 'combined_files.fa';
+	  $self->logger->info("Combining protein files");
       my $combine_fasta_files = Bio::Roary::CombinedProteome->new(
         proteome_files                 => $prepare_input_files->fasta_files,
         output_filename                => $output_combined_filename,
@@ -100,13 +101,15 @@ sub run {
       $output_combined_filename = $self->fasta_files->[0];
     }
 
+    $self->logger->info("Beginning all against all blast");
     my $blast_obj = Bio::Roary::ParallelAllAgainstAllBlast->new(
         fasta_file       => $output_combined_filename,
         blast_results_file_name  => $self->output_filename,
         job_runner       => $self->job_runner,
         cpus             => $self->cpus,
         makeblastdb_exec => $self->makeblastdb_exec,
-        blastp_exec      => $self->blastp_exec
+        blastp_exec      => $self->blastp_exec,
+		logger           => $self->logger
     );
     $blast_obj->run();
 }

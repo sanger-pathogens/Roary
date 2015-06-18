@@ -87,16 +87,19 @@ sub run {
         die $self->usage_text;
     }
 
+	$self->logger->info("Extract core genes from spreadsheet");
     my $core_genes_obj = Bio::Roary::ExtractCoreGenesFromSpreadsheet->new( 
         spreadsheet     => $self->spreadsheet_filename,
         core_definition => $self->core_definition
     );
-
+	
+	$self->logger->info("Looking up genes in files");
     my $gene_files = Bio::Roary::LookupGeneFiles->new(
         multifasta_directory => $self->multifasta_base_directory,
         ordered_genes        => $core_genes_obj->ordered_core_genes,
       );
 	 
+	$self->logger->info("Merge multifasta alignments");
     my $merge_alignments_obj = Bio::Roary::MergeMultifastaAlignments->new(
 	  sample_names          => $core_genes_obj->sample_names,
       multifasta_files      => $gene_files->ordered_gene_files(),

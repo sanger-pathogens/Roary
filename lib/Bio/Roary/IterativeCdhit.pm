@@ -23,6 +23,7 @@ use Bio::Roary::Exceptions;
 use Bio::Roary::External::Cdhit;
 use Bio::Roary::FilterFullClusters;
 use File::Copy;
+use Log::Log4perl qw(:easy);
 # CD hit is run locally
 
 has 'output_cd_hit_filename'          => ( is => 'ro', isa => 'Str', required => 1 );
