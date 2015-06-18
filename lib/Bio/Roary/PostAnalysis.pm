@@ -183,10 +183,11 @@ sub _build__order_genes_obj
 {
   my ($self) = @_;
   return Bio::Roary::OrderGenes->new(
-    analyse_groups_obj => $self->_analyse_groups_obj,
-    gff_files          => $self->input_files,
-	core_definition    => $self->core_definition,
-	sample_weights      => $self->_accessory_clustering->sample_weights
+    analyse_groups_obj  => $self->_analyse_groups_obj,
+    gff_files           => $self->input_files,
+	core_definition     => $self->core_definition,
+	sample_weights      => $self->_accessory_clustering->sample_weights,
+	samples_to_clusters => $self->_accessory_clustering->samples_to_clusters,
   );
 }
 

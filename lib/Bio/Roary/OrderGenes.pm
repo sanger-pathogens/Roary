@@ -28,14 +28,16 @@ has 'analyse_groups_obj'       => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroup
 has 'core_definition'          => ( is => 'ro', isa => 'Num',                       default  => 1.0 );
 has 'pan_graph_filename'       => ( is => 'ro', isa => 'Str',                       default  => 'core_accessory_graph.dot' );
 has 'accessory_graph_filename' => ( is => 'ro', isa => 'Str',                       default  => 'accessory_graph.dot' );
-has 'sample_weights'           => ( is => 'ro', isa => 'Maybe[HashRef]');
-has 'group_order'              => ( is => 'ro', isa => 'HashRef',                   lazy     => 1, builder => '_build_group_order' );
-has 'group_graphs'             => ( is => 'ro', isa => 'Graph',                     lazy     => 1, builder => '_build_group_graphs' );
-has 'groups_to_contigs'        => ( is => 'ro', isa => 'HashRef',                   lazy     => 1, builder => '_build_groups_to_contigs' );
-has '_groups_to_file_contigs'  => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build__groups_to_file_contigs' );
-has '_groups'                  => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_groups' );
-has 'number_of_files'          => ( is => 'ro', isa => 'Int',     lazy => 1, builder => '_build_number_of_files' );
-has '_groups_qc'               => ( is => 'ro', isa => 'HashRef', default => sub { {} } );
+has 'sample_weights'           => ( is => 'ro', isa => 'Maybe[HashRef]' );
+has 'samples_to_clusters'      => ( is => 'ro', isa => 'Maybe[HashRef]' );
+has 'group_order' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_group_order' );
+has 'groups_to_sample_names' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'group_graphs'            => ( is => 'ro', isa => 'Graph',   lazy => 1, builder => '_build_group_graphs' );
+has 'groups_to_contigs'       => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_groups_to_contigs' );
+has '_groups_to_file_contigs' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build__groups_to_file_contigs' );
+has '_groups'                 => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_groups' );
+has 'number_of_files'         => ( is => 'ro', isa => 'Int',     lazy => 1, builder => '_build_number_of_files' );
+has '_groups_qc' => ( is => 'ro', isa => 'HashRef', default => sub { {} } );
 has '_percentage_of_largest_weak_threshold' => ( is => 'ro', isa => 'Num', default => 0.9 );
 
 sub _build_number_of_files {
@@ -54,16 +56,17 @@ sub _build_groups {
 
 sub _build__groups_to_file_contigs {
     my ($self) = @_;
-    
+
     my @overlapping_hypothetical_gene_ids;
     my %samples_to_groups_contigs;
+
     # Open each GFF file
     for my $filename ( @{ $self->gff_files } ) {
-		my @groups_to_contigs;
+        my @groups_to_contigs;
         my $contigs_to_ids_obj = Bio::Roary::ContigsToGeneIDsFromGFF->new( gff_file => $filename );
 
-		my ( $sample_name, $directories, $suffix ) = fileparse($filename);
-		$sample_name =~ s/\.gff//gi;
+        my ( $sample_name, $directories, $suffix ) = fileparse($filename);
+        $sample_name =~ s/\.gff//gi;
 
         # Loop over each contig in the GFF file
         for my $contig_name ( keys %{ $contigs_to_ids_obj->contig_to_ids } ) {
@@ -84,7 +87,7 @@ sub _build__groups_to_file_contigs {
             }
             push( @groups_to_contigs, \@groups_on_contig );
         }
-		$samples_to_groups_contigs{$sample_name} = \@groups_to_contigs;
+        $samples_to_groups_contigs{$sample_name} = \@groups_to_contigs;
     }
 
     return \%samples_to_groups_contigs;
@@ -95,38 +98,37 @@ sub _build_group_order {
     my ($self) = @_;
     my %group_order;
 
-    for my $sample_name (keys %{$self->_groups_to_file_contigs})
-	{
-		my $groups_to_file_contigs = $self->_groups_to_file_contigs->{$sample_name};
-        for my $groups_on_contig ( @{ $groups_to_file_contigs } ) {
+    my %groups_to_sample_names;
+    for my $sample_name ( keys %{ $self->_groups_to_file_contigs } ) {
+        my $groups_to_file_contigs = $self->_groups_to_file_contigs->{$sample_name};
+        for my $groups_on_contig ( @{$groups_to_file_contigs} ) {
             for ( my $i = 1 ; $i < @{$groups_on_contig} ; $i++ ) {
                 my $group_from = $groups_on_contig->[ $i - 1 ];
                 my $group_to   = $groups_on_contig->[$i];
-				
-				if(defined($self->sample_weights) && $self->sample_weights->{$sample_name})
-				{
-					$group_order{$group_from}{$group_to}+= $self->sample_weights->{$sample_name};
-				}
-				else
-				{
+
+                if ( defined( $self->sample_weights ) && $self->sample_weights->{$sample_name} ) {
+                    $group_order{$group_from}{$group_to} += $self->sample_weights->{$sample_name};
+                    push( @{ $groups_to_sample_names{$group_from} }, $sample_name );
+                }
+                else {
                     $group_order{$group_from}{$group_to}++;
-     			}
+                }
             }
             if ( @{$groups_on_contig} == 1 ) {
                 my $group_from = $groups_on_contig->[0];
                 my $group_to   = $groups_on_contig->[0];
-				if(defined($self->sample_weights) && $self->sample_weights->{$sample_name})
-				{
-					$group_order{$group_from}{$group_to}+= $self->sample_weights->{$sample_name};
-				}
-				else
-				{
+                if ( defined( $self->sample_weights ) && $self->sample_weights->{$sample_name} ) {
+                    $group_order{$group_from}{$group_to} += $self->sample_weights->{$sample_name};
+                    push( @{ $groups_to_sample_names{$group_from} }, $sample_name );
+                }
+                else {
                     $group_order{$group_from}{$group_to}++;
-     			}
+                }
             }
         }
-	}
+    }
 
+    $self->groups_to_sample_names( \%groups_to_sample_names );
     return \%group_order;
 }
 
@@ -171,12 +173,25 @@ sub _reorder_connected_components {
             }
         }
 
-        if ( @{$graph_group} < 3 ) {
+        my %samples_in_graph;
+        for my $current_group ( keys %groups ) {
+            my $sample_names = $self->groups_to_sample_names->{$current_group};
+            if ( defined($sample_names) ) {
+                for my $sample_name ( @{$sample_names} ) {
+                    $samples_in_graph{$sample_name}++;
+                }
+            }
+        }
+        my @sample_names = sort keys %samples_in_graph;
+
+        if ( @{$graph_group} == 1 ) {
+
             push(
                 @paths_and_weights,
                 {
                     path           => $graph_group,
-                    average_weight => $edge_sum
+                    average_weight => $edge_sum,
+                    sample_names   => \@sample_names
                 }
             );
         }
@@ -197,15 +212,75 @@ sub _reorder_connected_components {
                 @paths_and_weights,
                 {
                     path           => \@reordered_dfs_groups,
-                    average_weight => $edge_sum
+                    average_weight => $edge_sum,
+                    sample_names   => \@sample_names
                 }
             );
         }
 
     }
-    my @ordered_paths_and_weights = sort { $a->{average_weight} <=> $b->{average_weight} } @paths_and_weights;
-    @ordered_graph_groups = map { $_->{path} } @ordered_paths_and_weights;
-    return \@ordered_graph_groups;
+
+    return $self->_order_by_samples_and_weights( \@paths_and_weights );
+}
+
+sub _order_by_samples_and_weights {
+    my ( $self, $paths_and_weights ) = @_;
+
+    my @ordered_graph_groups;
+    if ( !defined( $self->samples_to_clusters ) ) {
+        my @ordered_paths_and_weights = sort { $a->{average_weight} <=> $b->{average_weight} } @{$paths_and_weights};
+        @ordered_graph_groups = map { $_->{path} } @ordered_paths_and_weights;
+        return \@ordered_graph_groups;
+    }
+
+    #The input is an array of hashes.
+    #{
+    #    path           => \@reordered_dfs_groups,
+    #    average_weight => $edge_sum,
+    #	 sample_names   => \@sample_names
+    #}
+
+    use Data::Dumper;
+
+    # Find the largest cluster in each graph and regroup
+    my %largest_cluster_to_paths_and_weights;
+    for my $graph_details ( @{$paths_and_weights} ) {
+        my %cluster_count;
+        for my $sample_name ( @{ $graph_details->{sample_names} } ) {
+            if ( defined( $self->samples_to_clusters->{$sample_name} ) ) {
+                $cluster_count{ $self->samples_to_clusters->{$sample_name} }++;
+            }
+        }
+        my $largest_cluster = ( sort { $cluster_count{$a} <=> $cluster_count{$b} } keys %cluster_count )[0];
+        if ( !defined($largest_cluster) ) {
+            my @ordered_paths_and_weights = sort { $b->{average_weight} <=> $a->{average_weight} } @{$paths_and_weights};
+            @ordered_graph_groups = map { $_->{path} } @ordered_paths_and_weights;
+            return \@ordered_graph_groups;
+        }
+
+        push( @{ $largest_cluster_to_paths_and_weights{$largest_cluster}{graph_details} }, $graph_details );
+        $largest_cluster_to_paths_and_weights{$largest_cluster}{largest_cluster_size} += $cluster_count{$largest_cluster};
+    }
+
+    # go through each cluster group and order by weight
+    my @clustered_ordered_graph_groups;
+    for my $cluster_name (
+        sort {
+            $largest_cluster_to_paths_and_weights{$b}->{largest_cluster_size}
+              <=> $largest_cluster_to_paths_and_weights{$a}->{largest_cluster_size}
+        } keys %largest_cluster_to_paths_and_weights
+      )
+    {
+		
+        my @ordered_paths_and_weights =
+          sort { $b->{average_weight} <=> $a->{average_weight} } @{ $largest_cluster_to_paths_and_weights{$cluster_name}->{graph_details} };
+        @ordered_graph_groups = map { $_->{path} } @ordered_paths_and_weights;
+
+        for my $graph_group (@ordered_graph_groups) {
+            push( @clustered_ordered_graph_groups, $graph_group );
+        }
+    }
+    return \@clustered_ordered_graph_groups;
 }
 
 sub _build_groups_to_contigs {
@@ -291,13 +366,11 @@ sub _create_accessory_graph {
 
     my %core_groups;
     my %group_freq;
-	
 
-    for my $sample_name (keys %{$self->_groups_to_file_contigs})
-	{
-		my $groups_to_file_contigs = $self->_groups_to_file_contigs->{$sample_name};
-		
-        for my $groups_on_contig ( @{ $groups_to_file_contigs } ) {
+    for my $sample_name ( keys %{ $self->_groups_to_file_contigs } ) {
+        my $groups_to_file_contigs = $self->_groups_to_file_contigs->{$sample_name};
+
+        for my $groups_on_contig ( @{$groups_to_file_contigs} ) {
             for my $current_group ( @{$groups_on_contig} ) {
                 $group_freq{$current_group}++;
             }
