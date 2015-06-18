@@ -82,36 +82,6 @@ untar () {
   fi
 }
 
-# parallel
-if [ -d "$PARALLEL_BUILD_DIR" ]; then
-  echo "Parallel already untarred to $PARALLEL_BUILD_DIR, skipping"
-else
-  download $PARALLEL_URL $PARALLEL_DOWNLOAD_PATH
-  echo "Untarring parallel to $PARALLEL_BUILD_DIR"
-  tar xjvf $PARALLEL_DOWNLOAD_PATH
-fi
-
-if [ -d "$BEDTOOLS_BUILD_DIR" ]; then
-  echo "Bedtools already untarred to $BEDTOOLS_BUILD_DIR, skipping"
-else
-  download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
-  untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
-fi
-
-if [ -d "$CDHIT_BUILD_DIR" ]; then
-  echo "cdhit already untarred to $CDHIT_BUILD_DIR, skipping"
-else
-  download $CDHIT_URL $CDHIT_DOWNLOAD_PATH
-  untar $CDHIT_DOWNLOAD_PATH $CDHIT_BUILD_DIR
-fi
-
-if [ -d "$PRANK_BUILD_DIR" ]; then
-  echo "prank already untarred to $PRANK_BUILD_DIR, skipping"
-else
-  download $PRANK_URL $PRANK_DOWNLOAD_PATH
-  untar $PRANK_DOWNLOAD_PATH $PRANK_BUILD_DIR
-fi
-
 if [ -d "$BLAST_BUILD_DIR" ]; then
   echo "blast already untarred to $BLAST_BUILD_DIR, skipping"
 else
@@ -119,74 +89,74 @@ else
   untar $BLAST_DOWNLOAD_PATH $BLAST_BUILD_DIR
 fi
 
-if [ -d "$MCL_BUILD_DIR" ]; then
-  echo "mcl already untarred to $MCL_BUILD_DIR, skipping"
-else
-  download $MCL_URL $MCL_DOWNLOAD_PATH
-  untar $MCL_DOWNLOAD_PATH $MCL_BUILD_DIR
-fi
-
-if [ -d "$FASTTREE_BUILD_DIR" ]; then
-  echo "fasttree already untarred to $FASTTREE_BUILD_DIR, skipping"
-else
-  download $FASTTREE_URL $FASTTREE_DOWNLOAD_PATH
-  mkdir $FASTTREE_BUILD_DIR
-  mv $FASTTREE_DOWNLOAD_FILENAME $FASTTREE_BUILD_DIR
-fi
-
 # Build parallel
-cd $PARALLEL_BUILD_DIR
 if [ -e "$PARALLEL_BUILD_DIR/src/parallel" ]; then
   echo "Parallel already built, skipping"
 else
+  download $PARALLEL_URL $PARALLEL_DOWNLOAD_PATH
+  echo "Untarring parallel to $PARALLEL_BUILD_DIR"
+  tar xjvf $PARALLEL_DOWNLOAD_PATH
   echo "Building parallel"
+  cd $PARALLEL_BUILD_DIR
   ./configure
   make
 fi
 
 # Build bedtools
-cd $BEDTOOLS_BUILD_DIR
 if [ -e "$BEDTOOLS_BUILD_DIR/bin/bedtools" ]; then
   echo "Bedtools already built, skipping"
 else
+
+  download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
+  untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
+  cd $BEDTOOLS_BUILD_DIR
   echo "Building bedtools"
   make
 fi
 
 # Build cd-hit
-cd $CDHIT_BUILD_DIR
 if [ -e "$CDHIT_BUILD_DIR/cd-hit" ]; then
   echo "cd-hit already built, skipping"
 else
+  download $CDHIT_URL $CDHIT_DOWNLOAD_PATH
+  untar $CDHIT_DOWNLOAD_PATH $CDHIT_BUILD_DIR
   echo "Building cd-hit"
+  cd $CDHIT_BUILD_DIR
   make
 fi
 
 # Build prank
-cd $PRANK_BUILD_DIR
 if [ -e "$PRANK_BUILD_DIR/src/prank" ]; then
   echo "prank already built, skipping"
 else
+  download $PRANK_URL $PRANK_DOWNLOAD_PATH
+  untar $PRANK_DOWNLOAD_PATH $PRANK_BUILD_DIR
   echo "Building prank"
+  cd $PRANK_BUILD_DIR
   cd src
   make
 fi
 
 # Build MCL
-cd $MCL_BUILD_DIR
 if [ -e "$MCL_BUILD_DIR/src/shmcl/mcl" ]; then
   echo "MCL already built, skipping"
 else
+  download $MCL_URL $MCL_DOWNLOAD_PATH
+  untar $MCL_DOWNLOAD_PATH $MCL_BUILD_DIR
   echo "Building MCL"
+  cd $MCL_BUILD_DIR
   ./configure
   make
 fi
 
 # Build FastTree
-cd $FASTTREE_BUILD_DIR
 if [ -e "$FASTTREE_BUILD_DIR/FastTree" ]; then
   echo "FastTree already built, skipping"
 else
+  download $FASTTREE_URL $FASTTREE_DOWNLOAD_PATH
+  mkdir -p $FASTTREE_BUILD_DIR
+  mv $FASTTREE_DOWNLOAD_FILENAME $FASTTREE_BUILD_DIR
+  cd $FASTTREE_BUILD_DIR
   echo "Building FastTree"
   gcc -o FastTree FastTree-${FASTTREE_VERSION}.c -lm
 fi
