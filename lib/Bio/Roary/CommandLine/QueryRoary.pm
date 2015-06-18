@@ -32,13 +32,14 @@ has 'input_set_two'   => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'pan_genome_results' );
 has 'action'          => ( is => 'rw', isa => 'Str', default => 'union' );
 has 'core_definition' => ( is => 'rw', isa => 'Num', default => 0.99 );
+has 'verbose'         => ( is => 'rw', isa => 'Bool', default => 0 );
 
 has '_error_message' => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $input_files, $output_filename, $groups_filename, @group_names, @input_set_one, @input_set_two, $action, $core_definition, $help );
+    my ( $input_files, $output_filename, $groups_filename, @group_names, @input_set_one, @input_set_two, $action, $core_definition,$verbose,  $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -49,9 +50,14 @@ sub BUILD {
         'i|input_set_one=s'   => \@input_set_one,
         't|input_set_two=s'   => \@input_set_two,
         'c|core_definition=f' => \$core_definition,
+		'v|verbose'           => \$verbose,
         'h|help'              => \$help,
     );
 
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
     $self->help($help) if(defined($help));
     
     $self->output_filename($output_filename) if ( defined($output_filename) );

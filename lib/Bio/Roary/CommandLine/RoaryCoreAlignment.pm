@@ -25,11 +25,12 @@ has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'gene_
 has 'output_filename'           => ( is => 'rw', isa => 'Str', default => 'core_gene_alignment.aln' );
 has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 1 );
 has '_error_message'            => ( is => 'rw', isa => 'Str' );
+has 'verbose'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition, $help );
+    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -37,9 +38,14 @@ sub BUILD {
         's|spreadsheet_filename=s'      => \$spreadsheet_filename,
         'o|output_filename=s'           => \$output_filename,
         'cd|core_definition=f'          => \$core_definition,
+		'v|verbose'                     => \$verbose,
         'h|help'                        => \$help,
     );
     
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
     $self->help($help) if(defined($help));
 
     if ( defined($multifasta_base_directory) && ( -d $multifasta_base_directory ) ) {
