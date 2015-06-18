@@ -111,6 +111,8 @@ else
   untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
   cd $BEDTOOLS_BUILD_DIR
   echo "Building bedtools"
+  pwd
+  ls -alrt
   make
 fi
 
