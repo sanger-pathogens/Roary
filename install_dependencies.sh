@@ -43,7 +43,21 @@ fi
 cd build
 build_dir=$(pwd)
 
+PARALLEL_DOWNLOAD_PATH="$(pwd)/${PARALLEL_DOWNLOAD_FILENAME}"
+BEDTOOLS_DOWNLOAD_PATH="$(pwd)/${BEDTOOLS_DOWNLOAD_FILENAME}"
+CDHIT_DOWNLOAD_PATH="$(pwd)/${CDHIT_DOWNLOAD_FILENAME}"
+PRANK_DOWNLOAD_PATH="$(pwd)/${PRANK_DOWNLOAD_FILENAME}"
+BLAST_DOWNLOAD_PATH="$(pwd)/${BLAST_DOWNLOAD_FILENAME}"
+MCL_DOWNLOAD_PATH="$(pwd)/${MCL_DOWNLOAD_FILENAME}"
+FASTTREE_DOWNLOAD_PATH="$(pwd)/${FASTTREE_DOWNLOAD_FILENAME}"
 
+PARALLEL_BUILD_DIR="$(pwd)/parallel-${PARALLEL_VERSION}"
+BEDTOOLS_BUILD_DIR="$(pwd)/bedtools2"
+CDHIT_BUILD_DIR="$(pwd)/cd-hit-v${CDHIT_LONG_VERSION}"
+PRANK_BUILD_DIR="$(pwd)/prank-msa-master"
+BLAST_BUILD_DIR="$(pwd)/ncbi-blast-${BLAST_VERSION}+"
+MCL_BUILD_DIR="$(pwd)/mcl-${MCL_VERSION}"
+FASTTREE_BUILD_DIR="$(pwd)/fasttree"
 
 download () {
   download_url=$1
@@ -55,34 +69,6 @@ download () {
     wget $download_url -O $download_path
   fi
 }
-
-# Download parallel
-PARALLEL_DOWNLOAD_PATH="$(pwd)/${PARALLEL_DOWNLOAD_FILENAME}"
-download $PARALLEL_URL $PARALLEL_DOWNLOAD_PATH
-
-# Download bedtools
-BEDTOOLS_DOWNLOAD_PATH="$(pwd)/${BEDTOOLS_DOWNLOAD_FILENAME}"
-download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
-
-# Download cd-hit
-CDHIT_DOWNLOAD_PATH="$(pwd)/${CDHIT_DOWNLOAD_FILENAME}"
-download $CDHIT_URL $CDHIT_DOWNLOAD_PATH
-
-# Download prank
-PRANK_DOWNLOAD_PATH="$(pwd)/${PRANK_DOWNLOAD_FILENAME}"
-download $PRANK_URL $PRANK_DOWNLOAD_PATH
-
-# Download blast
-BLAST_DOWNLOAD_PATH="$(pwd)/${BLAST_DOWNLOAD_FILENAME}"
-download $BLAST_URL $BLAST_DOWNLOAD_PATH
-
-# Download mcl
-MCL_DOWNLOAD_PATH="$(pwd)/${MCL_DOWNLOAD_FILENAME}"
-download $MCL_URL $MCL_DOWNLOAD_PATH
-
-# Download fasttree
-FASTTREE_DOWNLOAD_PATH="$(pwd)/${FASTTREE_DOWNLOAD_FILENAME}"
-download $FASTTREE_URL $FASTTREE_DOWNLOAD_PATH
 
 untar () {
   to_untar=$1
@@ -96,44 +82,60 @@ untar () {
   fi
 }
 
-
-# Untar parallel
-PARALLEL_BUILD_DIR="$(pwd)/parallel-${PARALLEL_VERSION}"
+# parallel
 if [ -d "$PARALLEL_BUILD_DIR" ]; then
   echo "Parallel already untarred to $PARALLEL_BUILD_DIR, skipping"
 else
+  download $PARALLEL_URL $PARALLEL_DOWNLOAD_PATH
   echo "Untarring parallel to $PARALLEL_BUILD_DIR"
   tar xjvf $PARALLEL_DOWNLOAD_PATH
 fi
 
-# Untar bedtools
-BEDTOOLS_BUILD_DIR="$(pwd)/bedtools2"
-untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
+if [ -d "$BEDTOOLS_BUILD_DIR" ]; then
+  echo "Bedtools already untarred to $BEDTOOLS_BUILD_DIR, skipping"
+else
+  download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
+  untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
+fi
 
-# Untar cd-hit
-CDHIT_BUILD_DIR="$(pwd)/cd-hit-v${CDHIT_LONG_VERSION}"
-untar $CDHIT_DOWNLOAD_PATH $CDHIT_BUILD_DIR
+if [ -d "$CDHIT_BUILD_DIR" ]; then
+  echo "cdhit already untarred to $CDHIT_BUILD_DIR, skipping"
+else
+  download $CDHIT_URL $CDHIT_DOWNLOAD_PATH
+  untar $CDHIT_DOWNLOAD_PATH $CDHIT_BUILD_DIR
+fi
 
-# Untar prank
-PRANK_BUILD_DIR="$(pwd)/prank-msa-master"
-untar $PRANK_DOWNLOAD_PATH $PRANK_BUILD_DIR
+if [ -d "$PRANK_BUILD_DIR" ]; then
+  echo "prank already untarred to $PRANK_BUILD_DIR, skipping"
+else
+  download $PRANK_URL $PRANK_DOWNLOAD_PATH
+  untar $PRANK_DOWNLOAD_PATH $PRANK_BUILD_DIR
+fi
 
-# Untar blast
-BLAST_BUILD_DIR="$(pwd)/ncbi-blast-${BLAST_VERSION}+"
-untar $BLAST_DOWNLOAD_PATH $BLAST_BUILD_DIR
+if [ -d "$BLAST_BUILD_DIR" ]; then
+  echo "blast already untarred to $BLAST_BUILD_DIR, skipping"
+else
+  download $BLAST_URL $BLAST_DOWNLOAD_PATH
+  untar $BLAST_DOWNLOAD_PATH $BLAST_BUILD_DIR
+fi
 
-# Untar mcl
-MCL_BUILD_DIR="$(pwd)/mcl-${MCL_VERSION}"
-untar $MCL_DOWNLOAD_PATH $MCL_BUILD_DIR
+if [ -d "$MCL_BUILD_DIR" ]; then
+  echo "mcl already untarred to $MCL_BUILD_DIR, skipping"
+else
+  download $MCL_URL $MCL_DOWNLOAD_PATH
+  untar $MCL_DOWNLOAD_PATH $MCL_BUILD_DIR
+fi
 
-# Move source file into its own directory
-FASTTREE_BUILD_DIR="$(pwd)/fasttree"
-mkdir $FASTTREE_BUILD_DIR
-mv $FASTTREE_DOWNLOAD_FILENAME $FASTTREE_BUILD_DIR
+if [ -d "$FASTTREE_BUILD_DIR" ]; then
+  echo "fasttree already untarred to $FASTTREE_BUILD_DIR, skipping"
+else
+  download $FASTTREE_URL $FASTTREE_DOWNLOAD_PATH
+  mkdir $FASTTREE_BUILD_DIR
+  mv $FASTTREE_DOWNLOAD_FILENAME $FASTTREE_BUILD_DIR
+fi
 
 # Build parallel
 cd $PARALLEL_BUILD_DIR
-
 if [ -e "$PARALLEL_BUILD_DIR/src/parallel" ]; then
   echo "Parallel already built, skipping"
 else
@@ -144,7 +146,6 @@ fi
 
 # Build bedtools
 cd $BEDTOOLS_BUILD_DIR
-
 if [ -e "$BEDTOOLS_BUILD_DIR/bin/bedtools" ]; then
   echo "Bedtools already built, skipping"
 else
@@ -154,7 +155,6 @@ fi
 
 # Build cd-hit
 cd $CDHIT_BUILD_DIR
-
 if [ -e "$CDHIT_BUILD_DIR/cd-hit" ]; then
   echo "cd-hit already built, skipping"
 else
@@ -164,7 +164,6 @@ fi
 
 # Build prank
 cd $PRANK_BUILD_DIR
-
 if [ -e "$PRANK_BUILD_DIR/src/prank" ]; then
   echo "prank already built, skipping"
 else
