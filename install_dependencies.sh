@@ -62,6 +62,7 @@ FASTTREE_BUILD_DIR="$(pwd)/fasttree"
 download () {
   download_url=$1
   download_path=$2
+  cd $build_dir
   if [ -e "$download_path" ]; then
     echo "Skipping download of $download_url, $download_path already exists"
   else
@@ -78,6 +79,7 @@ untar () {
     rm -rf $expected_directory
   fi
   echo "Untarring $to_untar to $expected_directory"
+  cd $build_dir
   tar xzvf $to_untar
   rm $to_untar
   pwd
@@ -110,10 +112,8 @@ else
 
   download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
   untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
-  ls $BEDTOOLS_BUILD_DIR
   cd $BEDTOOLS_BUILD_DIR
   echo "Building bedtools"
-  pwd
   ls -alrt
   make
 fi
