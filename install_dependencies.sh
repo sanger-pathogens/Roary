@@ -74,12 +74,11 @@ untar () {
   to_untar=$1
   expected_directory=$2
   if [ -d "$expected_directory" ]; then
-    echo "Already untarred $to_untar to $expected_directory, skipping"
-  else
-    echo "Untarring $to_untar to $expected_directory"
-    tar xzvf $to_untar
-    rm $to_untar
+    rm -rf $expected_directory
   fi
+  echo "Untarring $to_untar to $expected_directory"
+  tar xzvf $to_untar
+  rm $to_untar
 }
 
 if [ -d "$BLAST_BUILD_DIR" ]; then
