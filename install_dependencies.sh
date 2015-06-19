@@ -85,7 +85,7 @@ untar () {
   pwd
 }
 
-if [ -d "$BLAST_BUILD_DIR" ]; then
+if [ -e "$BLAST_BUILD_DIR/bin/blastp" ]; then
   echo "blast already untarred to $BLAST_BUILD_DIR, skipping"
 else
   download $BLAST_URL $BLAST_DOWNLOAD_PATH
