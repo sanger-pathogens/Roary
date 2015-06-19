@@ -67,6 +67,7 @@ download () {
   else
     echo "Downloading $download_url to $download_path"
     wget $download_url -O $download_path
+    pwd
   fi
 }
 
@@ -79,6 +80,7 @@ untar () {
   echo "Untarring $to_untar to $expected_directory"
   tar xzvf $to_untar
   rm $to_untar
+  pwd
 }
 
 if [ -d "$BLAST_BUILD_DIR" ]; then
@@ -108,6 +110,7 @@ else
 
   download $BEDTOOLS_URL $BEDTOOLS_DOWNLOAD_PATH
   untar $BEDTOOLS_DOWNLOAD_PATH $BEDTOOLS_BUILD_DIR
+  ls $BEDTOOLS_BUILD_DIR
   cd $BEDTOOLS_BUILD_DIR
   echo "Building bedtools"
   pwd
