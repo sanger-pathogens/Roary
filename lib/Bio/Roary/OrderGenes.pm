@@ -233,15 +233,6 @@ sub _order_by_samples_and_weights {
         return \@ordered_graph_groups;
     }
 
-    #The input is an array of hashes.
-    #{
-    #    path           => \@reordered_dfs_groups,
-    #    average_weight => $edge_sum,
-    #	 sample_names   => \@sample_names
-    #}
-
-    use Data::Dumper;
-
     # Find the largest cluster in each graph and regroup
     my %largest_cluster_to_paths_and_weights;
     for my $graph_details ( @{$paths_and_weights} ) {
@@ -251,7 +242,7 @@ sub _order_by_samples_and_weights {
                 $cluster_count{ $self->samples_to_clusters->{$sample_name} }++;
             }
         }
-        my $largest_cluster = ( sort { $cluster_count{$a} <=> $cluster_count{$b} } keys %cluster_count )[0];
+        my $largest_cluster = ( sort { $cluster_count{$b} <=> $cluster_count{$a} || $a cmp $b} keys %cluster_count )[0];
         if ( !defined($largest_cluster) ) {
             my @ordered_paths_and_weights = sort { $b->{average_weight} <=> $a->{average_weight} } @{$paths_and_weights};
             @ordered_graph_groups = map { $_->{path} } @ordered_paths_and_weights;
@@ -379,6 +370,7 @@ sub _create_accessory_graph {
 
     for my $current_group ( keys %{ $self->group_order() } ) {
         next if ( $group_freq{$current_group} >= ( $self->number_of_files * $self->core_definition ) );
+		
         for my $group_to ( keys %{ $self->group_order->{$current_group} } ) {
             if ( $group_freq{$group_to} >= ( $self->number_of_files * $self->core_definition ) ) {
                 $graph->add_vertex($current_group);
