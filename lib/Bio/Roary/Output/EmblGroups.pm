@@ -123,8 +123,12 @@ sub _block {
 sub _get_heat_map_colour
 {
 	my ( $self, $taxon_names, $number_of_files ) = @_;
+	return $self->heatmap_lookup_table->[0] if(@{$taxon_names} == 1);
+	my $number_of_colours = @{$self->heatmap_lookup_table};
+	return $self->heatmap_lookup_table->[$number_of_colours -1 ] if(@{$taxon_names} == $number_of_files);
+	
 	my $block_size = $number_of_files/ @{$self->heatmap_lookup_table} ;
-	my $colour_index = ceil(@{$taxon_names}/ $block_size) +1;
+	my $colour_index = ceil(@{$taxon_names}/ $block_size) -1;
     return 	$self->heatmap_lookup_table->[$colour_index];
 }
 
