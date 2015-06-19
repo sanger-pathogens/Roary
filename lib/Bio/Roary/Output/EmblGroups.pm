@@ -33,8 +33,7 @@ has '_output_fh'           => ( is => 'ro', lazy => 1,          builder => '_bui
 has '_output_header_fh'    => ( is => 'ro', lazy => 1,          builder => '_build__output_header_fh' );
 has '_sorted_file_names'   => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build__sorted_file_names' );
 has '_groups_to_files'     => ( is => 'ro', isa  => 'HashRef',  lazy    => 1, builder => '_build__groups_to_files' );
-has 'heatmap_lookup_table' => ( is => 'ro', isa  => 'ArrayRef',  lazy    => 1, builder => '_build_heatmap_lookup_table' );
-
+has 'heatmap_lookup_table' => ( is => 'ro', isa  => 'ArrayRef', lazy    => 1, builder => '_build_heatmap_lookup_table' );
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -108,7 +107,7 @@ sub _block {
         }
     }
 
-    my $colour = $self->_get_heat_map_colour(\@taxon_names_array,$self->annotate_groups_obj->_number_of_files);
+    my $colour = $self->_get_heat_map_colour( \@taxon_names_array, $self->annotate_groups_obj->_number_of_files );
 
     my $taxon_names = join( " ", @taxon_names_array );
 
@@ -120,34 +119,32 @@ sub _block {
     return $tab_file_entry;
 }
 
-sub _get_heat_map_colour
-{
-	my ( $self, $taxon_names, $number_of_files ) = @_;
-	return $self->heatmap_lookup_table->[0] if(@{$taxon_names} == 1);
-	my $number_of_colours = @{$self->heatmap_lookup_table};
-	return $self->heatmap_lookup_table->[$number_of_colours -1 ] if(@{$taxon_names} == $number_of_files);
-	
-	my $block_size = $number_of_files/ @{$self->heatmap_lookup_table} ;
-	my $colour_index = ceil(@{$taxon_names}/ $block_size) -1;
-    return 	$self->heatmap_lookup_table->[$colour_index];
+sub _get_heat_map_colour {
+    my ( $self, $taxon_names, $number_of_files ) = @_;
+    return $self->heatmap_lookup_table->[0] if ( @{$taxon_names} == 1 );
+    my $number_of_colours = @{ $self->heatmap_lookup_table };
+    return $self->heatmap_lookup_table->[ $number_of_colours - 1 ] if ( @{$taxon_names} == $number_of_files );
+
+    my $block_size   = $number_of_files / @{ $self->heatmap_lookup_table };
+    my $colour_index = ceil( @{$taxon_names} / $block_size ) - 1;
+    return $self->heatmap_lookup_table->[$colour_index];
 }
 
 sub _build_heatmap_lookup_table {
     my ($self) = @_;
     return [
-		4,  # blue (RGB values: 0 0 255)
-		5,  # cyan (RGB values: 0 255 255)
-		9,  # light sky blue (RGB values: 135 206 250)
-		8,  # pale green (RGB values: 152 251 152)
-		3,  # green (RGB values: 0 255 0)
-		7,  # yellow (RGB values: 255 255 0)
-		10, # orange (RGB values: 255 165 0)
-		16, # light red (RGB values: 255 127 127)
-		15, # mid red: (RGB values: 255 63 63)
-		2,  # red (RGB values: 255 0 0)
-		];
+        4,     # blue (RGB values: 0 0 255)
+        5,     # cyan (RGB values: 0 255 255)
+        9,     # light sky blue (RGB values: 135 206 250)
+        8,     # pale green (RGB values: 152 251 152)
+        3,     # green (RGB values: 0 255 0)
+        7,     # yellow (RGB values: 255 255 0)
+        10,    # orange (RGB values: 255 165 0)
+        16,    # light red (RGB values: 255 127 127)
+        15,    # mid red: (RGB values: 255 63 63)
+        2,     # red (RGB values: 255 0 0)
+    ];
 }
-
 
 sub _block_colour {
     my ( $self, $accessory_label ) = @_;

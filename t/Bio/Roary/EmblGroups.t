@@ -44,17 +44,4 @@ is($obj->_get_heat_map_colour(['a','b','c'                            ], 10),9, 
 is($obj->_get_heat_map_colour(['a','b'                                ], 10),5,  'heatmap colour loop over each colour 2');
 is($obj->_get_heat_map_colour(['a'                                    ], 10),4,  'heatmap colour loop over each colour 1 ');
 
-
 done_testing();
-
-#4,  # blue (RGB values: 0 0 255)
-#5,  # cyan (RGB values: 0 255 255)
-#9,  # light sky blue (RGB values: 135 206 250)
-#8,  # pale green (RGB values: 152 251 152)
-#3,  # green (RGB values: 0 255 0)
-#7,  # yellow (RGB values: 255 255 0)
-#10, # orange (RGB values: 255 165 0)
-#16, # light red (RGB values: 255 127 127)
-#15, # mid red: (RGB values: 255 63 63)
-#2,  # red (RGB values: 255 0 0)
-#];
