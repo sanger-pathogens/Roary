@@ -34,33 +34,55 @@
         <p>Roary is a high speed stand alone pan genome pipeline, which takes annotated assemblies in GFF3 format (produced by Prokka) and calculates the pan genome.  Using a standard desktop PC, it can analyse datasets with thousands of samples, something which is computationally infeasible with existing methods, without compromising the quality of the results.  128 samples can be analysed in under 1 hour using 1 GB of RAM and a single processor. To perform this analysis using existing methods would take weeks and hundreds of GB of RAM.</p>
 
 
-
-<h2><a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation - Ubuntu/Debian</h2>
-<p>Assuming you have root on your system, all the dependancies can be installed using apt and cpanm.</p>
-<p><code>sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft exonerate</code></p>
-<p><code>sudo cpanm -f Bio::Roary</code></p>
-   
-
-<h2><a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation - OSX using homebrew and Linux using linuxbrew</h2>
-<p>Assuming you have homebrew setup and installed on your OSX system (or Linuxbrew on Linux), tap the science keg and install the dependancies, then install the perl modules:</p>
-
-<p><code>brew tap homebrew/science</code></p>
-<p><code>brew install bedtools cd-hit blast mcl prank parallel mafft exonerate</code></p>
-<p><code>cpanm -f Bio::Roary</code></p>
-
-
-<h2><a id="method" class="anchor" href="#vm" aria-hidden="true"><span class="octicon octicon-link"></span></a>Virtual Machine</h2>
-<p>We have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on <a href="http://environmentalomics.org/bio-linux/">Bio-Linux 8</a>. If you run Windows, 
-then this is the only way to use Roary on your machine. You need to first install 
-<a href="https://www.virtualbox.org/">VirtualBox</a>, then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.</p>
-
+<h2><a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+<p>Theres are a number of dependancies required for Roary, with instructions specific to the type of system you have:</p>
 <ul>
-<li><a href="ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova">Virtual Machine with Roary installed</a></li>
+<li><a href="#ubuntu">Ubuntu/Debian</a></li>
+<li><a href="#redhat">CentOS/RedHat</a></li>
+<li><a href="#homebrew">Homebrew/Linuxbrew - OSX/Linux</a></li>
+<li><a href="#bundled">Bundled binaries - OSX/Linux</a></li>
+<li><a href="#vm">Virtual Machine - OSX/Linux/Windows</a></li>
 </ul>
 
+<h2><a id="ubuntu" class="anchor" href="#ubuntu" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ubuntu/Debian</h2>
+<p>Assuming you have root on your system, all the dependancies can be installed using apt and cpanm.</p>
+<p><code>sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft exonerate fasttree</code></p>
+<p><code>sudo cpanm -f Bio::Roary</code></p>
+   
+<p>Older versions of Ubuntu/Debian (12.04 and below)</p>
+<p>Assuming you are running BASH, run this script, then copy and paste the last few lines into your BASH profile, as per the instructions.  Not all the packages Roary requires are available on older versions of Ubuntu/Debian or the versions dont support features Roary requires.  So this script will build them from source in the current working directory.</p>
+<p><code>./install_dependencies.sh</code></p>
+   
+<h2><a id="redhat" class="anchor" href="#redjat" aria-hidden="true"><span class="octicon octicon-link"></span></a>CentOS/RedHat</h2>
+<p>Most of the dependancies can be installed from RPMs. We dont use RHEL/CentOS, which is why these instructions arent pretty, please let us know how to clean them up. If this doesnt work, contact your system administrator.</p>
 
-<h2><a id="method" class="anchor" href="#method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation - With bundled binaries</h2>
+<p>Add nonstandard repositories:</p>
+<p><code>sudo yum install epel-release</code></p>
+<p><code>sudo rpm --import http://rpm.agresearch.co.nz/RPM-GPG-KEY-agresearch</code></p>
+<p><code>sudo wget -O  /etc/yum.repos.d/agr-free.repo 'http://rpm.agresearch.co.nz/agr-free.repo'</code></p>
+<p><code>sudo rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org</code></p>
+<p><code>sudo rpm -Uvh http://www.elrepo.org/elrepo-release-6-6.el6.elrepo.noarch.rpm</code></p>
 
+<p><code>sudo yum install BEDTools cd-hit exonerate mafft FastTree parallel</code></p>
+<p><code>curl -L https://raw.githubusercontent.com/miyagawa/cpanminus/master/cpanm | perl - --sudo App::cpanminus</code></p>
+
+<p>Search and download RPM from http://rpm.pbone.net/ and install with 'rpm -i':</p>
+<p><code>ncbi-blast+</code></p>
+
+<p>Download and install [PRANK](http://wasabiapp.org/software/prank/prank_installation/).</p>
+<p>Install Roary from CPAN:</p>
+<p><code>sudo cpanm -f Bio::Roary</code></p>
+	
+
+<h2><a id="homebrew" class="anchor" href="#homebrew" aria-hidden="true"><span class="octicon octicon-link"></span></a>Homebrew and Linuxbrew/h2>
+<p>Assuming you have <a href="http://brew.sh/">homebrew</a> setup and installed on your OSX system (or <a href="http://brew.sh/linuxbrew/">Linuxbrew</a> on Linux), tap the science keg and install the dependancies, then install the perl modules:</p>
+
+<p><code>brew tap homebrew/science</code></p>
+<p><code>brew install bedtools cd-hit blast mcl prank parallel mafft exonerate fasttree</code></p>
+<p><code>cpanm -f Bio::Roary</code></p>
+
+<h2><a id="bundled" class="anchor" href="#bundled" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bundled binaries</h2>
+As a last resort we have included precompiled binaries of the dependancies. They might work, if they dont, you'll need to install the dependancies from source. If your running an ancient version of Linux or OSX (more than 3 years since release) its unlikely to work. In that case the install_dependancies.sh script is the place to start.
 <p>Download the latest software from 
 <a href="https://github.com/sanger-pathogens/Roary/tarball/master">https://github.com/sanger-pathogens/Roary/tarball/master</a><p>
 
@@ -76,7 +98,19 @@ then this is the only way to use Roary on your machine. You need to first instal
 <p><code>export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib</code></p>
 
 <p>Install the Perl module dependancies</p>
-<p><code>cpanm Array::Utils BioPerl Exception::Class File::Find::Rule File::Grep File::Slurp Graph Moose Moose::Role Text::CSV Log::Log4perl File::Which</code></p>
+<p><code>cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy File::Find::Rule File::Grep File::Path File::Slurp::Tiny File::Spec File::Temp File::Which FindBin Getopt::Long Graph Graph::Writer::Dot List::Util Log::Log4perl Moose Moose::Role Text::CSV</code></p>
+  
+   
+   
+<h2><a id="vm" class="anchor" href="#vm" aria-hidden="true"><span class="octicon octicon-link"></span></a>Virtual Machine</h2>
+<p>We have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on <a href="http://environmentalomics.org/bio-linux/">Bio-Linux 8</a>. If you run Windows, 
+then this is the only way to use Roary on your machine. You need to first install 
+<a href="https://www.virtualbox.org/">VirtualBox</a>, then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.</p>
+
+<ul>
+<li><a href="ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova">Virtual Machine with Roary installed</a></li>
+</ul>
+<p>More importantly though, if your trying to do bioinformatics on Windows, your not going to get very far and you should seriously consider upgrading to Linux.</p>
    
 
 <h2>
