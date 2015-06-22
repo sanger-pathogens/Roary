@@ -19,7 +19,6 @@ Take in a group file and assosiated GFF files for the isolates and update the gr
 use Moose;
 use Bio::Roary::Exceptions;
 use Bio::Roary::GeneNamesFromGFF;
-use Data::Dumper;
 use Array::Utils qw(array_minus);
 
 use File::Grep qw(fgrep);
@@ -326,3 +325,4 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
+ 

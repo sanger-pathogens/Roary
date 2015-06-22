@@ -19,6 +19,7 @@ Add labels to the groups
 use Moose;
 use POSIX;
 use Text::CSV;
+use Bio::SeqIO;
 use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
 use Bio::Roary::AnnotateGroups;
@@ -35,6 +36,7 @@ has '_groups_to_files'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, bui
 has '_files_to_groups'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__files_to_groups' );
 
 has '_verbose'           => ( is => 'ro', isa => 'Bool', default => 0 );
+
 
 sub _build__output_fh {
     my ($self) = @_;
@@ -156,6 +158,14 @@ sub _row {
         $annotated_group_name,  $duplicate_gene_name,    $annotation,
         $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate,$genome_number,$order_within_fragement,$accessory_genome_number,$accessory_order_within_fragement,$qc_comment
     );
+	
+	for(my $i =0; $i < @row; $i++)
+	{
+		if(!defined($row[$i]))
+		{
+			$row[$i] = '';
+		}
+	}
 
     for my $filename ( @{ $self->_sorted_file_names } ) {
         my $group_to_file_genes = $self->_groups_to_files->{$group}->{$filename};

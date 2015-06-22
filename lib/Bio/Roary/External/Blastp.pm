@@ -24,6 +24,7 @@ Returns the path to the results file
 =cut
 
 use Moose;
+with 'Bio::Roary::JobRunner::Role';
 
 has 'fasta_file'        => ( is => 'ro', isa => 'Str', required => 1 );
 has 'blast_database'    => ( is => 'ro', isa => 'Str', required => 1 );
@@ -57,6 +58,7 @@ sub _command_to_run {
 
 sub run {
     my ($self) = @_;
+	$self->logger->info( "Running command: " . $self->_command_to_run() );
     system( $self->_command_to_run );
     1;
 }

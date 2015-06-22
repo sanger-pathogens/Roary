@@ -1,7 +1,24 @@
 language: perl
-sudo: required
+sudo: false
+addons:
+  apt:
+    packages:
+    - libssl-dev
+cache:
+  directories:
+  - build/parallel-20150522
+  - build/parallel-20141022
+  - build/parallel-20130922
+  - build/bedtools2
+  - build/cd-hit-v4.6.3-2015-0515
+  - build/prank-msa-master
+  - build/ncbi-blast-2.2.30+
+  - build/mcl-14-137
+  - build/fasttree
 perl:
+  - "5.10"
   - "5.14"
+  - "5.20"
 env:
   - PARALLEL_VERSION=20150522
   - PARALLEL_VERSION=20141022

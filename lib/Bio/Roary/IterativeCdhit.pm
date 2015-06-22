@@ -23,6 +23,7 @@ use Bio::Roary::Exceptions;
 use Bio::Roary::External::Cdhit;
 use Bio::Roary::FilterFullClusters;
 use File::Copy;
+use Log::Log4perl qw(:easy);
 # CD hit is run locally
 
 has 'output_cd_hit_filename'          => ( is => 'ro', isa => 'Str', required => 1 );
@@ -34,6 +35,16 @@ has 'lower_bound_percentage'          => ( is => 'ro', isa => 'Num', default => 
 has 'upper_bound_percentage'          => ( is => 'ro', isa => 'Num', default => 0.99 );
 has 'step_size_percentage'            => ( is => 'ro', isa => 'Num', default => 0.005 );
 has 'cpus'                            => ( is => 'ro', isa => 'Int', default => 1 );
+has 'logger'                          => ( is => 'ro', lazy => 1, builder => '_build_logger');
+
+sub _build_logger
+{
+    my ($self) = @_;
+    Log::Log4perl->easy_init(level => $ERROR);
+    my $logger = get_logger();
+    return $logger;
+}
+
 
 sub run {
     my ($self) = @_;
@@ -62,6 +73,7 @@ sub run {
         _length_difference_cutoff    => $self->lower_bound_percentage,
         _sequence_identity_threshold => $self->lower_bound_percentage,
         cpus                         => $self->cpus,
+		logger                       => $self->logger
     );
     $cdhit_obj->run();
     return $cdhit_obj->clusters_filename;

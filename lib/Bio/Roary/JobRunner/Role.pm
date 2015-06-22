@@ -11,6 +11,7 @@ A role to add job runner functionality
 
 use Moose::Role;
 use Log::Log4perl qw(:easy);
+use File::Spec;
 
 has 'job_runner'              => ( is => 'rw', isa => 'Str',  default  => 'Local' );
 has '_job_runner_class'       => ( is => 'ro', isa => 'Str',  lazy => 1, builder => '_build__job_runner_class' );
@@ -39,6 +40,25 @@ sub _build__job_runner_class {
     my $job_runner_class = "Bio::Roary::JobRunner::" . $self->job_runner;
     eval "require $job_runner_class";
     return $job_runner_class;
+}
+
+sub _find_exe {
+  my($self,$executables) = @_;
+  
+  # If there is an explicit full path passed in, just return.
+  if($executables->[0] =~ m!/!)
+  {
+	  return $executables->[0];
+  }
+  
+  for my $dir (File::Spec->path) {
+	  for my $exec (@{$executables})
+	  {
+        my $exe = File::Spec->catfile($dir, $exec);
+        return $exe if -x $exe; 
+      }
+  }
+  return $executables->[0];
 }
 
 

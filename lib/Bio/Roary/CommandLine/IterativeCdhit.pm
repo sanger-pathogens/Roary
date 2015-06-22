@@ -27,12 +27,13 @@ has 'lower_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 
 has 'upper_bound_percentage'          => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'step_size_percentage'            => ( is => 'rw', isa => 'Num', default => 0.005 );
 has 'cpus'                            => ( is => 'rw', isa => 'Int', default => 1 );
+has 'verbose'                         => ( is => 'rw', isa => 'Bool', default => 0 );
 
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $output_cd_hit_filename,$cpus,$lower_bound_percentage,$upper_bound_percentage,$step_size_percentage, $output_combined_filename, $number_of_input_files, $output_filtered_clustered_fasta,
+    my ( $output_cd_hit_filename,$cpus,$lower_bound_percentage,$upper_bound_percentage,$step_size_percentage, $output_combined_filename, $number_of_input_files, $output_filtered_clustered_fasta,$verbose, 
         $help );
 
     GetOptionsFromArray(
@@ -45,9 +46,14 @@ sub BUILD {
         'u|upper_bound_percentage=s'          => \$upper_bound_percentage,
         's|step_size_percentage=s'            => \$step_size_percentage,
         'cpus=i'                              => \$cpus,
+		'v|verbose'                           => \$verbose,
         'h|help'                              => \$help,
     );
 
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
     $self->help($help) if(defined($help));
     $self->lower_bound_percentage($lower_bound_percentage/100) if ( defined($lower_bound_percentage) );
     $self->upper_bound_percentage($upper_bound_percentage/100) if ( defined($upper_bound_percentage) );
@@ -78,7 +84,8 @@ sub run {
         lower_bound_percentage          => $self->lower_bound_percentage,
         upper_bound_percentage          => $self->upper_bound_percentage,
         step_size_percentage            => $self->step_size_percentage,
-        cpus                            => $self->cpus
+        cpus                            => $self->cpus,
+		logger                          => $self->logger
         
     );
     $obj->run;

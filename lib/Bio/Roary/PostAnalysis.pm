@@ -20,6 +20,10 @@ use Bio::Roary::Output::NumberOfGroups;
 use Bio::Roary::OrderGenes;
 use Bio::Roary::Output::EmblGroups;
 use Bio::Roary::SplitGroups;
+use Bio::Roary::AccessoryBinaryFasta;
+use Bio::Roary::External::Fasttree;
+use Bio::Roary::AccessoryClustering;
+use Log::Log4perl qw(:easy);
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
 has 'input_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -27,12 +31,15 @@ has 'output_filename'             => ( is => 'rw', isa => 'Str',      default  =
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',      default  => 'pan_genome.fa' );
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',      default  => 'gene_presence_absence.csv' );
 has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
+has 'verbose_stats'               => ( is => 'rw', isa => 'Bool',     default  => 0 ); 
+has 'verbose'                     => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'cpus'                        => ( is => 'ro', isa => 'Int',      default  => 1 );
 
 has 'clusters_filename'           => ( is => 'rw', isa => 'Str',      required => 1 );
 has 'dont_delete_files'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'dont_split_groups'           => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default => 1 );
-has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default => 50000 );
+has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool',     default  => 1 );
+has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
 
 has '_output_mcl_filename'               => ( is => 'ro', isa => 'Str', default  => '_uninflated_mcl_groups' );
 has '_output_inflate_unsplit_clusters_filename'  => ( is => 'ro', isa => 'Str', default  => '_inflated_unsplit_mcl_groups' );
@@ -47,26 +54,36 @@ has 'accessory_ordering_key'             => ( is => 'ro', isa => 'Str', default 
 has 'core_definition'                    => ( is => 'ro', isa => 'Num', default  => 1.0 );
 has 'pan_genome_reference_filename'      => ( is => 'ro', isa => 'Str', default  => 'pan_genome_reference.fa' );
 
-has '_inflate_clusters_obj'  => ( is => 'ro', isa => 'Bio::Roary::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
-has '_group_labels_obj'      => ( is => 'ro', isa => 'Bio::Roary::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
-has '_annotate_groups_obj'   => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups',         lazy => 1, builder => '_build__annotate_groups_obj' );
-has '_analyse_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',          lazy => 1, builder => '_build__analyse_groups_obj' );
-has '_order_genes_obj'       => ( is => 'ro', isa => 'Bio::Roary::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
-has '_group_statistics_obj'  => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
-has '_number_of_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
-has '_groups_multifastas_nuc_obj'  => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
-has '_split_groups_obj'      => ( is => 'ro', isa => 'Bio::Roary::SplitGroups', lazy_build => 1 );
 
-has 'verbose_stats' => ( is => 'rw', isa => 'Bool', default => 0 ); 
-has 'verbose'       => ( is => 'rw', isa => 'Bool', default => 0 );
+has '_inflate_clusters_obj'       => ( is => 'ro', isa => 'Bio::Roary::InflateClusters',        lazy => 1, builder => '_build__inflate_clusters_obj' );
+has '_group_labels_obj'           => ( is => 'ro', isa => 'Bio::Roary::GroupLabels',            lazy => 1, builder => '_build__group_labels_obj' );
+has '_annotate_groups_obj'        => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups',         lazy => 1, builder => '_build__annotate_groups_obj' );
+has '_analyse_groups_obj'         => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',          lazy => 1, builder => '_build__analyse_groups_obj' );
+has '_order_genes_obj'            => ( is => 'ro', isa => 'Bio::Roary::OrderGenes',             lazy => 1, builder => '_build__order_genes_obj' );
+has '_group_statistics_obj'       => ( is => 'ro', isa => 'Bio::Roary::GroupStatistics',        lazy => 1, builder => '_build__group_statistics_obj' );
+has '_number_of_groups_obj'       => ( is => 'ro', isa => 'Bio::Roary::Output::NumberOfGroups', lazy => 1, builder => '_build__number_of_groups_obj' );
+has '_accessory_binary_fasta'     => ( is => 'ro', isa => 'Bio::Roary::AccessoryBinaryFasta',   lazy => 1, builder => '_build__accessory_binary_fasta' );
+has '_groups_multifastas_nuc_obj' => ( is => 'ro', isa => 'Bio::Roary::Output::GroupsMultifastasNucleotide', lazy => 1, builder => '_build__groups_multifastas_nuc_obj' );
+has '_split_groups_obj'           => ( is => 'ro', isa => 'Bio::Roary::SplitGroups',            lazy => 1, builder => '_build__split_groups_obj' );
+has '_accessory_binary_tree'      => ( is => 'ro', isa => 'Bio::Roary::External::Fasttree',     lazy => 1, builder => '_build__accessory_binary_tree' );
+has '_accessory_clustering'       => ( is => 'ro', isa => 'Bio::Roary::AccessoryClustering',     lazy => 1, builder => '_build__accessory_clustering' );
+has 'logger'                          => ( is => 'ro', lazy => 1, builder => '_build_logger');
+
+sub _build_logger
+{
+    my ($self) = @_;
+    Log::Log4perl->easy_init(level => $ERROR);
+    my $logger = get_logger();
+    return $logger;
+}
 
 sub run {
     my ($self) = @_;
 
-    print "Reinflate clusters\n" if($self->verbose);
+    $self->logger->info( "Reinflate clusters" );
     $self->_inflate_clusters_obj->inflate();
 
-	print "Split groups with paralogs\n" if($self->verbose);
+	$self->logger->info( "Split groups with paralogs" );
     ## SPLIT GROUPS WITH PARALOGS ##
     if ( $self->dont_split_groups ){
       move( $self->_output_inflate_unsplit_clusters_filename, $self->_output_inflate_clusters_filename );
@@ -75,23 +92,68 @@ sub run {
       $self->_split_groups_obj->split_groups;
     }
 
-	print "Labelling the groups\n" if($self->verbose);
+	$self->logger->info( "Labelling the groups" );
     $self->_group_labels_obj->add_labels();
-	print "Transfering the annotation to the groups\n" if($self->verbose);
+	
+	$self->logger->info( "Transfering the annotation to the groups" );
     $self->_annotate_groups_obj->reannotate;
-	print "Creating the spreadsheet with gene presence and absence\n" if($self->verbose);
+	
+	$self->logger->info( "Creating accessory binary gene presence and absence fasta" );
+    $self->_accessory_binary_fasta->create_accessory_binary_fasta;
+	
+	$self->logger->info( "Creating accessory binary gene presence and absence tree" );
+	$self->_accessory_binary_tree->run;
+	
+	$self->logger->info( "Creating accessory gene presence and absence clusters" );
+	$self->_accessory_clustering->sample_weights;
+	
+	$self->logger->info( "Creating the spreadsheet with gene presence and absence" );
     $self->_group_statistics_obj->create_spreadsheet;
-	print "Creating tab files for R\n" if($self->verbose);
+	
+	$self->logger->info( "Creating tab files for R" );
     $self->_number_of_groups_obj->create_output_files;
+
     system("create_pan_genome_plots.R") unless($self->dont_create_rplots == 1);
-	print "Create EMBL files\n" if($self->verbose);
+	
+	$self->logger->info( "Create EMBL files" );
     $self->_create_embl_files;
     
-	print "Creating files with the nucleotide sequences for every cluster\n" if($self->verbose && $self->output_multifasta_files);
-    $self->_groups_multifastas_nuc_obj->create_files() if($self->output_multifasta_files);
+	if($self->output_multifasta_files)
+	{
+	  $self->logger->info( "Creating files with the nucleotide sequences for every cluster" );
+      $self->_groups_multifastas_nuc_obj->create_files();
+    }
 
-	print "Cleaning up files\n" if($self->verbose);
+	$self->logger->info( "Cleaning up files" );
     $self->_delete_intermediate_files;
+}
+
+sub _build__accessory_clustering
+{
+	my ( $self ) = @_;
+    return Bio::Roary::AccessoryClustering->new(
+        input_file => $self->_accessory_binary_fasta->output_filename,
+        cpus       => $self->cpus,
+      );
+}
+
+sub _build__accessory_binary_tree
+{
+	my ( $self ) = @_;
+    return Bio::Roary::External::Fasttree->new(
+	    input_file          => $self->_accessory_binary_fasta->output_filename,
+        verbose             => $self->verbose
+    );
+}
+
+sub _build__accessory_binary_fasta
+{
+    my ($self) = @_;
+    return Bio::Roary::AccessoryBinaryFasta->new(
+	    input_files         => $self->fasta_files,
+        annotate_groups_obj => $self->_annotate_groups_obj,
+        analyse_groups_obj  => $self->_analyse_groups_obj,
+    );
 }
 
 sub _build__split_groups_obj {
@@ -133,9 +195,11 @@ sub _build__order_genes_obj
 {
   my ($self) = @_;
   return Bio::Roary::OrderGenes->new(
-    analyse_groups_obj => $self->_analyse_groups_obj,
-    gff_files          => $self->input_files,
-	core_definition    => $self->core_definition
+    analyse_groups_obj  => $self->_analyse_groups_obj,
+    gff_files           => $self->input_files,
+	core_definition     => $self->core_definition,
+	sample_weights      => $self->_accessory_clustering->sample_weights,
+	samples_to_clusters => $self->_accessory_clustering->samples_to_clusters,
   );
 }
 
@@ -240,6 +304,8 @@ sub _delete_intermediate_files
   unlink($self->_input_cd_hit_groups_file)         ;
   unlink('database_masking.asnb')                  ;
   unlink('_clustered')                             ;
+  unlink('_accessory_clusters')                    ;
+  unlink('_accessory_clusters.clstr')              ;
 }
 
 no Moose;
