@@ -36,31 +36,14 @@ sudo cpanm -f Bio::Roary
 ```   
 
 ##CentOS/RedHat
-Most of the dependancies can be installed from RPMs. We dont use RHEL/CentOS, which is why these instructions arent pretty, please let us know how to clean them up. If this doesnt work, contact your system administrator.
-
-Add nonstandard repositories:
-```
-sudo yum install epel-release
-sudo rpm --import http://rpm.agresearch.co.nz/RPM-GPG-KEY-agresearch
-sudo wget -O  /etc/yum.repos.d/agr-free.repo 'http://rpm.agresearch.co.nz/agr-free.repo'
-sudo rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
-sudo rpm -Uvh http://www.elrepo.org/elrepo-release-6-6.el6.elrepo.noarch.rpm
-```
+To install the dependancies, the easiest way is through [linuxbrew](http://brew.sh/linuxbrew/), following the instructions for Fedora. Alternatively try the ./install_dependencies.sh script. 
 
 ```
-sudo yum install BEDTools cd-hit exonerate mafft FastTree parallel
-curl -L https://raw.githubusercontent.com/miyagawa/cpanminus/master/cpanm | perl - --sudo App::cpanminus
-```
-
-Search and download RPM from http://rpm.pbone.net/ and install with 'rpm -i':
-* ncbi-blast+ 
-
-Download and install [PRANK](http://wasabiapp.org/software/prank/prank_installation/). 
-
-Install Roary from CPAN:
-```
+brew tap homebrew/science
+brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree
 sudo cpanm -f Bio::Roary
 ```
+
 
 ###Older versions of Ubuntu/Debian (12.04 and below)
 Assuming you are running BASH, run this script, then copy and paste the last few lines into your BASH profile, as per the instructions.  Not all the packages Roary requires are available on older versions of Ubuntu/Debian or the versions dont support features Roary requires.  So this script will build them from source in the current working directory and install missing dependancies using apt and cpanm. This script is run automatically by our [continous integration server](https://travis-ci.org/andrewjpage/Roary) which runs on Ubuntu 12.04.
