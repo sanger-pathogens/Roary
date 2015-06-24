@@ -20,7 +20,6 @@ use Bio::Roary::GroupStatistics;
 use POSIX;
 
 has 'spreadsheet'            => ( is => 'ro', isa  => 'Str',      required => 1 );
-
 has '_csv_parser'            => ( is => 'ro', isa  => 'Text::CSV',lazy     => 1, builder => '_build__csv_parser' );
 has '_input_spreadsheet_fh'  => ( is => 'ro', lazy => 1,          builder  => '_build__input_spreadsheet_fh' );
 has 'ordered_core_genes'     => ( is => 'ro', isa  => 'ArrayRef', lazy     => 1, builder  => '_build_ordered_core_genes' );
