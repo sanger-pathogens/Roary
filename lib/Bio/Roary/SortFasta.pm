@@ -22,6 +22,8 @@ has 'input_filename'         => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'output_filename'        => ( is => 'ro', isa => 'Str',  lazy     => 1, builder => '_build_output_filename' );
 has 'make_multiple_of_three' => ( is => 'ro', isa => 'Bool', default  => 0 );
 has 'remove_nnn_from_end'    => ( is => 'ro', isa => 'Bool', default  => 0 );
+has 'variation_detected'     => ( is => 'rw', isa => 'Bool', default  => 0 );
+
 
 has '_input_seqio'  => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__input_seqio' );
 has '_output_seqio' => ( is => 'ro', isa => 'Bio::SeqIO', lazy => 1, builder => '_build__output_seqio' );
@@ -72,12 +74,19 @@ sub sort_fasta {
     my %input_sequences;
 
     my $nnn_at_end_of_all_sequences = 1;
+	my $sequence;
+	my $variation_detected = 0;
     while ( my $input_seq = $self->_input_seqio->next_seq() ) {
+		$sequence = $input_seq->seq if(!defined($sequence));
         $self->_add_padding_to_make_sequence_length_multiple_of_three($input_seq) if ( $self->make_multiple_of_three );
 
         $nnn_at_end_of_all_sequences = 0 if ( $nnn_at_end_of_all_sequences == 1 && !( $input_seq->seq() =~ /NNN$/i ) );
 
         $input_sequences{ $input_seq->display_id } = $input_seq;
+		if($sequence ne $input_seq->seq)
+		{
+			$self->variation_detected(1);
+		}
     }
 
     $self->_remove_nnn_from_all_sequences( \%input_sequences ) if ( $self->remove_nnn_from_end && $nnn_at_end_of_all_sequences );
