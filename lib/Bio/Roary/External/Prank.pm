@@ -35,6 +35,11 @@ sub _build__memory_required_in_mb {
 sub _command_to_run {
     my ($self) = @_;
 
+    if(! -e $self->input_filename)
+	{
+		$self->logger->error( "Input file to PRANK missing: " . $self->input_filename );
+	}
+
     return join(
         ' ',
         (
