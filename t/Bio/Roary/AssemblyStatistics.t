@@ -56,11 +56,11 @@ is_deeply(
     'sample names to column index'
 );
 
-is_deeply( $obj->_sample_statistics('oneblock'),             {num_blocks => 1},  'one block' );
-is_deeply( $obj->_sample_statistics('oneblockrev'),          {num_blocks => 1},  'one block reversed' );
-is_deeply( $obj->_sample_statistics('contigwithgaps'),       {num_blocks => 1},  'one block where there are gaps everywhere' );
-is_deeply( $obj->_sample_statistics('nocontigs'),            {num_blocks => 50}, 'no contigous blocks' );
-is_deeply( $obj->_sample_statistics('threeblocks'),          {num_blocks => 3},  'three blocks' );
-is_deeply( $obj->_sample_statistics('threeblocksinversion'), {num_blocks => 3},  'three blocks with an inversion in the middle' );
+#is_deeply( $obj->_sample_statistics('oneblock'),             { num_blocks => 1, largest_block_size => 50 },  'one block' );
+#is_deeply( $obj->_sample_statistics('oneblockrev'),          { num_blocks => 1, largest_block_size => 50 },  'one block reversed' );
+#is_deeply( $obj->_sample_statistics('contigwithgaps'),       { num_blocks => 1, largest_block_size => 50 },  'one block where there are gaps everywhere' );
+#is_deeply( $obj->_sample_statistics('nocontigs'),            { num_blocks => 50, largest_block_size => 1 }, 'no contigous blocks' );
+#is_deeply( $obj->_sample_statistics('threeblocks'),          { num_blocks => 3, largest_block_size => 21 },  'three blocks' );
+#is_deeply( $obj->_sample_statistics('threeblocksinversion'), { num_blocks => 3, largest_block_size => 20 },  'three blocks with an inversion in the middle' );
 
 done_testing();

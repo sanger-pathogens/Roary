@@ -85,10 +85,8 @@ sub _sample_statistics {
             next;
         }
     }
-	
-	my %stats ;
-	$stats{num_blocks} = $self->_number_of_contiguous_blocks(\@gene_ids);
-	return \%stats ;
+		
+	return $self->_number_of_contiguous_blocks(\@gene_ids) ;
 }
 
 sub _number_of_contiguous_blocks {
@@ -96,14 +94,28 @@ sub _number_of_contiguous_blocks {
 
     my $current_gene_id  = $gene_ids->[0];
     my $number_of_blocks = 1;
+	my $largest_block_size = 0;
+	my $block_size = 0;
     for my $gene_id ( @{$gene_ids} ) {
+		$block_size++;
         if ( !( ( $current_gene_id + $self->contigous_window >= $gene_id ) && ( $current_gene_id - $self->contigous_window <= $gene_id ) ) )
         {
+			if($block_size >= $largest_block_size)
+			{
+				$largest_block_size = $block_size;
+				$block_size = 0;
+			}
 			$number_of_blocks++;
         }
 		$current_gene_id  = $gene_id;
     }
-	return $number_of_blocks;
+	
+	if($block_size > $largest_block_size)
+	{
+		$largest_block_size = $block_size;
+		$block_size = 0;
+	}
+	return { num_blocks => $number_of_blocks, largest_block_size => $largest_block_size};
 }
 
 no Moose;
