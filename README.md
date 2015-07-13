@@ -40,13 +40,15 @@ To install the dependancies, the easiest way is through [linuxbrew](http://brew.
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree
+brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree cpanm
 sudo cpanm -f Bio::Roary
 ```
 
 
 ###Older versions of Ubuntu/Debian (12.04 and below)
-Assuming you are running BASH, run this script, then copy and paste the last few lines into your BASH profile, as per the instructions.  Not all the packages Roary requires are available on older versions of Ubuntu/Debian or the versions dont support features Roary requires.  So this script will build them from source in the current working directory and install missing dependancies using apt and cpanm. This script is run automatically by our [continous integration server](https://travis-ci.org/andrewjpage/Roary) which runs on Ubuntu 12.04.
+Follow the instructions for LinuxBrew. 
+
+Alternatively, run this script from BASH, then copy and paste the last few lines into your BASH profile, as per the instructions.  Not all the packages Roary requires are available on older versions of Ubuntu/Debian or the versions dont support features Roary requires.  So this script will build them from source in the current working directory and install missing dependancies using apt and cpanm. This script is run automatically by our [continous integration server](https://travis-ci.org/andrewjpage/Roary) which runs on Ubuntu 12.04.
 ```
 ./install_dependencies.sh
 ```
@@ -56,7 +58,7 @@ Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.s
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree
+brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree cpanm
 sudo cpanm -f Bio::Roary
 ```
 
