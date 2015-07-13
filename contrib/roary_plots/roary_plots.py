@@ -34,9 +34,9 @@ def get_options():
                                      prog = 'roary_plots.py')
 
     parser.add_argument('tree', action='store',
-                        help='Tree Newick file')
-    parser.add_argument('roary', action='store',
-                        help='Roary gene presence/absence table')
+                        help='Newick Tree file', default='accessory_binary_genes.fa.newick')
+    parser.add_argument('spreadsheet', action='store',
+                        help='Roary gene presence/absence spreadsheet', default='gene_presence_absence.csv')
 
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     mdist = max([t.distance(t.root, x) for x in t.get_terminals()])
 
     # Load roary
-    roary = pd.read_table(options.roary,
+    roary = pd.read_table(options.spreadsheet,
                          sep=',',
                          low_memory=False)
     # Set index (group name)
