@@ -1,4 +1,5 @@
-#!/usr/bin/env perl
+
+gi#!/usr/bin/env perl
 
 use Test::Most;
 use FindBin;
@@ -16,5 +17,6 @@ for my $dir ($BINDIR, $FindBin::RealBin) {
      }
 }
 
+print "$BINDIR\n";
 ok(scalar PATH->Whence($_), "$_ in PATH") for qw(blastp makeblastdb mcl mcxdeblast bedtools prank parallel);
 

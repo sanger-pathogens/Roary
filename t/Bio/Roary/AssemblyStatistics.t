@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -56,11 +57,39 @@ is_deeply(
     'sample names to column index'
 );
 
-#is_deeply( $obj->_sample_statistics('oneblock'),             { num_blocks => 1, largest_block_size => 50 },  'one block' );
-#is_deeply( $obj->_sample_statistics('oneblockrev'),          { num_blocks => 1, largest_block_size => 50 },  'one block reversed' );
-#is_deeply( $obj->_sample_statistics('contigwithgaps'),       { num_blocks => 1, largest_block_size => 50 },  'one block where there are gaps everywhere' );
-#is_deeply( $obj->_sample_statistics('nocontigs'),            { num_blocks => 50, largest_block_size => 1 }, 'no contigous blocks' );
-#is_deeply( $obj->_sample_statistics('threeblocks'),          { num_blocks => 3, largest_block_size => 21 },  'three blocks' );
-#is_deeply( $obj->_sample_statistics('threeblocksinversion'), { num_blocks => 3, largest_block_size => 20 },  'three blocks with an inversion in the middle' );
+is_deeply( $obj->_sample_statistics('oneblock'),    { num_blocks => 1, largest_block_size => 50 }, 'one block' );
+is_deeply( $obj->_sample_statistics('oneblockrev'), { num_blocks => 1, largest_block_size => 50 }, 'one block reversed' );
+is_deeply(
+    $obj->_sample_statistics('contigwithgaps'),
+    { num_blocks => 1, largest_block_size => 50 },
+    'one block where there are gaps everywhere'
+);
+is_deeply( $obj->_sample_statistics('nocontigs'),   { num_blocks => 50, largest_block_size => 1 },  'no contiguous blocks' );
+is_deeply( $obj->_sample_statistics('threeblocks'), { num_blocks => 3,  largest_block_size => 21 }, 'three blocks' );
+is_deeply(
+    $obj->_sample_statistics('threeblocksinversion'),
+    { num_blocks => 3, largest_block_size => 20 },
+    'three blocks with an inversion in the middle'
+);
+is_deeply( $obj->gene_category_count, { core => 50 }, 'Gene category counts' );
 
+# t/data/gene_category_count.csv
+ok( $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => 't/data/gene_category_count.csv' ),
+    'initialise spreadsheet with variable numbers of genes in samples' );
+is_deeply(
+    $obj->gene_category_count,
+    {
+        'core'      => 1,
+        'cloud'     => 4,
+        'soft_core' => 1,
+        'shell'     => 24
+    },
+    'Categories as expected'
+);
+ok($obj->create_summary_output, 'create output file');
+compare_ok('summary_statistics.txt', 't/data/expected_summary_statistics.txt', 'summary statistics as expected');
+
+
+
+unlink('summary_statistics.txt');
 done_testing();
