@@ -1,5 +1,4 @@
-
-gi#!/usr/bin/env perl
+#!/usr/bin/env perl
 
 use Test::Most;
 use FindBin;
