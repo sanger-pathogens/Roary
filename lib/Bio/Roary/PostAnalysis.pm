@@ -255,7 +255,7 @@ sub _build__groups_multifastas_nuc_obj
       group_names     => $self->_analyse_groups_obj->_groups,
       group_limit     => $self->group_limit,
 	  core_definition => $self->core_definition,
-	  dont_delete     => $self->dont_delete_files
+	  dont_delete_files => $self->dont_delete_files
     );
 }
 
