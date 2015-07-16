@@ -17,7 +17,7 @@ Wrapper to run cd-hit
 =cut
 
 use Moose;
-use File::Spec;
+
 with 'Bio::Roary::JobRunner::Role';
 
 has 'input_file'                   => ( is => 'ro', isa => 'Str',  required => 1 );
@@ -82,31 +82,12 @@ sub _command_to_run {
     );
 }
 
-sub _find_exe {
-  my($self,$executables) = @_;
-  
-  # If there is an explicit full path passed in, just return.
-  if($executables->[0] =~ m!/!)
-  {
-	  return $executables->[0];
-  }
-  
-  for my $dir (File::Spec->path) {
-	  for my $exec (@{$executables})
-	  {
-        my $exe = File::Spec->catfile($dir, $exec);
-        return $exe if -x $exe; 
-      }
-  }
-  return $executables->[0];
-}
-
 sub run {
     my ($self) = @_;
     my @commands_to_run;
 	
     push(@commands_to_run, $self->_command_to_run() );
-    
+    $self->logger->info( "Running command: " . $self->_command_to_run() );
     my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus => $self->cpus );
     $job_runner_obj->run();
     

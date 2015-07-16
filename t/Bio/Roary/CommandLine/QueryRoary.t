@@ -45,17 +45,15 @@ my %scripts_and_expected_files = (
       [ 'set_difference_unique_set_two', 't/data/expected_set_difference_unique_set_two' ],
     '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa' =>
       [ 'set_difference_common_set', 't/data/expected_set_difference_common_set' ],
-    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa ' => [
-        'set_difference_unique_set_two_statistics.csv', 't/data/expected_set_difference_unique_set_two_statistics.csv'
-    ],
-    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa     ' => [
-        'set_difference_unique_set_one_statistics.csv', 't/data/expected_set_difference_unique_set_one_statistics.csv'
-    ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa ' =>
+      [ 'set_difference_unique_set_two_statistics.csv', 't/data/expected_set_difference_unique_set_two_statistics.csv' ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa     ' =>
+      [ 'set_difference_unique_set_one_statistics.csv', 't/data/expected_set_difference_unique_set_one_statistics.csv' ],
     '-g t/data/query_groups -a difference   -i t/data/query_1.fa -t t/data/query_2.fa,t/data/query_3.fa   ' =>
       [ 'set_difference_common_set_statistics.csv', 't/data/expected_set_difference_common_set_statistics.csv' ],
-      
-    '-h' =>
-      [ 'empty_file2', 't/data/empty_file' ],
+    '-g t/data/query_groups -a difference   -i t/data/query_1.gff -t t/data/query_2.gff,t/data/query_3.gff' =>
+      [ 'set_difference_common_set_statistics.csv', 't/data/expected_gff_set_difference_common_set_statistics.csv' ],
+    '-h' => [ 'empty_file2', 't/data/empty_file' ],
 );
 
 mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files );
@@ -68,5 +66,7 @@ unlink('set_difference_unique_set_two_statistics.csv') if ( -e 'set_difference_u
 unlink('set_difference_unique_set_one_statistics.csv') if ( -e 'set_difference_unique_set_one_statistics.csv' );
 unlink('set_difference_common_set_statistics.csv')     if ( -e 'set_difference_common_set_statistics.csv' );
 unlink('pan_genome_reference.fa')                      if ( -e 'pan_genome_reference.fa' );
+unlink('set_difference_core_accessory_graph.dot')      if ( -e 'set_difference_core_accessory_graph.dot' );
+unlink('set_difference_accessory_graph.dot')           if ( -e 'set_difference_accessory_graph.dot' );
 
 done_testing();

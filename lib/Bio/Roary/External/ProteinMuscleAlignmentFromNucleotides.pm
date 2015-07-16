@@ -42,7 +42,12 @@ sub _build__memory_required_in_mb {
 
 sub _command_to_run {
     my ( $self, $fasta_files, ) = @_;
-    return $self->exec. " -t ".$self->translation_table." ". join( " ", @{$fasta_files}  );
+	my $verbose = "";
+	if($self->verbose)
+	{
+		$verbose = '-v';
+	}
+    return $self->exec. " ".$verbose." ". join( " ", @{$fasta_files}  );
 }
 
 sub _build__core_alignment_cmd {
@@ -63,6 +68,7 @@ sub run {
         if(@files_chunk == $self->_files_per_chunk )
         {
           push(@commands_to_run, $self->_command_to_run(\@files_chunk));
+		  $self->logger->info( "Running command: " . $self->_command_to_run(\@files_chunk) );
           @files_chunk = ();
         }
     }
@@ -70,6 +76,7 @@ sub run {
     if(@files_chunk > 0)
     {
       push(@commands_to_run, $self->_command_to_run(\@files_chunk));
+	  $self->logger->info( "Running command: " . $self->_command_to_run(\@files_chunk) );
     }
 
     my $job_runner_obj = $self->_job_runner_class->new(
@@ -81,6 +88,7 @@ sub run {
     );
     $job_runner_obj->run();
     
+	$self->logger->info( "Running command: " . $self->_core_alignment_cmd() );
     $job_runner_obj->submit_dependancy_job($self->_core_alignment_cmd);
     1;
 }

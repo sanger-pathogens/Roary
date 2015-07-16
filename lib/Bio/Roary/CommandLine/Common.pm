@@ -39,7 +39,7 @@ before 'run' => sub {
 	my $OPSYS = $^O;
 	my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 
-    for my $dir ($BINDIR, "$BINDIR/../common", $FindBin::RealBin) {
+    for my $dir ($BINDIR, $FindBin::RealBin) {
       if (-d $dir) {
         $ENV{PATH} .= ":$dir";
        }

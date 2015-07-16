@@ -38,11 +38,6 @@ is_deeply(
     'genes map to the correct files'
 );
 
-is_deeply(
-    $plot_groups_obj->_freq_groups_per_genome,
-    [ 100, 50, 50, 50, 50, 50 ],
-    'frequency of groups uniqued by genome'
-);
 
 is_deeply(
     $plot_groups_obj->_groups_to_genes,

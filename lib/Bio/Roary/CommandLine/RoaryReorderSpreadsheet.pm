@@ -23,12 +23,13 @@ has 'output_filename'      => ( is => 'rw', isa => 'Str', default => 'reordered_
 has 'tree_format'          => ( is => 'rw', isa => 'Str', default => 'newick' );
 has 'search_strategy'      => ( is => 'rw', isa => 'Str', default =>  'depth' );
 has 'sortby'               => ( is => 'rw', isa => 'Str', default => 'height');
+has 'verbose'              => ( is => 'rw', isa => 'Bool', default => 0 );
 
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $output_filename, $tree_file,$search_strategy, $sortby, $tree_format, $spreadsheet_filename, $help );
+    my ( $output_filename, $tree_file,$search_strategy, $sortby, $tree_format, $spreadsheet_filename,$verbose,  $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -38,9 +39,14 @@ sub BUILD {
         's|spreadsheet_filename=s' => \$spreadsheet_filename,
         'a|search_strategy=s'      => \$search_strategy,
         'b|sortby=s'               => \$sortby,
+		'v|verbose'                => \$verbose,
         'h|help'                   => \$help,
     );
 
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
     $self->help($help) if(defined($help));
     $self->output_filename($output_filename)           if ( defined($output_filename) );
     $self->tree_file($tree_file)                       if ( defined($tree_file) );

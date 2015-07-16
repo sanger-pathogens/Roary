@@ -18,24 +18,30 @@ has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
-has 'gff_files'     => ( is => 'rw', isa => 'ArrayRef' );
+has 'gff_files'       => ( is => 'rw', isa => 'ArrayRef' );
 has 'groups_filename' => ( is => 'rw', isa => 'Str' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'reannotated_groups' );
-
-has '_error_message' => ( is => 'rw', isa => 'Str' );
+has 'verbose'         => ( is => 'rw', isa => 'Bool', default => 0 );
+has '_error_message'  => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $gff_files, $output_filename, $groups_filename, @group_names, $action, $help );
+    my ( $gff_files, $output_filename, $groups_filename, @group_names, $action,$verbose,  $help );
 
     GetOptionsFromArray(
         $self->args,
         'o|output=s'          => \$output_filename,
         'g|groups_filename=s' => \$groups_filename,
+		'v|verbose'           => \$verbose,
         'h|help'              => \$help,
     );
-
+	
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
+	
     $self->help($help) if(defined($help));
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide a FASTA file");

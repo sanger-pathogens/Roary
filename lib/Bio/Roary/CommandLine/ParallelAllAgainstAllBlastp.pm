@@ -25,13 +25,14 @@ has 'job_runner'        => ( is => 'rw', isa => 'Str', default => 'Local' );
 has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
 has 'makeblastdb_exec'  => ( is => 'rw', isa => 'Str', default => 'makeblastdb' );
 has 'blastp_exec'       => ( is => 'rw', isa => 'Str', default => 'blastp' );
+has 'verbose'           => ( is => 'rw', isa => 'Bool', default => 0 );
 
 has '_error_message' => ( is => 'rw', isa => 'Str' );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec, $blastp_exec, $help, $cpus );
+    my ( $fasta_files, $output_filename, $job_runner, $makeblastdb_exec, $blastp_exec, $help, $cpus, $verbose, );
 
     GetOptionsFromArray(
         $self->args,
@@ -40,6 +41,7 @@ sub BUILD {
         'm|makeblastdb_exec=s' => \$makeblastdb_exec,
         'b|blastp_exec=s'      => \$blastp_exec,
         'p|processors=i'       => \$cpus,
+		'v|verbose'            => \$verbose,
         'h|help'               => \$help,
     );
     
@@ -47,6 +49,10 @@ sub BUILD {
         $self->_error_message("Error: You need to provide a FASTA file");
     }
 
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
     $self->help($help) if(defined($help));
     $self->output_filename($output_filename)   if ( defined($output_filename) );
     $self->job_runner($job_runner)             if ( defined($job_runner) );
@@ -81,6 +87,7 @@ sub run {
     if(@{$self->fasta_files} > 1)
     {
       $output_combined_filename = 'combined_files.fa';
+	  $self->logger->info("Combining protein files");
       my $combine_fasta_files = Bio::Roary::CombinedProteome->new(
         proteome_files                 => $prepare_input_files->fasta_files,
         output_filename                => $output_combined_filename,
@@ -94,13 +101,15 @@ sub run {
       $output_combined_filename = $self->fasta_files->[0];
     }
 
+    $self->logger->info("Beginning all against all blast");
     my $blast_obj = Bio::Roary::ParallelAllAgainstAllBlast->new(
         fasta_file       => $output_combined_filename,
         blast_results_file_name  => $self->output_filename,
         job_runner       => $self->job_runner,
         cpus             => $self->cpus,
         makeblastdb_exec => $self->makeblastdb_exec,
-        blastp_exec      => $self->blastp_exec
+        blastp_exec      => $self->blastp_exec,
+		logger           => $self->logger
     );
     $blast_obj->run();
 }

@@ -88,7 +88,10 @@ sub BUILD {
     $self->cpus($cpus)                                               if ( defined($cpus) );
     $self->group_limit($group_limit)                                 if ( defined($group_limit) );
     $self->core_definition( $core_definition/100 )                   if ( defined($core_definition) );
-	$self->verbose($verbose)                                         if ( defined($verbose) );
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
 }
 
 sub run {
@@ -114,6 +117,8 @@ sub run {
       verbose_stats                   =>  $self->verbose_stats,
       group_limit                     =>  $self->group_limit,
 	  verbose                         =>  $self->verbose,
+	  cpus                            =>  $self->cpus,
+	  logger                          =>  $self->logger,
       );                                                             
     $obj->run();
 	
@@ -133,7 +138,8 @@ sub run {
         job_runner          => $self->job_runner,
         translation_table   => $self->translation_table,
         core_definition     => $self->core_definition,
-        cpus                => $self->cpus
+        cpus                => $self->cpus,
+		verbose             => $self->verbose,
       );
       $seg->run();
 	

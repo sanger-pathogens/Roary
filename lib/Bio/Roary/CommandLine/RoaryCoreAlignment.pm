@@ -25,11 +25,12 @@ has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'gene_
 has 'output_filename'           => ( is => 'rw', isa => 'Str', default => 'core_gene_alignment.aln' );
 has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 1 );
 has '_error_message'            => ( is => 'rw', isa => 'Str' );
+has 'verbose'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition, $help );
+    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help );
 
     GetOptionsFromArray(
         $self->args,
@@ -37,9 +38,14 @@ sub BUILD {
         's|spreadsheet_filename=s'      => \$spreadsheet_filename,
         'o|output_filename=s'           => \$output_filename,
         'cd|core_definition=f'          => \$core_definition,
+		'v|verbose'                     => \$verbose,
         'h|help'                        => \$help,
     );
     
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
     $self->help($help) if(defined($help));
 
     if ( defined($multifasta_base_directory) && ( -d $multifasta_base_directory ) ) {
@@ -59,7 +65,17 @@ sub BUILD {
     }
 
     $self->output_filename( $output_filename ) if ( defined($output_filename) );
-    $self->core_definition( $core_definition/100 ) if ( defined($core_definition) ); 
+    if ( defined($core_definition) ) 
+	{
+		if($core_definition > 1)
+		{
+			$self->core_definition( $core_definition/100 );
+		}
+		else
+		{
+			$self->core_definition( $core_definition );
+		}
+	}
 }
 
 sub run {
@@ -71,20 +87,24 @@ sub run {
         die $self->usage_text;
     }
 
+	$self->logger->info("Extract core genes from spreadsheet");
     my $core_genes_obj = Bio::Roary::ExtractCoreGenesFromSpreadsheet->new( 
         spreadsheet     => $self->spreadsheet_filename,
         core_definition => $self->core_definition
     );
-
+	
+	$self->logger->info("Looking up genes in files");
     my $gene_files = Bio::Roary::LookupGeneFiles->new(
         multifasta_directory => $self->multifasta_base_directory,
         ordered_genes        => $core_genes_obj->ordered_core_genes,
       );
-    
+	 
+	$self->logger->info("Merge multifasta alignments");
     my $merge_alignments_obj = Bio::Roary::MergeMultifastaAlignments->new(
-	  sample_names     => $core_genes_obj->sample_names,
-      multifasta_files => $gene_files->ordered_gene_files(),
-      output_filename  => $self->output_filename
+	  sample_names          => $core_genes_obj->sample_names,
+      multifasta_files      => $gene_files->ordered_gene_files(),
+      output_filename       => $self->output_filename,
+	  sample_names_to_genes => $core_genes_obj->sample_names_to_genes
     );
     $merge_alignments_obj->merge_files;
 }

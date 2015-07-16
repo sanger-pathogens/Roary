@@ -22,20 +22,27 @@ has 'gff_files'             => ( is => 'rw', isa => 'ArrayRef' );
 has 'output_suffix'         => ( is => 'rw', isa => 'Str', default => 'proteome.faa' );
 has '_error_message'        => ( is => 'rw', isa => 'Str' );
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
-has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'translation_table'     => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'verbose'               => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $gff_files, $output_suffix, $apply_unknowns_filter, $help, $translation_table );
+    my ( $gff_files, $output_suffix, $apply_unknowns_filter, $help, $translation_table,$verbose,  );
 
     GetOptionsFromArray(
         $self->args,
         'o|output_suffix=s'       => \$output_suffix,
         'apply_unknowns_filter=i' => \$apply_unknowns_filter,
         't|translation_table=i'   => \$translation_table,
+		'v|verbose'               => \$verbose,
         'h|help'                  => \$help,
     );
+	
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
 
     $self->help($help) if(defined($help));
     if ( @{ $self->args } == 0 ) {

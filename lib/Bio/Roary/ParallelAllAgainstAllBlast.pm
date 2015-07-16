@@ -128,9 +128,11 @@ sub run {
         );
         push( @expected_output_files, $output_seq_results_file );
         push( @commands_to_run,       $blast_database->_command_to_run() );
+		$self->logger->info( "Running command: " . $blast_database->_command_to_run() );
     }
     my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus  => $self->cpus );
     $job_runner_obj->run();
+	$self->logger->info( "Combining blast results" );
     $self->_combine_blast_results(\@expected_output_files);
     return 1;
 }

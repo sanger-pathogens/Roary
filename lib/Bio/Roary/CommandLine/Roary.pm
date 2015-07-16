@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::Roary;
 
 # ABSTRACT: Take in FASTA files of proteins and cluster them
@@ -31,7 +32,8 @@ has 'mcl_exec'                => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter'   => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'                    => ( is => 'rw', isa => 'Int', default => 1 );
 has 'output_multifasta_files' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'perc_identity'           => ( is => 'rw', isa => 'Num', default => 98 );
+has 'version'                 => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'perc_identity'           => ( is => 'rw', isa => 'Num', default => 95 );
 has 'dont_delete_files'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_create_rplots'      => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_run_qc'             => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -39,7 +41,7 @@ has 'dont_split_groups'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'       => ( is => 'rw', isa => 'Int', default => 11 );
 has 'group_limit'             => ( is => 'rw', isa => 'Num', default => 50000 );
-has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 1 );
+has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'kraken_db'               => ( is => 'rw', isa => 'Str',  default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
 
@@ -53,7 +55,7 @@ sub BUILD {
         $max_threads,           $dont_delete_files, $dont_split_groups,       $perc_identity, $output_filename,
         $job_runner,            $makeblastdb_exec,  $mcxdeblast_exec,         $mcl_exec,      $blastp_exec,
         $apply_unknowns_filter, $cpus,              $output_multifasta_files, $verbose_stats, $translation_table,
-        $run_qc,                $core_definition,   $help, $kraken_db,
+        $run_qc,                $core_definition,   $help, $kraken_db,        $cmd_version,
     );
 
     GetOptionsFromArray(
@@ -79,8 +81,16 @@ sub BUILD {
         'cd|core_definition=i'      => \$core_definition,
         'v|verbose'                 => \$verbose,
         'k|kraken_db=s'             => \$kraken_db,
+		'version'                   => \$cmd_version,
         'h|help'                    => \$help,
     );
+
+	$self->version($cmd_version)                   if ( defined($cmd_version) );
+	if( $self->version)
+	{
+		print $self->_version();
+		exit();
+	}
 
     print "\nPlease cite Roary if you use any of the results it produces:
     \"Roary: Rapid large-scale prokaryote pan genome analysis\",
@@ -91,13 +101,14 @@ sub BUILD {
         $self->verbose($verbose);
         $self->logger->level(10000);
     }
+
     $self->help($help) if ( defined($help) );
     if(@{$self->args} == 0)
     {
         $self->logger->error("Error: You need to provide a GFF file");
         die $self->usage_text;
     }
-    $self->output_filename($output_filename)   if ( defined($output_filename) );
+	$self->output_filename($output_filename)   if ( defined($output_filename) );
     $self->job_runner($job_runner)             if ( defined($job_runner) );
     $self->makeblastdb_exec($makeblastdb_exec) if ( defined($makeblastdb_exec) );
     $self->blastp_exec($blastp_exec)           if ( defined($blastp_exec) );
@@ -109,11 +120,11 @@ sub BUILD {
       if ( defined($apply_unknowns_filter) );
 
     if ( defined($output_multifasta_files) ) {
-        if ( which('revtrans.py') ) {
+        if ( which('prank') ) {
             $self->output_multifasta_files($output_multifasta_files);
         }
         else {
-            $self->logger->warn("revtrans.py not found in your PATH so cannot generate multiFASTA alignments, skipping for now.");
+            $self->logger->warn("prank not found in your PATH so cannot generate multiFASTA alignments, skipping for now.");
         }
     }
     $self->dont_delete_files($dont_delete_files) if ( defined($dont_delete_files) );
@@ -148,6 +159,19 @@ sub BUILD {
     }
     $self->fasta_files( $self->args );
 
+}
+
+sub _version
+{
+	my ($self) = @_;
+	if(defined($Bio::Roary::CommandLine::Roary::VERSION))
+	{
+	   return $Bio::Roary::CommandLine::Roary::VERSION ."\n";
+    }
+	else
+	{
+	   return "x.y.z\n";
+	}
 }
 
 sub run {
@@ -226,17 +250,16 @@ sub usage_text {
     roary -o results *.gff
     
     # Create a MultiFASTA alignment of core genes, so that you can build a phylogenetic tree
-	# Requires RevTrans.py to be installed
     roary -e *.gff
 	
     # Create multifasta alignement of each gene (Warning: Thousands of files are created)
     roary -e --dont_delete_files *.gff
 	
-    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates
+    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates (default 99%)
     roary -e --core_definition 98 *.gff
 	
-    # Set the blastp percentage identity threshold (default 98%).
-    roary -i 95 *.gff
+    # Set the blastp percentage identity threshold (default 95%).
+    roary -i 98 *.gff
     
     # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
     roary --translation_table 1 *.gff 
@@ -255,6 +278,9 @@ sub usage_text {
 	# Requires Kraken to be installed
     roary -k /path/to/kraken_database/ -qc *.gff
 
+    # print out the version number and exit
+    roary --version
+	
     # This help message
     roary -h
 

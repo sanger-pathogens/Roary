@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+
+package Bio::Roary::Main::AssemblyStatistics;
+
+# ABSTRACT: Given a spreadsheet of gene presence and absense calculate some statistics
+# PODNAME: pan_genome_assembly_statistics
+
+=head1 SYNOPSIS
+
+Given a spreadsheet of gene presence and absense calculate some statistics
+
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+use Bio::Roary::CommandLine::AssemblyStatistics;
+
+Bio::Roary::CommandLine::AssemblyStatistics->new(args => \@ARGV, script_name => $0)->run;

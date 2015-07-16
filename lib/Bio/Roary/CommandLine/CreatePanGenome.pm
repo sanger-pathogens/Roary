@@ -16,7 +16,7 @@ use Bio::Roary::QC::Report;
 extends 'Bio::Roary::CommandLine::Roary';
 
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default => 'Local' );
-has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_create_rplots'          => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 0.99 );
 has 'run_qc'                      => ( is => 'rw', isa => 'Bool', default => 1 );
@@ -50,11 +50,11 @@ sub usage_text {
     # Create multifasta alignement of each gene (Warning: Thousands of files are created)
     create_pan_genome -e --dont_delete_files *.gff
 	
-    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates
+    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates (default 99%)
     create_pan_genome -e --core_definition 98 *.gff
 	
-    # Set the blastp percentage identity threshold (default 98%).
-    create_pan_genome -i 95 *.gff
+    # Set the blastp percentage identity threshold (default 95%).
+    create_pan_genome -i 98 *.gff
     
     # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
     create_pan_genome --translation_table 1 *.gff 
@@ -70,6 +70,9 @@ sub usage_text {
     
     # Use a different Kraken database
     roary -k /path/to/kraken_database/  *.gff
+	
+    # print out the version number and exit
+    create_pan_genome --version
 
     # This help message
     create_pan_genome -h
