@@ -11,6 +11,7 @@ Given a spreadsheet of gene presence and absense calculate some statistics
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
+use Bio::Roary::AssemblyStatistics;
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'            => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -105,7 +106,8 @@ sub run {
     my ($self) = @_;
 
     ( !$self->help ) or die $self->usage_text;
-
+    my $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->spreadsheet );
+	$obj->create_summary_output;
 }
 
 sub usage_text {
