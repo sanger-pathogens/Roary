@@ -23,6 +23,7 @@ use Bio::Roary::SplitGroups;
 use Bio::Roary::AccessoryBinaryFasta;
 use Bio::Roary::External::Fasttree;
 use Bio::Roary::AccessoryClustering;
+use Bio::Roary::AssemblyStatistics;
 use Log::Log4perl qw(:easy);
 
 has 'fasta_files'                 => ( is => 'rw', isa => 'ArrayRef', required => 1 );
@@ -67,6 +68,8 @@ has '_groups_multifastas_nuc_obj' => ( is => 'ro', isa => 'Bio::Roary::Output::G
 has '_split_groups_obj'           => ( is => 'ro', isa => 'Bio::Roary::SplitGroups',            lazy => 1, builder => '_build__split_groups_obj' );
 has '_accessory_binary_tree'      => ( is => 'ro', isa => 'Bio::Roary::External::Fasttree',     lazy => 1, builder => '_build__accessory_binary_tree' );
 has '_accessory_clustering'       => ( is => 'ro', isa => 'Bio::Roary::AccessoryClustering',     lazy => 1, builder => '_build__accessory_clustering' );
+has '_assembly_statistics'        => ( is => 'ro', isa => 'Bio::Roary::AssemblyStatistics',     lazy => 1, builder => '_build__assembly_statistics' );
+
 has 'logger'                          => ( is => 'ro', lazy => 1, builder => '_build_logger');
 
 sub _build_logger
@@ -110,6 +113,9 @@ sub run {
 	$self->logger->info( "Creating the spreadsheet with gene presence and absence" );
     $self->_group_statistics_obj->create_spreadsheet;
 	
+	$self->logger->info( "Creating summary statistics of the spreadsheet" );
+    $self->_assembly_statistics->create_summary_output;
+	
 	$self->logger->info( "Creating tab files for R" );
     $self->_number_of_groups_obj->create_output_files;
 
@@ -126,6 +132,12 @@ sub run {
 
 	$self->logger->info( "Cleaning up files" );
     $self->_delete_intermediate_files;
+}
+
+sub _build__assembly_statistics
+{
+	my ( $self ) = @_;
+	return Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->_group_statistics_obj->output_filename );
 }
 
 sub _build__accessory_clustering
