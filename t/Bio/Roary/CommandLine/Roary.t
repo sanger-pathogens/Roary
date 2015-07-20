@@ -125,7 +125,7 @@ SKIP:
 {
     skip "mafft not installed", 11 unless ( which('mafft') );
     %scripts_and_expected_files =
-      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff --mafft' =>
+      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files --mafft --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
           [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH.fa.aln' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
