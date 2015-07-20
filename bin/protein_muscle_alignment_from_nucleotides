@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Bio::Roary::Main::ProteinMuscleAlignmentFromNucleotides;
+package Bio::Roary::Main::GeneAlignmentFromNucleotides;
 
 # ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
 # PODNAME: protein_muscle_alignment_from_nucleotides
@@ -13,6 +13,6 @@ Take in a multifasta file of nucleotides, convert to proteins and align with mus
 
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
-use Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides;
+use Bio::Roary::CommandLine::GeneAlignmentFromNucleotides;
 
-Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides->new(args => \@ARGV, script_name => $0)->run;
+Bio::Roary::CommandLine::GeneAlignmentFromNucleotides->new(args => \@ARGV, script_name => $0)->run;

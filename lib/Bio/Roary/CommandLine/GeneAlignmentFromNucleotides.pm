@@ -1,10 +1,10 @@
-package Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides;
+package Bio::Roary::CommandLine::GeneAlignmentFromNucleotides;
 
-# ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
+# ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with PRANK
 
 =head1 SYNOPSIS
 
-Take in a multifasta file of nucleotides, convert to proteins and align with muscle, reverse translate back to nucleotides
+Take in a multifasta file of nucleotides, convert to proteins and align with PRANK or MAFFT, reverse translate back to nucleotides
 
 =cut
 
@@ -15,6 +15,7 @@ use Bio::Roary::AnnotateGroups;
 use Bio::Roary::External::Prank;
 use Bio::Roary::Output::GroupsMultifastaProtein;
 use Bio::Roary::SortFasta;
+use Bio::Roary::External::Mafft;
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -24,15 +25,17 @@ has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'nucleotide_fasta_files' => ( is => 'rw', isa => 'ArrayRef' );
 has '_error_message'         => ( is => 'rw', isa => 'Str' );
 has 'verbose'                => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'mafft'                  => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $nucleotide_fasta_files, $help, $verbose );
+    my ( $nucleotide_fasta_files, $help, $verbose,$mafft, );
 
     GetOptionsFromArray(
         $self->args,
         'v|verbose' => \$verbose,
+        'mafft'     => \$mafft,
         'h|help'    => \$help,
     );
 
@@ -74,14 +77,27 @@ sub run {
 
         if ( $sort_fasta_before->variation_detected == 1 ) {
 
-            my $prank_obj = Bio::Roary::External::Prank->new(
-                input_filename  => $fasta_file,
-                output_filename => $fasta_file . '.aln',
-                job_runner      => 'Local',
-                logger          => $self->logger,
-                verbose         => $self->verbose
-            );
-            $prank_obj->run();
+            if ( $self->mafft == 1 ) {
+                my $mafft_obj = Bio::Roary::External::Mafft->new(
+                    input_filename  => $fasta_file,
+                    output_filename => $fasta_file . '.aln',
+                    job_runner      => 'Local',
+                    logger          => $self->logger,
+                    verbose         => $self->verbose
+                );
+                $mafft_obj->run();
+            }
+            else {
+
+                my $prank_obj = Bio::Roary::External::Prank->new(
+                    input_filename  => $fasta_file,
+                    output_filename => $fasta_file . '.aln',
+                    job_runner      => 'Local',
+                    logger          => $self->logger,
+                    verbose         => $self->verbose
+                );
+                $prank_obj->run();
+            }
         }
         else {
             move( $fasta_file, $fasta_file . '.aln' );
@@ -101,10 +117,13 @@ sub usage_text {
 
     return <<USAGE;
     Usage: protein_muscle_alignment_from_nucleotides [options]
-    Take in a multifasta file of nucleotides, convert to proteins and align with muscle
+    Take in a multifasta file of nucleotides, convert to proteins and align with PRANK or MAFFT
     
     # Transfer the annotation from the GFF files to the group file
     protein_muscle_alignment_from_nucleotides protein_fasta_1.faa protein_fasta_2.faa
+	
+    # Use MAFFT instead
+    protein_muscle_alignment_from_nucleotides --mafft protein_fasta_1.faa protein_fasta_2.faa
     
     # This help message
     protein_muscle_alignment_from_nucleotides -h
