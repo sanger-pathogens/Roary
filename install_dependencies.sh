@@ -36,6 +36,10 @@ FASTTREE_VERSION="2.1.8"
 FASTTREE_DOWNLOAD_FILENAME="FastTree-${FASTTREE_VERSION}.c"
 FASTTREE_URL="http://microbesonline.org/fasttree/FastTree-${FASTTREE_VERSION}.c"
 
+MAFFT_VERSION="7.221"
+MAFFT_DOWNLOAD_FILENAME="mafft-${MAFFT_VERSION}-without-extensions-src.tgz"
+MAFFT_URL="http://mafft.cbrc.jp/alignment/software/${MAFFT_DOWNLOAD_FILENAME}"
+
 # Make an install location
 if [ ! -d 'build' ]; then
   mkdir build
@@ -50,6 +54,7 @@ PRANK_DOWNLOAD_PATH="$(pwd)/${PRANK_DOWNLOAD_FILENAME}"
 BLAST_DOWNLOAD_PATH="$(pwd)/${BLAST_DOWNLOAD_FILENAME}"
 MCL_DOWNLOAD_PATH="$(pwd)/${MCL_DOWNLOAD_FILENAME}"
 FASTTREE_DOWNLOAD_PATH="$(pwd)/${FASTTREE_DOWNLOAD_FILENAME}"
+MAFFT_DOWNLOAD_PATH="$(pwd)/${MAFFT_DOWNLOAD_FILENAME}"
 
 PARALLEL_BUILD_DIR="$(pwd)/parallel-${PARALLEL_VERSION}"
 BEDTOOLS_BUILD_DIR="$(pwd)/bedtools2"
@@ -58,6 +63,8 @@ PRANK_BUILD_DIR="$(pwd)/prank-msa-master"
 BLAST_BUILD_DIR="$(pwd)/ncbi-blast-${BLAST_VERSION}+"
 MCL_BUILD_DIR="$(pwd)/mcl-${MCL_VERSION}"
 FASTTREE_BUILD_DIR="$(pwd)/fasttree"
+MAFFT_BUILD_DIR="$(pwd)/mafft-${MAFFT_VERSION}-without-extensions"
+
 
 download () {
   download_url=$1
@@ -165,6 +172,22 @@ else
   gcc -o FastTree FastTree-${FASTTREE_VERSION}.c -lm
 fi
 
+export MAFFT_INSTALL_DIR="${MAFFT_BUILD_DIR}/build"
+# Build MAFFT
+if [ -e "$MAFFT_BUILD_DIR/build/mafft" ]; then
+  echo "MAFFT already built, skipping"
+else
+  download $MAFFT_URL $MAFFT_DOWNLOAD_PATH
+  untar $MAFFT_DOWNLOAD_PATH $MAFFT_BUILD_DIR
+  echo "Building MAFFT"
+  cd $MAFFT_BUILD_DIR
+  mkdir -p $MAFFT_INSTALL_DIR
+  cd core
+  sed -i '1s!.*!PREFIX = $(MAFFT_INSTALL_DIR)!' Makefile
+  make
+  make install
+fi
+
 
 # Add things to PATH
 update_path () {
@@ -195,6 +218,8 @@ update_path $MCL_BIN_DIR_2
 
 FASTTREE_BIN_DIR=$FASTTREE_BUILD_DIR
 update_path $FASTTREE_BIN_DIR
+MAFFT_BIN_DIR="$MAFFT_INSTALL_DIR/bin"
+update_path $MAFFT_BIN_DIR
 
 update_perl_path () {
   new_dir=$1
@@ -216,7 +241,7 @@ dzil listdeps --missing | cpanm --notest
 cd $start_dir
 
 echo "Add the following lines to one of these files ~/.bashrc or ~/.bash_profile or ~/.profile"
-echo "export PATH=${ROARY_BIN_DIR}:${PARALLEL_BIN_DIR}:${BEDTOOLS_BIN_DIR}:${CDHIT_BIN_DIR}:${PRANK_BIN_DIR}:${BLAST_BIN_DIR}:${MCL_BIN_DIR}:${MCL_BIN_DIR_2}:${FASTTREE_BIN_DIR}:${PATH}"
+echo "export PATH=${ROARY_BIN_DIR}:${PARALLEL_BIN_DIR}:${BEDTOOLS_BIN_DIR}:${CDHIT_BIN_DIR}:${PRANK_BIN_DIR}:${BLAST_BIN_DIR}:${MCL_BIN_DIR}:${MCL_BIN_DIR_2}:${FASTTREE_BIN_DIR}:${MAFFT_BIN_DIR}:${PATH}"
 echo "export PERL5LIB=${ROARY_LIB_DIR}:${BEDTOOLS_LIB_DIR}:${PERL5LIB}"
 
 set +eu
