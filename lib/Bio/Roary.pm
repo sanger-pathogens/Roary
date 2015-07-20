@@ -46,6 +46,7 @@ has 'translation_table'           => ( is => 'rw', isa => 'Int',      default  =
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',      default  => 50000 );
 has 'core_definition'             => ( is => 'rw', isa => 'Num',      default  => 1.0 );
 has 'verbose'                     => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'mafft'                       => ( is => 'ro', isa => 'Bool',     default  => 0 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -113,7 +114,6 @@ sub run {
 
     unlink($output_blast_results_filename) unless($self->dont_delete_files == 1);
     
-
     my $post_analysis = Bio::Roary::External::PostAnalysis->new(
         job_runner                  => $self->job_runner,
         cpus                        => $self->cpus,
@@ -133,6 +133,7 @@ sub run {
         group_limit                 => $self->group_limit,
         core_definition             => $self->core_definition,
 		verbose                     => $self->verbose,
+		mafft                       => $self->mafft,
     );
     $post_analysis->run();
 

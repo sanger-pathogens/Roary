@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
     - libssl-dev
+    - mafft
 cache:
   directories:
   - build/parallel-20150522

@@ -12,7 +12,7 @@ use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::Roary::PostAnalysis;
 use File::Find::Rule;
-use Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides;
+use Bio::Roary::External::GeneAlignmentFromNucleotides;
 use File::Path qw(remove_tree);
 extends 'Bio::Roary::CommandLine::Common';
 
@@ -38,6 +38,7 @@ has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
 has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 1.0 );
 has 'verbose'                     => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'mafft'                       => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
@@ -45,7 +46,7 @@ sub BUILD {
     my ( 
       $output_filename, $dont_create_rplots, $dont_delete_files, $dont_split_groups, $output_pan_geneome_filename, 
       $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $core_definition,
-      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit,$verbose
+      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit,$verbose,$mafft
     );
 
 
@@ -68,6 +69,7 @@ sub BUILD {
         'group_limit=i'           => \$group_limit,
         'cd|core_definition=f'    => \$core_definition,
 		'v|verbose'               => \$verbose,
+		'mafft'                   => \$mafft,
         'h|help'                  => \$help,
     );
     
@@ -88,6 +90,7 @@ sub BUILD {
     $self->cpus($cpus)                                               if ( defined($cpus) );
     $self->group_limit($group_limit)                                 if ( defined($group_limit) );
     $self->core_definition( $core_definition/100 )                   if ( defined($core_definition) );
+	$self->mafft($mafft)                                            if ( defined($mafft) );
     if ( defined($verbose) ) {
         $self->verbose($verbose);
         $self->logger->level(10000);
@@ -133,13 +136,14 @@ sub run {
     {
 		print "Aligning each cluster\n" if($self->verbose);
       my $output_gene_files = $self->_find_input_files;
-      my $seg = Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides->new(
+      my $seg = Bio::Roary::External::GeneAlignmentFromNucleotides->new(
         fasta_files         => $output_gene_files,
         job_runner          => $self->job_runner,
         translation_table   => $self->translation_table,
         core_definition     => $self->core_definition,
         cpus                => $self->cpus,
 		verbose             => $self->verbose,
+		mafft               => $self->mafft,
       );
       $seg->run();
 	

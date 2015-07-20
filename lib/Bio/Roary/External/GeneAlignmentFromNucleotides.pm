@@ -51,7 +51,7 @@ sub _command_to_run {
 	}
     my $mafft_str = "";	
 	$mafft_str = ' --mafft ' if($self->mafft);
-    return $self->exec.$verbose.$mafft_str. join( " ", @{$fasta_files}  );
+    return $self->exec." ".$verbose.$mafft_str.join( " ", @{$fasta_files}  );
 }
 
 sub _build__core_alignment_cmd {

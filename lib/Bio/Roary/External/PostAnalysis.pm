@@ -35,6 +35,7 @@ has 'translation_table'           => ( is => 'rw', isa => 'Int',  default  => 11
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default  => 50000 );
 has 'core_definition'             => ( is => 'ro', isa => 'Num',  default  => 1.0 );
 has 'verbose'                     => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'mafft'                       => ( is => 'ro', isa => 'Bool', default  => 0 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
@@ -115,6 +116,9 @@ sub _command_to_run {
     my $verbose_stats_flag = '';
     $verbose_stats_flag = '--verbose_stats' if ( defined($self->verbose_stats) && $self->verbose_stats == 1 );
 	
+    my $mafft_flag = '';
+    $mafft_flag = '--mafft' if ( defined($self->mafft) && $self->mafft == 1 );
+	
     my $verbose_flag = '';
     $verbose_flag = '-v' if ( defined($self->verbose) && $self->verbose == 1 );
     
@@ -135,6 +139,7 @@ sub _command_to_run {
             $dont_split_groups_flag,
             $verbose_stats_flag,
 			$verbose_flag,
+			$mafft_flag,
             '-j', $self->job_runner,
             '--processors', $self->cpus,
             '--group_limit', $self->group_limit,

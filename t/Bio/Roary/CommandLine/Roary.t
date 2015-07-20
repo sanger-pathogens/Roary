@@ -117,11 +117,23 @@ SKIP:
       ( '-j Local --output_multifasta_files t/data/core_alignment_gene_lookup/query_1.gff t/data/core_alignment_gene_lookup/query_2.gff t/data/core_alignment_gene_lookup/query_3.gff' =>
           [ 'core_gene_alignment.aln', 't/data/core_alignment_gene_lookup/expected_core_gene_alignment.aln' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
-	
-	
 
     cleanup_files();
 }
+
+SKIP:
+{
+    skip "mafft not installed", 11 unless ( which('mafft') );
+    %scripts_and_expected_files =
+      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff --mafft' =>
+          [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH.fa.aln' ], );
+    mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+
+    ok( -e 'core_gene_alignment.aln', 'Core gene alignment exists' );
+	
+}
+
+
 done_testing();
 
 sub cleanup_files {

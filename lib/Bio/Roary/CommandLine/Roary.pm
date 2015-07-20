@@ -39,7 +39,8 @@ has 'dont_create_rplots'      => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_run_qc'             => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_split_groups'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'           => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'translation_table'       => ( is => 'rw', isa => 'Int', default => 11 );
+has 'translation_table'       => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'mafft'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'group_limit'             => ( is => 'rw', isa => 'Num', default => 50000 );
 has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -55,7 +56,7 @@ sub BUILD {
         $max_threads,           $dont_delete_files, $dont_split_groups,       $perc_identity, $output_filename,
         $job_runner,            $makeblastdb_exec,  $mcxdeblast_exec,         $mcl_exec,      $blastp_exec,
         $apply_unknowns_filter, $cpus,              $output_multifasta_files, $verbose_stats, $translation_table,
-        $run_qc,                $core_definition,   $help, $kraken_db,        $cmd_version,
+        $run_qc,                $core_definition,   $help, $kraken_db,        $cmd_version, $mafft,
     );
 
     GetOptionsFromArray(
@@ -80,6 +81,7 @@ sub BUILD {
         'dont_run_qc'               => \$dont_run_qc,
         'cd|core_definition=i'      => \$core_definition,
         'v|verbose'                 => \$verbose,
+		'mafft'                     => \$mafft,
         'k|kraken_db=s'             => \$kraken_db,
 		'version'                   => \$cmd_version,
         'h|help'                    => \$help,
@@ -116,6 +118,7 @@ sub BUILD {
     $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
     $self->cpus($cpus)                         if ( defined($cpus) );
     $self->perc_identity($perc_identity)       if ( defined($perc_identity) );
+	$self->mafft($mafft)                       if ( defined($mafft) );
     $self->apply_unknowns_filter($apply_unknowns_filter)
       if ( defined($apply_unknowns_filter) );
 
@@ -134,7 +137,6 @@ sub BUILD {
     $self->translation_table($translation_table) if ( defined($translation_table) );
     $self->group_limit($group_limit)             if ( defined($group_limit) );
     $self->kraken_db($kraken_db)                 if ( defined($kraken_db) );
-
 
     if ( defined($run_qc) ) {
         if ( which('kraken') && which('kraken-report') ) {
@@ -228,7 +230,8 @@ sub run {
         translation_table       => $self->translation_table,
         group_limit             => $self->group_limit,
         core_definition         => $self->core_definition,
-        verbose                 => $self->verbose
+        verbose                 => $self->verbose,
+		mafft                   => $self->mafft,
     );
     $pan_genome_obj->run();
 }
@@ -249,7 +252,7 @@ sub usage_text {
     # Provide an output filename
     roary -o results *.gff
     
-    # Create a MultiFASTA alignment of core genes, so that you can build a phylogenetic tree
+    # Create a MultiFASTA alignment of core genes (codon aligned with PRANK), so that you can build a phylogenetic tree 
     roary -e *.gff
 	
     # Create multifasta alignement of each gene (Warning: Thousands of files are created)
@@ -257,6 +260,9 @@ sub usage_text {
 	
     # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates (default 99%)
     roary -e --core_definition 98 *.gff
+	
+    # Quickly align genes with MAFFT. Not as accurate as codon alignment with PRANK, but much faster.
+    roary -e --mafft *.gff
 	
     # Set the blastp percentage identity threshold (default 95%).
     roary -i 98 *.gff

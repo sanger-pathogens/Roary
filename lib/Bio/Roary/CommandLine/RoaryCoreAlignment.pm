@@ -30,7 +30,7 @@ has 'verbose'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help );
+    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help, $mafft );
 
     GetOptionsFromArray(
         $self->args,
@@ -63,7 +63,6 @@ sub BUILD {
     {
         $self->_error_message("Error: Cant access the spreadsheet: ".$self->spreadsheet_filename);
     }
-
     $self->output_filename( $output_filename ) if ( defined($output_filename) );
     if ( defined($core_definition) ) 
 	{
