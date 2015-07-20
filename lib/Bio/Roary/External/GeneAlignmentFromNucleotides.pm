@@ -1,4 +1,4 @@
-package Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides;
+package Bio::Roary::External::GeneAlignmentFromNucleotides;
 
 # ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
 
@@ -6,9 +6,9 @@ package Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides;
 
 Take in a multifasta file of nucleotides, convert to proteins and align with muscle
 
-   use Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides;
+   use Bio::Roary::External::GeneAlignmentFromNucleotides;
    
-   my $seg = Bio::Roary::External::ProteinMuscleAlignmentFromNucleotides->new(
+   my $seg = Bio::Roary::External::GeneAlignmentFromNucleotides->new(
      fasta_files => [],
    );
    
@@ -27,12 +27,14 @@ has 'fasta_files'       => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein_muscle_alignment_from_nucleotides' );
 has 'translation_table' => ( is => 'rw', isa => 'Int',      default => 11 );
 has 'core_definition'   => ( is => 'ro', isa => 'Num',      default => 1 );
+has 'mafft'             => ( is => 'ro', isa => 'Bool',     default => 0 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
 has '_queue'                 => ( is => 'rw', isa => 'Str', default  => 'normal' );
 has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 25 );
 has '_core_alignment_cmd'    => ( is => 'rw', isa => 'Str', lazy_build => 1 );
+
 
 sub _build__memory_required_in_mb {
     my ($self)          = @_;
@@ -45,9 +47,11 @@ sub _command_to_run {
 	my $verbose = "";
 	if($self->verbose)
 	{
-		$verbose = '-v';
+		$verbose = ' -v ';
 	}
-    return $self->exec. " ".$verbose." ". join( " ", @{$fasta_files}  );
+    my $mafft_str = "";	
+	$mafft_str = ' --mafft ' if($self->mafft);
+    return $self->exec." ".$verbose.$mafft_str.join( " ", @{$fasta_files}  );
 }
 
 sub _build__core_alignment_cmd {
@@ -55,6 +59,7 @@ sub _build__core_alignment_cmd {
     
     my $core_cmd = "pan_genome_core_alignment";
     $core_cmd .= " -cd " . ($self->core_definition*100) if ( defined $self->core_definition );
+
     return $core_cmd;
 }
 

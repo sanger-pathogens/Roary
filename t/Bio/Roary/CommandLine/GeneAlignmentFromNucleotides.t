@@ -11,10 +11,10 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides');
+    use_ok('Bio::Roary::CommandLine::GeneAlignmentFromNucleotides');
 }
 
-my $script_name = 'Bio::Roary::CommandLine::ProteinMuscleAlignmentFromNucleotides';
+my $script_name = 'Bio::Roary::CommandLine::GeneAlignmentFromNucleotides';
 my $cwd         = getcwd();
 system('touch empty_file');
 system('cp t/data/nuc_to_be_aligned.fa t/data/f.fa');
