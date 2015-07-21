@@ -43,7 +43,7 @@ sub BUILD {
         $self->verbose($verbose);
         $self->logger->level(10000);
     }
-
+    $self->mafft($mafft) if (defined($mafft));
     $self->help($help) if ( defined($help) );
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide at least 1 FASTA file");
