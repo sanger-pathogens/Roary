@@ -90,7 +90,7 @@ sub BUILD {
     $self->cpus($cpus)                                               if ( defined($cpus) );
     $self->group_limit($group_limit)                                 if ( defined($group_limit) );
     $self->core_definition( $core_definition/100 )                   if ( defined($core_definition) );
-	$self->mafft($mafft)                                            if ( defined($mafft) );
+	$self->mafft($mafft)                                             if ( defined($mafft) );
     if ( defined($verbose) ) {
         $self->verbose($verbose);
         $self->logger->level(10000);
