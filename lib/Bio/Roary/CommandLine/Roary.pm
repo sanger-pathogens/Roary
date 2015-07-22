@@ -96,7 +96,7 @@ sub BUILD {
 
     print "\nPlease cite Roary if you use any of the results it produces:
     Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), \"Roary: Rapid large-scale prokaryote pan genome analysis\", Bioinformatics,
-    doi: http://10.1093/bioinformatics/btv421\n\n";
+    doi: http://doi.org/10.1093/bioinformatics/btv421\n\n";
 
     if ( defined($verbose) ) {
         $self->verbose($verbose);
