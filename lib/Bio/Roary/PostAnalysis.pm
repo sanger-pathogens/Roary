@@ -137,7 +137,7 @@ sub run {
 sub _build__assembly_statistics
 {
 	my ( $self ) = @_;
-	return Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->_group_statistics_obj->output_filename );
+	return Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->_group_statistics_obj->output_filename, core_definition => $self->core_definition );
 }
 
 sub _build__accessory_clustering

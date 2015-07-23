@@ -122,6 +122,7 @@ sub run {
 	  verbose                         =>  $self->verbose,
 	  cpus                            =>  $self->cpus,
 	  logger                          =>  $self->logger,
+	  core_definition                 =>  $self->core_definition,
       );                                                             
     $obj->run();
 	
