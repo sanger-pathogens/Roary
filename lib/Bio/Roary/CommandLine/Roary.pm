@@ -79,7 +79,7 @@ sub BUILD {
         'group_limit=i'             => \$group_limit,
         'qc|run_qc'                 => \$run_qc,
         'dont_run_qc'               => \$dont_run_qc,
-        'cd|core_definition=i'      => \$core_definition,
+        'cd|core_definition=f'      => \$core_definition,
         'v|verbose'                 => \$verbose,
 		'mafft'                     => \$mafft,
         'k|kraken_db=s'             => \$kraken_db,
