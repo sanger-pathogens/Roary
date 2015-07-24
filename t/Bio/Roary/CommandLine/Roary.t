@@ -82,7 +82,7 @@ SKIP:
     skip "prank not installed", 11 unless ( which('prank') );
 
     %scripts_and_expected_files =
-      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
           [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH.fa.aln' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
@@ -111,11 +111,11 @@ SKIP:
       ( '-j Local --dont_delete_files --dont_split_groups --output_multifasta_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
           [ 'pan_genome_reference.fa', 't/data/expected_pan_genome_reference.fa' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
-	
-	
+
     %scripts_and_expected_files =
-      ( '-j Local --output_multifasta_files t/data/core_alignment_gene_lookup/query_1.gff t/data/core_alignment_gene_lookup/query_2.gff t/data/core_alignment_gene_lookup/query_3.gff' =>
-          [ 'core_gene_alignment.aln', 't/data/core_alignment_gene_lookup/expected_core_gene_alignment.aln' ], );
+      (
+'-j Local --output_multifasta_files t/data/core_alignment_gene_lookup/query_1.gff t/data/core_alignment_gene_lookup/query_2.gff t/data/core_alignment_gene_lookup/query_3.gff'
+          => [ 'core_gene_alignment.aln', 't/data/core_alignment_gene_lookup/expected_core_gene_alignment.aln' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
     cleanup_files();
@@ -125,14 +125,150 @@ SKIP:
 {
     skip "mafft not installed", 11 unless ( which('mafft') );
     %scripts_and_expected_files =
-      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files --mafft --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
-          [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH_mafft.fa.aln' ], );
+      ( '-j Local --dont_delete_files --dont_split_groups  --output_multifasta_files --mafft t/data/real_data_1.gff t/data/real_data_2.gff'
+          => [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH_mafft.fa.aln' ], );
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
     ok( -e 'core_gene_alignment.aln', 'Core gene alignment exists' );
-	
+
 }
 
+
+%scripts_and_expected_files = (
+    '-o some_different_output t/data/real_data_1.gff t/data/real_data_2.gff'    => [ 'some_different_output', 't/data/expected_some_different_output' ],
+    '-o some_different_output -i 90 t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'some_different_output', 't/data/expected_some_different_output' ],
+    '-o some_different_output --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff' =>
+      [ 'some_different_output', 't/data/expected_some_different_output' ],
+	'-p 2 -o some_different_output t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'some_different_output', 't/data/expected_some_different_output' ],
+	'-p 2 -i 90 t/data/real_data_1.gff t/data/real_data_2.gff'                    => [ 'clustered_proteins', 't/data/expected_some_different_output' ],
+	'-i 90 t/data/real_data_1.gff t/data/real_data_2.gff'                         => [ 'clustered_proteins', 't/data/expected_some_different_output' ],
+	'-p 2 --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff'    => [ 'clustered_proteins', 't/data/expected_some_different_output' ],
+	);
+mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files, [ 0 ] );
+
+stderr_should_have($script_name,'-e --group_limit 10 t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+stderr_should_have($script_name,'-p 2 --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+stderr_should_have($script_name,'--core_definition 60 --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+stderr_should_have($script_name,'--mafft --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+stderr_should_have($script_name,'-o some_different_output --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+stderr_should_have($script_name,'--translation_table 1 --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+stderr_should_have($script_name,'--verbose_stats --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+stderr_should_not_have($script_name,'-e --group_limit 10 t/data/real_data_1.gff t/data/real_data_2.gff', 'Cant access the multifasta base directory');
+
+#### needs kraken
+####stderr_should_not_have($script_name,'--group_limit 10 --qc t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
+
+%scripts_and_expected_files = (
+    # output
+    '-o some_different_output -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-o some_different_output -e --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+      [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH.fa.aln' ],
+    '-o some_different_output --core_definition 60 t/data/real_data_1.gff t/data/real_data_2.gff' =>
+      [ 'summary_statistics.txt', 't/data/expected_core_60_summary_statistics.txt' ],
+    '-o some_different_output -e --mafft t/data/real_data_1.gff t/data/real_data_2.gff' =>
+      [ 'core_gene_alignment.aln', 't/data/expected_mafft_real_data_core_gene_alignment.aln' ],
+     # -e
+    '-e -i 90 t/data/real_data_1.gff t/data/real_data_2.gff'                   => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-e --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-e -v t/data/real_data_1.gff t/data/real_data_2.gff'                      => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-e --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'         => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-e --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-e --qc t/data/real_data_1.gff t/data/real_data_2.gff'                    => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+
+#    '-o some_different_output -v t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '-o some_different_output --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '-o some_different_output --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '-o some_different_output --qc t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # single parameters
+    '--core_definition 60 t/data/real_data_1.gff t/data/real_data_2.gff'    => [ 'summary_statistics.txt', 't/data/expected_core_60_summary_statistics.txt' ],
+#    '--translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'empty_file', 't/data/empty_file' ],
+#    '-v t/data/real_data_1.gff t/data/real_data_2.gff'                      => [ 'empty_file', 't/data/empty_file' ],
+#    '--verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'         => [ 'empty_file', 't/data/empty_file' ],
+#    '--group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--qc t/data/real_data_1.gff t/data/real_data_2.gff'                    => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # Parallel
+    '-p 2 -e t/data/real_data_1.gff t/data/real_data_2.gff'                       => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-p 2 -e --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'pan_genome_sequences/mdoH.fa.aln', 't/data/mdoH.fa.aln' ],
+    '-p 2 --core_definition 60 t/data/real_data_1.gff t/data/real_data_2.gff'     => [ 'summary_statistics.txt', 't/data/expected_core_60_summary_statistics.txt' ],
+    '-p 2 -e --mafft t/data/real_data_1.gff t/data/real_data_2.gff'               => [ 'core_gene_alignment.aln', 't/data/expected_mafft_real_data_core_gene_alignment.aln' ],
+#    '-p 2 -v t/data/real_data_1.gff t/data/real_data_2.gff'                       => [ 'empty_file', 't/data/empty_file' ],
+#    '-p 2 --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'          => [ 'empty_file', 't/data/empty_file' ],
+#    '-p 2 --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff'  => [ 'empty_file', 't/data/empty_file' ],
+#    '-p 2 --qc t/data/real_data_1.gff t/data/real_data_2.gff'                     => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # core definition
+#    '--core_definition 60 -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 -e --dont_delete_files t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 -e --mafft t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 -i 90 t/data/real_data_1.gff t/data/real_data_2.gff'      => [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 -v t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--core_definition 60 --qc t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # mafft
+#    '--mafft -i 90 t/data/real_data_1.gff t/data/real_data_2.gff'                   => [ 'empty_file', 't/data/empty_file' ],
+#    '--mafft --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'empty_file', 't/data/empty_file' ],
+#    '--mafft -v t/data/real_data_1.gff t/data/real_data_2.gff'                      => [ 'empty_file', 't/data/empty_file' ],
+#    '--mafft --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'         => [ 'empty_file', 't/data/empty_file' ],
+
+#    '--mafft --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--mafft --qc t/data/real_data_1.gff t/data/real_data_2.gff'                    => [ 'empty_file', 't/data/empty_file' ],
+#
+#
+#    # dont_delete_files
+#    '--dont_delete_files -i 90 t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--dont_delete_files --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--dont_delete_files -v t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--dont_delete_files --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--dont_delete_files --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--dont_delete_files --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--dont_delete_files --qc t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # change identity
+#    '-i 90 --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'empty_file', 't/data/empty_file' ],
+#    '-i 90 -v t/data/real_data_1.gff t/data/real_data_2.gff'                      => [ 'empty_file', 't/data/empty_file' ],
+#    '-i 90 --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'         => [ 'empty_file', 't/data/empty_file' ],
+#    '-i 90 --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff'     => [ 'empty_file', 't/data/empty_file' ],
+#    '-i 90 --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '-i 90 --qc t/data/real_data_1.gff t/data/real_data_2.gff'                    => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # translation_table
+#    '--translation_table 1 -v t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '--translation_table 1 --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--translation_table 1 --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--translation_table 1 --qc t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # verbose
+#    '-v --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'         => [ 'empty_file', 't/data/empty_file' ],
+#    '-v --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff'     => [ 'empty_file', 't/data/empty_file' ],
+#    '-v --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#    '-v --qc t/data/real_data_1.gff t/data/real_data_2.gff'                    => [ 'empty_file', 't/data/empty_file' ],
+#
+#    # verbose stats
+#    '--verbose_stats --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' =>
+#      [ 'empty_file', 't/data/empty_file' ],
+#    '--verbose_stats --qc t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'empty_file', 't/data/empty_file' ],
+#
+);
+mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+
+cleanup_files();
 
 done_testing();
 
@@ -179,4 +315,5 @@ sub cleanup_files {
     unlink('pan_genome_reference.fa');
     unlink('accessory_graph.dot');
     unlink('core_accessory_graph.dot');
+	unlink('some_different_output');
 }

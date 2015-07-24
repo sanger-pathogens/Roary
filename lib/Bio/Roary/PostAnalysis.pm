@@ -124,14 +124,20 @@ sub run {
 	$self->logger->info( "Create EMBL files" );
     $self->_create_embl_files;
     
+	my $clusters_not_exceeded = 1;
 	if($self->output_multifasta_files)
 	{
 	  $self->logger->info( "Creating files with the nucleotide sequences for every cluster" );
-      $self->_groups_multifastas_nuc_obj->create_files();
+      $clusters_not_exceeded = $self->_groups_multifastas_nuc_obj->create_files();
     }
 
 	$self->logger->info( "Cleaning up files" );
     $self->_delete_intermediate_files;
+	if($clusters_not_exceeded == 0 && $self->output_multifasta_files)
+	{
+		$self->logger->error( "Exiting early because number of clusters is too high" );
+		exit();
+	}
 }
 
 sub _build__assembly_statistics
