@@ -14,6 +14,7 @@ use Bio::Roary::PostAnalysis;
 use File::Find::Rule;
 use Bio::Roary::External::GeneAlignmentFromNucleotides;
 use File::Path qw(remove_tree);
+use Bio::Roary::External::Fasttree;
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'                        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -147,6 +148,13 @@ sub run {
 		mafft               => $self->mafft,
       );
       $seg->run();
+	  
+      my $core_tree = Bio::Roary::External::Fasttree->new(
+	          input_file => 'core_alignment.aln',
+	          verbose    => $self->verbose,
+	          logger     => $self->logger
+	      );
+	  $core_tree->run();
 	
       # Cleanup intermediate multifasta files
       if($self->dont_delete_files == 0)
