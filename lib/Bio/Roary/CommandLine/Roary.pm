@@ -137,6 +137,12 @@ sub BUILD {
     $self->group_limit($group_limit)             if ( defined($group_limit) );
     $self->kraken_db($kraken_db)                 if ( defined($kraken_db) );
 
+    if ( defined $verbose_stats  && defined($output_multifasta_files))
+	{
+		$self->verbose_stats(0);
+		$self->logger->warn("The verbose stats spreadsheet is not compatible with the core gene alignement so disabling verbose_stats");
+	}
+
     if ( defined($run_qc) ) {
         if ( which('kraken') && which('kraken-report') ) {
             $self->run_qc($run_qc);

@@ -135,7 +135,6 @@ sub run {
         $clusters_not_exceeded = $self->_groups_multifastas_nuc_obj->create_files();
     }
 
-    $self->logger->info("Cleaning up files");
     $self->_delete_intermediate_files;
     if ( $clusters_not_exceeded == 0 && $self->output_multifasta_files ) {
         $self->logger->error("Exiting early because number of clusters is too high");
@@ -324,6 +323,7 @@ sub _create_embl_files {
 sub _delete_intermediate_files {
     my ($self) = @_;
     return if ( $self->dont_delete_files == 1 );
+	$self->logger->info("Cleaning up files");
 
     for my $fasta_file ( @{ $self->fasta_files } ) {
         unlink($fasta_file) if ( -e $fasta_file );

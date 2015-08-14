@@ -46,13 +46,19 @@ sub _command_to_run {
 sub run {
     my ($self) = @_;
     my @commands_to_run;
-	
-	if(-s $self->input_file < 5)
+
+	if(!defined($self->input_file) || ! ( -e $self->input_file))
 	{
-		$self->logger->error( "The input file is too small so not creating a tree" );
+		$self->logger->error( "The input file is missing so not creating a tree" );
 		return 1;
 	}
-	
+
+	if(-s $self->input_file < 5)
+	{
+		$self->logger->info( "The input file is too small so not creating a tree" );
+		return 1;
+	}
+
     push(@commands_to_run, $self->_command_to_run() );
     $self->logger->info( "Running command: " . $self->_command_to_run() );
     my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus => $self->cpus );

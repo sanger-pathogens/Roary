@@ -130,10 +130,9 @@ SKIP:
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
     ok( -e 'core_gene_alignment.aln', 'Core gene alignment exists' );
-	ok( -e 'core_alignment.aln.newick', 'core gene newick tree exists');
+	ok( -e 'core_gene_alignment.aln.newick', 'core gene newick tree exists');
 
 }
-
 
 %scripts_and_expected_files = (
     '-o some_different_output t/data/real_data_1.gff t/data/real_data_2.gff'    => [ 'some_different_output', 't/data/expected_some_different_output' ],
@@ -155,25 +154,19 @@ stderr_should_have($script_name,'-o some_different_output --group_limit 10 -e t/
 stderr_should_have($script_name,'--translation_table 1 --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
 stderr_should_have($script_name,'--verbose_stats --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
 stderr_should_not_have($script_name,'-e --group_limit 10 t/data/real_data_1.gff t/data/real_data_2.gff', 'Cant access the multifasta base directory');
+stderr_should_have($script_name,'-v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
+stderr_should_have($script_name,'-p 2 -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
+stderr_should_have($script_name,'--core_definition 60 -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
+stderr_should_have($script_name,'-i 90 -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
+stderr_should_not_have($script_name,'--dont_delete_files -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
+stderr_should_have($script_name,'-v --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'   ,'Cleaning up files');
+stderr_should_have($script_name,'-v --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' ,'Cleaning up files');
+stderr_should_have($script_name,'-v --qc t/data/real_data_1.gff t/data/real_data_2.gff' ,'Running Kraken on each input assembly');
+stderr_should_have($script_name,'--translation_table 1 -v t/data/real_data_1.gff t/data/real_data_2.gff' ,'Cleaning up files');
+stderr_should_have($script_name,'-e -v t/data/real_data_1.gff t/data/real_data_2.gff','Creating files with the nucleotide sequences for every cluster');
 
 #### needs kraken
 ####stderr_should_not_have($script_name,'--group_limit 10 --qc t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
-
-stdout_should_have($script_name,'-v t/data/real_data_1.gff t/data/real_data_2.gff','');
-#
-
-#'-e -v t/data/real_data_1.gff t/data/real_data_2.gff'
-#
-#'-p 2 -v t/data/real_data_1.gff t/data/real_data_2.gff'
-#'--core_definition 60 -v t/data/real_data_1.gff t/data/real_data_2.gff'
-#'--mafft -v t/data/real_data_1.gff t/data/real_data_2.gff'
-#'-i 90 -v t/data/real_data_1.gff t/data/real_data_2.gff'
-#'--dont_delete_files -v t/data/real_data_1.gff t/data/real_data_2.gff'
-#'-v --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'   
-#'-v --group_limit 10 -e t/data/real_data_1.gff t/data/real_data_2.gff' 
-#'-v --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' 
-#'-v --qc t/data/real_data_1.gff t/data/real_data_2.gff'        
-#'--translation_table 1 -v t/data/real_data_1.gff t/data/real_data_2.gff' 
 
 
 %scripts_and_expected_files = (
@@ -186,7 +179,7 @@ stdout_should_have($script_name,'-v t/data/real_data_1.gff t/data/real_data_2.gf
     '-o some_different_output -e --mafft t/data/real_data_1.gff t/data/real_data_2.gff' =>
       [ 'core_gene_alignment.aln', 't/data/expected_mafft_real_data_core_gene_alignment.aln' ],
      # -e
-    '-e -i 90 t/data/real_data_1.gff t/data/real_data_2.gff'                   => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+    '-e -i 95.3 t/data/real_data_1.gff t/data/real_data_2.gff'                 => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
     '-e --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
     '-e -v t/data/real_data_1.gff t/data/real_data_2.gff'                      => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
     '-e --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'         => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],

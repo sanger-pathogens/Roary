@@ -150,7 +150,7 @@ sub run {
       $seg->run();
 	  
       my $core_tree = Bio::Roary::External::Fasttree->new(
-	          input_file => 'core_alignment.aln',
+	          input_file => 'core_gene_alignment.aln',
 	          verbose    => $self->verbose,
 	          logger     => $self->logger
 	      );
