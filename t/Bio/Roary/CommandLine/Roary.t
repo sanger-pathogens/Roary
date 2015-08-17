@@ -135,7 +135,7 @@ SKIP:
 
 SKIP:
 {
-    skip "extended tests not run",  40 unless ( $ENV{ROARY_FULL_TESTS} eq 'true' );
+	skip "extended tests not run",  40 unless ( defined($ENV{ROARY_FULL_TESTS}));
 
     %scripts_and_expected_files = (
         '-o some_different_output t/data/real_data_1.gff t/data/real_data_2.gff'    => [ 'some_different_output', 't/data/expected_some_different_output' ],
