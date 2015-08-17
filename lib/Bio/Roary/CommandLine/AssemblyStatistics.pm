@@ -45,7 +45,7 @@ sub BUILD {
         'o|output_filename=s'       => \$output_filename,
         'j|job_runner=s'            => \$job_runner,
         'p|processors=i'            => \$cpus,
-        'cd|core_definition=i'      => \$core_definition,
+        'cd|core_definition=f'      => \$core_definition,
         'v|verbose'                 => \$verbose,
 		'version'                   => \$version,
         'h|help'                    => \$help,

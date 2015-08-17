@@ -15,10 +15,10 @@ with 'Bio::Roary::SpreadsheetRole';
 has 'output_filename'       => ( is => 'ro', isa => 'Str',      default => 'assembly_statistics.csv' );
 has 'job_runner'            => ( is => 'ro', isa => 'Str',      default => 'Local' );
 has 'cpus'                  => ( is => 'ro', isa => 'Int',      default => 1 );
-has 'core_definition'       => ( is => 'ro', isa => 'Num',      default => 0.99 );
-has '_cloud_percentage'     => ( is => 'ro', isa => 'Num',      default => 0.15 );
-has '_shell_percentage'     => ( is => 'ro', isa => 'Num',      default => 0.95 );
-has '_soft_core_percentage' => ( is => 'ro', isa => 'Num',      default => 0.99 );
+has 'core_definition'       => ( is => 'rw', isa => 'Num',      default => 0.99 );
+has '_cloud_percentage'     => ( is => 'rw', isa => 'Num',      default => 0.15 );
+has '_shell_percentage'     => ( is => 'rw', isa => 'Num',      default => 0.95 );
+has '_soft_core_percentage' => ( is => 'rw', isa => 'Num',      default => 0.99 );
 has 'verbose'               => ( is => 'ro', isa => 'Bool',     default => 0 );
 has 'contiguous_window'     => ( is => 'ro', isa => 'Int',      default => 10 );
 has 'ordered_genes'         => ( is => 'ro', isa => 'ArrayRef', lazy    => 1, builder => '_build_ordered_genes' );
@@ -27,9 +27,12 @@ has 'all_sample_statistics' => ( is => 'ro', isa => 'HashRef',  lazy    => 1, bu
 has 'sample_names_to_column_index' => ( is => 'rw', isa => 'Maybe[HashRef]' );
 has 'summary_output_filename'=> ( is => 'ro', isa => 'Str',      default => 'summary_statistics.txt' );
 
+has 'gene_category_count'   => ( is => 'ro', isa => 'HashRef',  lazy    => 1, builder => '_build_gene_category_count' );
+
 sub BUILD {
     my ($self) = @_;
     $self->_genes_to_rows;
+	$self->gene_category_count;
 }
 
 sub create_summary_output
@@ -58,7 +61,7 @@ sub create_summary_output
 	return 1;
 }
 
-sub gene_category_count {
+sub _build_gene_category_count {
     my ($self) = @_;
     my %gene_category_count;
     if ( $self->core_definition < $self->_soft_core_percentage ) {
