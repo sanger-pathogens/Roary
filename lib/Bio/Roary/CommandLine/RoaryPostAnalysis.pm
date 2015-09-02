@@ -149,13 +149,6 @@ sub run {
       );
       $seg->run();
 	  
-      my $core_tree = Bio::Roary::External::Fasttree->new(
-	          input_file => 'core_gene_alignment.aln',
-	          verbose    => $self->verbose,
-	          logger     => $self->logger
-	      );
-	  $core_tree->run();
-	
       # Cleanup intermediate multifasta files
       if($self->dont_delete_files == 0)
       {

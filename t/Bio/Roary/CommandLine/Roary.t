@@ -129,8 +129,6 @@ SKIP:
     mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
 
     ok( -e 'core_gene_alignment.aln', 'Core gene alignment exists' );
-	ok( -e 'core_gene_alignment.aln.newick', 'core gene newick tree exists');
-
 }
 
 SKIP:
