@@ -100,7 +100,7 @@ ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
 More importantly though, if your trying to do bioinformatics on Windows, your not going to get very far and you should seriously consider upgrading to Linux.
 
 ##Other versions of Linux
-If none of the above options work, you'll have to install the depedancies from source or from your distributions packaging system.  You should probably ask your system administrator for assistance if you havent done this kind of thing before.
+If none of the above options work, you'll have to install the depedancies from source or from your distributions packaging system.  You should ask your system administrator for assistance if you havent done this kind of thing before.
 
 ### Ancient versions of perl
 The code will not work with perl 5.8 or below (pre-modern perl). 

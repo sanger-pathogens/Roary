@@ -59,12 +59,12 @@ my %tools = (
   'prank' => {
     GETVER  => "prank -version | grep PRANK",
     REGEXP  => qr/PRANK v.(\d+)/,
-    NEEDED  => 0,
+    NEEDED  => 1,
   },
   'mafft' => {
     GETVER  => "mafft --version < /dev/null 2>&1",
     REGEXP  => qr/v($BIDEC) /,
-    NEEDED  => 0,
+    NEEDED  => 1,
   },
   'cdhit' => {
     GETVER  => "cdhit -h | grep 'CD-HIT version'",
