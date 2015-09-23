@@ -43,6 +43,7 @@ Options: -p INT    number of threads [1]
          -qc       generate QC report with Kraken
          -k STR    path to Kraken database for QC, use with -qc
          -w        print version and exit
+		 -a        check dependancies and exit
          -h        this help message
 
 Example: Quickly generate a core gene alignment using 16 threads
