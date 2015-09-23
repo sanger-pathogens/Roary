@@ -110,8 +110,8 @@ sub BUILD {
     }
 
     $self->help($help) if ( defined($help) );
-    if ( @{ $self->args } == 0 ) {
-        $self->logger->error("Error: You need to provide a GFF file");
+    if ( @{ $self->args } <= 2 ) {
+        $self->logger->error("Error: You need to provide at least 2 files to build a pan genome");
         die $self->usage_text;
     }
     $self->output_filename($output_filename)   if ( defined($output_filename) );
