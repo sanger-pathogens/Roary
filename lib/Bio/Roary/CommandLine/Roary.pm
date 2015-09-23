@@ -99,14 +99,14 @@ sub BUILD {
     $self->version($cmd_version) if ( defined($cmd_version) );
     if ( $self->version ) {
         print $self->_version();
-        exit();
+        die();
     }
 	
 	if($check_dependancies)
 	{
 	    my $check_tools = Bio::Roary::External::CheckTools->new();
 	    $check_tools->check_all_tools;
-		exit();
+		die();
 	}
 
     print "\nPlease cite Roary if you use any of the results it produces:

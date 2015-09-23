@@ -2,7 +2,7 @@
 
 use Test::Most;
 use FindBin;
-plan tests => 7;
+plan tests => 8;
 bail_on_fail if 0;
 use Env::Path 'PATH';
 
