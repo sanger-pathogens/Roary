@@ -5,9 +5,15 @@ use File::Slurp::Tiny qw(read_file write_file);
 use File::Path qw( remove_tree);
 use Cwd;
 use File::Which;
+use File::Path qw(make_path);
+use Cwd qw(abs_path getcwd); 
 
-BEGIN { unshift( @INC, './lib' ) }
-BEGIN { unshift( @INC, './t/lib' ) }
+#Test changes current working directory so relative paths can get out of sync
+local $ENV{PERL5LIB} = join(':', ("$ENV{PERL5LIB}", abs_path('./lib'), abs_path('./t/lib')));
+local $ENV{PATH} = join(':', ("$ENV{PATH}", abs_path('./bin')));
+
+BEGIN { unshift( @INC, abs_path('./lib') ) }
+BEGIN { unshift( @INC, abs_path('./t/lib') ) }
 with 'TestHelper';
 
 BEGIN {
@@ -75,6 +81,12 @@ for my $filename ( ( 'query_1.gff.proteome.faa', 'query_2.gff.proteome.faa', 'qu
     is( read_file($filename), read_file( 't/data/locus_tag_gffs/' . $filename . '.expected' ),
         "content of proteome $filename as expected" );
 }
+
+
+my $current_cwd = getcwd();
+stderr_should_have($script_name,'-v --output_directory t/data/directory_which_doesnt_exist t/data/real_data_1.gff t/data/real_data_2.gff', 'Output directory created');
+ok( ( -e 't/data/directory_which_doesnt_exist/clustered_proteins' ), 'pan genome files should be in directory' );
+is(getcwd(),$current_cwd , 'current working directory should not have changed after script is finished'); 
 
 SKIP:
 {
@@ -159,6 +171,7 @@ SKIP:
     stderr_should_have($script_name,'-p 2 -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
     stderr_should_have($script_name,'--core_definition 60 -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
     stderr_should_have($script_name,'-i 90 -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
+	stderr_should_have($script_name,'-i 30 t/data/real_data_1.gff t/data/real_data_2.gff','The percentage identity is too low');
     stderr_should_not_have($script_name,'--dont_delete_files -v t/data/real_data_1.gff t/data/real_data_2.gff','Cleaning up files');
     stderr_should_have($script_name,'-v --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'   ,'Cleaning up files');
     stderr_should_have($script_name,'-v --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' ,'Cleaning up files');
@@ -282,6 +295,7 @@ done_testing();
 sub cleanup_files {
     remove_tree('pan_genome_sequences');
     remove_tree('fixed_input_files');
+	remove_tree('t/data/directory_which_doesnt_exist');
     unlink('_blast_results');
     unlink('_clustered');
     unlink('_clustered.bak.clstr');

@@ -1,4 +1,5 @@
 undef $VERSION;
+
 package Bio::Roary::CommandLine::Roary;
 
 # ABSTRACT: Take in FASTA files of proteins and cluster them
@@ -16,14 +17,18 @@ use Bio::Roary::PrepareInputFiles;
 use Bio::Roary::QC::Report;
 use Bio::Roary::ReformatInputGFFs;
 use File::Which;
+use File::Path qw(make_path);
+use Cwd  qw(abs_path getcwd); 
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
-has 'fasta_files'             => ( is => 'rw', isa => 'ArrayRef' );
+has 'fasta_files'             => ( is => 'rw', isa => 'ArrayRef', default => sub{[]} );
 has 'output_filename'         => ( is => 'rw', isa => 'Str', default => 'clustered_proteins' );
+has 'output_directory'        => ( is => 'rw', isa => 'Str', default => '.' );
+has '_original_directory'     => ( is => 'rw', isa => 'Str', default => '.' );
 has 'job_runner'              => ( is => 'rw', isa => 'Str', default => 'Local' );
 has 'makeblastdb_exec'        => ( is => 'rw', isa => 'Str', default => 'makeblastdb' );
 has 'blastp_exec'             => ( is => 'rw', isa => 'Str', default => 'blastp' );
@@ -39,12 +44,12 @@ has 'dont_create_rplots'      => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_run_qc'             => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_split_groups'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'           => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'translation_table'       => ( is => 'rw', isa => 'Int',  default => 11 );
+has 'translation_table'       => ( is => 'rw', isa => 'Int', default => 11 );
 has 'mafft'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'group_limit'             => ( is => 'rw', isa => 'Num', default => 50000 );
 has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'kraken_db'               => ( is => 'rw', isa => 'Str',  default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
+has 'kraken_db' => ( is => 'rw', isa => 'Str', default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
 
 has 'run_qc' => ( is => 'rw', isa => 'Bool', default => 0 );
 
@@ -56,43 +61,44 @@ sub BUILD {
         $max_threads,           $dont_delete_files, $dont_split_groups,       $perc_identity, $output_filename,
         $job_runner,            $makeblastdb_exec,  $mcxdeblast_exec,         $mcl_exec,      $blastp_exec,
         $apply_unknowns_filter, $cpus,              $output_multifasta_files, $verbose_stats, $translation_table,
-        $run_qc,                $core_definition,   $help, $kraken_db,        $cmd_version, $mafft,
+        $run_qc,                $core_definition,   $help,                    $kraken_db,     $cmd_version,
+        $mafft,                 $output_directory,
     );
 
     GetOptionsFromArray(
         $self->args,
         'o|output=s'                => \$output_filename,
+        'f|output_directory=s'      => \$output_directory,
         'j|job_runner=s'            => \$job_runner,
         'm|makeblastdb_exec=s'      => \$makeblastdb_exec,
         'b|blastp_exec=s'           => \$blastp_exec,
         'd|mcxdeblast_exec=s'       => \$mcxdeblast_exec,
         'c|mcl_exec=s'              => \$mcl_exec,
         'p|processors=i'            => \$cpus,
-        'apply_unknowns_filter=i'   => \$apply_unknowns_filter,
+        'u|apply_unknowns_filter=i' => \$apply_unknowns_filter,
         'e|output_multifasta_files' => \$output_multifasta_files,
         'i|perc_identity=i'         => \$perc_identity,
-        'dont_delete_files'         => \$dont_delete_files,
-        'dont_split_groups'         => \$dont_split_groups,
-        'create_rplots'             => \$create_rplots,
-        'verbose_stats'             => \$verbose_stats,
+        'z|dont_delete_files'       => \$dont_delete_files,
+        's|dont_split_groups'       => \$dont_split_groups,
+        'r|create_rplots'           => \$create_rplots,
+        'y|verbose_stats'           => \$verbose_stats,
         't|translation_table=i'     => \$translation_table,
-        'group_limit=i'             => \$group_limit,
+        'g|group_limit=i'           => \$group_limit,
         'qc|run_qc'                 => \$run_qc,
-        'dont_run_qc'               => \$dont_run_qc,
+        'x|dont_run_qc'             => \$dont_run_qc,
         'cd|core_definition=f'      => \$core_definition,
         'v|verbose'                 => \$verbose,
-		'mafft'                     => \$mafft,
+        'n|mafft'                   => \$mafft,
         'k|kraken_db=s'             => \$kraken_db,
-		'version'                   => \$cmd_version,
+        'w|version'                 => \$cmd_version,
         'h|help'                    => \$help,
     );
 
-	$self->version($cmd_version)                   if ( defined($cmd_version) );
-	if( $self->version)
-	{
-		print $self->_version();
-		exit();
-	}
+    $self->version($cmd_version) if ( defined($cmd_version) );
+    if ( $self->version ) {
+        print $self->_version();
+        exit();
+    }
 
     print "\nPlease cite Roary if you use any of the results it produces:
     Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), \"Roary: Rapid large-scale prokaryote pan genome analysis\", Bioinformatics,
@@ -104,20 +110,28 @@ sub BUILD {
     }
 
     $self->help($help) if ( defined($help) );
-    if(@{$self->args} == 0)
-    {
+    if ( @{ $self->args } == 0 ) {
         $self->logger->error("Error: You need to provide a GFF file");
         die $self->usage_text;
     }
-	$self->output_filename($output_filename)   if ( defined($output_filename) );
+    $self->output_filename($output_filename)   if ( defined($output_filename) );
     $self->job_runner($job_runner)             if ( defined($job_runner) );
     $self->makeblastdb_exec($makeblastdb_exec) if ( defined($makeblastdb_exec) );
     $self->blastp_exec($blastp_exec)           if ( defined($blastp_exec) );
     $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
     $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
     $self->cpus($cpus)                         if ( defined($cpus) );
-    $self->perc_identity($perc_identity)       if ( defined($perc_identity) );
-	$self->mafft($mafft)                       if ( defined($mafft) );
+
+    if ( defined($perc_identity) ) {
+        $self->perc_identity($perc_identity);
+        if ( $perc_identity < 50 ) {
+            $self->logger->error(
+"The percentage identity is too low. Either somethings wrong with your data, like contamination, or your doing something that the software isnt designed to support."
+            );
+        }
+    }
+
+    $self->mafft($mafft) if ( defined($mafft) );
     $self->apply_unknowns_filter($apply_unknowns_filter)
       if ( defined($apply_unknowns_filter) );
 
@@ -136,12 +150,12 @@ sub BUILD {
     $self->translation_table($translation_table) if ( defined($translation_table) );
     $self->group_limit($group_limit)             if ( defined($group_limit) );
     $self->kraken_db($kraken_db)                 if ( defined($kraken_db) );
+    $self->output_directory($output_directory)   if ( defined($output_directory) );
 
-    if ( defined $verbose_stats  && defined($output_multifasta_files))
-	{
-		$self->verbose_stats(0);
-		$self->logger->warn("The verbose stats spreadsheet is not compatible with the core gene alignement so disabling verbose_stats");
-	}
+    if ( defined $verbose_stats && defined($output_multifasta_files) ) {
+        $self->verbose_stats(0);
+        $self->logger->warn("The verbose stats spreadsheet is not compatible with the core gene alignement so disabling verbose_stats");
+    }
 
     if ( defined($run_qc) ) {
         if ( which('kraken') && which('kraken-report') ) {
@@ -163,38 +177,63 @@ sub BUILD {
             $self->logger->error("Error: Cant access file $filename");
             die $self->usage_text;
         }
+		push(@{$self->fasta_files}, abs_path($filename ));
     }
-    $self->fasta_files( $self->args );
-
 }
 
-sub _version
-{
-	my ($self) = @_;
-	if(defined($Bio::Roary::CommandLine::Roary::VERSION))
-	{
-	   return $Bio::Roary::CommandLine::Roary::VERSION ."\n";
+sub _version {
+    my ($self) = @_;
+    if ( defined($Bio::Roary::CommandLine::Roary::VERSION) ) {
+        return $Bio::Roary::CommandLine::Roary::VERSION . "\n";
     }
-	else
-	{
-	   return "x.y.z\n";
-	}
+    else {
+        return "x.y.z\n";
+    }
+}
+
+sub _setup_output_directory {
+    my ($self) = @_;
+    return if ( $self->output_directory eq '.' || $self->output_directory eq '' );
+
+    if ( -e $self->output_directory || -d $self->output_directory ) {
+        $self->logger->warn("Output directory name exists already so adding a timestamp to the end");
+        $self->output_directory( $self->output_directory() . '_' . time() );
+        if ( -e $self->output_directory || -d $self->output_directory ) {
+            $self->logger->error("Output directory name with time stamp exist so giving up");
+            die();
+        }
+    }
+    make_path( $self->output_directory, { error => \my $err } );
+    if (@$err) {
+        for my $diag (@$err) {
+            my ( $file, $message ) = %$diag;
+            $self->logger->error("Error creating output directory $message");
+            die();
+        }
+    }
+	$self->logger->info("Output directory created: ". $self->output_directory);
+	
+    $self->_original_directory(getcwd());
+    chdir( $self->output_directory );
+    return $self;
 }
 
 sub run {
     my ($self) = @_;
 
     ( !$self->help ) or die $self->usage_text;
+	$self->_setup_output_directory;
 
-    $self->logger->info("Fixing input GFF files"); 
+    $self->logger->info("Fixing input GFF files");
     my $reformat_input_files = Bio::Roary::ReformatInputGFFs->new( gff_files => $self->fasta_files, logger => $self->logger );
-	$reformat_input_files->fix_duplicate_gene_ids();
-	if(@{$reformat_input_files->fixed_gff_files} == 0)
-	{
-		$self->logger->error("All input files have been excluded from analysis. Please check you have valid GFF files, with annotation and a FASTA sequence at the end. Better still, reannotate your FASTA file with PROKKA.");
-		die();
-	}
-	$self->fasta_files($reformat_input_files->fixed_gff_files);
+    $reformat_input_files->fix_duplicate_gene_ids();
+    if ( @{ $reformat_input_files->fixed_gff_files } == 0 ) {
+        $self->logger->error(
+"All input files have been excluded from analysis. Please check you have valid GFF files, with annotation and a FASTA sequence at the end. Better still, reannotate your FASTA file with PROKKA."
+        );
+        die();
+    }
+    $self->fasta_files( $reformat_input_files->fixed_gff_files );
 
     $self->logger->info("Extracting proteins from GFF files");
     my $prepare_input_files = Bio::Roary::PrepareInputFiles->new(
@@ -236,65 +275,40 @@ sub run {
         group_limit             => $self->group_limit,
         core_definition         => $self->core_definition,
         verbose                 => $self->verbose,
-		mafft                   => $self->mafft,
+        mafft                   => $self->mafft,
     );
     $pan_genome_obj->run();
+	
+	chdir( $self->_original_directory );
 }
 
 sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: roary [options]
-    Take in GFF files and cluster the genes
-    
-    # Take in GFF files and cluster the genes
-    roary example.gff
-	
-    # Run with 4 processors
-    roary -p 4  *.gff
-    
-    # Provide an output filename
-    roary -o results *.gff
-    
-    # Create a MultiFASTA alignment of core genes (codon aligned with PRANK), so that you can build a phylogenetic tree 
-    roary -e *.gff
-	
-    # Create multifasta alignement of each gene (Warning: Thousands of files are created)
-    roary -e --dont_delete_files *.gff
-	
-    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates (default 99%)
-    roary -e --core_definition 98 *.gff
-	
-    # Quickly align genes with MAFFT. Not as accurate as codon alignment with PRANK, but much faster.
-    roary -e --mafft *.gff
-	
-    # Set the blastp percentage identity threshold (default 95%).
-    roary -i 98 *.gff
-    
-    # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
-    roary --translation_table 1 *.gff 
+Usage:   roary [options] *.gff
 
-    # Verbose output to STDOUT so that you know whats happening as it goes along
-    roary -v *.gff
+Options: -p INT    number of threads [1]
+         -o STR    clusters output filename [clustered_proteins]
+		 -f STR    output directory [.]
+         -e        create a multiFASTA alignment of core genes using PRANK
+         -n        fast core gene alignement with MAFFT, use with -e
+         -i        minimum percentage identity for blastp [95]
+         -cd FLOAT percentage of isolates a gene must be in to be core [99]
+         -z        dont delete intermediate files
+         -t INT    translation table [11]
+         -v        verbose output to STDOUT
+         -y        add gene inference information to spreadsheet, doesnt work with -e
+         -g INT    maximum number of clusters [50000]
+         -qc       generate QC report with Kraken
+         -k STR    path to Kraken database for QC, use with -qc
+         -w        print version and exit
+         -h        this help message
 
-    # Include full annotation and inference in group statistics
-    roary --verbose_stats *.gff
+Example: Quickly generate a core gene alignment using 8 threads
+         roary -e --mafft -p 8 *.gff
 
-    # Increase the groups/clusters limit (default 50,000). If you need to change this your
-    # probably trying to work data from more than one species, and you should check the results of the qc option.
-    roary --group_limit 60000  *.gff
-
-    # Generate QC report detailing top genus and species for each assembly
-	# Requires Kraken to be installed
-    roary -k /path/to/kraken_database/ -qc *.gff
-
-    # print out the version number and exit
-    roary --version
-	
-    # This help message
-    roary -h
-
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 
