@@ -222,9 +222,7 @@ sub run {
     my ($self) = @_;
 
     ( !$self->help ) or die $self->usage_text;
-	print getcwd()."\n";
 	$self->_setup_output_directory;
-	print getcwd()."\n";
 
     $self->logger->info("Fixing input GFF files");
     my $reformat_input_files = Bio::Roary::ReformatInputGFFs->new( gff_files => $self->fasta_files, logger => $self->logger );
@@ -281,9 +279,7 @@ sub run {
     );
     $pan_genome_obj->run();
 	
-	print getcwd()."\n";
 	chdir( $self->_original_directory );
-	print getcwd()."\n";
 }
 
 sub usage_text {
