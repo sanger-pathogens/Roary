@@ -2,12 +2,12 @@
 
 package Bio::Roary::Main::GeneAlignmentFromNucleotides;
 
-# ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
-# PODNAME: protein_muscle_alignment_from_nucleotides
+# ABSTRACT: Take in multi-FASTA files of nucleotides and align each file with PRANK or MAFFT
+# PODNAME: protein_alignment_from_nucleotides
 
 =head1 SYNOPSIS
 
-Take in a multifasta file of nucleotides, convert to proteins and align with muscle
+Take in multi-FASTA files of nucleotides and align each file with PRANK or MAFFT
 
 =cut
 

@@ -1,10 +1,10 @@
 package Bio::Roary::External::GeneAlignmentFromNucleotides;
 
-# ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with muscle
+# ABSTRACT: Take in multi-FASTA files of nucleotides and align each file with PRANK or MAFFT
 
 =head1 SYNOPSIS
 
-Take in a multifasta file of nucleotides, convert to proteins and align with muscle
+Take in multi-FASTA files of nucleotides and align each file with PRANK or MAFFT
 
    use Bio::Roary::External::GeneAlignmentFromNucleotides;
    
@@ -24,7 +24,7 @@ use Moose;
 with 'Bio::Roary::JobRunner::Role';
 
 has 'fasta_files'       => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein_muscle_alignment_from_nucleotides' );
+has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein_alignment_from_nucleotides' );
 has 'translation_table' => ( is => 'rw', isa => 'Int',      default => 11 );
 has 'core_definition'   => ( is => 'ro', isa => 'Num',      default => 1 );
 has 'mafft'             => ( is => 'ro', isa => 'Bool',     default => 0 );
