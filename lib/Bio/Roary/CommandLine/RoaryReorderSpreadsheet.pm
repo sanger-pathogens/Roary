@@ -19,10 +19,10 @@ has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 
 has 'tree_file'            => ( is => 'rw', isa => 'Str' );
-has 'spreadsheet_filename' => ( is => 'rw', isa => 'Str' );
+has 'spreadsheet_filename' => ( is => 'rw', isa => 'Str', default => 'gene_presence_absence.csv' );
 has 'output_filename'      => ( is => 'rw', isa => 'Str', default => 'reordered_spreadsheet.csv' );
 has 'tree_format'          => ( is => 'rw', isa => 'Str', default => 'newick' );
-has 'search_strategy'      => ( is => 'rw', isa => 'Str', default =>  'depth' );
+has 'search_strategy'      => ( is => 'rw', isa => 'Str', default => 'depth' );
 has 'sortby'               => ( is => 'rw', isa => 'Str', default => 'height');
 has 'verbose'              => ( is => 'rw', isa => 'Bool', default => 0 );
 
@@ -79,25 +79,19 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: pan_genome_reorder_spreadsheet [options]
-    Take in a tree and a spreadsheet from the pan genome pipeline and output a spreadsheet with the columns ordered by the tree. 
-    By default it expects the tree to be in newick format.
-    
-    # Reorder the spreadsheet columns to match the order of the samples in the tree
-    pan_genome_reorder_spreadsheet -t my_tree.tre -s my_spreadsheet.csv
-    
-    # Specify an output filename
-    pan_genome_reorder_spreadsheet -t my_tree.tre -s my_spreadsheet.csv -o output_spreadsheet.csv
-    
-    # Use a different search strategy  (default is 'depth' first search)
-    pan_genome_reorder_spreadsheet -t my_tree.tre -s my_spreadsheet.csv -a breadth
-    
-    # Use a different child sorting method (height/creation/alpha/revalpha), default is 'height'
-    pan_genome_reorder_spreadsheet -t my_tree.tre -s my_spreadsheet.csv -b alpha
-    
-    # This help message
-    pan_genome_reorder_spreadsheet -h
+Usage: pan_genome_reorder_spreadsheet [options] -t tree.newick
+Reorder the columns in the gene presence and absence spreadsheet against a phylogenetic tree.
 
+Options: -t STR tree filename []
+         -o STR output filename [reordered_spreadsheet.csv]
+         -f STR tree format (newick/nexus/nhx/svggraph/tabtree/lintree) [newick]
+         -s STR input gene presence and absence spreadsheet [gene_presence_absence.csv]
+         -a STR search strategy (depth/breadth) [depth]
+         -b STR sorting method (height/creation/alpha/revalpha) [height]
+         -v     verbose output to STDOUT
+         -h     this help message
+
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 

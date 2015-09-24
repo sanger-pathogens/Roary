@@ -44,6 +44,8 @@ sub BUILD {
     }
 	
     $self->help($help) if(defined($help));
+    ( !$self->help ) or die $self->usage_text;
+    
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide a FASTA file");
     }
@@ -53,7 +55,7 @@ sub BUILD {
         $self->groups_filename($groups_filename);
     }
     else {
-        $self->_error_message("Error: Cant access the groups file $groups_filename");
+        $self->_error_message("Error: Cant access the groups file");
     }
 
     for my $filename ( @{ $self->args } ) {
@@ -69,7 +71,7 @@ sub BUILD {
 sub run {
     my ($self) = @_;
 
-    ( !$self->help ) or die $self->usage_text;
+    
     if ( defined( $self->_error_message ) ) {
         print $self->_error_message . "\n";
         die $self->usage_text;
@@ -89,18 +91,15 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: transfer_annotation_to_groups [options]
-    Take in a groups file and the protein fasta files and output selected data
-    
-    # Transfer the annotation from the GFF files to the group file
-    transfer_annotation_to_groups -g groupfile *.gff
-    
-    # Specify an output filename
-    transfer_annotation_to_groups -o output_filename -g groupfile *.gff
-    
-    # This help message
-    transfer_annotation_to_groups -h
+Usage: transfer_annotation_to_groups [options] *.gff
+Take in a groups file and the protein fasta files and output selected data
 
+Options: -o STR output filename [reannotated_groups]
+         -g STR clusters filename [clustered_proteins]
+         -v     verbose output to STDOUT
+         -h     this help message
+
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 
