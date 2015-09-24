@@ -14,6 +14,7 @@ use FindBin;
 use Log::Log4perl qw(:easy);
 
 has 'logger'                  => ( is => 'ro', lazy => 1, builder => '_build_logger');
+has 'version'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub _build_logger
 {
@@ -32,6 +33,12 @@ sub usage_text {
     my ($self) = @_;
 	return "Usage text";
 }
+
+sub _version {
+    my ($self) = @_;
+    return "x.y.z\n";
+}
+
 
 # add our included binaries to the END of the PATH
 before 'run' => sub {

@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::ExtractProteomeFromGff;
 
 # ABSTRACT: Take in GFF files and output the proteome
@@ -28,14 +29,15 @@ has 'verbose'               => ( is => 'rw', isa => 'Bool', default => 0 );
 sub BUILD {
     my ($self) = @_;
 
-    my ( $gff_files, $output_suffix, $apply_unknowns_filter, $help, $translation_table,$verbose,  );
+    my ( $gff_files, $output_suffix, $apply_unknowns_filter, $help, $translation_table,$verbose,$cmd_version  );
 
     GetOptionsFromArray(
         $self->args,
         'o|output_suffix=s'       => \$output_suffix,
-        'apply_unknowns_filter=i' => \$apply_unknowns_filter,
+        'f|apply_unknowns_filter=i' => \$apply_unknowns_filter,
         't|translation_table=i'   => \$translation_table,
 		'v|verbose'               => \$verbose,
+		'w|version'               => \$cmd_version,
         'h|help'                  => \$help,
     );
 	
@@ -43,16 +45,20 @@ sub BUILD {
         $self->verbose($verbose);
         $self->logger->level(10000);
     }
-
-    $self->help($help) if(defined($help));
+	
+	$self->help($help) if(defined($help));
+	( !$self->help ) or die $self->usage_text;
+	
+    $self->version($cmd_version) if ( defined($cmd_version) );
+    if ( $self->version ) {
+        die($self->_version());
+    }
+    
     if ( @{ $self->args } == 0 ) {
         $self->_error_message("Error: You need to provide a GFF file");
     }
 
-    if ( defined($output_suffix) ) {
-        $self->output_suffix($output_suffix);
-    }
-
+    $self->output_suffix($output_suffix)                 if ( defined($output_suffix) ) ;
     $self->apply_unknowns_filter($apply_unknowns_filter) if ( defined($apply_unknowns_filter) );
     $self->translation_table($translation_table)         if (defined($translation_table) );
 
@@ -69,7 +75,7 @@ sub BUILD {
 sub run {
     my ($self) = @_;
 
-    ( !$self->help ) or die $self->usage_text;
+   
     if ( defined( $self->_error_message ) ) {
         print $self->_error_message . "\n";
         die $self->usage_text;
@@ -92,19 +98,15 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: extract_proteome_from_gff [options]
-    Take in GFF files and create Fasta files of the protein sequences
-    
-    extract_proteome_from_gff *.gff
-    
-    # specify an output suffix
-    extract_proteome_from_gff -o output_suffix.faa  *.gff
-    
-    # specify an output suffix
-    extract_proteome_from_gff --translation_table 1  *.gff
-    
-    # This help message
-    extract_proteome_from_gff -h
+Usage: extract_proteome_from_gff [options] *.gff
+Take in GFF files and create FASTA files of the protein sequences
+
+Options: -o STR    output suffix [proteome.faa]
+         -t INT    translation table [11]
+         -f        filter sequences with missing data
+         -v        verbose output to STDOUT
+         -w        print version and exit
+         -h        this help message
 
 USAGE
 }

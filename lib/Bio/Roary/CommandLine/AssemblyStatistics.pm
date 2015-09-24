@@ -20,7 +20,7 @@ has 'help'            => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'spreadsheet'     => ( is => 'rw', isa => 'Str',      default  => 'gene_presence_absence.csv' );
 has 'job_runner'      => ( is => 'rw', isa => 'Str',      default  => 'Local' );
 has 'cpus'            => ( is => 'rw', isa => 'Int',      default  => 1 );
-has 'output_filename' => ( is => 'rw', isa => 'Bool',     default  => 'assembly_statistics.csv' );
+has 'output_filename' => ( is => 'rw', isa => 'Str',      default  => 'assembly_statistics.csv' );
 has 'version'         => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'core_definition' => ( is => 'rw', isa => 'Num',      default  => 0.99 );
 has 'verbose'         => ( is => 'rw', isa => 'Bool',     default  => 0 );
@@ -52,11 +52,9 @@ sub BUILD {
     );
 
 	$self->version($version)                   if ( defined($version) );
-	if( $self->version)
-	{
-		print $self->_version();
-		exit();
-	}
+    if ( $self->version ) {
+        die($self->_version());
+    }
 
     if ( defined($verbose) ) {
         $self->verbose($verbose);
@@ -64,6 +62,7 @@ sub BUILD {
     }
 
     $self->help($help) if ( defined($help) );
+	( !$self->help ) or die $self->usage_text;
     if(@{$self->args} == 0)
     {
         $self->logger->error("Error: You need to provide a gene_presence_absence.csv spreadsheet");
@@ -105,7 +104,6 @@ sub _version
 sub run {
     my ($self) = @_;
 
-    ( !$self->help ) or die $self->usage_text;
     my $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->spreadsheet );
 	$obj->create_summary_output;
 }
@@ -119,10 +117,10 @@ Take in a gene presence and absence spreadsheet and output some statistics
   
 Options: -p INT    number of threads [1]	
          -o STR    output filename [assembly_statistics.csv]
-		 -cd FLOAT percentage of isolates a gene must be in to be core [99]
+         -cd FLOAT percentage of isolates a gene must be in to be core [99]
          -v        verbose output to STDOUT
-		 -w        print version and exit
-		 -h        this help message
+         -w        print version and exit
+         -h        this help message
 		 
 Example: Run with defaults
          pan_genome_assembly_statistics gene_presence_absence.csv
