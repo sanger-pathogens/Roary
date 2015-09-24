@@ -124,6 +124,7 @@ Options: -n        nucleotide alignment with MAFFT
          -v        verbose output to STDOUT
          -h        this help message
 
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 

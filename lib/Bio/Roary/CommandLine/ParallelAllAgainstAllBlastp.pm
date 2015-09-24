@@ -56,10 +56,13 @@ sub BUILD {
     }
     $self->help($help) if(defined($help));
     $self->output_filename($output_filename)   if ( defined($output_filename) );
-    $self->job_runner($job_runner)             if ( defined($job_runner) );
     $self->makeblastdb_exec($makeblastdb_exec) if ( defined($makeblastdb_exec) );
     $self->blastp_exec($blastp_exec)           if ( defined($blastp_exec) );
+    $self->job_runner($job_runner)             if ( defined($job_runner) );
     $self->cpus($cpus)                         if ( defined($cpus) );
+    if ( $self->cpus > 1 ) {
+        $self->job_runner('Parallel');
+    }
 
     for my $filename ( @{ $self->args } ) {
         if ( !-e $filename ) {
@@ -119,21 +122,17 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: parallel_all_against_all_blastp [options]
-    Take in a FASTA file of proteins and blast against itself
-    
-    # Take in a FASTA file of proteins and blast against itself
-    parallel_all_against_all_blastp example.faa
-    
-    # Provide an output filename
-    parallel_all_against_all_blastp -o blast_results example.faa
-    
-    # number of processors to use
-    parallel_all_against_all_blastp -p 10 example.faa
+Usage: parallel_all_against_all_blastp [options] file.faa
+Take in a FASTA file of proteins and blast against itself
 
-    # This help message
-    parallel_all_against_all_blastp -h
+Options: -p INT    number of threads [1]
+         -o STR    output filename for blast results [blast_results]
+         -m STR    makeblastdb executable [makeblastdb]
+         -b STR    blastp executable [blastp]
+         -v        verbose output to STDOUT
+         -h        this help message
 
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 

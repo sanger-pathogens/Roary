@@ -108,6 +108,7 @@ Options: -o STR    output suffix [proteome.faa]
          -w        print version and exit
          -h        this help message
 
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 
