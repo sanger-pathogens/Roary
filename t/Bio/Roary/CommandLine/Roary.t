@@ -82,6 +82,7 @@ for my $filename ( ( 'query_1.gff.proteome.faa', 'query_2.gff.proteome.faa', 'qu
         "content of proteome $filename as expected" );
 }
 
+stderr_should_have($script_name,'-a', 'Looking for');
 
 my $current_cwd = getcwd();
 stderr_should_have($script_name,'-v --output_directory t/data/directory_which_doesnt_exist t/data/real_data_1.gff t/data/real_data_2.gff', 'Output directory created');

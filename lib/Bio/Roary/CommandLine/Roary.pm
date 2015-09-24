@@ -16,6 +16,7 @@ use Bio::Roary;
 use Bio::Roary::PrepareInputFiles;
 use Bio::Roary::QC::Report;
 use Bio::Roary::ReformatInputGFFs;
+use Bio::Roary::External::CheckTools;
 use File::Which;
 use File::Path qw(make_path);
 use Cwd  qw(abs_path getcwd); 
@@ -62,7 +63,7 @@ sub BUILD {
         $job_runner,            $makeblastdb_exec,  $mcxdeblast_exec,         $mcl_exec,      $blastp_exec,
         $apply_unknowns_filter, $cpus,              $output_multifasta_files, $verbose_stats, $translation_table,
         $run_qc,                $core_definition,   $help,                    $kraken_db,     $cmd_version,
-        $mafft,                 $output_directory,
+        $mafft,                 $output_directory,  $check_dependancies,
     );
 
     GetOptionsFromArray(
@@ -91,14 +92,22 @@ sub BUILD {
         'n|mafft'                   => \$mafft,
         'k|kraken_db=s'             => \$kraken_db,
         'w|version'                 => \$cmd_version,
+		'a|check_dependancies'      => \$check_dependancies,
         'h|help'                    => \$help,
     );
 
     $self->version($cmd_version) if ( defined($cmd_version) );
     if ( $self->version ) {
         print $self->_version();
-        exit();
+        die();
     }
+	
+	if($check_dependancies)
+	{
+	    my $check_tools = Bio::Roary::External::CheckTools->new();
+	    $check_tools->check_all_tools;
+		die();
+	}
 
     print "\nPlease cite Roary if you use any of the results it produces:
     Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), \"Roary: Rapid large-scale prokaryote pan genome analysis\", Bioinformatics,
@@ -110,8 +119,8 @@ sub BUILD {
     }
 
     $self->help($help) if ( defined($help) );
-    if ( @{ $self->args } == 0 ) {
-        $self->logger->error("Error: You need to provide a GFF file");
+    if ( @{ $self->args } < 2 ) {
+        $self->logger->error("Error: You need to provide at least 2 files to build a pan genome");
         die $self->usage_text;
     }
     $self->output_filename($output_filename)   if ( defined($output_filename) );
@@ -303,6 +312,7 @@ Options: -p INT    number of threads [1]
          -qc       generate QC report with Kraken
          -k STR    path to Kraken database for QC, use with -qc
          -w        print version and exit
+		 -a        check dependancies and exit
          -h        this help message
 
 Example: Quickly generate a core gene alignment using 8 threads

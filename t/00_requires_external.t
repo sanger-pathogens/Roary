@@ -2,7 +2,7 @@
 
 use Test::Most;
 use FindBin;
-plan tests => 7;
+plan tests => 8;
 bail_on_fail if 0;
 use Env::Path 'PATH';
 
@@ -16,5 +16,5 @@ for my $dir ($BINDIR, $FindBin::RealBin) {
      }
 }
 
-ok(scalar PATH->Whence($_), "$_ in PATH") for qw(blastp makeblastdb mcl mcxdeblast bedtools prank parallel);
+ok(scalar PATH->Whence($_), "$_ in PATH") for qw(blastp makeblastdb mcl mcxdeblast bedtools prank parallel mafft);
 
