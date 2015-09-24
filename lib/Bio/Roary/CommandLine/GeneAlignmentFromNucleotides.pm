@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::GeneAlignmentFromNucleotides;
 
 # ABSTRACT: Take in a multifasta file of nucleotides, convert to proteins and align with PRANK
@@ -35,7 +36,7 @@ sub BUILD {
     GetOptionsFromArray(
         $self->args,
         'v|verbose' => \$verbose,
-        'mafft'     => \$mafft,
+        'n|mafft'   => \$mafft,
         'h|help'    => \$help,
     );
 
@@ -116,18 +117,14 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: protein_muscle_alignment_from_nucleotides [options]
-    Take in a multifasta file of nucleotides, convert to proteins and align with PRANK or MAFFT
-    
-    # Transfer the annotation from the GFF files to the group file
-    protein_muscle_alignment_from_nucleotides protein_fasta_1.faa protein_fasta_2.faa
-	
-    # Use MAFFT instead
-    protein_muscle_alignment_from_nucleotides --mafft protein_fasta_1.faa protein_fasta_2.faa
-    
-    # This help message
-    protein_muscle_alignment_from_nucleotides -h
+Usage: protein_alignment_from_nucleotides [options] *.fa
+Take in multi-FASTA files of nucleotides and align each file with PRANK or MAFFT
 
+Options: -n        nucleotide alignment with MAFFT
+         -v        verbose output to STDOUT
+         -h        this help message
+
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 

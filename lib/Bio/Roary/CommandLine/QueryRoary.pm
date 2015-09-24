@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::QueryRoary;
 
 # ABSTRACT: Take in a groups file and the protein fasta files and output selected data
@@ -177,7 +178,6 @@ sub run {
     }
 }
 
-
 sub create_spreadsheets
 {
       my ($self, $groups_file, $fasta_files, $gff_files) = @_;
@@ -200,7 +200,6 @@ sub create_spreadsheets
 		core_definition    => $self->core_definition,
 		pan_graph_filename => 'set_difference_core_accessory_graph.dot',
 		accessory_graph_filename  => 'set_difference_accessory_graph.dot',
-		
       );
       
       my $group_statistics = Bio::Roary::GroupStatistics->new(
@@ -216,33 +215,36 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: query_pan_genome [options]
-    Take in a groups file and GFF files and output selected data
-    
-    # Create multifasta files for each group/gene passed in
-    query_pan_genome -a gene_multifasta -n gryA,mecA,abc *.gff
-    
-    # Union
-    query_pan_genome -a union *.gff
-    
-    # Intersection
-    query_pan_genome -a intersection *.gff
+Usage: query_pan_genome [options] *.gff
+Perform set operations on the pan genome to see the gene differences between groups of isolates.
 
-    # Complement (Union minus Intersection)
-    query_pan_genome -a complement *.gff
-    
-    # Difference between sets 
-    query_pan_genome -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff
+Options: -g STR    groups filename [clustered_proteins]
+         -a STR    action (union/intersection/complement/gene_multifasta/difference) [union]
+         -c FLOAT  percentage of isolates a gene must be in to be core [99]
+         -o STR    output filename [pan_genome_results]
+         -n STR    comma separated list of gene names for use with gene_multifasta action
+         -i STR    comma separated list of filenames, comparison set one
+         -t STR    comma separated list of filenames, comparison set two
+         -v        verbose output to STDOUT
+         -h        this help message
+ 
+Examples: 
+Union of genes found in isolates
+         query_pan_genome -a union *.gff
+         
+Intersection of genes found in isolates (core genes)
+         query_pan_genome -a intersection *.gff
+         
+Complement of genes found in isolates (accessory genes)
+         query_pan_genome -a complement *.gff
 
-    # Provide an output filename
-    query_pan_genome -a union -o results.fa *.gff
-	
-    # Change the core definition to 95%, default is a gene must be in 99% of isolates to be core
-    query_pan_genome -a union -c 95 *.gff
+Extract the sequence of each gene listed and create multi-FASTA files
+         query_pan_genome -a gene_multifasta -n gryA,mecA,abc *.gff
 
-    # This help message
-    query_pan_genome -h
+Gene differences between sets of isolates
+         query_pan_genome -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff
 
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 

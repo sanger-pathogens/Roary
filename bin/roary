@@ -2,12 +2,12 @@
 
 package Bio::Roary::Main::Roary;
 
-# ABSTRACT: Create a pan genome from a set of proteome FASTA files
-# PODNAME: create_pan_geneome
+# ABSTRACT: Create a pan genome from a set of GFF files
+# PODNAME: roary
 
 =head1 SYNOPSIS
 
-Create a pan genome from a set of proteome FASTA files
+Create a pan genome from a set of GFF files
 
 =cut
 

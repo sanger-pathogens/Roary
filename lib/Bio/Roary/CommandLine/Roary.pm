@@ -38,7 +38,6 @@ has 'mcl_exec'                => ( is => 'rw', isa => 'Str', default => 'mcl' );
 has 'apply_unknowns_filter'   => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'cpus'                    => ( is => 'rw', isa => 'Int', default => 1 );
 has 'output_multifasta_files' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'version'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'perc_identity'           => ( is => 'rw', isa => 'Num', default => 95 );
 has 'dont_delete_files'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_create_rplots'      => ( is => 'rw', isa => 'Bool', default => 1 );
@@ -98,27 +97,28 @@ sub BUILD {
 
     $self->version($cmd_version) if ( defined($cmd_version) );
     if ( $self->version ) {
-        print $self->_version();
-        die();
+        die($self->_version());
     }
 	
 	if($check_dependancies)
 	{
 	    my $check_tools = Bio::Roary::External::CheckTools->new();
 	    $check_tools->check_all_tools;
-		die();
+		die("Roary version ".$self->_version());
 	}
 
     print "\nPlease cite Roary if you use any of the results it produces:
     Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), \"Roary: Rapid large-scale prokaryote pan genome analysis\", Bioinformatics,
     doi: http://doi.org/10.1093/bioinformatics/btv421\n\n";
 
+    $self->help($help) if ( defined($help) );
+	( !$self->help ) or die $self->usage_text;
+
     if ( defined($verbose) ) {
         $self->verbose($verbose);
         $self->logger->level(10000);
     }
 
-    $self->help($help) if ( defined($help) );
     if ( @{ $self->args } < 2 ) {
         $self->logger->error("Error: You need to provide at least 2 files to build a pan genome");
         die $self->usage_text;
@@ -190,16 +190,6 @@ sub BUILD {
     }
 }
 
-sub _version {
-    my ($self) = @_;
-    if ( defined($Bio::Roary::CommandLine::Roary::VERSION) ) {
-        return $Bio::Roary::CommandLine::Roary::VERSION . "\n";
-    }
-    else {
-        return "x.y.z\n";
-    }
-}
-
 sub _setup_output_directory {
     my ($self) = @_;
     return if ( $self->output_directory eq '.' || $self->output_directory eq '' );
@@ -208,16 +198,14 @@ sub _setup_output_directory {
         $self->logger->warn("Output directory name exists already so adding a timestamp to the end");
         $self->output_directory( $self->output_directory() . '_' . time() );
         if ( -e $self->output_directory || -d $self->output_directory ) {
-            $self->logger->error("Output directory name with time stamp exist so giving up");
-            die();
+            die("Output directory name with time stamp exist so giving up");
         }
     }
     make_path( $self->output_directory, { error => \my $err } );
     if (@$err) {
         for my $diag (@$err) {
             my ( $file, $message ) = %$diag;
-            $self->logger->error("Error creating output directory $message");
-            die();
+            die("Error creating output directory $message");
         }
     }
 	$self->logger->info("Output directory created: ". $self->output_directory);
@@ -230,17 +218,13 @@ sub _setup_output_directory {
 sub run {
     my ($self) = @_;
 
-    ( !$self->help ) or die $self->usage_text;
 	$self->_setup_output_directory;
 
     $self->logger->info("Fixing input GFF files");
     my $reformat_input_files = Bio::Roary::ReformatInputGFFs->new( gff_files => $self->fasta_files, logger => $self->logger );
     $reformat_input_files->fix_duplicate_gene_ids();
     if ( @{ $reformat_input_files->fixed_gff_files } == 0 ) {
-        $self->logger->error(
-"All input files have been excluded from analysis. Please check you have valid GFF files, with annotation and a FASTA sequence at the end. Better still, reannotate your FASTA file with PROKKA."
-        );
-        die();
+        die("All input files have been excluded from analysis. Please check you have valid GFF files, with annotation and a FASTA sequence at the end. Better still, reannotate your FASTA file with PROKKA.");
     }
     $self->fasta_files( $reformat_input_files->fixed_gff_files );
 
@@ -291,6 +275,16 @@ sub run {
 	chdir( $self->_original_directory );
 }
 
+sub _version {
+    my ($self) = @_;
+    if ( defined($Bio::Roary::CommandLine::Roary::VERSION) ) {
+        return $Bio::Roary::CommandLine::Roary::VERSION . "\n";
+    }
+    else {
+        return "x.y.z\n";
+    }
+}
+
 sub usage_text {
     my ($self) = @_;
 
@@ -299,9 +293,9 @@ Usage:   roary [options] *.gff
 
 Options: -p INT    number of threads [1]
          -o STR    clusters output filename [clustered_proteins]
-		 -f STR    output directory [.]
+         -f STR    output directory [.]
          -e        create a multiFASTA alignment of core genes using PRANK
-         -n        fast core gene alignement with MAFFT, use with -e
+         -n        fast core gene alignment with MAFFT, use with -e
          -i        minimum percentage identity for blastp [95]
          -cd FLOAT percentage of isolates a gene must be in to be core [99]
          -z        dont delete intermediate files

@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::RoaryCoreAlignment;
 
 # ABSTRACT: Take in the group statistics spreadsheet and the location of the gene multifasta files and create a core alignment.
@@ -23,7 +24,7 @@ has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'multifasta_base_directory' => ( is => 'rw', isa => 'Str', default => 'pan_genome_sequences' );
 has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'gene_presence_absence.csv' );
 has 'output_filename'           => ( is => 'rw', isa => 'Str', default => 'core_gene_alignment.aln' );
-has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 1 );
+has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 0.99 );
 has '_error_message'            => ( is => 'rw', isa => 'Str' );
 has 'verbose'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 
@@ -112,19 +113,17 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: pan_genome_core_alignment [options]
-    Create a core alignment from the spreadsheet and the directory of multifasta gene files.
-    Genes are ordered based on order in de novo assemblies.
-    
-    # When run from the directory where the pan genome exists, it should just work
-    pan_genome_core_alignment
-    
-    # Specify the directory containing the multifastas (-m), the spreadsheet (-s) and an output file name (-o)
-    pan_genome_core_alignment -m pan_genome_sequences -s gene_presence_absence.csv -o output_alignment.aln
-    
-    # This help message
-    pan_genome_core_alignment -h
+Usage: pan_genome_core_alignment [options]
+Create an alignment of core genes from the spreadsheet and the directory of gene multi-FASTAs.
 
+Options: -o STR    output filename [core_gene_alignment.aln]
+         -cd FLOAT percentage of isolates a gene must be in to be core [99]
+         -m STR    directory containing gene multi-FASTAs [pan_genome_sequences]
+         -s STR    gene presence and absence spreadsheet [gene_presence_absence.csv]
+         -v        verbose output to STDOUT
+         -h        this help message
+
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 
