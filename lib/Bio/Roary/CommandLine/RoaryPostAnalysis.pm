@@ -23,13 +23,13 @@ has 'script_name'                 => ( is => 'ro', isa => 'Str',      required =
 has 'help'                        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has '_error_message'              => ( is => 'rw', isa => 'Str' );
 
-has 'fasta_files'                 => ( is => 'rw', isa => 'Str' );
-has 'input_files'                 => ( is => 'rw', isa => 'Str');
+has 'fasta_files'                 => ( is => 'rw', isa => 'Str',  default  => '_fasta_files' );
+has 'input_files'                 => ( is => 'rw', isa => 'Str',  default  => '_gff_files');
 has 'output_filename'             => ( is => 'rw', isa => 'Str',  default  => 'clustered_proteins' );
 has 'output_pan_geneome_filename' => ( is => 'rw', isa => 'Str',  default  => 'pan_genome.fa' );
 has 'output_statistics_filename'  => ( is => 'rw', isa => 'Str',  default  => 'gene_presence_absence.csv' );
 has 'output_multifasta_files'     => ( is => 'rw', isa => 'Bool', default  => 0 );
-has 'clusters_filename'           => ( is => 'rw', isa => 'Str' );
+has 'clusters_filename'           => ( is => 'rw', isa => 'Str',  default  => '_clustered.clstr' );
 has 'job_runner'                  => ( is => 'rw', isa => 'Str',  default  => 'Local' );
 has 'cpus'                        => ( is => 'rw', isa => 'Int',  default => 1 );
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool', default  => 0 );
@@ -38,7 +38,7 @@ has 'dont_split_groups'           => ( is => 'rw', isa => 'Bool', default  => 0 
 has 'verbose_stats'               => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'translation_table'           => ( is => 'rw', isa => 'Int',  default => 11 );
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 50000 );
-has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 1.0 );
+has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 0.99 );
 has 'verbose'                     => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'mafft'                       => ( is => 'rw', isa => 'Bool', default => 0 );
 
@@ -54,25 +54,25 @@ sub BUILD {
 
     GetOptionsFromArray(
         $self->args,
-        'o|output=s'              => \$output_filename,
-        'j|job_runner=s'          => \$job_runner,
-        'output_multifasta_files' => \$output_multifasta_files,
-        'p=s'                     => \$output_pan_geneome_filename,
-        's=s'                     => \$output_statistics_filename,
-        'c=s'                     => \$clusters_filename,
-        'f=s'                     => \$fasta_files,
-        'i=s'                     => \$input_files,
-        'dont_delete_files'       => \$dont_delete_files,
-        'dont_create_rplots'      => \$dont_create_rplots,
-        'dont_split_groups'       => \$dont_split_groups,
-        'verbose_stats'           => \$verbose_stats,
-        'processors=i'            => \$cpus,
-        't|translation_table=i'   => \$translation_table,
-        'group_limit=i'           => \$group_limit,
-        'cd|core_definition=f'    => \$core_definition,
-		'v|verbose'               => \$verbose,
-		'mafft'                   => \$mafft,
-        'h|help'                  => \$help,
+        'o|output=s'                => \$output_filename,
+        'j|job_runner=s'            => \$job_runner,
+        'm|output_multifasta_files' => \$output_multifasta_files,
+        'p=s'                       => \$output_pan_geneome_filename,
+        's=s'                       => \$output_statistics_filename,
+        'c=s'                       => \$clusters_filename,
+        'f=s'                       => \$fasta_files,
+        'i=s'                       => \$input_files,
+        'a|dont_delete_files'       => \$dont_delete_files,
+        'b|dont_create_rplots'      => \$dont_create_rplots,
+        'd|dont_split_groups'       => \$dont_split_groups,
+        'e|verbose_stats'           => \$verbose_stats,
+        'z|processors=i'            => \$cpus,
+        't|translation_table=i'     => \$translation_table,
+        'g|group_limit=i'           => \$group_limit,
+        'cd|core_definition=f'      => \$core_definition,
+		'v|verbose'                 => \$verbose,
+		'n|mafft'                   => \$mafft,
+        'h|help'                    => \$help,
     );
     
     $self->help($help) if(defined($help));
@@ -187,25 +187,29 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: pan_genome_post_analysis [options]
-    Perform the post analysis on the pan genome. This script is usally only called by another script.
-    
-    #Normal usage
-    pan_genome_post_analysis 
-      -o <output_groups_filename>     
-      -p <output_pan_genome_filename>
-      -s <output_stats_filename>     
-      -c <output_clusters_filename>   
-      -f <file_of_proteins>              
-      -i <file_of_gffs> 
-	  -v <verbose output flag>
-      --processors <number of processors>
-      --verbose_stats
-      --core_definition <percentage of genomes required to qualify gene as core>        
+Usage: pan_genome_post_analysis [options]
+Perform the post analysis on the pan genome. This script is usally only called by another script.
 
-    # This help message
-    pan_genome_post_analysis -h
-
+Options: -a        dont delete intermediate files
+         -b        dont create R plots
+         -c STR    clusters filename [_clustered.clstr]
+         -cd FLOAT percentage of isolates a gene must be in to be core [0.99]
+         -d        dont split groups
+         -e        add inference values to gene presence and absence spreadsheet
+         -f STR    file of protein filenames [_fasta_files]
+         -g INT    maximum number of clusters [50000]
+         -i STR    file of GFF filenames [_gff_files]
+         -m        core gene alignement with PRANK
+         -n        fast core gene alignement with MAFFT instead of PRANK
+         -o STR    clusters output filename [clustered_proteins]
+         -p STR    output pan genome filename [pan_genome.fa]
+         -s STR    output gene presence and absence filename [gene_presence_absence.csv]
+         -t INT    translation table [11]
+         -z INT    number of threads [1]
+         -v        verbose output to STDOUT
+         -h        this help message
+         
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 
