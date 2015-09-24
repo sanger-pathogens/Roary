@@ -22,17 +22,15 @@ use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
 use Bio::Roary::Output::GroupsMultifastaNucleotide;
 
-has 'gff_files'        => ( is => 'ro', isa => 'ArrayRef',                      required => 1 );
-has 'group_names'      => ( is => 'ro', isa => 'ArrayRef',                      required => 0 );
-has 'annotate_groups'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
-has 'output_multifasta_files'     => ( is => 'ro', isa => 'Bool',     default  => 0 );
-has 'core_definition'  => ( is => 'ro', isa => 'Num', default  => 1.0 );
-has 'dont_delete_files' => ( is => 'ro', isa => 'Bool',     default  => 0 );
-
-has 'output_directory' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_directory');
-
-has '_number_of_groups' => ( is => 'rw', isa => 'Num', lazy_build => 1 );
-has 'group_limit'      => ( is => 'rw', isa => 'Num', default => 50000 );
+has 'gff_files'               => ( is => 'ro', isa => 'ArrayRef',                   required => 1 );
+has 'group_names'             => ( is => 'ro', isa => 'ArrayRef',                   required => 0 );
+has 'annotate_groups'         => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
+has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default  => 0 );
+has 'core_definition'         => ( is => 'ro', isa => 'Num',  default  => 1.0 );
+has 'dont_delete_files'       => ( is => 'ro', isa => 'Bool', default  => 0 );
+has 'output_directory'        => ( is => 'ro', isa => 'Str',  lazy => 1, builder => '_build_output_directory');
+has '_number_of_groups'       => ( is => 'rw', isa => 'Num',  lazy => 1, builder => '_build__number_of_groups' );
+has 'group_limit'             => ( is => 'rw', isa => 'Num',  default => 50000 );
 
 sub _build_output_directory
 {
@@ -58,6 +56,7 @@ sub create_files {
     }
 
     make_path($self->output_directory);
+    unlink('pan_genome_reference.fa');
     
 	my $number_of_gff_files = @{$self->gff_files};
 	my %pan_reference_groups_seen;

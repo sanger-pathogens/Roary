@@ -4,6 +4,7 @@ use warnings;
 use File::Path qw( remove_tree);
 use Data::Dumper;
 use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -23,7 +24,7 @@ my $obj;
 
 my $annotate_groups = Bio::Roary::AnnotateGroups->new(
   gff_files       => $gff_files,
-  groups_filename => 't/data/query_groups',
+  groups_filename => 't/data/query_groups_reference',
 );
 
 ok($annotate_groups->reannotate);
@@ -39,9 +40,12 @@ ok(
 );
 ok( $obj->create_files(), 'Create multiple fasta files where you dont delete non core files' );
 
-is(read_file('pan_genome_sequences/hly.fa'),     read_file('t/data/pan_genome_sequences/hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
-is(read_file('pan_genome_sequences/speH.fa'),    read_file('t/data/pan_genome_sequences/speH.fa' ), 'Check multifasta content is correct for 2-speH.fa ');
-is(read_file('pan_genome_sequences/argF.fa'),    read_file('t/data/pan_genome_sequences/argF.fa' ), 'Check multifasta content is correct for 2-argF.fa ');
+compare_ok('pan_genome_sequences/hly.fa', 't/data/pan_genome_sequences/hly.fa', 'Check multifasta content is correct for 3-hly.fa');
+compare_ok('pan_genome_sequences/speH.fa','t/data/pan_genome_sequences/speH.fa','Check multifasta content is correct for 2-speH.fa ');
+compare_ok('pan_genome_sequences/argF.fa','t/data/pan_genome_sequences/argF.fa','Check multifasta content is correct for 2-argF.fa ');
+ok(-e 'pan_genome_reference.fa','pan genome reference file created');
+compare_ok('pan_genome_reference.fa', 't/data/expected_g2_g5_pan_genome_reference.fa', 'pan genome reference as expected');
+
 cleanup_files();
 
 
