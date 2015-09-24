@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::RoaryReorderSpreadsheet;
 
 # ABSTRACT: Take in a tree and a spreadsheet and output a reordered spreadsheet

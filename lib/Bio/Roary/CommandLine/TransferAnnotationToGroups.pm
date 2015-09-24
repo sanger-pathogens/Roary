@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::TransferAnnotationToGroups;
 
 # ABSTRACT: Take in a groups file and a set of GFF files and transfer the consensus annotation

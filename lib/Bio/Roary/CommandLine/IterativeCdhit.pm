@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::IterativeCdhit;
 
 # ABSTRACT: Iteratively run cdhit

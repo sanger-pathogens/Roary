@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::RoaryPostAnalysis;
 
 # ABSTRACT: Perform the post analysis on the pan genome

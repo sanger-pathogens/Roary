@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::ParallelAllAgainstAllBlastp;
 
 # ABSTRACT: Take in a FASTA file of proteins and blast against itself

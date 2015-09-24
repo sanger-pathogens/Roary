@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::QueryRoary;
 
 # ABSTRACT: Take in a groups file and the protein fasta files and output selected data

@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::RoaryCoreAlignment;
 
 # ABSTRACT: Take in the group statistics spreadsheet and the location of the gene multifasta files and create a core alignment.
