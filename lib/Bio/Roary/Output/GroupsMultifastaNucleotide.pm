@@ -63,7 +63,7 @@ sub populate_files {
           if(! defined($self->pan_reference_groups_seen->{$current_group}))
 		  {
 		  	my $pan_output_seq = $self->_pan_genome_reference_io_obj($current_group);
-			$pan_output_seq->write_seq($input_seq);
+			$pan_output_seq->write_seq(Bio::Seq->new( -display_id => $input_seq->display_id, -desc => $current_group, -seq => $input_seq->seq ) );
 			$self->pan_reference_groups_seen->{$current_group} = 1;
 		  }
 
