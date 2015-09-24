@@ -119,6 +119,8 @@ sub BUILD {
     }
 
     $self->help($help) if ( defined($help) );
+	( !$self->help ) or die $self->usage_text;
+	
     if ( @{ $self->args } < 2 ) {
         $self->logger->error("Error: You need to provide at least 2 files to build a pan genome");
         die $self->usage_text;
@@ -230,7 +232,6 @@ sub _setup_output_directory {
 sub run {
     my ($self) = @_;
 
-    ( !$self->help ) or die $self->usage_text;
 	$self->_setup_output_directory;
 
     $self->logger->info("Fixing input GFF files");
