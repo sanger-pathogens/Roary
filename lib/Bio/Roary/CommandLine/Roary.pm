@@ -20,6 +20,7 @@ use Bio::Roary::External::CheckTools;
 use File::Which;
 use File::Path qw(make_path);
 use Cwd  qw(abs_path getcwd); 
+use File::Temp;
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -50,8 +51,8 @@ has 'group_limit'             => ( is => 'rw', isa => 'Num', default => 50000 );
 has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'kraken_db' => ( is => 'rw', isa => 'Str', default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
-
 has 'run_qc' => ( is => 'rw', isa => 'Bool', default => 0 );
+has '_working_directory'      => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 
 sub BUILD {
     my ($self) = @_;
@@ -235,7 +236,9 @@ sub run {
         apply_unknowns_filter => $self->apply_unknowns_filter,
         cpus                  => $self->cpus,
         translation_table     => $self->translation_table,
-        verbose               => $self->verbose
+        verbose               => $self->verbose,
+        working_directory    => $self->_working_directory,
+        
     );
 
     if ( $self->run_qc ) {

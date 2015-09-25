@@ -28,14 +28,11 @@ with 'Bio::Roary::BedFromGFFRole';
 has 'gff_file'                       => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'apply_unknowns_filter'          => ( is => 'rw', isa => 'Bool', default  => 1 );
 has 'maximum_percentage_of_unknowns' => ( is => 'ro', isa => 'Num',  default  => 5 );
-has 'output_filename' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
-
-has 'fasta_file'      => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_file' );
-
-
-has '_working_directory' => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
-has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
-has 'translation_table' => ( is => 'rw', isa => 'Int', default => 11 );
+has 'output_filename'                => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
+has 'fasta_file'                     => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build_fasta_file' );
+has '_working_directory'             => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
+has '_working_directory_name'        => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
+has 'translation_table'              => ( is => 'rw', isa => 'Int', default => 11 );
 
 sub _build_fasta_file {
     my ($self) = @_;
@@ -43,8 +40,8 @@ sub _build_fasta_file {
     $self->_convert_nucleotide_to_protein;
     $self->_cleanup_fasta;
     $self->_cleanup_intermediate_files;
-    $self->_filter_fasta_sequences( $self->output_filename );
-    return $self->output_filename;
+    $self->_filter_fasta_sequences( join('/',($self->output_directory,$self->output_filename)) );
+    return join('/',($self->output_directory,$self->output_filename));
 }
 
 sub _build__working_directory_name {
@@ -68,17 +65,17 @@ sub _cleanup_intermediate_files {
 
 sub _nucleotide_fasta_file_from_gff_filename {
     my ($self) = @_;
-    return join( '.', ( $self->output_filename, 'intermediate.fa' ) );
+    return join('/',($self->output_directory,join( '.', ( $self->output_filename, 'intermediate.fa' ) )));
 }
 
 sub _extracted_nucleotide_fasta_file_from_bed_filename {
     my ($self) = @_;
-    return join( '.', ( $self->output_filename, 'intermediate.extracted.fa' ) );
+    return join('/',($self->output_directory,join( '.', ( $self->output_filename,'intermediate.extracted.fa' ) )));
 }
 
 sub _unfiltered_output_filename {
     my $self = shift;
-    return join( '.', ( $self->output_filename, 'unfiltered.fa' ) );
+    return join('/',($self->output_directory,join( '.', ( $self->output_filename, 'unfiltered.fa' ) )));
 }
 
 
@@ -113,7 +110,7 @@ sub _extract_nucleotide_regions {
 sub _cleanup_fasta {
     my $self    = shift;
     my $infile  = $self->_unfiltered_output_filename;
-    my $outfile = $self->output_filename;
+    my $outfile = join('/',($self->output_directory,$self->output_filename));
     return unless ( -e $infile );
 
     open( my $in,  '<', $infile );
@@ -129,7 +126,7 @@ sub _cleanup_fasta {
 
 sub _fastatranslate_filename {
     my ($self) = @_;
-    return join( '.', ( $self->output_filename, 'intermediate.translate.fa' ) );
+    return join('/',($self->output_directory,join( '.', ( $self->output_filename, 'intermediate.translate.fa' ) )));
 }
 
 sub _fastatranslate {
