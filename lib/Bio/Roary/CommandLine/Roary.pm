@@ -52,7 +52,7 @@ has 'core_definition'         => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'kraken_db' => ( is => 'rw', isa => 'Str', default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
 has 'run_qc' => ( is => 'rw', isa => 'Bool', default => 0 );
-has '_working_directory'      => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
+has '_working_directory'      => ( is => 'rw', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 
 sub BUILD {
     my ($self) = @_;
@@ -189,6 +189,9 @@ sub BUILD {
         }
 		push(@{$self->fasta_files}, abs_path($filename ));
     }
+    
+    
+    $self->_working_directory(File::Temp->newdir( DIR => getcwd, CLEANUP => 0 )) if( $self->dont_delete_files );
 }
 
 sub _setup_output_directory {

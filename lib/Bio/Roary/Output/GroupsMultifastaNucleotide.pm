@@ -52,6 +52,11 @@ sub _build__input_seqio {
     return Bio::SeqIO->new( -file => $self->fasta_file, -format => 'Fasta' );
 }
 
+sub _bed_output_filename {
+    my ($self) = @_;
+    return join( '.', ( $self->output_filename, 'intermediate.bed' ) );
+}
+
 sub populate_files {
     my ($self) = @_;
     while ( my $input_seq = $self->_input_seqio->next_seq() ) 

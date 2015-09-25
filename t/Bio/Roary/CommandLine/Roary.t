@@ -3,10 +3,10 @@ use Moose;
 use Data::Dumper;
 use File::Slurp::Tiny qw(read_file write_file);
 use File::Path qw( remove_tree);
-use Cwd;
 use File::Which;
 use File::Path qw(make_path);
 use Cwd qw(abs_path getcwd); 
+use File::Find::Rule;
 
 #Test changes current working directory so relative paths can get out of sync
 local $ENV{PERL5LIB} = join(':', ("$ENV{PERL5LIB}", abs_path('./lib'), abs_path('./t/lib')));
@@ -63,24 +63,7 @@ ok( !( -e 'query_1.gff.proteome.faa' ), 'Check protein query_1.gff.proteome.faa 
 ok( !( -e 'query_2.gff.proteome.faa' ), 'Check protein query_2.gff.proteome.faa is cleaned up' );
 ok( !( -e 'query_5.gff.proteome.faa' ), 'Check protein query_5.gff.proteome.faa is cleaned up' );
 
-%scripts_and_expected_files =
-  ( '-j Local --dont_delete_files t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' => [ 'empty_file', 't/data/empty_file' ], );
-mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [ 0, 6, 7, 8, 9 ] );
-ok( ( -e 'query_1.gff.proteome.faa' ), 'Check protein query_1.gff.proteome.faa is not cleaned up' );
-ok( ( -e 'query_2.gff.proteome.faa' ), 'Check protein query_2.gff.proteome.faa is not cleaned up' );
-ok( ( -e 'query_5.gff.proteome.faa' ), 'Check protein query_5.gff.proteome.faa is not cleaned up' );
-
 cleanup_files();
-
-%scripts_and_expected_files = (
-    '-j Local --dont_delete_files t/data/locus_tag_gffs/query_1.gff t/data/locus_tag_gffs/query_2.gff t/data/locus_tag_gffs/query_5.gff '
-      => [ 'empty_file', 't/data/empty_file' ], );
-mock_execute_script_and_check_output_sorted_groups( $script_name, \%scripts_and_expected_files, [ 0, 6, 7, 8, 9 ] );
-
-for my $filename ( ( 'query_1.gff.proteome.faa', 'query_2.gff.proteome.faa', 'query_5.gff.proteome.faa' ) ) {
-    is( read_file($filename), read_file( 't/data/locus_tag_gffs/' . $filename . '.expected' ),
-        "content of proteome $filename as expected" );
-}
 
 stderr_should_have($script_name,'-a', 'Looking for');
 
@@ -292,6 +275,7 @@ sub cleanup_files {
     remove_tree('pan_genome_sequences');
     remove_tree('fixed_input_files');
 	remove_tree('t/data/directory_which_doesnt_exist');
+    remove_tree('locus_tags_gffs_output');
     unlink('_blast_results');
     unlink('_clustered');
     unlink('_clustered.bak.clstr');

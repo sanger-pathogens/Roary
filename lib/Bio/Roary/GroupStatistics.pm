@@ -19,6 +19,7 @@ Add labels to the groups
 use Moose;
 use POSIX;
 use Text::CSV;
+use File::Basename;
 use Bio::SeqIO;
 use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
@@ -63,7 +64,7 @@ sub _header {
     my @header = @{ $self->fixed_headers };
 
     for my $filename ( @{ $self->_sorted_file_names } ) {
-        my $filename_cpy = $filename;
+        my $filename_cpy = basename($filename);
         $filename_cpy =~ s!\.gff\.proteome\.faa!!;
         push( @header, $filename_cpy );
     }

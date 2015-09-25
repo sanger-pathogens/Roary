@@ -41,8 +41,8 @@ ok(
 ok( $obj->create_files(), 'Create multiple fasta files where you dont delete non core files' );
 
 compare_ok('pan_genome_sequences/hly.fa', 't/data/pan_genome_sequences/hly.fa', 'Check multifasta content is correct for 3-hly.fa');
-compare_ok('pan_genome_sequences/speH.fa','t/data/pan_genome_sequences/speH.fa','Check multifasta content is correct for 2-speH.fa ');
-compare_ok('pan_genome_sequences/argF.fa','t/data/pan_genome_sequences/argF.fa','Check multifasta content is correct for 2-argF.fa ');
+compare_ok('pan_genome_sequences/speH.fa','t/data/pan_genome_sequences/speH.fa','Check multifasta content is correct for 2-speH.fa');
+compare_ok('pan_genome_sequences/argF.fa','t/data/pan_genome_sequences/argF.fa','Check multifasta content is correct for 2-argF.fa');
 ok(-e 'pan_genome_reference.fa','pan genome reference file created');
 compare_ok('pan_genome_reference.fa', 't/data/expected_g2_g5_pan_genome_reference.fa', 'pan genome reference as expected');
 
