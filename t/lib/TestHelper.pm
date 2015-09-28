@@ -136,7 +136,6 @@ sub mock_execute_script_and_check_output {
 
             my $actual_output_file_name   = $scripts_and_expected_files->{$script_parameters}->[0];
             my $expected_output_file_name = $scripts_and_expected_files->{$script_parameters}->[1];
-
             ok( -e $actual_output_file_name, "Actual output file exists $actual_output_file_name  $script_parameters" );
             if ( defined($columns_to_exclude) ) {
                 is(

@@ -27,6 +27,7 @@ has 'nucleotide_fasta_files' => ( is => 'rw', isa => 'ArrayRef' );
 has '_error_message'         => ( is => 'rw', isa => 'Str' );
 has 'verbose'                => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'mafft'                  => ( is => 'rw', isa => 'Bool', default => 0 );
+has '_min_similarity'        => ( is => 'rw', isa => 'Num',  default  => 0.98 );
 
 sub BUILD {
     my ($self) = @_;
@@ -76,7 +77,7 @@ sub run {
         );
         $sort_fasta_before->sort_fasta->replace_input_with_output_file;
 
-        if ( $sort_fasta_before->variation_detected == 1 ) {
+        if ( $sort_fasta_before->sequences_unaligned == 1  || $sort_fasta_before->sequences_unaligned == 0 && $sort_fasta_before->similarity <= $self->_min_similarity) {
 
             if ( $self->mafft == 1 ) {
                 my $mafft_obj = Bio::Roary::External::Mafft->new(
