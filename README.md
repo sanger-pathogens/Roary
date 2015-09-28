@@ -89,7 +89,7 @@ export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 ###Install perl dependancies
 
 ```
-sudo cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy File::Find::Rule File::Grep File::Path File::Slurp::Tiny File::Spec File::Temp File::Which FindBin Getopt::Long Graph Graph::Writer::Dot List::Util Log::Log4perl Moose Moose::Role Text::CSV
+sudo cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy File::Find::Rule File::Grep File::Path File::Slurper File::Spec File::Temp File::Which FindBin Getopt::Long Graph Graph::Writer::Dot List::Util Log::Log4perl Moose Moose::Role Text::CSV
 ```
 
 ##Virtual Machine - OSX/Linux/Windows

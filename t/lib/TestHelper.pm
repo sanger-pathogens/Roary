@@ -2,7 +2,7 @@ package TestHelper;
 use Moose::Role;
 use Test::Most;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file read_lines);
+use File::Slurper qw(read_lines read_text);
 use Test::Files;
 use Test::Output;
 
@@ -288,7 +288,7 @@ sub compare_tab_files_with_variable_coordinates {
 
 sub _filter_coordinates_from_string {
     my ($file_name) = @_;
-    my $file_contents = read_file($file_name);
+    my $file_contents = read_text($file_name);
     my @lines = split( /\n/, $file_contents );
     my $modified_file_contents = '';
     for my $line ( sort @lines ) {
@@ -301,7 +301,7 @@ sub _filter_coordinates_from_string {
 
 sub _exclude_variable_columns_from_spreadsheet {
     my ( $file_name, $columns_to_exclude ) = @_;
-    my $file_contents          = read_file($file_name);
+    my $file_contents          = read_text($file_name);
     my @lines                  = split( /\n/, $file_contents );
     my $modified_file_contents = '';
 

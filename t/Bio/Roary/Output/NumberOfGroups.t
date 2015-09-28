@@ -2,8 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
-
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -38,19 +37,19 @@ ok(my $obj = Bio::Roary::Output::NumberOfGroups->new(
 ok($obj->create_output_files, 'create the raw output file');
 
 ok(-e 'number_of_conserved_genes.Rtab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_conserved_genes.tab'), read_file('number_of_conserved_genes.Rtab'), 'Content of total groups tab file as expected');
+compare_ok('t/data/expected_number_of_conserved_genes.tab', 'number_of_conserved_genes.Rtab', 'Content of total groups tab file as expected');
 unlink('number_of_conserved_genes.Rtab');
 
 ok(-e 'number_of_new_genes.Rtab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_new_genes.tab'), read_file('number_of_new_genes.Rtab'), '');
+compare_ok('t/data/expected_number_of_new_genes.tab', 'number_of_new_genes.Rtab', '');
 unlink('number_of_new_genes.Rtab');
 
 ok(-e 'number_of_genes_in_pan_genome.Rtab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_genes_in_pan_genome.tab'), read_file('number_of_genes_in_pan_genome.Rtab'), 'Content of total groups tab file as expected');
+compare_ok('t/data/expected_number_of_genes_in_pan_genome.tab', 'number_of_genes_in_pan_genome.Rtab', 'Content of total groups tab file as expected');
 unlink('number_of_genes_in_pan_genome.Rtab');
 
 ok(-e 'number_of_unique_genes.Rtab', 'check raw output file created');
-is(read_file('t/data/expected_number_of_unique_genes.tab'), read_file('number_of_unique_genes.Rtab'), 'Content of unique groups tab file as expected');
+compare_ok('t/data/expected_number_of_unique_genes.tab', 'number_of_unique_genes.Rtab', 'Content of unique groups tab file as expected');
 unlink('number_of_unique_genes.Rtab');
 
 
@@ -61,7 +60,7 @@ ok($obj = Bio::Roary::Output::NumberOfGroups->new(
   core_definition => 0.6
   ),"initialise object with 60 percent core definition");
 ok($obj->create_output_files, 'create the raw output files for 60 percent core def');
-is(read_file('t/data/expected_number_of_conserved_genes_0.6.tab'), read_file('number_of_conserved_genes.Rtab'), 'Content of conserved genes with 60 percent core def');
+compare_ok('t/data/expected_number_of_conserved_genes_0.6.tab','number_of_conserved_genes.Rtab', 'Content of conserved genes with 60 percent core def');
 
 unlink('number_of_conserved_genes.Rtab');
 unlink('number_of_new_genes.Rtab');

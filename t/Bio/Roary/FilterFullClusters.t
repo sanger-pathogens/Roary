@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -25,11 +25,9 @@ ok(my $filter_clusters = Bio::Roary::FilterFullClusters->new(
 ok($filter_clusters->filter_full_clusters_from_fasta(),'filter the clusters');
 ok($filter_clusters->filter_complete_cluster_from_original_fasta(),'filter original input and save full groups');
 
-
-is(read_file('output_filtered.fa'), read_file('t/data/expected_output_filtered.fa'), 'content as expected');
-
-is(read_file('output_groups'), read_file('t/data/expected_output_groups_cdhit'), 'content as expected');
-is(read_file('filtered_original_input.fa'), read_file('t/data/expected_filtered_original_input.fa'), 'content as expected');
+compare_ok('output_filtered.fa', 't/data/expected_output_filtered.fa', 'content as expected');
+compare_ok('output_groups', 't/data/expected_output_groups_cdhit', 'content as expected');
+compare_ok('filtered_original_input.fa', 't/data/expected_filtered_original_input.fa', 'content as expected');
 
 unlink('output_groups');
 unlink('filtered_original_input.fa');

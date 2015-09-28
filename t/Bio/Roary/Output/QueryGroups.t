@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file read_lines);
 use Moose;
 BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';

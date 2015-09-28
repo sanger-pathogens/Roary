@@ -14,7 +14,7 @@ use File::Path qw(make_path remove_tree);
 use File::Copy qw(move);
 use File::Temp;
 use File::Basename;
-use File::Slurp::Tiny 'read_lines';
+use File::Slurper 'read_lines';
 use Cwd;
 
 
@@ -86,7 +86,7 @@ sub _build__genes_to_neighbourhood
 	my ( $filename, $directories, $suffix ) = fileparse( $fasta_file, qr/\.[^.]*/ );
   	system('grep \> '.$fasta_file.'| sed  \'s/>//\' >'.$self->_gene_files_temp_dir_obj."/".$filename.$suffix ) ;
 	
-	my @genes = read_lines($self->_gene_files_temp_dir_obj."/".$filename.$suffix, chomp => 1 );
+	my @genes = read_lines($self->_gene_files_temp_dir_obj."/".$filename.$suffix );
 	
 	for(my $i =0; $i< @genes; $i++)
 	{

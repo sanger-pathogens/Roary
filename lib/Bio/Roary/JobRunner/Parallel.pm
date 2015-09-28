@@ -16,7 +16,6 @@ package Bio::Roary::JobRunner::Parallel;
 =cut
 
 use Moose;
-use File::Slurp::Tiny qw(read_file write_file);
 use File::Temp qw/ tempfile /;
 use Log::Log4perl qw(:easy);
 

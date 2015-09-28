@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 use File::Which;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -34,7 +34,7 @@ ok(
 ok( $qc_report_obj->report, 'report generated' );
 ok( -e 'kraken_report.csv', 'report file exists' );
 
-is( read_file('kraken_report.csv'), read_file("t/data/exp_qc_report.csv"), 'report file correct' );
+compare_ok('kraken_report.csv',"t/data/exp_qc_report.csv", 'report file correct' );
 
 unlink('kraken_report.csv');
 
@@ -62,14 +62,12 @@ ok( my $nuc_files = $qc_report_obj->_extract_nuc_files_from_all_gffs(), 'extract
 is_deeply( [ $qc_report_obj->_tmp_directory . '/query_1.fna', $qc_report_obj->_tmp_directory . '/query_2.fna' ],
     $nuc_files, 'check extracted nuc files from gffs list' );
 
-is(
-    read_file( $qc_report_obj->_tmp_directory . '/query_1.fna' ),
-    read_file('t/data/expected_query_1.fna'),
+compare_ok( $qc_report_obj->_tmp_directory . '/query_1.fna' ,
+    't/data/expected_query_1.fna',
     'Check FASTA file 1 extracted as expected'
 );
-is(
-    read_file( $qc_report_obj->_tmp_directory . '/query_2.fna' ),
-    read_file('t/data/expected_query_2.fna'),
+compare_ok( $qc_report_obj->_tmp_directory . '/query_2.fna' ,
+    't/data/expected_query_2.fna',
     'Check FASTA file 2 extracted as expected'
 );
 
@@ -92,7 +90,7 @@ SKIP:
     
     ok( $qc_report_obj->report, 'report generated with real data' );
     ok( -e 'kraken_report.csv', 'report file exists with real data' );
-    is( read_file('kraken_report.csv'), read_file("t/data/exp_qc_report_real.csv"), 'report file correct' );
+    compare_ok('kraken_report.csv',"t/data/exp_qc_report_real.csv", 'report file correct' );
     unlink('kraken_report.csv');
     
 }

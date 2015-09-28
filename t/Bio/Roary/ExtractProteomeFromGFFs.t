@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use File::Basename;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -27,9 +27,8 @@ my @sorted_expected_files = sort( ( 'example_annotation.gff.proteome.faa', 'exam
 
 is_deeply( \@sorted_fasta_files, \@sorted_expected_files, 'one file created' );
 
-is(
-    read_file( $plot_groups_obj->fasta_files->[0] ),
-    read_file('t/data/example_annotation.gff.proteome.faa.expected'),
+compare_ok( $plot_groups_obj->fasta_files->[0] ,
+    't/data/example_annotation.gff.proteome.faa.expected',
     'content of proteome 1 as expected'
 );
 
@@ -49,9 +48,8 @@ is_deeply( \@sorted_fasta_files, \@sorted_expected_files, 'GB files created outp
 
 for my $full_filename ( @{ $plot_groups_obj->fasta_files() } ) {
     my $base_filename = basename($full_filename);
-    is(
-        read_file($full_filename),
-        read_file( 't/data/genbank_gbff/' . $base_filename . '.expected' ),
+    compare_ok($full_filename,
+        't/data/genbank_gbff/' . $base_filename . '.expected',
         "content of proteome $full_filename as expected"
     );
 }
@@ -73,7 +71,7 @@ is_deeply( \@sorted_fasta_files, \@sorted_expected_files, 'locus tag id files cr
 
 for my $full_filename ( @{ $plot_groups_obj->fasta_files() } ) {
     my $base_filename = basename($full_filename);
-    is( read_file($full_filename), read_file( 't/data/locus_tag_gffs/' . $base_filename . '.expected' ),
+    compare_ok($full_filename, 't/data/locus_tag_gffs/' . $base_filename . '.expected' ,
         "content of proteome $full_filename as expected" );
 }
 

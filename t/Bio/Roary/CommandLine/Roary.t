@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use Moose;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 use File::Path qw( remove_tree);
 use File::Which;
 use File::Path qw(make_path);

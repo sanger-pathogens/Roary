@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -19,7 +19,7 @@ ok(
 );
 ok($obj->convert_nucleotide_to_protein(),'perform the conversion');
 
-is(read_file('t/data/nuc_multifasta.faa'),read_file('t/data/expected_nuc_multifasta.faa' ),'File content as expected');
+compare_ok('t/data/nuc_multifasta.faa', 't/data/expected_nuc_multifasta.faa', 'File content as expected');
 
 unlink('t/data/nuc_multifasta.faa');
 

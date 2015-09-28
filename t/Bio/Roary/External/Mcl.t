@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Cwd;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -45,7 +45,7 @@ ok(
     'initialise object with real values'
 );
 ok( $obj->run(), 'run the real command' );
-is(read_file('output_groups'), read_file('t/data/expected_output_groups'), 'outgroups as expected');
+compare_ok('output_groups', 't/data/expected_output_groups', 'outgroups as expected');
 
 unlink('output_groups');
 
