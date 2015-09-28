@@ -28,11 +28,12 @@ has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein
 has 'translation_table' => ( is => 'rw', isa => 'Int',      default => 11 );
 has 'core_definition'   => ( is => 'ro', isa => 'Num',      default => 1 );
 has 'mafft'             => ( is => 'ro', isa => 'Bool',     default => 0 );
+has 'dont_delete_files' => ( is => 'rw', isa => 'Bool', default  => 0 );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
 has '_queue'                 => ( is => 'rw', isa => 'Str', default  => 'normal' );
-has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 25 );
+has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 5 );
 has '_core_alignment_cmd'    => ( is => 'rw', isa => 'Str', lazy_build => 1 );
 
 
@@ -59,6 +60,7 @@ sub _build__core_alignment_cmd {
     
     my $core_cmd = "pan_genome_core_alignment";
     $core_cmd .= " -cd " . ($self->core_definition*100) if ( defined $self->core_definition );
+    $core_cmd .= " --dont_delete_files " if ( defined $self->dont_delete_files );
 
     return $core_cmd;
 }
