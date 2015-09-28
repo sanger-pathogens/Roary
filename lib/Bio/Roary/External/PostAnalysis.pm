@@ -17,6 +17,7 @@ Perform the post analysis
 =cut
 
 use Moose;
+use Cwd  qw(getcwd); 
 with 'Bio::Roary::JobRunner::Role';
 
 has 'input_files'                 => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -35,6 +36,10 @@ has 'translation_table'           => ( is => 'rw', isa => 'Int',  default  => 11
 has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default  => 50000 );
 has 'core_definition'             => ( is => 'ro', isa => 'Num',  default  => 1.0 );
 has 'verbose'                     => ( is => 'rw', isa => 'Bool', default  => 0 );
+has 'mafft'                       => ( is => 'ro', isa => 'Bool', default  => 0 );
+has '_working_directory'          => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
+has '_gff_fofn'                   => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__gff_fofn' );
+has '_fasta_fofn'                 => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__fasta_fofn'  );
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
@@ -71,11 +76,23 @@ sub _build__memory_required_in_mb {
     return $memory_required;
 }
 
+sub _build__gff_fofn
+{
+    my ($self) = @_;
+    return join('/', ($self->_working_directory, '/_gff_files'));
+}
+
+sub _build__fasta_fofn
+{
+    my ($self) = @_;
+    return join('/', ($self->_working_directory, '/_fasta_files'));
+}
+
 
 sub _output_gff_files
 {
   my ($self) = @_;
-  open(my $out_fh, '>', '_gff_files');
+  open(my $out_fh, '>', $self->_gff_fofn);
   for my $filename (@{$self->input_files})
   {
     print {$out_fh} $filename."\n";
@@ -86,7 +103,7 @@ sub _output_gff_files
 sub _output_fasta_files
 {
   my ($self) = @_;
-  open(my $out_fh, '>', '_fasta_files');
+  open(my $out_fh, '>', $self->_fasta_fofn);
   for my $filename (@{$self->fasta_files})
   {
     print {$out_fh} $filename."\n";
@@ -115,6 +132,9 @@ sub _command_to_run {
     my $verbose_stats_flag = '';
     $verbose_stats_flag = '--verbose_stats' if ( defined($self->verbose_stats) && $self->verbose_stats == 1 );
 	
+    my $mafft_flag = '';
+    $mafft_flag = '--mafft' if ( defined($self->mafft) && $self->mafft == 1 );
+	
     my $verbose_flag = '';
     $verbose_flag = '-v' if ( defined($self->verbose) && $self->verbose == 1 );
     
@@ -127,14 +147,15 @@ sub _command_to_run {
             '-s', $self->output_statistics_filename,
             '-c', $self->clusters_filename,
             $output_multifasta_files_flag,
-            '-i', '_gff_files',
-            '-f', '_fasta_files',
+            '-i', $self->_gff_fofn,
+            '-f', $self->_fasta_fofn,
             '-t', $self->translation_table,
             $dont_delete_files_flag,
             $dont_create_rplots_flag,
             $dont_split_groups_flag,
             $verbose_stats_flag,
 			$verbose_flag,
+			$mafft_flag,
             '-j', $self->job_runner,
             '--processors', $self->cpus,
             '--group_limit', $self->group_limit,

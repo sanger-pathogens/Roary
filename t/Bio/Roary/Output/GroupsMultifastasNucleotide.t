@@ -4,6 +4,7 @@ use warnings;
 use File::Path qw( remove_tree);
 use Data::Dumper;
 use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -16,14 +17,14 @@ BEGIN {
     
 }
 
-remove_tree('pan_genome_sequences');
+cleanup_files();
 my $gff_files = [ 't/data/query_1.gff', 't/data/query_2.gff','t/data/query_3.gff' ];
 
 my $obj;
 
 my $annotate_groups = Bio::Roary::AnnotateGroups->new(
   gff_files       => $gff_files,
-  groups_filename => 't/data/query_groups',
+  groups_filename => 't/data/query_groups_reference',
 );
 
 ok($annotate_groups->reannotate);
@@ -39,10 +40,13 @@ ok(
 );
 ok( $obj->create_files(), 'Create multiple fasta files where you dont delete non core files' );
 
-is(read_file('pan_genome_sequences/hly.fa'),     read_file('t/data/pan_genome_sequences/hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
-is(read_file('pan_genome_sequences/speH.fa'),    read_file('t/data/pan_genome_sequences/speH.fa' ), 'Check multifasta content is correct for 2-speH.fa ');
-is(read_file('pan_genome_sequences/argF.fa'),    read_file('t/data/pan_genome_sequences/argF.fa' ), 'Check multifasta content is correct for 2-argF.fa ');
-remove_tree('pan_genome_sequences');
+compare_ok('pan_genome_sequences/hly.fa', 't/data/pan_genome_sequences/hly.fa', 'Check multifasta content is correct for 3-hly.fa');
+compare_ok('pan_genome_sequences/speH.fa','t/data/pan_genome_sequences/speH.fa','Check multifasta content is correct for 2-speH.fa');
+compare_ok('pan_genome_sequences/argF.fa','t/data/pan_genome_sequences/argF.fa','Check multifasta content is correct for 2-argF.fa');
+ok(-e 'pan_genome_reference.fa','pan genome reference file created');
+compare_ok('pan_genome_reference.fa', 't/data/expected_g2_g5_pan_genome_reference.fa', 'pan genome reference as expected');
+
+cleanup_files();
 
 
 ok(
@@ -59,7 +63,7 @@ ok( $obj->create_files(), 'Create multiple fasta files where you delete non core
 is(read_file('pan_genome_sequences/hly.fa'),     read_file('t/data/pan_genome_sequences/hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
 ok(! -e 'pan_genome_sequences/speH.fa', 'Check 2-speH.fa doesnt exist since its non core');
 ok(! -e 'pan_genome_sequences/argF.fa', 'Check 2-argF.fa doesnt exist since its non core');
-remove_tree('pan_genome_sequences');
+cleanup_files();
 
 
 
@@ -76,4 +80,13 @@ ok(
 my $exp_stderr = "Number of clusters (8) exceeds limit (4). Multifastas not created. Please check the spreadsheet for contamination from different species or increase the --group_limit parameter.\n";
 stderr_is { $obj->create_files() } $exp_stderr, 'multifasta creation fails when group limit exceeded';
 
+cleanup_files();
+
 done_testing();
+
+
+sub cleanup_files {
+    remove_tree('pan_genome_sequences');
+    unlink('reannotated_groups_file');
+    unlink('pan_genome_reference.fa');
+}

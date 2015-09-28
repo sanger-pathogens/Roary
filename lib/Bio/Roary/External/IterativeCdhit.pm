@@ -41,7 +41,7 @@ sub _build__memory_required_in_mb {
         # Convert to mb
         $memory_required = int( $memory_required / 1000000 );
 
-        # Triple memory for worst case senario
+        # Pentuple memory for worst case senario
         $memory_required *= 5;
         $memory_required = 2000 if ( $memory_required < 2000 );
     }

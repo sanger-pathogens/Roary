@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::CreatePanGenome;
 
 # ABSTRACT: Take in FASTA files of proteins and cluster them
@@ -25,57 +26,39 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: create_pan_genome [options]
-    This script sets the defaults for use in the Pathogen Genomics group at WTSI.
-	The only differences are that it runs additional analysis by default 
-	(which are turned off to make Roary as easy as possible to install & run for external users ):
-	 - QC of samples with Kraken
-	 - MultiFASTA core alignment of core genes
-	 - Core is defined as being in 99% of isolates
-	 - A PDF of plots is created with R
-    
-    For more details see:
-    http://mediawiki.internal.sanger.ac.uk/index.php/Pathogen_Informatics_Pan_Genome_Pipeline
-    
+Usage:   create_pan_genome [options] *.gff
+Build a pan genome with WTSI defaults.
 
-    # Take in GFF files and cluster the genes
-    bsub  -M4000 -R "select[mem>4000] rusage[mem=4000]" 'create_pan_genome example.gff'
-	
-    # Run with 16 processors and 10GB of RAM
-    bsub -q long -o log -e err -M10000 -R "select[mem>10000] rusage[mem=10000]" -n16 -R "span[hosts=1]" 'create_pan_genome -p 16  *.gff'
-	
+Options: -p INT    number of threads [1]
+         -o STR    clusters output filename [clustered_proteins]
+		 -f STR    output directory [.]
+         -e        create a multiFASTA alignment of core genes
+         -n        fast core gene alignement with MAFFT, use with -e
+         -i        minimum percentage identity for blastp [95]
+         -cd FLOAT percentage of isolates a gene must be in to be core [99]
+         -z        dont delete intermediate files
+         -t INT    translation table [11]
+         -v        verbose output to STDOUT
+         -y        add gene inference information to spreadsheet, doesnt work with -e
+         -g INT    maximum number of clusters [50000]
+         -qc       generate QC report with Kraken
+         -k STR    path to Kraken database for QC, use with -qc
+         -w        print version and exit
+		 -a        check dependancies and exit
+         -h        this help message
 
-	########### 
-	
-    # Create multifasta alignement of each gene (Warning: Thousands of files are created)
-    create_pan_genome -e --dont_delete_files *.gff
-	
-    # Create a MultiFASTA alignment of core genes where core is defined as being in at least 98% of isolates (default 99%)
-    create_pan_genome -e --core_definition 98 *.gff
-	
-    # Set the blastp percentage identity threshold (default 95%).
-    create_pan_genome -i 98 *.gff
-    
-    # Different translation table (default is 11 for Bacteria). Viruses/Vert = 1
-    create_pan_genome --translation_table 1 *.gff 
-	
-    # Verbose output to STDOUT so that you know whats happening as it goes along
-    create_pan_genome -v *.gff
+Example: Quickly generate a core gene alignment using 16 threads
 
-    # Include full annotation and inference in group statistics
-    create_pan_genome --verbose_stats *.gff
+         bsub.py --threads 16 10 log create_pan_genome -e --mafft -p 16  *.gff
+		 
+Example: Create a tree and visualise with iCANDY
 
-    # Increase the groups/clusters limit (default 50,000). Please check the QC results before running this!
-    create_pan_genome --group_limit 60000  *.gff
-    
-    # Use a different Kraken database
-    roary -k /path/to/kraken_database/  *.gff
-	
-    # print out the version number and exit
-    create_pan_genome --version
+		 annotationfind –t file –i file_of_lanes -symlink .
+		 bsub.py --threads 16 10 log create_pan_genome -e --mafft -p 16 *.gff
+		 ~sh16/scripts/run_RAxML.py -a core_gene_alignment.aln -q normal  -M 8 -n 8 -V AVX -o tree
+		 bsub.py 10 log ~sh16/scripts/iCANDY.py -t RAxML_bipartitions.tree -q taxa -l 1 -E 30 -o accessory.pdf -M -L left -p A1 -g 90 accessory.tab accessory.header.embl
 
-    # This help message
-    create_pan_genome -h
+For further info see: http://mediawiki.internal.sanger.ac.uk/index.php/Pathogen_Informatics_Pan_Genome_Pipeline
 
 USAGE
 }

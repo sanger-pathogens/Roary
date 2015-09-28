@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
+use File::Basename;
 use File::Slurp::Tiny qw(read_file write_file);
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -24,7 +25,7 @@ ok(
     'initalise'
 );
 
-my @sorted_fasta_files = sort @{$obj->fasta_files};
+my @sorted_fasta_files = sort map { basename($_) } sort @{$obj->fasta_files};
 my @expected_fasta_files = sort((
             'example_1.faa.tmp.filtered.fa',
             'example_2.faa.tmp.filtered.fa',
@@ -39,9 +40,10 @@ is_deeply(
     'proteome extracted from gff files, input fasta files filtered'
 );
 
+my @input_files_lookup = sort map { basename($_) } @{$obj->lookup_fasta_files_from_unknown_input_files( [ 't/data/example_annotation_2.gff', 't/data/example_1.faa' ] )};
 is_deeply(
-    $obj->lookup_fasta_files_from_unknown_input_files( [ 't/data/example_annotation_2.gff', 't/data/example_1.faa' ] ),
-    ['example_annotation_2.gff.proteome.faa','example_1.faa.tmp.filtered.fa'],
+    \@input_files_lookup,
+    ['example_1.faa.tmp.filtered.fa','example_annotation_2.gff.proteome.faa'],
     'previously created faa file looked up from gff filename'
 );
 

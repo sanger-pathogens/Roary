@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::Roary::Main::GeneAlignmentFromNucleotides;
+
+# ABSTRACT: Take in multi-FASTA files of nucleotides and align each file with PRANK or MAFFT
+# PODNAME: protein_alignment_from_nucleotides
+
+=head1 SYNOPSIS
+
+Take in multi-FASTA files of nucleotides and align each file with PRANK or MAFFT
+
+=cut
+
+use Cwd qw(abs_path); 
+BEGIN { unshift( @INC, abs_path('./lib') ) }
+BEGIN { unshift( @INC, abs_path('./t/lib') ) }
+use Bio::Roary::CommandLine::GeneAlignmentFromNucleotides;
+
+Bio::Roary::CommandLine::GeneAlignmentFromNucleotides->new(args => \@ARGV, script_name => $0)->run;

@@ -132,25 +132,21 @@ if __name__ == "__main__":
     # Plot the pangenome pie chart
     plt.figure(figsize=(10, 10))
 
-    core = roary[roary.sum(axis=1) == roary.shape[1]].shape[0]
-    softcore = roary[(roary.sum(axis=1) < roary.shape[1]) &
-                     (roary.sum(axis=1) >= roary.shape[1]*0.95)].shape[0]
-    shell = roary[(roary.sum(axis=1) < roary.shape[1]*0.95) &
-                     (roary.sum(axis=1) >= roary.shape[1]*0.15)].shape[0]
-    cloud = roary[roary.sum(axis=1) < roary.shape[1]*0.15].shape[0]
+    core     = roary[(roary.sum(axis=1) >= roary.shape[1]*0.99) & (roary.sum(axis=1) <= roary.shape[1]     )].shape[0]
+    softcore = roary[(roary.sum(axis=1) >= roary.shape[1]*0.95) & (roary.sum(axis=1) <  roary.shape[1]*0.99)].shape[0]
+    shell    = roary[(roary.sum(axis=1) >= roary.shape[1]*0.15) & (roary.sum(axis=1) <  roary.shape[1]*0.95)].shape[0]
+    cloud    = roary[roary.sum(axis=1)  < roary.shape[1]*0.15].shape[0]
 
     total = roary.shape[0]
-
+    
     def my_autopct(pct):
-        val=int(pct*total/100.0)
+        val=int(round(pct*total/100.0))
         return '{v:d}'.format(v=val)
 
     a=plt.pie([core, softcore, shell, cloud],
-          labels=['core\n(%d strains)'%roary.shape[1],
-                  'soft-core\n(%d <= strains < %d)'%(roary.shape[1]*.95,
-                                                     roary.shape[1]),
-                  'shell\n(%d <= strains < %d)'%(roary.shape[1]*.15,
-                                                 roary.shape[1]*.95),
+          labels=['core\n(%d <= strains <= %d)'%(roary.shape[1]*.99,roary.shape[1]),
+                  'soft-core\n(%d <= strains < %d)'%(roary.shape[1]*.95,roary.shape[1]*.99),
+                  'shell\n(%d <= strains < %d)'%(roary.shape[1]*.15,roary.shape[1]*.95),
                   'cloud\n(strains < %d)'%(roary.shape[1]*.15)],
           explode=[0.1, 0.05, 0.02, 0], radius=0.9,
           colors=[(0, 0, 1, float(x)/total) for x in (core, softcore, shell, cloud)],

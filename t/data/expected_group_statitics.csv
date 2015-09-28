@@ -1,4 +1,4 @@
-"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragment","Accessory Order with Fragment","QC","t/data/query_1.fa","t/data/query_2.fa","t/data/query_3.fa"
+"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragment","Accessory Order with Fragment","QC","query_1.fa","query_2.fa","query_3.fa"
 "hly","","Alpha-toxin","3","3","1","","","","","","1_1","2_1","3_1"
 "speH","","hypothetical protein","2","2","1","","","","","","1_2","2_2",""
 "argF","","Ornithine carbamoyltransferase","2","2","1","","","","","","1_3","","3_3"

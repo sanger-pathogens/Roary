@@ -1,3 +1,4 @@
+undef $VERSION;
 package Bio::Roary::CommandLine::IterativeCdhit;
 
 # ABSTRACT: Iteratively run cdhit
@@ -45,7 +46,7 @@ sub BUILD {
         'l|lower_bound_percentage=s'          => \$lower_bound_percentage,
         'u|upper_bound_percentage=s'          => \$upper_bound_percentage,
         's|step_size_percentage=s'            => \$step_size_percentage,
-        'cpus=i'                              => \$cpus,
+        'p|cpus=i'                              => \$cpus,
 		'v|verbose'                           => \$verbose,
         'h|help'                              => \$help,
     );
@@ -95,36 +96,21 @@ sub usage_text {
     my ($self) = @_;
 
     return <<USAGE;
-    Usage: iterative_cdhit [options]
-    Iteratively cluster a set of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.
-    
-    # Basic usage where you have a single isolate
-    iterative_cdhit -m proteome_fasta.faa
-    
-    # Use multiple CPUs
-    iterative_cdhit -m proteome_fasta.faa --cpus 8 
-    
-    # Where you have 10 isolates
-    iterative_cdhit -m proteome_fasta.faa -n 10
-    
-    # Specify the output file name  cdhit results
-    iterative_cdhit -m proteome_fasta.faa -n 10 -c _clustered 
+Usage: iterative_cdhit [options]
+Iteratively cluster a set of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.
 
-    # Specify the output file name for the output protein sequences
-    iterative_cdhit -m proteome_fasta.faa -n 10 -f output_filtered_clustered_fasta
-    
-    # Change the lower bound percentage that you iterate to (defaults to 98%)
-    iterative_cdhit -m proteome_fasta.faa -l 95
-    
-    # Change the upper bound percentage that you iterate from (defaults to 99%)
-    iterative_cdhit -m proteome_fasta.faa -l 100
-    
-    # Change the intermediate step size (defaults to 0.5%)
-    iterative_cdhit -m proteome_fasta.faa -l 0.1
+Options: -p INT   number of threads [1]
+         -m STR   output filename for combined proteins [_combined_files]
+         -n INT   number of isolates [1]
+         -c STR   cd-hit output filename [_clustered]
+         -f STR   output filename for filtered sequences [_clustered_filtered.fa]
+         -l FLOAT lower bound percentage identity [98.0]
+         -u FLOAT upper bound percentage identity [99.0]
+         -s FLOAT step size for percentage identity [0.5]
+         -v       verbose output to STDOUT
+         -h       this help message
 
-    # This help message
-    iterative_cdhit -h
-
+For further info see: http://sanger-pathogens.github.io/Roary/
 USAGE
 }
 

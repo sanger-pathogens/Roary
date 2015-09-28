@@ -43,6 +43,7 @@ SKIP:
   ok( -e 'core_accessory.header.embl','core_accessory.header.embl exists');
   ok( -e 'accessory.tab','accessory.tab exists');
   ok( -e 'accessory.header.embl','accessory.header.embl exists');
+  ok( -e 'summary_statistics.txt' ,'summary_statistics.txt exists');
   
   compare_tab_files_with_variable_coordinates('accessory.header.embl', 't/data/post_analysis_expected/accessory.header.embl');
   compare_tab_files_with_variable_coordinates('accessory.tab', 't/data/post_analysis_expected/accessory.tab');

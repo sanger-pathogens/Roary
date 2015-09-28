@@ -55,10 +55,14 @@ sub _build__groups_freq {
     for my $filename ( @{ $self->input_filenames } ) {
         my $genes = $self->analyse_groups->_files_to_genes->{$filename};
         
+		my %file_groups_seen;
         for my $gene ( @{$genes} ) {
           next if(!defined($gene));
           next if(!defined($self->analyse_groups->_genes_to_groups->{$gene}));
-            push(@{$groups_freq{ $self->analyse_groups->_genes_to_groups->{$gene} }}, $gene);
+		  next if(defined($file_groups_seen{$self->analyse_groups->_genes_to_groups->{$gene}}));
+		  
+          push(@{$groups_freq{ $self->analyse_groups->_genes_to_groups->{$gene} }}, $gene);
+          $file_groups_seen{$self->analyse_groups->_genes_to_groups->{$gene}} = 1;
         }
     }
 
