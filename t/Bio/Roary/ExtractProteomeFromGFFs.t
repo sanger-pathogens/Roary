@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
+use File::Basename;
 use File::Slurp::Tiny qw(read_file write_file);
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -21,7 +22,7 @@ ok(
     'initialise object'
 );
 
-my @sorted_fasta_files = sort( @{ $plot_groups_obj->fasta_files() } );
+my @sorted_fasta_files = map { basename($_) } sort( @{ $plot_groups_obj->fasta_files() } );
 my @sorted_expected_files = sort( ( 'example_annotation.gff.proteome.faa', 'example_annotation_2.gff.proteome.faa' ) );
 
 is_deeply( \@sorted_fasta_files, \@sorted_expected_files, 'one file created' );
@@ -41,21 +42,23 @@ ok(
     ),
     'initialise object with genbank gff files'
 );
-@sorted_fasta_files = sort( @{ $plot_groups_obj->fasta_files() } );
+@sorted_fasta_files = map { basename($_) } sort( @{ $plot_groups_obj->fasta_files() } );
 @sorted_expected_files = sort( ( 'genbank1.gff.proteome.faa', 'genbank2.gff.proteome.faa', 'genbank3.gff.proteome.faa' ) );
 
 is_deeply( \@sorted_fasta_files, \@sorted_expected_files, 'GB files created output' );
 
-for my $filename (@sorted_expected_files) {
-    is( read_file($filename), read_file( 't/data/genbank_gbff/' . $filename . '.expected' ), "content of proteome $filename as expected" );
+for my $full_filename ( @{ $plot_groups_obj->fasta_files() } ) {
+    my $base_filename = basename($full_filename);
+    is(
+        read_file($full_filename),
+        read_file( 't/data/genbank_gbff/' . $base_filename . '.expected' ),
+        "content of proteome $full_filename as expected"
+    );
 }
 
 unlink('genbank1.gff.proteome.faa');
 unlink('genbank2.gff.proteome.faa');
 unlink('genbank3.gff.proteome.faa');
-
-
-
 
 ok(
     $plot_groups_obj = Bio::Roary::ExtractProteomeFromGFFs->new(
@@ -63,13 +66,15 @@ ok(
     ),
     'initialise object with locus tag id gff files'
 );
-@sorted_fasta_files = sort( @{ $plot_groups_obj->fasta_files() } );
+@sorted_fasta_files = map { basename($_) } sort( @{ $plot_groups_obj->fasta_files() } );
 @sorted_expected_files = sort( ( 'query_1.gff.proteome.faa', 'query_2.gff.proteome.faa', 'query_3.gff.proteome.faa' ) );
 
 is_deeply( \@sorted_fasta_files, \@sorted_expected_files, 'locus tag id files created output' );
 
-for my $filename (@sorted_expected_files) {
-    is( read_file($filename), read_file( 't/data/locus_tag_gffs/' . $filename . '.expected' ), "content of proteome $filename as expected" );
+for my $full_filename ( @{ $plot_groups_obj->fasta_files() } ) {
+    my $base_filename = basename($full_filename);
+    is( read_file($full_filename), read_file( 't/data/locus_tag_gffs/' . $base_filename . '.expected' ),
+        "content of proteome $full_filename as expected" );
 }
 
 unlink('query_1.gff.proteome.faa');

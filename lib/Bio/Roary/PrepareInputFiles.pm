@@ -18,7 +18,8 @@ use Moose;
 use Bio::Roary::Exceptions;
 use Bio::Roary::ExtractProteomeFromGFFs;
 use Bio::Roary::FilterUnknownsFromFasta;
-use Cwd;
+use Cwd qw(getcwd); 
+use File::Temp;
 
 has 'input_files'      => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
 has 'job_runner'       => ( is => 'ro', isa => 'Str',             default  => 'Local' );
@@ -41,9 +42,8 @@ has '_extract_proteome_obj' => (
 has 'apply_unknowns_filter' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'translation_table'     => ( is => 'rw', isa => 'Int',  default => 11 );
 has 'verbose'               => ( is => 'rw', isa => 'Bool', default => 0 );
-
-has '_fasta_filter_obj' =>
-  ( is => 'ro', isa => 'Bio::Roary::FilterUnknowsFromFasta', lazy => 1, builder => '_fasta_filter_obj' );
+has '_fasta_filter_obj'     =>  ( is => 'ro', isa => 'Bio::Roary::FilterUnknowsFromFasta', lazy => 1, builder => '_fasta_filter_obj' );
+has 'working_directory'    => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 
 sub _build__input_gff_files {
     my ($self) = @_;
@@ -77,7 +77,8 @@ sub _build__extract_proteome_obj {
         apply_unknowns_filter => $self->apply_unknowns_filter,
         translation_table     => $self->translation_table,
         cpus                  => $self->cpus,
-		verbose               => $self->verbose
+		verbose               => $self->verbose,
+        working_directory    => $self->working_directory,
     );
 }
 

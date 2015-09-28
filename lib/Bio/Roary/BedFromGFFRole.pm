@@ -14,10 +14,11 @@ use Bio::Tools::GFF;
 
 has '_tags_to_filter'   => ( is => 'ro', isa => 'Str', default => '(CDS|ncRNA|tRNA|tmRNA|rRNA)' );
 has 'min_gene_size_in_nucleotides'   => ( is => 'ro', isa => 'Int',  default  => 120 );
+has 'output_directory'               => ( is => 'ro', isa => 'Str', default => '.' );
 
 sub _bed_output_filename {
     my ($self) = @_;
-    return join( '.', ( $self->output_filename, 'intermediate.bed' ) );
+    return join('/',($self->output_directory,join( '.', ( $self->output_filename, 'intermediate.bed' ) )));
 }
 
 sub _create_bed_file_from_gff {
