@@ -134,30 +134,36 @@ sub run {
         remove_tree('split_groups');
     }
 
-
     if($self->output_multifasta_files == 1)
     {
-		print "Aligning each cluster\n" if($self->verbose);
+	  print "Aligning each cluster\n" if($self->verbose);
       my $output_gene_files = $self->_find_input_files;
       my $seg = Bio::Roary::External::GeneAlignmentFromNucleotides->new(
         fasta_files         => $output_gene_files,
-        job_runner          => $self->job_runner,
+        job_runner          => $self->_is_lsf_job_runner_available ? 'LSF' : $self->job_runner,
         translation_table   => $self->translation_table,
         core_definition     => $self->core_definition,
         cpus                => $self->cpus,
 		verbose             => $self->verbose,
 		mafft               => $self->mafft,
+        dont_delete_files   => $self->dont_delete_files,
       );
       $seg->run();
-	  
-      # Cleanup intermediate multifasta files
-      if($self->dont_delete_files == 0)
-      {
-        remove_tree('pan_genome_sequences');
-      }
     }
-     
+}
 
+sub _is_lsf_job_runner_available
+{
+    my ($self) = @_;
+    my $rc = eval "require Bio::Roary::JobRunner::LSF; 1;";
+    if(defined($rc) && $rc == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 sub _find_input_files
