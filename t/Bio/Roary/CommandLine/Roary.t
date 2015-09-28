@@ -91,7 +91,7 @@ SKIP:
     );
 
     my @keys = keys %{ $seq_len->sequence_lengths };
-    is( $seq_len->sequence_lengths->{ $keys[0] }, 64932, 'length of first sequence' );
+    is( $seq_len->sequence_lengths->{ $keys[0] }, 64983, 'length of first sequence' );
 
     ok( -e 'accessory.tab' );
     ok( -e 'core_accessory.tab' );

@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -24,7 +23,7 @@ ok( $obj = Bio::Roary::SortFasta->new(
 ok($obj->sort_fasta, 'sort the fasta file');
 ok(-e 't/data/out_of_order_fasta.fa.sorted.fa', 'the new file exists');
 
-is(read_file('t/data/out_of_order_fasta.fa.sorted.fa'), read_file('t/data/expected_out_of_order_fasta.fa.sorted.fa'), 'check order of sorted fasta');
+compare_ok('t/data/out_of_order_fasta.fa.sorted.fa', 't/data/expected_out_of_order_fasta.fa.sorted.fa', 'check order of sorted fasta');
 
 
 ok( $obj = Bio::Roary::SortFasta->new(
@@ -49,5 +48,11 @@ ok( $obj = Bio::Roary::SortFasta->new(
 ), 'initalise object with uneven sequences and remove nnn from end but nothing to remove');
 ok($obj->sort_fasta, 'sort the fasta file');
 compare_ok($obj->output_filename, 't/data/expected_uneven_sequences.fa', "output sequences are now divisible by three and no nnn removed");
+
+
+is(0,$obj->_percentage_similarity("AAA","BBB"), 'totally different');
+is(1,$obj->_percentage_similarity("AAA","AAA"), 'all the same');
+is(0.5,$obj->_percentage_similarity("AAAA","AABB"), 'half different');
+is(1,$obj->_percentage_similarity("AAAA","AAAABB"), 'first half the same');
 
 done_testing();
