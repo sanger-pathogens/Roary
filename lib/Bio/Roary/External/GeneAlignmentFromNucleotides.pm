@@ -45,7 +45,7 @@ sub _build__memory_required_in_mb {
     my ($self)          = @_;
 
     my $largest_file_size = 1;
-    for my $file (@{$fasta_files})
+    for my $file (@{$self->fasta_files})
     {
         my $file_size = -s $file;
         if($file_size > $largest_file_size)
