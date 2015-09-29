@@ -130,6 +130,7 @@ Options: -o STR    output filename [core_gene_alignment.aln]
          -cd FLOAT percentage of isolates a gene must be in to be core [99]
          -m STR    directory containing gene multi-FASTAs [pan_genome_sequences]
          -s STR    gene presence and absence spreadsheet [gene_presence_absence.csv]
+         -z        dont delete intermediate files
          -v        verbose output to STDOUT
          -h        this help message
 
