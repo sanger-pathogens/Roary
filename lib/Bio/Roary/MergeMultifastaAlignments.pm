@@ -50,10 +50,10 @@ sub _build__gene_lengths
    {
        my $seq_io = $self->_input_seq_io_obj($filename);
 	   next unless(defined($seq_io ));
-       while($seq_record = $seq_io->next_seq)
+       while(my $seq_record = $seq_io->next_seq)
        {
            # Save all of the gene sequences to memory, massive speedup but a bit naughty.
-          $self->_gene_to_sequence->{$seq_record->display_id} = $seq_record->seq;
+          $self->_gene_to_sequence->{$filename}->{$seq_record->display_id} = $seq_record->seq;
 	      $gene_lengths{$filename} = $seq_record->length() if(!defined($gene_lengths{$filename}));
        }
    }
@@ -64,15 +64,16 @@ sub _build__gene_lengths
 sub _sequence_for_sample_from_gene_file
 {
 	my ($self, $sample_name, $gene_file) = @_;
-
-    if(defined($self->sample_names_to_genes->{$sample_name}->{$gene_file}))
+    
+    # loop over this to get the geneIDs
+    for my $gene_id (keys %{$self->_gene_to_sequence->{$gene_file}})
     {
-      return $self->sample_names_to_genes->{$sample_name}->{$gene_file};
+        if(defined($self->sample_names_to_genes->{$sample_name}->{$gene_id}))
+        {
+          return $self->_gene_to_sequence->{$gene_file}->{$gene_id};
+        }
     }
-    else
-    {
 	  return $self->_padded_string_for_gene_file($gene_file);
-    }
 }
 
 sub _padded_string_for_gene_file
