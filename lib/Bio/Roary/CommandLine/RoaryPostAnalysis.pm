@@ -108,9 +108,10 @@ sub run {
         die $self->usage_text;
     }
 
+    my $input_files = $self->_read_file_into_array($self->input_files);
     my $obj = Bio::Roary::PostAnalysis->new(
       fasta_files                     =>  $self->_read_file_into_array($self->fasta_files) ,
-      input_files                     =>  $self->_read_file_into_array($self->input_files) ,
+      input_files                     =>  $input_files ,
       output_filename                 =>  $self->output_filename            ,
       output_pan_geneome_filename     =>  $self->output_pan_geneome_filename,
       output_statistics_filename      =>  $self->output_statistics_filename ,
@@ -147,6 +148,7 @@ sub run {
 		verbose             => $self->verbose,
 		mafft               => $self->mafft,
         dont_delete_files   => $self->dont_delete_files,
+        num_input_files     => $#{$input_files},
       );
       $seg->run();
     }
