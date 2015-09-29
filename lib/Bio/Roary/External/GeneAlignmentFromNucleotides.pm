@@ -55,7 +55,7 @@ sub _build__memory_required_in_mb {
     }
     
     my $approx_sequence_length_of_largest_file = $largest_file_size/ $self->num_input_files;
-    my $memory_required = ($approx_sequence_length_of_largest_file*$approx_sequence_length_of_largest_file) + $self->_min_memory_in_mb;
+    my $memory_required = (($approx_sequence_length_of_largest_file*$approx_sequence_length_of_largest_file)/1000000) + $self->_min_memory_in_mb;
     
     $memory_required = $self->_max_memory_in_mb if($memory_required  > $self->_max_memory_in_mb);
 
