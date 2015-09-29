@@ -23,13 +23,13 @@ Returns the path to the results file
 use Moose;
 with 'Bio::Roary::JobRunner::Role';
 
-has 'fasta_files'       => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein_alignment_from_nucleotides' );
-has 'translation_table' => ( is => 'rw', isa => 'Int',      default => 11 );
-has 'core_definition'   => ( is => 'ro', isa => 'Num',      default => 1 );
-has 'mafft'             => ( is => 'ro', isa => 'Bool',     default => 0 );
-has 'dont_delete_files' => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'num_input_files'   => ( is => 'ro', isa => 'Int',      required => 1);
+has 'fasta_files'                 => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'exec'                        => ( is => 'ro', isa => 'Str',      default  => 'protein_alignment_from_nucleotides' );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',      default => 11 );
+has 'core_definition'             => ( is => 'ro', isa => 'Num',      default => 1 );
+has 'mafft'                       => ( is => 'ro', isa => 'Bool',     default => 0 );
+has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'num_input_files'             => ( is => 'ro', isa => 'Int',      required => 1);
 
 # Overload Role
 has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
