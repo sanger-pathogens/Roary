@@ -79,7 +79,7 @@ sub _build__core_alignment_cmd {
     
     my $core_cmd = "pan_genome_core_alignment";
     $core_cmd .= " -cd " . ($self->core_definition*100) if ( defined $self->core_definition );
-    $core_cmd .= " --dont_delete_files " if ( defined $self->dont_delete_files );
+    $core_cmd .= " --dont_delete_files " if ( defined $self->dont_delete_files  && $self->dont_delete_files == 1 );
 
     return $core_cmd;
 }
