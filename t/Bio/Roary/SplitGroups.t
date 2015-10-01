@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -24,7 +24,7 @@ ok( $obj = Bio::Roary::SplitGroups->new(
 
 $obj->split_groups;
 ok( -e 'blah.out', 'output file exists' );
-is(read_file('blah.out'), read_file('t/data/split_groups/paralog_exp_clusters1'), 'split group output correct for test 1');
+compare_ok('blah.out','t/data/split_groups/paralog_exp_clusters1', 'split group output correct for test 1');
 
 # test 2 - partial sharing of CGN
 ok( $obj = Bio::Roary::SplitGroups->new(
@@ -36,7 +36,7 @@ ok( $obj = Bio::Roary::SplitGroups->new(
 
 $obj->split_groups;
 ok( -e 'blah2.out', 'output file exists' );
-is(read_file('blah2.out'), read_file('t/data/split_groups/paralog_exp_clusters2'), 'split group output correct for test 2');
+compare_ok('blah2.out', 't/data/split_groups/paralog_exp_clusters2', 'split group output correct for test 2');
 
 # test 3 - one gene with no shared CGN
 ok( $obj = Bio::Roary::SplitGroups->new(
@@ -48,7 +48,7 @@ ok( $obj = Bio::Roary::SplitGroups->new(
 
 $obj->split_groups;
 ok( -e 'blah3.out', 'output file exists' );
-is(read_file('blah3.out'), read_file('t/data/split_groups/paralog_exp_clusters3'), 'split group output correct for test 3');
+compare_ok('blah3.out', 't/data/split_groups/paralog_exp_clusters3', 'split group output correct for test 3');
 
 # test 4 - paralogs inside paralogs (inception paralog)
 ok( $obj = Bio::Roary::SplitGroups->new(
@@ -60,7 +60,7 @@ ok( $obj = Bio::Roary::SplitGroups->new(
 
 $obj->split_groups;
 ok( -e 'blah4.out', 'output file exists' );
-is(read_file('blah4.out'), read_file('t/data/split_groups/paralog_exp_clusters4'), 'split group output correct for test 4');
+compare_ok('blah4.out','t/data/split_groups/paralog_exp_clusters4', 'split group output correct for test 4');
 
 unlink( "blah.out" );
 unlink( "blah2.out" );

@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";

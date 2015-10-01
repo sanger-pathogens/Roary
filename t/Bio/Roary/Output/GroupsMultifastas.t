@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 
@@ -30,14 +30,12 @@ ok( $obj->create_files(), 'Create multiple fasta files' );
 ok( -e $obj->output_filename_base . '_group_2.fa', $obj->output_filename_base . '_group_2.fa'.' group created' );
 ok( -e $obj->output_filename_base . '_group_5.fa', $obj->output_filename_base . '_group_2.fa'.' group created' );
 
-is(
-    read_file( $obj->output_filename_base . '_group_2.fa' ),
-    read_file('t/data/expected_output_groups_group_2_multi.fa'),
+compare_ok( $obj->output_filename_base . '_group_2.fa' ,
+    't/data/expected_output_groups_group_2_multi.fa',
     'group 2 contect as expected'
 );
-is(
-    read_file( $obj->output_filename_base . '_group_5.fa' ),
-    read_file('t/data/expected_output_groups_group_5_multi.fa'),
+compare_ok( $obj->output_filename_base . '_group_5.fa' ,
+    't/data/expected_output_groups_group_5_multi.fa',
     'group 5 contect as expected'
 );
 

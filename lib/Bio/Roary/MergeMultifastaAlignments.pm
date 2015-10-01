@@ -25,6 +25,12 @@ has 'sample_names_to_genes'  => ( is => 'rw', isa => 'HashRef',    required => 1
 has 'output_filename'        => ( is => 'ro', isa => 'Str',        default  => 'core_alignment.aln' );
 has '_output_seqio_obj'      => ( is => 'ro', isa => 'Bio::SeqIO', lazy     => 1, builder => '_build__output_seqio_obj' );
 has '_gene_lengths'          => ( is => 'rw', isa => 'HashRef',    lazy     => 1, builder => '_build__gene_lengths'  );
+has '_gene_to_sequence'      => ( is => 'rw', isa => 'HashRef',    default  => sub {{}});
+
+sub BUILD {
+    my ($self) = @_;
+    $self->_gene_lengths;
+}
 
 sub _input_seq_io_obj {
     my ( $self, $filename ) = @_;
@@ -44,29 +50,30 @@ sub _build__gene_lengths
    {
        my $seq_io = $self->_input_seq_io_obj($filename);
 	   next unless(defined($seq_io ));
-	   my $seq_record = $seq_io->next_seq;
-	   next unless(defined($seq_record ));
-	   $gene_lengths{$filename} = $seq_record->length();
+       while(my $seq_record = $seq_io->next_seq)
+       {
+           # Save all of the gene sequences to memory, massive speedup but a bit naughty.
+          $self->_gene_to_sequence->{$filename}->{$seq_record->display_id} = $seq_record->seq;
+	      $gene_lengths{$filename} = $seq_record->length() if(!defined($gene_lengths{$filename}));
+       }
    }
+
    return \%gene_lengths;
 }
 
 sub _sequence_for_sample_from_gene_file
 {
 	my ($self, $sample_name, $gene_file) = @_;
-	
-    my $seq_io = $self->_input_seq_io_obj($gene_file);
-    return undef unless(defined($seq_io ));
-	my $seq_record;
-    while($seq_record = $seq_io->next_seq)
-	{
-      if($self->sample_names_to_genes->{$sample_name}->{$seq_record->display_id} )
-	  {
-		  return $seq_record->seq;
-	  }
+    
+    # loop over this to get the geneIDs
+    for my $gene_id (keys %{$self->_gene_to_sequence->{$gene_file}})
+    {
+        if(defined($self->sample_names_to_genes->{$sample_name}->{$gene_id}))
+        {
+          return $self->_gene_to_sequence->{$gene_file}->{$gene_id};
+        }
     }
-	
-	return $self->_padded_string_for_gene_file($gene_file);
+	  return $self->_padded_string_for_gene_file($gene_file);
 }
 
 sub _padded_string_for_gene_file

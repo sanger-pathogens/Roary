@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use Moose;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 use Cwd;
 use File::Which;
 

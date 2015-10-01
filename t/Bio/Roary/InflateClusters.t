@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -22,7 +22,7 @@ ok( $obj = Bio::Roary::InflateClusters->new(
 ),'initialise object');
 ok($obj->inflate,'inflate the results');
 
-is(read_file('example.output'),read_file('t/data/expected_inflated_results'), 'inflated results as expected');
+compare_ok('example.output','t/data/expected_inflated_results', 'inflated results as expected');
 unlink('example.output');
 
 
@@ -33,7 +33,7 @@ ok( $obj = Bio::Roary::InflateClusters->new(
 ),'initialise object');
 ok($obj->inflate,'inflate the results');
 
-is(read_file('example.output'),read_file('t/data/expected_clusters_to_inflate'), 'inflated results as expected');
+compare_ok('example.output','t/data/expected_clusters_to_inflate', 'inflated results as expected');
 unlink('example.output');
 
 done_testing();

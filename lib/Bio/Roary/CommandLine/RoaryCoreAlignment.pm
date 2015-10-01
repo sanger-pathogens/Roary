@@ -12,6 +12,7 @@ Take in the group statistics spreadsheet and the location of the gene multifasta
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Cwd 'abs_path';
+use File::Path qw(remove_tree);
 use Bio::Roary::ExtractCoreGenesFromSpreadsheet;
 use Bio::Roary::LookupGeneFiles;
 use Bio::Roary::MergeMultifastaAlignments;
@@ -25,13 +26,14 @@ has 'multifasta_base_directory' => ( is => 'rw', isa => 'Str', default => 'pan_g
 has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'gene_presence_absence.csv' );
 has 'output_filename'           => ( is => 'rw', isa => 'Str', default => 'core_gene_alignment.aln' );
 has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 0.99 );
+has 'dont_delete_files'         => ( is => 'rw', isa => 'Bool', default => 0 );
 has '_error_message'            => ( is => 'rw', isa => 'Str' );
 has 'verbose'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help, $mafft );
+    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help, $mafft, $dont_delete_files );
 
     GetOptionsFromArray(
         $self->args,
@@ -39,6 +41,7 @@ sub BUILD {
         's|spreadsheet_filename=s'      => \$spreadsheet_filename,
         'o|output_filename=s'           => \$output_filename,
         'cd|core_definition=f'          => \$core_definition,
+        'z|dont_delete_files'           => \$dont_delete_files,
 		'v|verbose'                     => \$verbose,
         'h|help'                        => \$help,
     );
@@ -76,6 +79,8 @@ sub BUILD {
 			$self->core_definition( $core_definition );
 		}
 	}
+    $self->dont_delete_files($dont_delete_files) if ( defined($dont_delete_files) );
+    
 }
 
 sub run {
@@ -107,6 +112,11 @@ sub run {
 	  sample_names_to_genes => $core_genes_obj->sample_names_to_genes
     );
     $merge_alignments_obj->merge_files;
+    
+    if($self->dont_delete_files == 0)
+    {
+      remove_tree('pan_genome_sequences');
+    }
 }
 
 sub usage_text {
@@ -120,6 +130,7 @@ Options: -o STR    output filename [core_gene_alignment.aln]
          -cd FLOAT percentage of isolates a gene must be in to be core [99]
          -m STR    directory containing gene multi-FASTAs [pan_genome_sequences]
          -s STR    gene presence and absence spreadsheet [gene_presence_absence.csv]
+         -z        dont delete intermediate files
          -v        verbose output to STDOUT
          -h        this help message
 

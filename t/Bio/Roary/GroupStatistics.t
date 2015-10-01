@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -30,7 +30,7 @@ ok($obj = Bio::Roary::GroupStatistics->new(
 ),'Initialise group statistics object');
 ok($obj->create_spreadsheet,'Create the CSV file');
 ok(-e 'group_statitics.csv', 'CSV file exists');
-is(read_file('group_statitics.csv'),read_file('t/data/expected_group_statitics.csv'), 'Spreadsheet content as expected');
+compare_ok('group_statitics.csv','t/data/expected_group_statitics.csv', 'Spreadsheet content as expected');
 
 unlink('group_statitics.csv');
 
@@ -54,7 +54,7 @@ ok($obj = Bio::Roary::GroupStatistics->new(
 ),'Initialise group statistics object where one isolate has only 1 gene');
 ok($obj->create_spreadsheet,'Create the CSV file');
 ok(-e 'missing_genes_stats.csv', 'CSV file exists');
-is(read_file('missing_genes_stats.csv'),read_file('t/data/expected_group_statitics_missing_genes.csv'), 'Spreadsheet content as expected with missing genes');
+compare_ok('missing_genes_stats.csv','t/data/expected_group_statitics_missing_genes.csv', 'Spreadsheet content as expected with missing genes');
 
 unlink('missing_genes_stats.csv');
 
@@ -69,7 +69,7 @@ ok($obj = Bio::Roary::GroupStatistics->new(
 ),'Initialise group statistics object');
 ok($obj->create_spreadsheet,'Create the CSV file');
 ok(-e 'verbose_stats.csv', 'CSV file exists');
-is(read_file('verbose_stats.csv'),read_file('t/data/expected_group_statitics_verbose.csv'), 'Verbose spreadsheet content as expected');
+compare_ok('verbose_stats.csv','t/data/expected_group_statitics_verbose.csv', 'Verbose spreadsheet content as expected');
 
 unlink('verbose_stats.csv');
 

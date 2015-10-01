@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use File::Slurper 'read_text';
 use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -54,9 +54,9 @@ ok( $obj->groups_to_contigs,       'build the graph for sample weights' );
 ok( -e 'core_accessory_graph.dot', 'core accessory graph created for sample weights' );
 ok( -e 'accessory_graph.dot',      'accessory graph created for sample weights' );
 
-my $actual_graph = read_file('accessory_graph.dot');
+my $actual_graph = read_text('accessory_graph.dot');
 $actual_graph =~ s/group_[\w]/group_X/gi;
-is_deeply( $actual_graph, read_file('t/data/expected_sample_weights_accessory_graph.dot'), 'graph weights changed' );
+is_deeply( $actual_graph, read_text('t/data/expected_sample_weights_accessory_graph.dot'), 'graph weights changed' );
 
 # Check how the final graphs get reordered.
 
