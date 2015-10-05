@@ -1,62 +1,403 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Pan Genome Pipeline : ">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-    <title>Roary the Pan Genome Pipeline</title>
+    <title>Pan Genome Pipeline by andrewjpage</title>
   </head>
 
   <body>
+    <header>
+      <div class="inner">
+        <h1>Pan Genome Pipeline</h1>
+        <h2></h2>
+        <a href="https://github.com/andrewjpage/Roary" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/sanger-pathogens/Roary">View on GitHub</a>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span class="octicon octicon-link"></span></a>Abstract</h1>
 
-          <h1 id="project_title">Roary the Pan Genome Pipeline</h1>
-          <h2 id="project_tagline"></h2>
+<p><strong>By Andrew Page based on version 3.3.3 (2-Oct-2015)</strong></p>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/sanger-pathogens/Roary/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/sanger-pathogens/Roary/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
+<p>Roary is a high speed stand alone pan genome pipeline, which takes annotated assemblies in GFF3 format (produced by Prokka (Seemann, 2014)) and calculates the pan genome. Using a standard desktop PC, it can analyse datasets with thousands of samples, something which is computationally infeasible with existing methods, without compromising the quality of the results. 128 samples can be analysed in under 1 hour using 1 GB of RAM and a single processor. To perform this analysis using existing methods would take weeks and hundreds of GB of RAM. Roary is not intended for meta-genomics or for comparing extremely diverse sets of genomes. </p>
+
+<h1>
+<a id="citation-and-further-details-of-the-method" class="anchor" href="#citation-and-further-details-of-the-method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Citation and further details of the method</h1>
+
+<p>Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), "Roary: Rapid large-scale prokaryote pan genome analysis", Bioinformatics, <a href="http://bioinformatics.oxfordjournals.org/content/early/2015/08/05/bioinformatics.btv421">doi:10.1093/bioinformatics/btv421</a></p>
+
+<h1>
+<a id="installation-instructions" class="anchor" href="#installation-instructions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation instructions</h1>
+
+<p><a href="https://github.com/sanger-pathogens/Roary/blob/master/README.md">Details on how to install Roary</a>.</p>
+
+<h1>
+<a id="input-files" class="anchor" href="#input-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files</h1>
+
+<p>Roary takes GFF3 files as input. They must contain the nucleotide sequence at the end of the file.</p>
+
+<h2>
+<a id="input-files-from-prokka" class="anchor" href="#input-files-from-prokka" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files from Prokka</h2>
+
+<p>All GFF3 files created by Prokka are valid with Roary and this is the recommended way of generating the input files.  Each input file should have a unique prefix for the gene IDs (--prefix) to make it easier for you to identify where genes came from.</p>
+
+<h2>
+<a id="input-files-from-genbank" class="anchor" href="#input-files-from-genbank" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files from GenBank</h2>
+
+<p>On NCBI's website, GFF3 files only contain annotation and not the nucleotide sequence so cannot be used. You need to download the GenBank files plus nucleotide sequence and convert them. When downloading, click on the <em>show sequence</em> option, <em>Update View</em> then <em>Send</em> to a <em>File</em> of type <em>GenBank</em>. You can then use the Bio::Perl script <em>bp_genbank2gff3.pl</em> to convert to GFF3. Just be aware that mixing different gene prediction methods and annotation pipelines can give noisier results.</p>
+
+<h2>
+<a id="input-files-from-genbank-draft-wgs" class="anchor" href="#input-files-from-genbank-draft-wgs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files from GenBank draft WGS</h2>
+
+<p>Install Bio-RetrieveAssemblies which will allow you to download draft WGS assemblies from GenBank. </p>
+
+<pre><code>sudo cpanm -f Bio::RetrieveAssemblies
+</code></pre>
+
+<p>To download all Salmonella typhi annotated assemblies as GFF3 files:</p>
+
+<pre><code>retrieve_assemblies -a -f gff typhi
+</code></pre>
+
+<h2>
+<a id="software-usage" class="anchor" href="#software-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Software usage</h2>
+
+<p>To run the software and create a pan genome you use the <em>roary</em> script. It takes in GFF files and outputs various analysis.  </p>
+
+<h3>
+<a id="roary" class="anchor" href="#roary" aria-hidden="true"><span class="octicon octicon-link"></span></a>roary</h3>
+
+<pre><code>Usage:   roary [options] *.gff
+
+Options: -p INT    number of threads [1]
+         -o STR    clusters output filename [clustered_proteins]
+         -f STR    output directory [.]
+         -e        create a multiFASTA alignment of core genes using PRANK
+         -n        fast core gene alignment with MAFFT, use with -e
+         -i        minimum percentage identity for blastp [95]
+         -cd FLOAT percentage of isolates a gene must be in to be core [99]
+         -z        dont delete intermediate files
+         -t INT    translation table [11]
+         -v        verbose output to STDOUT
+         -y        add gene inference information to spreadsheet
+         -g INT    maximum number of clusters [50000]
+         -qc       generate QC report with Kraken
+         -k STR    path to Kraken database for QC, use with -qc
+         -w        print version and exit
+         -a        check dependencies and exit
+         -h        this help message
+</code></pre>
+
+<p>Default usage – create a pan genome without a core alignment</p>
+
+<pre><code>roary *.gff
+</code></pre>
+
+<p>Quickly generate a core gene alignment using 8 threads:</p>
+
+<pre><code>roary -e --mafft -p 8 *.gff
+</code></pre>
+
+<p>Save results to a different directory:</p>
+
+<pre><code>roary –f output_dir *.gff
+</code></pre>
+
+<p>Change the minimum blastp percentage identity. Its not advised to go below 90% unless you know what your doing.</p>
+
+<pre><code>roary –i 90 *.gff
+</code></pre>
+
+<p>Run a QC check to see if all the samples are what you think they are</p>
+
+<pre><code>roary –qc –k /path/to/kraken/db *.gff
+</code></pre>
+
+<p>Check that the software is installed correctly.</p>
+
+<pre><code>roary -a
+</code></pre>
+
+<h3>
+<a id="query_pan_genome" class="anchor" href="#query_pan_genome" aria-hidden="true"><span class="octicon octicon-link"></span></a>query_pan_genome</h3>
+
+<p>Perform set operations on the pan genome to see the gene differences between groups of isolates.</p>
+
+<pre><code>Options: -g STR    groups filename [clustered_proteins]
+         -a STR    action (union/intersection/complement/gene_multifasta/difference) [union]
+         -c FLOAT  percentage of isolates a gene must be in to be core [99]
+         -o STR    output filename [pan_genome_results]
+         -n STR    comma separated list of gene names for use with gene_multifasta action
+         -i STR    comma separated list of filenames, comparison set one
+         -t STR    comma separated list of filenames, comparison set two
+         -v        verbose output to STDOUT
+         -h        this help message
+</code></pre>
+
+<p>Union of genes found in isolates</p>
+
+<pre><code>query_pan_genome -a union *.gff
+</code></pre>
+
+<p>Intersection of genes found in isolates (core genes)</p>
+
+<pre><code>query_pan_genome -a intersection *.gff
+</code></pre>
+
+<p>Complement of genes found in isolates (accessory genes)</p>
+
+<pre><code>query_pan_genome -a complement *.gff
+</code></pre>
+
+<p>Extract the sequence of each gene listed and create multi-FASTA files</p>
+
+<pre><code>query_pan_genome -a gene_multifasta -n gryA,mecA,abc *.gff
+</code></pre>
+
+<p>Gene differences between sets of isolates</p>
+
+<pre><code>query_pan_genome -a difference --input_set_one 1.gff,2.gff --input_set_two 3.gff,4.gff,5.gff
+</code></pre>
+
+<h3>
+<a id="iterative_cdhit" class="anchor" href="#iterative_cdhit" aria-hidden="true"><span class="octicon octicon-link"></span></a>iterative_cdhit</h3>
+
+<p>Iteratively cluster a set of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.</p>
+
+<pre><code>Options: -p INT   number of threads [1]
+         -m STR   output filename for combined proteins [_combined_files]
+         -n INT   number of isolates [1]
+         -c STR   cd-hit output filename [_clustered]
+         -f STR   output filename for filtered sequences [_clustered_filtered.fa]
+         -l FLOAT lower bound percentage identity [98.0]
+         -u FLOAT upper bound percentage identity [99.0]
+         -s FLOAT step size for percentage identity [0.5]
+         -v       verbose output to STDOUT
+         -h       this help message
+</code></pre>
+
+<h3>
+<a id="roary_plotspy" class="anchor" href="#roary_plotspy" aria-hidden="true"><span class="octicon octicon-link"></span></a>roary_plots.py</h3>
+
+<p>This contributed script by Marco Galardini is not installed by default but can be very useful. <a href="https://github.com/sanger-pathogens/Roary/tree/master/contrib/roary_plots">Additional details can be found here in the repository</a>.
+It provides 3 figures, showing the tree compared to a matrix with the presence and absence of core and accessory genes. The next is an pie chart of the breakdown of genes and the number of isolate they are present in. And finally there is a graph with the frequency of genes versus the number of genomes.</p>
+
+<pre><code>roary_plots.py my_tree.tre gene_presence_absence.csv
+</code></pre>
+
+<p><img src="http://sanger-pathogens.github.io/Roary/images/pan_genome_matrix.png" alt="Pan Genome Matrix"></p>
+
+<p><img src="http://sanger-pathogens.github.io/Roary/images/pan_genome_pie.png" alt="Pan Genome Pie"></p>
+
+<p><img src="http://sanger-pathogens.github.io/Roary/images/pan_genome_freq.png" alt="Pan Genome Frequency"></p>
+
+<h1>
+<a id="receipe-for-using-roary" class="anchor" href="#receipe-for-using-roary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Receipe for using Roary</h1>
+
+<ol>
+<li>Annotate FASTA files with PROKKA</li>
+<li>Roary –e –mafft *.gff</li>
+<li>FastTree –nt –gtr core_gene_alignment.aln &gt; my_tree.newick</li>
+</ol>
+
+<h1>
+<a id="output-files" class="anchor" href="#output-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output files</h1>
+
+<h2>
+<a id="summary_statisticstxt" class="anchor" href="#summary_statisticstxt" aria-hidden="true"><span class="octicon octicon-link"></span></a>summary_statistics.txt</h2>
+
+<p>Number of genes in the core and accessory. A text file with an overview of the genes and how frequently they occur in the input isolates. If the number of core genes is 0 it can indicate you have some contamination. Likewise if the total number of  genes is very high.
+<img src="http://sanger-pathogens.github.io/Roary/images/summary_statistics.png" alt="Summary Statistics"></p>
+
+<h2>
+<a id="gene_presence_absencecsv" class="anchor" href="#gene_presence_absencecsv" aria-hidden="true"><span class="octicon octicon-link"></span></a>gene_presence_absence.csv</h2>
+
+<p>The gene presence and absence spreadsheet lists each gene and which samples it is present in.  The view below shows how it looks in Excel. 
+<img src="http://sanger-pathogens.github.io/Roary/images/gene_presence_and_absence.png" alt="Gene presence and absence"></p>
+
+<p>A. The gene name, which is the most frequently occurring gene name from the sequences in the cluster. If there is no gene name, then it is given a generic unique name <em>group_XXX</em>. 
+B. A non unique gene name, where sequences with the same gene name have ended up in different groups. It might be because of split genes, or miss annotation.
+C. Functional annotation. The most frequently occurring functional annotation from the cluster is used.
+D. Number of isolates represented in the cluster.
+E. Number of sequences in the cluster.
+F. Average number of sequences per isolate. This is normally 1. If this is greater than 1 then there is over clustering and the paralogs couldn’t be split.
+G. Genome fragment, where there is evidence at the contig level that the genes are linked. 
+H. Order within fragment, combined with the genome fragment this gives an indication of the order of genes within the graph. In Excel, sort on Column G and H.
+I. Accessory Fragment is where core genes are excluded and there is evidence at contig level that the genes are linked.
+J. Accessory order with fragment, combined with the Accessory fragment this gives an indication of the order of genes within the accessory graph. In Excel, sort on columns I and J.
+K. Comments on the quality of the cluster. Miss predictions are noted, as are single genes on single contigs, which can be evidence of low level contamination.
+X. Presence and absence of genes in each sample, with the corresponding source Gene ID.</p>
+
+<h2>
+<a id="pan_genome_referencefa" class="anchor" href="#pan_genome_referencefa" aria-hidden="true"><span class="octicon octicon-link"></span></a>pan_genome_reference.fa</h2>
+
+<p>This is a FASTA file which contains a single representative nucleotide sequence from each of the clusters in the pan genome (core and accessory). The name of each sequence is the source sequence ID followed by the cluster it came from. This file can be of use for reference guided assembly, whole genome MLST or for mapping raw reads to it. </p>
+
+<h2>
+<a id="rtab" class="anchor" href="#rtab" aria-hidden="true"><span class="octicon octicon-link"></span></a>*.Rtab</h2>
+
+<p>There is an additional script called <em>create_pan_genome_plots.R</em> which requires R and the ggplot2 library. It takes in the *.Rtab files and produces graphs on how the pan genome varies as genomes are added (in random orders).</p>
+
+<p><img src="http://sanger-pathogens.github.io/Roary/images/conserved_genes.png" alt="Total Conserved Genes">
+<img src="http://sanger-pathogens.github.io/Roary/images/new_genes.png" alt="New Unique Genes"></p>
+
+<h2>
+<a id="accessory_binary_genesfanewick" class="anchor" href="#accessory_binary_genesfanewick" aria-hidden="true"><span class="octicon octicon-link"></span></a>accessory_binary_genes.fa.newick</h2>
+
+<p>This is a tree created using the binary presence and absence of accessory genes. It is in Newick format and can be viewed in FigTree. It is only a quick and dirty tree to roughly group isolates together based on their accessory genome and is in no way reliable other than to give a quick insight into the data. If you want a more accurate tree you need to use the core gene alignment as your starting point.</p>
+
+<h2>
+<a id="accessory_graphdot" class="anchor" href="#accessory_graphdot" aria-hidden="true"><span class="octicon octicon-link"></span></a>accessory_graph.dot</h2>
+
+<p>A graph in DOT format of how genes are linked together at the contig level in the accessory genome.</p>
+
+<h2>
+<a id="core_accessory_graphdot" class="anchor" href="#core_accessory_graphdot" aria-hidden="true"><span class="octicon octicon-link"></span></a>core_accessory_graph.dot</h2>
+
+<p>A graph in DOT format of how genes are linked together at the contig level in the pan genome.</p>
+
+<h2>
+<a id="clustered_proteins" class="anchor" href="#clustered_proteins" aria-hidden="true"><span class="octicon octicon-link"></span></a>clustered_proteins</h2>
+
+<p>Groups file where each line lists the sequences in a cluster.</p>
+
+<h2>
+<a id="core_gene_alignmentaln" class="anchor" href="#core_gene_alignmentaln" aria-hidden="true"><span class="octicon octicon-link"></span></a>core_gene_alignment.aln</h2>
+
+<p>If you pass in the <em>-e</em> parameter to roary, a multi-FASTA alignment of all of the core genes is created. By default it uses PRANK (Löytynoja, 2014) which performs a codon aware alignment. It is slow but accurate.  If you pass in <em>-e --mafft</em> it will use MAFFT which performs a nucleotide alignment. It is very fast but less accurate. This can then be used as input to build a phylogenetic tree. To reduce the memory and run time, you can pre filter the alignment using <a href="https://github.com/sanger-pathogens/snp_sites">snp_sites</a>.
+Just be aware that recombination is not taken care of with this method.  </p>
+
+<h1>
+<a id="software-availability" class="anchor" href="#software-availability" aria-hidden="true"><span class="octicon octicon-link"></span></a>Software availability</h1>
+
+<p>All of the source code is available under the GNU GPL 3 open source license from:
+<a href="https://github.com/sanger-pathogens/Roary">https://github.com/sanger-pathogens/Roary</a></p>
+
+<h1>
+<a id="contact-us" class="anchor" href="#contact-us" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contact us</h1>
+
+<p>If you are having problems installing the software you should contact your local system administrator in the first instance as they will be best placed to assist you.  If you have any queries about Roary or wish to report any bugs please email <a href="mailto:roary@sanger.ac.uk">roary@sanger.ac.uk</a>.</p>
+
+<h1>
+<a id="faq" class="anchor" href="#faq" aria-hidden="true"><span class="octicon octicon-link"></span></a>FAQ</h1>
+
+<h2>
+<a id="strange-errors" class="anchor" href="#strange-errors" aria-hidden="true"><span class="octicon octicon-link"></span></a> Strange errors</h2>
+
+<p>Check the dependencies with <em>roary -a</em>.  If theres something missing, then you’ll need to install it.</p>
+
+<h2>
+<a id="i-got-no-core-genes" class="anchor" href="#i-got-no-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>I got no core genes?</h2>
+
+<p>Usually this means there is contamination, where one of your samples is from a different unrelated species.  If you have Kraken (Wood and Salzberg, 2014) installed, you can run a Kraken QC check with <em>—qc –k /path/to/kraken/db</em>. This will produce report which will list the top species for each sample.  Another quick way is to simply look at the size of your input files. If some are way too big or way too small, they might be a different species or partial assemblies. If assemblies are extremely fragmented (thousands of contigs), genes may be too fragmented to do anything with.</p>
+
+<h2>
+<a id="the-core-is-a-lot-smaller-than-i-expected" class="anchor" href="#the-core-is-a-lot-smaller-than-i-expected" aria-hidden="true"><span class="octicon octicon-link"></span></a>The core is a lot smaller than I expected?</h2>
+
+<p>With bacteria, the rule of thumb is that there are about 1,000 genes per million bases. If you have a 2 megabase genome and are getting a core of 200 genes, instead of closer to 2,000 genes, then there is a problem. The species could be too diverse, in which case you should lower the blastp percentage identity (-i 90). Just be aware that you can get anything to cluster with anything else if you set this value low enough, but the results will be complete rubbish. If your setting this below 70%, then your doing something wrong. Other causes are contamination from a different species, or very poor assemblies (too small, too fragmented), see <em>I got no core genes</em>. </p>
+
+<h2>
+<a id="no-core-alignment-is-produced-and-theres-an-error-about-too-many-clusters" class="anchor" href="#no-core-alignment-is-produced-and-theres-an-error-about-too-many-clusters" aria-hidden="true"><span class="octicon octicon-link"></span></a>No core alignment is produced and theres an error about too many clusters?</h2>
+
+<p>By default if there are more than 50,000 clusters, Roary will not create the core alignment. In virtually every case, having more than 50,000 clusters is a result of mixing different unrelated species and you should go back and QC your samples.  In some limited cases (e.g. E. coli) you can increase the maximum number of allowed clusters by using the <em>–g</em> parameter (<em>-g 60000</em>).  More clusters will mean a longer running time, and a lot more RAM usage.</p>
+
+<h2>
+<a id="what-tree-building-software-do-you-recommend" class="anchor" href="#what-tree-building-software-do-you-recommend" aria-hidden="true"><span class="octicon octicon-link"></span></a>What tree building software do you recommend?</h2>
+
+<p>RAxML (Stamatakis, 2014) is great, or if you need a quick and dirty tree try FastTree.</p>
+
+<h2>
+<a id="theres-some-very-long-branches-in-my-tree" class="anchor" href="#theres-some-very-long-branches-in-my-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>Theres some very long branches in my tree?</h2>
+
+<p>Its likely you have recombination. Roary doesn’t take recombination into account, so you will have to use a different method such as Gubbins (Croucher et al., 2014). Or you might have contamination from two closely related strains.</p>
+
+<h2>
+<a id="is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" class="anchor" href="#is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is there a server I can upload my data to and get a pan genome back?</h2>
+
+<p>No. One of the big selling points of Roary is that it can run on your own machine in a reasonable amount of time. Sending genomic data across borders is fraught with danger (and slow). For example, what if your private data gets accidentally publicly released, or you accidentally send data that is contaminated with Human reads (illegal without proper safeguards in many countries)? One possible alternative is to use <a href="http://wgsa.net">http://wgsa.net</a> if you wish to visualize your samples in the context of other published samples.</p>
+
+<h2>
+<a id="i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" class="anchor" href="#i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a> I have no knowledge of the command line or bioinformatics and have just spent $500,000 sequencing lots of bacteria. What do I do to get a pretty tree?</h2>
+
+<p>Hire a bioinformatician.</p>
+
+<h2>
+<a id="i-havent-done-any-qc-on-my-sequencing-data-and-the-pan-genome-looks-very-strange" class="anchor" href="#i-havent-done-any-qc-on-my-sequencing-data-and-the-pan-genome-looks-very-strange" aria-hidden="true"><span class="octicon octicon-link"></span></a>I haven’t done any QC on my sequencing data and the pan genome looks very strange?</h2>
+
+<p>garbage in = garbage out.</p>
+
+<h2>
+<a id="will-it-work-with-virus-data" class="anchor" href="#will-it-work-with-virus-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Virus data?</h2>
+
+<p>In theory yes, just set the translation table to 1 (<em>-t 1</em>). I haven’t validated it so use at your own risk.</p>
+
+<h2>
+<a id="will-it-work-with-archaea" class="anchor" href="#will-it-work-with-archaea" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Archaea?</h2>
+
+<p>Yes.</p>
+
+<h2>
+<a id="will-it-work-with-mitochondria" class="anchor" href="#will-it-work-with-mitochondria" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Mitochondria?</h2>
+
+<p>Yes, just set the translation table to 4 (<em>-t 4</em>).</p>
+
+<h2>
+<a id="will-it-work-with-eukaryotes-eg-homo-sapiens-mus-musculus" class="anchor" href="#will-it-work-with-eukaryotes-eg-homo-sapiens-mus-musculus" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Eukaryotes (e.g. Homo sapiens, Mus musculus)?</h2>
+
+<p>No.</p>
+
+<h2>
+<a id="do-you-have-plans-for-a-windows-version" class="anchor" href="#do-you-have-plans-for-a-windows-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Do you have plans for a Windows version?</h2>
+
+<p>No. Install Linux.</p>
+
+<h2>
+<a id="cdhit-seg-faults" class="anchor" href="#cdhit-seg-faults" aria-hidden="true"><span class="octicon octicon-link"></span></a>cdhit seg faults</h2>
+
+<p>Old versions of cdhit have a bug, so you need to use at least version 4.6.1. The cdhit packages for Ubuntu 12.04 seem to be effected, so installing from the source is the only option.</p>
+
+<h2>
+<a id="kraken-installed-via-homebrew-throws-an-error" class="anchor" href="#kraken-installed-via-homebrew-throws-an-error" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kraken installed via homebrew throws an error.</h2>
+
+<p>Theres a bug and you'll need to install it from source on older versions of OSX (like Mountain Lion).</p>
+
+<h2>
+<a id="why-dont-you-bundle-a-kraken-database-for-the-qc" class="anchor" href="#why-dont-you-bundle-a-kraken-database-for-the-qc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why dont you bundle a Kraken database for the QC?</h2>
+
+<p>Its massive (2.7GB currently) and changes as RefSeq is updated. The authors have prebuilt databases and details about how to make your own.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/andrewjpage/Roary/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/andrewjpage/Roary/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/andrewjpage/Roary"></a> is maintained by <a href="https://github.com/andrewjpage">andrewjpage</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <p>Roary is a high speed stand alone pan genome pipeline, which takes annotated assemblies in GFF3 format (produced by Prokka) and calculates the pan genome.  Using a standard desktop PC, it can analyse datasets with thousands of samples, something which is computationally infeasible with existing methods, without compromising the quality of the results.  128 samples can be analysed in under 1 hour using 1 GB of RAM and a single processor. To perform this analysis using existing methods would take weeks and hundreds of GB of RAM.</p>
-        <p>The paper has been published in Bioinformatics:</p>
-        
-        <p><strong>Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, 
-        Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), 
-        "Roary: Rapid large-scale prokaryote pan genome analysis", Bioinformatics, doi: <a href=" http://doi.org/10.1093/bioinformatics/btv421">10.1093/bioinformatics/btv421</a></strong></p>
-
-
-<ul>
-    <li><a href="https://github.com/sanger-pathogens/Roary/blob/master/README.md">Installation instructions</a></li>
-	<li><a href="http://sanger-pathogens.github.io/Roary/roary_user_manual.pdf">User manual</a></li>
-</ul>
-
-
-      </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Pan Genome Pipeline maintained by <a href="https://github.com/sanger-pathogens">sanger-pathogens</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
+  
   </body>
 </html>
