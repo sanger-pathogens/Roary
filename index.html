@@ -229,18 +229,21 @@ It provides 3 figures, showing the tree compared to a matrix with the presence a
 <p>The gene presence and absence spreadsheet lists each gene and which samples it is present in.  The view below shows how it looks in Excel. 
 <img src="http://sanger-pathogens.github.io/Roary/images/gene_presence_and_absence.png" alt="Gene presence and absence"></p>
 
-<p>A. The gene name, which is the most frequently occurring gene name from the sequences in the cluster. If there is no gene name, then it is given a generic unique name <em>group_XXX</em>. 
-B. A non unique gene name, where sequences with the same gene name have ended up in different groups. It might be because of split genes, or miss annotation.
-C. Functional annotation. The most frequently occurring functional annotation from the cluster is used.
-D. Number of isolates represented in the cluster.
-E. Number of sequences in the cluster.
-F. Average number of sequences per isolate. This is normally 1. If this is greater than 1 then there is over clustering and the paralogs couldn’t be split.
-G. Genome fragment, where there is evidence at the contig level that the genes are linked. 
-H. Order within fragment, combined with the genome fragment this gives an indication of the order of genes within the graph. In Excel, sort on Column G and H.
-I. Accessory Fragment is where core genes are excluded and there is evidence at contig level that the genes are linked.
-J. Accessory order with fragment, combined with the Accessory fragment this gives an indication of the order of genes within the accessory graph. In Excel, sort on columns I and J.
-K. Comments on the quality of the cluster. Miss predictions are noted, as are single genes on single contigs, which can be evidence of low level contamination.
-X. Presence and absence of genes in each sample, with the corresponding source Gene ID.</p>
+<ol type="A">
+	
+<li>The gene name, which is the most frequently occurring gene name from the sequences in the cluster. If there is no gene name, then it is given a generic unique name <em>group_XXX</em>.</li> 
+<li>A non unique gene name, where sequences with the same gene name have ended up in different groups. It might be because of split genes, or miss annotation.</li>
+<li>Functional annotation. The most frequently occurring functional annotation from the cluster is used.</li>
+<li>Number of isolates represented in the cluster.</li>
+<li>Number of sequences in the cluster.</li>
+<li>Average number of sequences per isolate. This is normally 1. If this is greater than 1 then there is over clustering and the paralogs couldn’t be split.</li>
+<li>Genome fragment, where there is evidence at the contig level that the genes are linked. </li>
+<li>Order within fragment, combined with the genome fragment this gives an indication of the order of genes within the graph. In Excel, sort on Column G and H.</li>
+<li>Accessory Fragment is where core genes are excluded and there is evidence at contig level that the genes are linked.</li>
+<li>Accessory order with fragment, combined with the Accessory fragment this gives an indication of the order of genes within the accessory graph. In Excel, sort on columns I and J.</li>
+<li>Comments on the quality of the cluster. Miss predictions are noted, as are single genes on single contigs, which can be evidence of low level contamination.</li>
+<li>Presence and absence of genes in each sample, with the corresponding source Gene ID.</li>
+</ul>
 
 <h2>
 <a id="pan_genome_referencefa" class="anchor" href="#pan_genome_referencefa" aria-hidden="true"><span class="octicon octicon-link"></span></a>pan_genome_reference.fa</h2>
