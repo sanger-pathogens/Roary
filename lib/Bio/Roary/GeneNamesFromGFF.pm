@@ -21,8 +21,9 @@ with 'Bio::Roary::ParseGFFAnnotationRole';
 
 has 'ids_to_gene_name' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_ids_to_gene_name' );
 has 'ids_to_product' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'ids_to_gene_size' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 
-# Parsing with the perl GFF module is exceptionally slow.
+# Parsing with the perl GFF module is exceptionally slow.
 sub _build_ids_to_gene_name {
     my ($self) = @_;
     my %id_to_gene_name;
@@ -43,7 +44,7 @@ sub _build_ids_to_gene_name {
             my ( $product, @junk ) = $feature->get_tag_values('product');
             $self->ids_to_product->{$gene_id} = $product;
         }
-
+		$self->ids_to_gene_size->{$gene_id} = $feature->end - $feature->start;
     }
 
     return \%id_to_gene_name;

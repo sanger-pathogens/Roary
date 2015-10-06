@@ -27,7 +27,9 @@ has 'gff_files'          => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'output_filename'    => ( is => 'ro', isa => 'Str',      default  => 'reannotated_groups_file' );
 has 'groups_filename'    => ( is => 'ro', isa => 'Str',      required => 1 );
 has '_ids_to_gene_names' => ( is => 'ro', isa => 'HashRef',  lazy     => 1, builder => '_build__ids_to_gene_names' );
-has '_ids_to_product' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has '_ids_to_product'    => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has '_ids_to_gene_size'  => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+
 has '_groups_to_id_names' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_id_names' );
 has '_output_fh' => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
 has '_groups_to_consensus_gene_names' =>
@@ -96,6 +98,7 @@ sub _build__ids_to_gene_names {
     my ($self) = @_;
     my %ids_to_gene_names;
     my %ids_to_product;
+	my %ids_to_gene_size;
     for my $filename ( @{ $self->_filtered_gff_files } ) {
         my $gene_names_from_gff = Bio::Roary::GeneNamesFromGFF->new( gff_file => $filename );
         my %id_to_gene_lookup = %{ $gene_names_from_gff->ids_to_gene_name };
@@ -103,8 +106,12 @@ sub _build__ids_to_gene_names {
 
         my %id_to_product_lookup = %{ $gene_names_from_gff->ids_to_product };
         @ids_to_product{ keys %id_to_product_lookup } = values %id_to_product_lookup;
+		
+		my %ids_to_gene_size_lookup = %{ $gene_names_from_gff->ids_to_gene_size };
+        @ids_to_gene_size{ keys %ids_to_gene_size_lookup } = values %ids_to_gene_size_lookup;
     }
     $self->_ids_to_product( \%ids_to_product );
+	$self->_ids_to_gene_size( \%ids_to_gene_size );
 
     return \%ids_to_gene_names;
 }

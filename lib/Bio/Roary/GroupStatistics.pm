@@ -27,7 +27,7 @@ use Bio::Roary::AnnotateGroups;
 
 has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
-has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'group_statitics.csv' );
+has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'gene_presence_absence.csv' );
 has 'groups_to_contigs'   => ( is => 'ro', isa => 'Maybe[HashRef]');
 
 has '_output_fh'         => ( is => 'ro', lazy => 1,           builder => '_build__output_fh' );

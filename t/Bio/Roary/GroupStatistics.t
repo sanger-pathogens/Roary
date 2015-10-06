@@ -29,10 +29,10 @@ ok($obj = Bio::Roary::GroupStatistics->new(
   analyse_groups_obj  => $analyse_groups 
 ),'Initialise group statistics object');
 ok($obj->create_spreadsheet,'Create the CSV file');
-ok(-e 'group_statitics.csv', 'CSV file exists');
-compare_ok('group_statitics.csv','t/data/expected_group_statitics.csv', 'Spreadsheet content as expected');
+ok(-e 'gene_presence_absence.csv', 'CSV file exists');
+compare_ok('gene_presence_absence.csv','t/data/expected_group_statitics.csv', 'Spreadsheet content as expected');
 
-unlink('group_statitics.csv');
+unlink('gene_presence_absence.csv');
 
 
 ############################
