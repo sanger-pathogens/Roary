@@ -229,9 +229,9 @@ sub _build_group_nucleotide_lengths
 		}
 		
 		next if(@gene_lengths == 0);
-		my $average_gene_size = int((sum @gene_lengths)/@gene_lengths);
-		my $min_gene_size = min @gene_lengths;
-		my $max_gene_size = max @gene_lengths;
+		my $average_gene_size = (int((sum @gene_lengths)/@gene_lengths)) || 0;
+		my $min_gene_size = (min @gene_lengths) || 0;
+		my $max_gene_size = (max @gene_lengths) || 0;
 		$group_nucleotide_lengths{$group_name} = {'min' => $min_gene_size, 'max' =>$max_gene_size , 'average' => $average_gene_size};
     }
 	return \%group_nucleotide_lengths;
