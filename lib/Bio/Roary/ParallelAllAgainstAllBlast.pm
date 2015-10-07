@@ -40,7 +40,7 @@ has '_working_directory' =>
   ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_working_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__working_directory_name' );
 
-has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
+has 'memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build_memory_in_mb' );
 
 
 sub BUILD {
@@ -93,7 +93,7 @@ sub _combine_blast_results {
     return 1;
 }
 
-sub _build__memory_required_in_mb
+sub _build_memory_in_mb
 {
   my ($self) = @_;
   my $filename = $self->fasta_file;
@@ -130,7 +130,7 @@ sub run {
         push( @commands_to_run,       $blast_database->_command_to_run() );
 		$self->logger->info( "Running command: " . $blast_database->_command_to_run() );
     }
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus  => $self->cpus );
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->memory_in_mb, queue => $self->_queue, cpus  => $self->cpus );
     $job_runner_obj->run();
 	$self->logger->info( "Combining blast results" );
     $self->_combine_blast_results(\@expected_output_files);

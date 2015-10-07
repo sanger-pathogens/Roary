@@ -32,16 +32,17 @@ has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool',     default  =
 has 'num_input_files'             => ( is => 'ro', isa => 'Int',      required => 1);
 
 # Overload Role
-has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
+has 'memory_in_mb' => ( is => 'rw', isa => 'Int', lazy     => 1, builder => '_build_memory_in_mb' );
 has '_min_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 500 );
 has '_max_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 60000 );
 has '_queue'                 => ( is => 'rw', isa => 'Str', default  => 'normal' );
 has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 10 );
 has '_core_alignment_cmd'    => ( is => 'rw', isa => 'Str', lazy_build => 1 );
+has '_dependancy_memory_in_mb'  => ( is => 'ro', isa => 'Int', default => 10000 );
 
 
 
-sub _build__memory_required_in_mb {
+sub _build_memory_in_mb {
     my ($self)          = @_;
 
     my $largest_file_size = 1;
@@ -107,13 +108,14 @@ sub run {
 
     my $job_runner_obj = $self->_job_runner_class->new(
         commands_to_run => \@commands_to_run,
-        memory_in_mb    => $self->_memory_required_in_mb,
+        memory_in_mb    => $self->memory_in_mb,
         queue           => $self->_queue,
         dont_wait       => 1,
         cpus            => $self->cpus 
     );
     $job_runner_obj->run();
     
+	$job_runner_obj->memory_in_mb($self->_dependancy_memory_in_mb);
 	$self->logger->info( "Running command: " . $self->_core_alignment_cmd() );
     $job_runner_obj->submit_dependancy_job($self->_core_alignment_cmd);
     1;

@@ -67,7 +67,7 @@ sub _build_fasta_files_to_gff_files {
         push(@commands_to_run, "extract_proteome_from_gff --translation_table ".$self->translation_table." --apply_unknowns_filter ".$self->apply_unknowns_filter." -d ".$self->working_directory." -o $output_suffix $filename");
     }
     #Farm out the computation and block until its ready
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus  => $self->cpus);
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->memory_in_mb, queue => $self->_queue, cpus  => $self->cpus);
     $job_runner_obj->run();
     
     return \%fasta_files;
