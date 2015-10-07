@@ -20,7 +20,7 @@ use Moose;
 use Bio::Roary::Exceptions;
 use Bio::Roary::GeneNamesFromGFF;
 use Array::Utils qw(array_minus);
-
+use List::Util qw(max min sum);
 use File::Grep qw(fgrep);
 
 has 'gff_files'          => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -29,18 +29,17 @@ has 'groups_filename'    => ( is => 'ro', isa => 'Str',      required => 1 );
 has '_ids_to_gene_names' => ( is => 'ro', isa => 'HashRef',  lazy     => 1, builder => '_build__ids_to_gene_names' );
 has '_ids_to_product'    => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 has '_ids_to_gene_size'  => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'group_nucleotide_lengths'  => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_build_group_nucleotide_lengths');
 
-has '_groups_to_id_names' => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_id_names' );
-has '_output_fh' => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
+has '_groups_to_id_names'   => ( is => 'ro', isa => 'HashRef', lazy => 1, builder => '_builder__groups_to_id_names' );
+has '_output_fh'            => ( is => 'ro', lazy => 1, builder => '_build__output_fh' );
 has '_groups_to_consensus_gene_names' =>
   ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build__groups_to_consensus_gene_names' );
-has '_filtered_gff_files' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__filtered_gff_files' );
-has '_number_of_files'    => ( is => 'ro', isa => 'Int',      lazy => 1, builder => '_build__number_of_files' );
-has '_ids_to_groups'      => ( is => 'rw', isa => 'HashRef',  lazy => 1, builder => '_builder__ids_to_groups' );
-
-has '_group_counter' => ( is => 'rw', isa => 'Int', lazy => 1, builder => '_builder__group_counter' );
+has '_filtered_gff_files'   => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build__filtered_gff_files' );
+has '_number_of_files'      => ( is => 'ro', isa => 'Int',      lazy => 1, builder => '_build__number_of_files' );
+has '_ids_to_groups'        => ( is => 'rw', isa => 'HashRef',  lazy => 1, builder => '_builder__ids_to_groups' );
+has '_group_counter'        => ( is => 'rw', isa => 'Int', lazy => 1, builder => '_builder__group_counter' );
 has '_group_default_prefix' => ( is => 'rw', isa => 'Str', default => 'group_' );
-
 has '_ids_to_verbose_stats' => ( is => 'rw', isa => 'HashRef', lazy_build => 1 );
 
 sub BUILD {
@@ -138,12 +137,10 @@ sub _build__ids_to_verbose_stats {
 
             $inf = $1 if ( $line =~ m/inference=([^;]+);/ );
             $prod = $1 if ( $line =~ m/product=([^;]+)[;\n]/ );
-			
 
             my %info = ( 'inference' => $inf, 'product' => $prod );
             $verbose{$id} = \%info;
         }
-
         return \%verbose;
 }
 
@@ -214,6 +211,30 @@ sub _consensus_gene_name_for_group {
     else {
         return $group_name;
     }
+}
+
+sub _build_group_nucleotide_lengths
+{
+	my ($self) = @_;
+	my %group_nucleotide_lengths;
+    for my $group_name (keys %{ $self->_groups_to_id_names } )
+    {
+		my @gene_lengths;
+		for my $gene_id (@{$self->_groups_to_id_names->{$group_name}})
+		{
+			my $current_gene_size = $self->_ids_to_gene_size->{$gene_id};
+			next unless(defined($current_gene_size) );
+			next if($current_gene_size < 1);
+			push(@gene_lengths, $current_gene_size);
+		}
+		
+		next if(@gene_lengths == 0);
+		my $average_gene_size = int((sum @gene_lengths)/@gene_lengths);
+		my $min_gene_size = min @gene_lengths;
+		my $max_gene_size = max @gene_lengths;
+		$group_nucleotide_lengths{$group_name} = {'min' => $min_gene_size, 'max' =>$max_gene_size , 'average' => $average_gene_size};
+    }
+	return \%group_nucleotide_lengths;
 }
 
 sub _generate_groups_to_consensus_gene_names {
