@@ -27,7 +27,7 @@ use Bio::Roary::AnnotateGroups;
 
 has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
-has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'group_statitics.csv' );
+has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'gene_presence_absence.csv' );
 has 'groups_to_contigs'   => ( is => 'ro', isa => 'Maybe[HashRef]');
 
 has '_output_fh'         => ( is => 'ro', lazy => 1,           builder => '_build__output_fh' );
@@ -55,7 +55,7 @@ sub _build__text_csv_obj {
 sub fixed_headers {
     my ($self) = @_;
     my @header =
-      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Genome Fragment','Order within Fragment', 'Accessory Fragment','Accessory Order with Fragment', 'QC' );
+      ( 'Gene', 'Non-unique Gene name', 'Annotation', 'No. isolates', 'No. sequences', 'Avg sequences per isolate', 'Genome Fragment','Order within Fragment', 'Accessory Fragment','Accessory Order with Fragment', 'QC','Min group size nuc', 'Max group size nuc', 'Avg group size nuc' );
     return \@header;
 }
 
@@ -154,10 +154,12 @@ sub _row {
       $accessory_genome_number = $self->groups_to_contigs->{$annotated_group_name}->{accessory_label};
       $accessory_order_within_fragement = $self->groups_to_contigs->{$annotated_group_name}->{accessory_order};
     }
+	
+	my $group_size = $self->annotate_groups_obj->group_nucleotide_lengths->{$group};
     
     my @row = (
         $annotated_group_name,  $duplicate_gene_name,    $annotation,
-        $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate,$genome_number,$order_within_fragement,$accessory_genome_number,$accessory_order_within_fragement,$qc_comment
+        $num_isolates_in_group, $num_sequences_in_group, $avg_sequences_per_isolate,$genome_number,$order_within_fragement,$accessory_genome_number,$accessory_order_within_fragement,$qc_comment,$group_size->{min}, $group_size->{max}, $group_size->{average}
     );
 	
 	for(my $i =0; $i < @row; $i++)

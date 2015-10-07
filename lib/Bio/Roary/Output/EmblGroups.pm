@@ -18,6 +18,7 @@ reate a tab/embl file with the features for drawing pretty pictures
 
 use Moose;
 use POSIX;
+use File::Basename;
 use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
 use Bio::Roary::AnnotateGroups;
@@ -100,7 +101,7 @@ sub _block {
         my $group_to_file_genes = $self->_groups_to_files->{$group}->{$filename};
 
         if ( defined($group_to_file_genes) && @{$group_to_file_genes} > 0 ) {
-            my $filename_cpy = $filename;
+            my $filename_cpy = basename($filename);
             $filename_cpy =~ s!\.gff\.proteome\.faa!!;
             push( @taxon_names_array, $filename_cpy );
             next;
