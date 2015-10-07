@@ -46,12 +46,12 @@ is_deeply(
 is_deeply(
     $obj->sample_names_to_column_index,
     {
-        'threeblocks'          => 15,
-        'nocontigs'            => 14,
-        'contigwithgaps'       => 13,
-        'oneblock'             => 11,
-        'threeblocksinversion' => 16,
-        'oneblockrev'          => 12
+        'threeblocks'          => 18,
+        'nocontigs'            => 17,
+        'contigwithgaps'       => 16,
+        'oneblock'             => 14,
+        'threeblocksinversion' => 19,
+        'oneblockrev'          => 15
     },
     'sample names to column index'
 );
