@@ -31,9 +31,12 @@ ok($obj = Bio::Roary::GroupStatistics->new(
 ok($obj->create_spreadsheet,'Create the CSV file');
 ok(-e 'gene_presence_absence.csv', 'CSV file exists');
 compare_ok('gene_presence_absence.csv','t/data/expected_group_statitics.csv', 'Spreadsheet content as expected');
+ok($obj->create_rtab,'Create the Rtab file');
+ok(-e 'gene_presence_absence.Rtab', 'Rtab file exists');
+compare_ok('gene_presence_absence.Rtab','t/data/expected_gene_presence_and_absence.Rtab', 'Rtab matrix content as expected');
 
 unlink('gene_presence_absence.csv');
-
+unlink('gene_presence_absence.Rtab');
 
 ############################
 

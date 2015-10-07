@@ -27,7 +27,8 @@ use Bio::Roary::AnnotateGroups;
 
 has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
-has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'gene_presence_absence.csv' );
+has 'output_filename'     => ( is => 'ro', isa => 'Str',                        default  => 'gene_presence_absence.csv' );
+has 'output_rtab_filename' => ( is => 'ro', isa => 'Str',                       default  => 'gene_presence_absence.Rtab' );
 has 'groups_to_contigs'   => ( is => 'ro', isa => 'Maybe[HashRef]');
 
 has '_output_fh'         => ( is => 'ro', lazy => 1,           builder => '_build__output_fh' );
@@ -59,18 +60,23 @@ sub fixed_headers {
     return \@header;
 }
 
-sub _header {
-    my ($self) = @_;
-    my @header = @{ $self->fixed_headers };
-
+sub _sample_headers
+{
+	my ($self) = @_;
+	my @header;
     for my $filename ( @{ $self->_sorted_file_names } ) {
         my $filename_cpy = basename($filename);
         $filename_cpy =~ s!\.gff\.proteome\.faa!!;
         push( @header, $filename_cpy );
     }
+	return \@header;
+}
 
+sub _header {
+    my ($self) = @_;
+    my @header = @{ $self->fixed_headers };
+    push( @header, @{$self->_sample_headers});
     push( @header, 'Inference' ) if ( $self->_verbose );
-
     return \@header;
 }
 
@@ -191,6 +197,41 @@ sub _row {
     }
 
     return \@row;
+}
+
+#TODO extract
+sub create_rtab {
+	my ($self) = @_;
+	
+	open(my $rtab_fh, ">", $self->output_rtab_filename);
+	my %num_files_in_groups;
+	for my $group (@{ $self->annotate_groups_obj->_groups })
+	{
+	  my $num_files = $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$group});
+	  $num_files_in_groups{$group} = $num_files;
+	}
+	
+	print {$rtab_fh} "Gene\t".join("\t", @{$self->_sample_headers})."\n";
+	
+	for my $group (sort {$num_files_in_groups{$b}<=>$num_files_in_groups{$a} || $a cmp $b} keys %num_files_in_groups)
+	{
+		my @row;
+		my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
+		push(@row,$annotated_group_name );
+	    for my $filename ( @{ $self->_sorted_file_names } ) {
+	        my $group_to_file_genes = $self->_groups_to_files->{$group}->{$filename};
+
+	        if ( defined($group_to_file_genes) && @{$group_to_file_genes} > 0 ) {
+	            push( @row, 1 );
+	            next;
+	        }
+	        else {
+	            push( @row, 0 );
+	        }
+	    }
+		print {$rtab_fh} join("\t", @row)."\n";
+	}
+	return 1;
 }
 
 sub create_spreadsheet {
