@@ -34,9 +34,9 @@ has '_score'     => ( is => 'ro', isa => 'Str', default  => 'r' );
 has '_inflation_value' => ( is => 'ro', isa => 'Num', default => 1.5 );
 has '_logging'         => ( is => 'ro', isa => 'Str', default  => '> /dev/null 2>&1' );
 
-has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
+has 'memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build_memory_in_mb' );
 
-sub _build__memory_required_in_mb
+sub _build_memory_in_mb
 {
   my ($self) = @_;
   # Todo: implement this equation for memory estimation if this hardcoded value proves too unstable.
@@ -95,7 +95,7 @@ sub run {
     my @commands_to_run;
     push(@commands_to_run, $self->_command_to_run );
     $self->logger->info( "Running command: " . $self->_command_to_run() );
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue,        cpus            => $self->cpus  );
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->memory_in_mb, queue => $self->_queue,        cpus            => $self->cpus  );
     $job_runner_obj->run();
     
     1;

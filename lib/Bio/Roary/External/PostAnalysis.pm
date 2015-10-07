@@ -42,7 +42,7 @@ has '_gff_fofn'                   => ( is => 'ro', isa => 'Str', lazy => 1, buil
 has '_fasta_fofn'                 => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__fasta_fofn'  );
 
 # Overload Role
-has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
+has 'memory_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_memory_in_mb' );
 has '_minimum_memory_mb'    => ( is => 'ro', isa => 'Int', default => 4000 );
 has '_memory_per_sample_mb' => ( is => 'ro', isa => 'Int', default => 30 );
 has '_queue'                => ( is => 'rw', isa => 'Str',  lazy => 1, builder => '_build__queue');
@@ -64,7 +64,7 @@ sub _build__queue {
 }
 
 
-sub _build__memory_required_in_mb {
+sub _build_memory_in_mb {
     my ($self) = @_;
     my $num_samples = @{ $self->input_files };
 
@@ -172,7 +172,7 @@ sub run {
     $self->logger->info( "Running command: " . $self->_command_to_run() );
     my $job_runner_obj = $self->_job_runner_class->new(
         commands_to_run => \@commands_to_run,
-        memory_in_mb    => $self->_memory_required_in_mb,
+        memory_in_mb    => $self->memory_in_mb,
         queue           => $self->_queue,
         dont_wait       => $self->dont_wait,
         cpus            => $self->cpus 
