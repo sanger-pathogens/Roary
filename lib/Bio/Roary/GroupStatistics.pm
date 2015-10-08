@@ -24,19 +24,20 @@ use Bio::SeqIO;
 use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
 use Bio::Roary::AnnotateGroups;
+use Bio::Roary::PresenceAbsenceMatrix;
 
-has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
-has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
-has 'output_filename'     => ( is => 'ro', isa => 'Str',                            default  => 'gene_presence_absence.csv' );
-has 'groups_to_contigs'   => ( is => 'ro', isa => 'Maybe[HashRef]');
-
-has '_output_fh'         => ( is => 'ro', lazy => 1,           builder => '_build__output_fh' );
-has '_text_csv_obj'      => ( is => 'ro', isa  => 'Text::CSV', lazy    => 1, builder => '_build__text_csv_obj' );
-has '_sorted_file_names' => ( is => 'ro', isa  => 'ArrayRef',  lazy    => 1, builder => '_build__sorted_file_names' );
-has '_groups_to_files'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__groups_to_files' );
-has '_files_to_groups'   => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__files_to_groups' );
-
-has '_verbose'           => ( is => 'ro', isa => 'Bool', default => 0 );
+has 'annotate_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
+has 'analyse_groups_obj'   => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
+has 'output_filename'      => ( is => 'ro', isa => 'Str',                        default  => 'gene_presence_absence.csv' );
+has 'output_rtab_filename' => ( is => 'ro', isa => 'Str',                        default  => 'gene_presence_absence.Rtab' );
+has 'groups_to_contigs'    => ( is => 'ro', isa => 'Maybe[HashRef]');
+has '_output_fh'           => ( is => 'ro', lazy => 1,           builder => '_build__output_fh' );
+has '_text_csv_obj'        => ( is => 'ro', isa  => 'Text::CSV', lazy    => 1, builder => '_build__text_csv_obj' );
+has '_sorted_file_names'   => ( is => 'ro', isa  => 'ArrayRef',  lazy    => 1, builder => '_build__sorted_file_names' );
+has '_groups_to_files'     => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__groups_to_files' );
+has '_files_to_groups'     => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__files_to_groups' );
+has '_num_files_in_groups' => ( is => 'ro', isa  => 'HashRef',   lazy    => 1, builder => '_build__num_files_in_groups' );
+has '_verbose'             => ( is => 'ro', isa => 'Bool', default => 0 );
 
 
 sub _build__output_fh {
@@ -59,18 +60,23 @@ sub fixed_headers {
     return \@header;
 }
 
-sub _header {
-    my ($self) = @_;
-    my @header = @{ $self->fixed_headers };
-
+sub _sample_headers
+{
+	my ($self) = @_;
+	my @header;
     for my $filename ( @{ $self->_sorted_file_names } ) {
         my $filename_cpy = basename($filename);
         $filename_cpy =~ s!\.gff\.proteome\.faa!!;
         push( @header, $filename_cpy );
     }
+	return \@header;
+}
 
+sub _header {
+    my ($self) = @_;
+    my @header = @{ $self->fixed_headers };
+    push( @header, @{$self->_sample_headers});
     push( @header, 'Inference' ) if ( $self->_verbose );
-
     return \@header;
 }
 
@@ -126,6 +132,17 @@ sub _build__files_to_groups
   return \%files_to_groups;
 }
 
+sub _build__num_files_in_groups
+{
+	 my ($self) = @_;
+ 	my %num_files_in_groups;
+ 	for my $group (@{ $self->annotate_groups_obj->_groups })
+ 	{
+ 	  my $num_files = $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$group});
+ 	  $num_files_in_groups{$group} = $num_files;
+ 	}
+	return \%num_files_in_groups;
+}
 
 sub _row {
     my ( $self, $group ) = @_;
@@ -193,20 +210,27 @@ sub _row {
     return \@row;
 }
 
+sub create_rtab
+{
+	my ($self) = @_;
+    my $presence_absence_matrix_obj = Bio::Roary::PresenceAbsenceMatrix->new(
+      output_filename     => $self->output_rtab_filename,
+	  annotate_groups_obj => $self->annotate_groups_obj,
+      sorted_file_names   => $self->_sorted_file_names,
+      groups_to_files     => $self->_groups_to_files,
+      num_files_in_groups => $self->_num_files_in_groups,
+      sample_headers      => $self->_sample_headers,
+    );
+    $presence_absence_matrix_obj->create_matrix_file;
+	return $self;
+}
+
 sub create_spreadsheet {
     my ($self) = @_;
 
     $self->_text_csv_obj->print( $self->_output_fh, $self->_header );
 
-    #for each group count the nubmer of files
-	my %num_files_in_groups;
-	for my $group (@{ $self->annotate_groups_obj->_groups })
-	{
-	  my $num_files = $self->analyse_groups_obj->_count_num_files_in_group( $self->annotate_groups_obj->_groups_to_id_names->{$group});
-	  $num_files_in_groups{$group} = $num_files;
-	}
-
-    for my $group (sort {$num_files_in_groups{$b}<=>$num_files_in_groups{$a} || $a cmp $b} keys %num_files_in_groups){
+    for my $group (sort {$self->_num_files_in_groups->{$b}<=>$self->_num_files_in_groups->{$a} || $a cmp $b} keys %{$self->_num_files_in_groups}){
         $self->_text_csv_obj->print( $self->_output_fh, $self->_row($group) );
     }
     close( $self->_output_fh );
