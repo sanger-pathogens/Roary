@@ -304,15 +304,21 @@ Options: -p INT    number of threads [1]
          -n        fast core gene alignment with MAFFT, use with -e
          -i        minimum percentage identity for blastp [95]
          -cd FLOAT percentage of isolates a gene must be in to be core [99]
-         -z        dont delete intermediate files
-         -t INT    translation table [11]
-         -v        verbose output to STDOUT
-         -y        add gene inference information to spreadsheet, doesnt work with -e
-         -g INT    maximum number of clusters [50000]
          -qc       generate QC report with Kraken
          -k STR    path to Kraken database for QC, use with -qc
+         -a        check dependancies and exit
+         -b STR    blastp executable [blastp]
+         -c STR    mcl executable [mcl]
+         -d STR    mcxdeblast executable [mcxdeblast]
+         -g INT    maximum number of clusters [50000]
+         -m STR    makeblastdb executable [makeblastdb]
+         -r        create R plots, requires R and ggplot2
+         -s        dont split paralogs
+         -t INT    translation table [11]
+         -z        dont delete intermediate files
+         -v        verbose output to STDOUT
          -w        print version and exit
-		 -a        check dependancies and exit
+         -y        add gene inference information to spreadsheet, doesnt work with -e
          -h        this help message
 
 Example: Quickly generate a core gene alignment using 8 threads
