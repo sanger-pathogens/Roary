@@ -33,7 +33,7 @@ has 'num_input_files'             => ( is => 'ro', isa => 'Int',      required =
 
 # Overload Role
 has 'memory_in_mb' => ( is => 'rw', isa => 'Int', lazy     => 1, builder => '_build_memory_in_mb' );
-has '_min_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 500 );
+has '_min_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 1000 );
 has '_max_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 60000 );
 has '_queue'                 => ( is => 'rw', isa => 'Str', default  => 'normal' );
 has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 10 );
@@ -56,7 +56,7 @@ sub _build_memory_in_mb {
     }
     
     my $approx_sequence_length_of_largest_file = $largest_file_size/ $self->num_input_files;
-    my $memory_required = int((($approx_sequence_length_of_largest_file*$approx_sequence_length_of_largest_file)/1000000) + $self->_min_memory_in_mb);
+    my $memory_required = int((($approx_sequence_length_of_largest_file*$approx_sequence_length_of_largest_file)/1000000)*1.5 + $self->_min_memory_in_mb);
     
     $memory_required = $self->_max_memory_in_mb if($memory_required  > $self->_max_memory_in_mb);
 
