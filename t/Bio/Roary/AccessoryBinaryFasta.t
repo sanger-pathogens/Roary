@@ -25,7 +25,7 @@ my $dummy_analyse_groups = Bio::Roary::AnalyseGroups->new(
 
 ok(
     my $obj = Bio::Roary::AccessoryBinaryFasta->new(
-        input_files => [ 'aaa', 'bbb', 'ccc', 'ddd' ],
+        input_files => [ 't/abc/aaa', 't/abc/bbb', 't/abc/ccc', 't/abc/ddd' ],
         groups_to_files => 
 		{
             group_1 => { 'aaa' => [1] },
