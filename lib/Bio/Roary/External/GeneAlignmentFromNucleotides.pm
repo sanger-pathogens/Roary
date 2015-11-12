@@ -43,11 +43,11 @@ has '_dependancy_memory_in_mb'  => ( is => 'ro', isa => 'Int', default => 15000 
 sub _build__files_per_chunk
 {
     my ($self) = @_;
-    if($num_input_files > 1000)
+    if($self->num_input_files > 1000)
     {
                return 5;
     }
-    elsif($num_input_files > 500)
+    elsif($self->num_input_files > 500)
     {
                return 7;
     }
