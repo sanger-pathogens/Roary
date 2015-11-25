@@ -60,7 +60,7 @@ sub create_summary_output
 	my $cloud_genes     = ($self->gene_category_count->{cloud} ? $self->gene_category_count->{cloud} : 0);
 	my $total_genes = $core_genes  + $soft_core_genes  + $shell_genes + $cloud_genes  ;
 	
-	$self->logger->error("Very few core genes detected with the current settings. Try modifying the core definition ( -cd 90 ) and/or 
+	$self->logger->warn("Very few core genes detected with the current settings. Try modifying the core definition ( -cd 90 ) and/or 
 	the blast identity (-i 70) parameters.  Also try checking for contamination (-qc) and ensure you only have one species.") if($core_genes < 100);
 	
 	print {$fh} "Core genes ($core_percentage".'% <= strains <= 100%):'."\t$core_genes\n";
