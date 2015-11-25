@@ -13,13 +13,13 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <title>Roary the pan genome pipeline</title>
+    <title>Roary: the pan genome pipeline</title>
   </head>
 
   <body>
     <header>
       <div class="inner">
-        <h1>Roary the Pan Genome Pipeline</h1>
+        <h1>Roary: the Pan Genome Pipeline</h1>
         <h2></h2>
         <a href="https://github.com/andrewjpage/Roary" class="button"><small>View project on</small> GitHub</a>
       </div>
@@ -38,7 +38,7 @@
 <h1>
 <a id="citation-and-further-details-of-the-method" class="anchor" href="#citation-and-further-details-of-the-method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Citation and further details of the method</h1>
 
-<p>Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), "Roary: Rapid large-scale prokaryote pan genome analysis", Bioinformatics, <a href="http://bioinformatics.oxfordjournals.org/content/early/2015/08/05/bioinformatics.btv421">doi:10.1093/bioinformatics/btv421</a></p>
+<p>Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill, "Roary: Rapid large-scale prokaryote pan genome analysis", Bioinformatics, 2015;31(22):3691-3693 <a href="http://bioinformatics.oxfordjournals.org/content/31/22/3691">doi:10.1093/bioinformatics/btv421</a></p>
 
 <h1>
 <a id="installation-instructions" class="anchor" href="#installation-instructions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation instructions</h1>
@@ -313,15 +313,21 @@ Just be aware that recombination is not taken care of with this method.  </p>
 <h1>
 <a id="contact-us" class="anchor" href="#contact-us" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contact us</h1>
 
-<p>If you are having problems installing the software you should contact your local system administrator in the first instance as they will be best placed to assist you.  If you have any queries about Roary or wish to report any bugs please email <a href="mailto:roary@sanger.ac.uk">roary@sanger.ac.uk</a>.</p>
+<p>If you are having problems installing the software you should contact your local system administrator in the first instance as they will be best placed to assist you.  If you have any queries about Roary or wish to report any bugs please email <a href="mailto:roary@sanger.ac.uk">roary@sanger.ac.uk</a> or open an <a href="https://github.com/sanger-pathogens/Roary/issues">issue on our github page</a>.</p>
 
 <h1>
 <a id="faq" class="anchor" href="#faq" aria-hidden="true"><span class="octicon octicon-link"></span></a>FAQ</h1>
 
 <h2>
-<a id="strange-errors" class="anchor" href="#strange-errors" aria-hidden="true"><span class="octicon octicon-link"></span></a> Strange errors</h2>
+<a id="strange-errors" class="anchor" href="#strange-errors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Strange errors</h2>
 
 <p>Check the dependencies with <em>roary -a</em>.  If theres something missing, then you’ll need to install it.</p>
+
+
+<h2>
+<a id="gubbins" class="anchor" href="#gubbins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gubbins, detecting recombinatioin in pan genomes</h2>
+
+<p>You cannot use the output of Roary as the input to <a href="http://sanger-pathogens.github.io/gubbins/">Gubbins</a> (e.g. to detect recombination in the pan genome). They are fundamentally incompatible and we dont have a solution yet for this open problem.</p>
 
 <h2>
 <a id="i-got-no-core-genes" class="anchor" href="#i-got-no-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>I got no core genes?</h2>
@@ -346,7 +352,7 @@ Just be aware that recombination is not taken care of with this method.  </p>
 <h2>
 <a id="theres-some-very-long-branches-in-my-tree" class="anchor" href="#theres-some-very-long-branches-in-my-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>Theres some very long branches in my tree?</h2>
 
-<p>Its likely you have recombination. Roary doesn’t take recombination into account, so you will have to use a different method such as Gubbins (Croucher et al., 2014). Or you might have contamination from two closely related strains.</p>
+<p>Its likely you have recombination. Roary doesn’t take recombination into account, so you will have to use a different method such as Gubbins (Croucher et al., 2014) which uses reads aligned to a reference genome. Do not use the output of Roary as the input to Gubbins, they are fundamentally incompatible.  Another possibility is that you might have contamination from two closely related strains.</p>
 
 <h2>
 <a id="is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" class="anchor" href="#is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is there a server I can upload my data to and get a pan genome back?</h2>
@@ -354,7 +360,7 @@ Just be aware that recombination is not taken care of with this method.  </p>
 <p>No. One of the big selling points of Roary is that it can run on your own machine in a reasonable amount of time. Sending genomic data across borders is fraught with danger (and slow). For example, what if your private data gets accidentally publicly released, or you accidentally send data that is contaminated with Human reads (illegal without proper safeguards in many countries)? One possible alternative is to use <a href="http://wgsa.net">http://wgsa.net</a> if you wish to visualize your samples in the context of other published samples.</p>
 
 <h2>
-<a id="i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" class="anchor" href="#i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a> I have no knowledge of the command line or bioinformatics and have just spent $500,000 sequencing lots of bacteria. What do I do to get a pretty tree?</h2>
+<a id="i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" class="anchor" href="#i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>I have no knowledge of the command line or bioinformatics and have just spent $500,000 sequencing lots of bacteria. What do I do to get a pretty tree?</h2>
 
 <p>Hire a bioinformatician.</p>
 
@@ -414,7 +420,7 @@ Just be aware that recombination is not taken care of with this method.  </p>
             .tar.gz file
           </a>
 
-          <p class="repo-owner"><a href="https://github.com/andrewjpage/Roary"></a> is maintained by <a href="https://github.com/andrewjpage">andrewjpage</a>.</p>
+          <p class="repo-owner"><a href="https://github.com/sanger-pathogens/Roary"></a> is maintained by <a href="https://github.com/sanger-pathogens">sanger-pathogens</a>.</p>
 
           <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
