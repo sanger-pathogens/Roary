@@ -52,7 +52,7 @@ my %tools = (
     'bedtools' => {
         GETVER => "bedtools --version",
         REGEXP => qr/bedtools v($BIDEC)/,
-        MINVER => "2.2",
+        MINVER => "2.1",
         NEEDED => 1,
     },
     'mafft' => {
@@ -130,7 +130,7 @@ sub check_tool {
     my ( $self, $toolname ) = @_;
     my $t  = $tools{$toolname};
     my $fp = $self->find_exe($toolname);
-    $self->logger->error("Can't find required '$toolname' in your \$PATH")     if !$fp and $t->{NEEDED};
+    $self->logger->error("ERROR: Can't find required '$toolname' in your \$PATH")     if !$fp and $t->{NEEDED};
     $self->logger->error("Optional tool '$toolname' not found in your \$PATH") if !$fp and !$t->{NEEDED};
 
     if ($fp) {

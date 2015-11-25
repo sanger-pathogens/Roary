@@ -122,7 +122,7 @@ sub BUILD {
 	}
 
     if ($check_dependancies) {
-        my $check_tools = Bio::Roary::External::CheckTools->new(logger => $self->logger);
+        my $check_tools = Bio::Roary::External::CheckTools->new();
         $check_tools->check_all_tools;
         $self->logger->error( "Roary version " . $self->_version() );
     }
