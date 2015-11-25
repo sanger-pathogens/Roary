@@ -63,11 +63,11 @@ sub create_summary_output
 	$self->logger->warn("Very few core genes detected with the current settings. Try modifying the core definition ( -cd 90 ) and/or 
 	the blast identity (-i 70) parameters.  Also try checking for contamination (-qc) and ensure you only have one species.") if($core_genes < 100);
 	
-	print {$fh} "Core genes ($core_percentage".'% <= strains <= 100%):'."\t$core_genes\n";
-	print {$fh} "Soft core genes (".$shell_percentage."% <= strains < ".$soft_core_percentage."%):\t$soft_core_genes\n";
-	print {$fh} "Shell genes (".$cloud_percentage."% <= strains < ".$shell_percentage."%):\t$shell_genes\n";
-	print {$fh} "Cloud genes (0% <= strains < ".$cloud_percentage."%):\t$cloud_genes\n";
-	print {$fh} "Total genes:\t$total_genes\n";
+	print {$fh} "Core genes\t($core_percentage".'% <= strains <= 100%)'."\t$core_genes\n";
+	print {$fh} "Soft core genes\t(".$shell_percentage."% <= strains < ".$soft_core_percentage."%)\t$soft_core_genes\n";
+	print {$fh} "Shell genes\t(".$cloud_percentage."% <= strains < ".$shell_percentage."%)\t$shell_genes\n";
+	print {$fh} "Cloud genes\t(0% <= strains < ".$cloud_percentage."%)\t$cloud_genes\n";
+	print {$fh} "Total genes\t(0% <= strains <= 100%)\t$total_genes\n";
 	
 	close($fh);
 	return 1;
