@@ -60,11 +60,6 @@ my %tools = (
         REGEXP => qr/v($BIDEC) /,
         NEEDED => 1,
     },
-    'translate' => {
-        GETVER => "translate -v",
-        REGEXP => qr/translate from FSA ($BIDEC)/,
-        NEEDED => 1,
-    },
     'kraken' => {
         GETVER => "kraken --version | head -n 1",
         REGEXP => qr/Kraken version kraken-(\d+\.\d+\.\d+.*)/,

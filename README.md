@@ -25,7 +25,7 @@ If the installation fails please contact your system administrator. If you encou
 All the dependancies can be installed using apt and cpanm (tested on Ubuntu 14.04). Root permissions are required.
 
 ```
-sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft exonerate fasttree
+sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft fasttree
 sudo cpanm -f Bio::Roary
 ```   
 
@@ -40,7 +40,7 @@ Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.s
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree cpanm
+brew install bedtools cd-hit blast mcl parallel prank mafft fasttree cpanm
 sudo cpanm -f Bio::Roary
 ```
 
@@ -76,7 +76,7 @@ sudo cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy Fi
 ```
 Install the external dependances either from source or from your packaging system:
 ```
-bedtools cd-hit blast mcl GNUparallel prank mafft exonerate fasttree
+bedtools cd-hit blast mcl GNUparallel prank mafft fasttree
 ```
 
 ## Ancient systems and versions of perl

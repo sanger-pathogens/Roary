@@ -16,5 +16,5 @@ for my $dir ($BINDIR, $FindBin::RealBin) {
      }
 }
 
-ok(scalar PATH->Whence($_), "$_ in PATH") for qw(blastp makeblastdb mcl mcxdeblast bedtools prank parallel mafft translate);
+ok(scalar PATH->Whence($_), "$_ in PATH") for qw(blastp makeblastdb mcl mcxdeblast bedtools prank parallel mafft);
 
