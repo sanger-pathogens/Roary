@@ -61,22 +61,22 @@ my %tools = (
         NEEDED => 1,
     },
     'translate' => {
-        GETVER => "translate  -v",
+        GETVER => "translate -v",
         REGEXP => qr/translate from FSA ($BIDEC)/,
         NEEDED => 1,
     },
     'kraken' => {
-        GETVER => "kraken  --version | head -n 1",
+        GETVER => "kraken --version | head -n 1",
         REGEXP => qr/Kraken version kraken-(\d+\.\d+\.\d+.*)/,
         NEEDED => 0,
     },
     'kraken-report' => {
-        GETVER => "kraken  --version | head -n 1",
+        GETVER => "kraken-report --version | head -n 1",
         REGEXP => qr/Kraken version kraken-(\d+\.\d+\.\d+.*)/,
         NEEDED => 0,
     },
 	'Rscript'  => {
-        GETVER => "Rscript --version",
+        GETVER => "Rscript --version 2>&1 | head -n 1",
         REGEXP => qr/R scripting front-end version ($BIDEC)/,
 		MINVER => "3",
         NEEDED => 0,
@@ -107,11 +107,11 @@ my %cdhit_tools = (
 
 my %fasttree_tools = (
     'fasttree' => {
-        GETVER => "fasttree  2>&1 | head -n 1",
+        GETVER => "fasttree 2>&1 | head -n 1",
         REGEXP => qr/Usage for FastTree version ($BIDEC)/,
     },
     'FastTree' => {
-        GETVER => "FastTree  2>&1 | head -n 1",
+        GETVER => "FastTree 2>&1 | head -n 1",
         REGEXP => qr/Usage for FastTree version ($BIDEC)/,
     }
 );
@@ -151,7 +151,7 @@ sub check_tool {
                 }
             }
             else {
-                $self->logger->error( "Could not determine version of $toolname - please install version", $t->{MINVER}, "or higher" )
+                $self->logger->error( "Could not determine version of $toolname - please install version ", $t->{MINVER}, " or higher" )
                   ;    # FIXME: or less <= MAXVER if given
             }
         }
