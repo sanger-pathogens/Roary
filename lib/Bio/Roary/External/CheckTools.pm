@@ -107,11 +107,11 @@ my %cdhit_tools = (
 
 my %fasttree_tools = (
     'fasttree' => {
-        GETVER => "fasttree | head -n 1",
+        GETVER => "fasttree  2>&1 | head -n 1",
         REGEXP => qr/Usage for FastTree version ($BIDEC)/,
     },
     'FastTree' => {
-        GETVER => "FastTree | head -n 1",
+        GETVER => "FastTree  2>&1 | head -n 1",
         REGEXP => qr/Usage for FastTree version ($BIDEC)/,
     }
 );

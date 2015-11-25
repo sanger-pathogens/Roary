@@ -122,7 +122,7 @@ sub BUILD {
 	}
 
     if ($check_dependancies) {
-        my $check_tools = Bio::Roary::External::CheckTools->new();
+        my $check_tools = Bio::Roary::External::CheckTools->new(logger => $self->logger);
         $check_tools->check_all_tools;
         $self->logger->error( "Roary version " . $self->_version() );
     }
@@ -329,7 +329,7 @@ Options: -p INT    number of threads [1]
          -cd FLOAT percentage of isolates a gene must be in to be core [99]
          -qc       generate QC report with Kraken
          -k STR    path to Kraken database for QC, use with -qc
-         -a        check dependancies and exit
+         -a        check dependancies and print versions
          -b STR    blastp executable [blastp]
          -c STR    mcl executable [mcl]
          -d STR    mcxdeblast executable [mcxdeblast]
