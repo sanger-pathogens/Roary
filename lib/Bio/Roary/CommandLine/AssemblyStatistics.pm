@@ -104,7 +104,7 @@ sub _version
 sub run {
     my ($self) = @_;
 
-    my $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->spreadsheet );
+    my $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->spreadsheet, logger => $self->logger );
 	$obj->create_summary_output;
 }
 
