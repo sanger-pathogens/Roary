@@ -101,16 +101,17 @@ sub BUILD {
         die($self->_version());
     }
 	
-	if($check_dependancies)
-	{
-	    my $check_tools = Bio::Roary::External::CheckTools->new();
-	    $check_tools->check_all_tools;
-		die("Roary version ".$self->_version());
-	}
-
     print "\nPlease cite Roary if you use any of the results it produces:
-    Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill (2015), \"Roary: Rapid large-scale prokaryote pan genome analysis\", Bioinformatics,
-    doi: http://doi.org/10.1093/bioinformatics/btv421\n\n";
+    Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill,
+	\"Roary: Rapid large-scale prokaryote pan genome analysis\", Bioinformatics, 2015 Nov 15;31(22):3691-3693
+    doi: http://doi.org/10.1093/bioinformatics/btv421
+	Pubmed: 26198102\n\n";
+	
+    my $check_tools = Bio::Roary::External::CheckTools->new();
+    $check_tools->check_all_tools;
+	$self->logger->error("Roary version ".$self->_version());
+	die() if($check_dependancies);
+	
 
     $self->help($help) if ( defined($help) );
 	( !$self->help ) or die $self->usage_text;

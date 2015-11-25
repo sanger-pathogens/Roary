@@ -10,6 +10,7 @@ Given a spreadsheet of gene presence and absense calculate some statistics
 
 use Moose;
 use Bio::Roary::ExtractCoreGenesFromSpreadsheet;
+use Log::Log4perl qw(:easy);
 with 'Bio::Roary::SpreadsheetRole';
 
 has 'output_filename'       => ( is => 'ro', isa => 'Str',      default => 'assembly_statistics.csv' );
@@ -26,13 +27,21 @@ has '_genes_to_rows'        => ( is => 'ro', isa => 'HashRef',  lazy    => 1, bu
 has 'all_sample_statistics' => ( is => 'ro', isa => 'HashRef',  lazy    => 1, builder => '_build_all_sample_statistics' );
 has 'sample_names_to_column_index' => ( is => 'rw', isa => 'Maybe[HashRef]' );
 has 'summary_output_filename'=> ( is => 'ro', isa => 'Str',      default => 'summary_statistics.txt' );
-
+has 'logger'                 => ( is => 'ro', lazy => 1, builder => '_build_logger');
 has 'gene_category_count'   => ( is => 'ro', isa => 'HashRef',  lazy    => 1, builder => '_build_gene_category_count' );
 
 sub BUILD {
     my ($self) = @_;
     $self->_genes_to_rows;
 	$self->gene_category_count;
+}
+
+sub _build_logger
+{
+    my ($self) = @_;
+    Log::Log4perl->easy_init(level => $ERROR);
+    my $logger = get_logger();
+    return $logger;
 }
 
 sub create_summary_output
@@ -50,6 +59,9 @@ sub create_summary_output
 	my $shell_genes     =($self->gene_category_count->{shell} ? $self->gene_category_count->{shell} : 0);
 	my $cloud_genes     = ($self->gene_category_count->{cloud} ? $self->gene_category_count->{cloud} : 0);
 	my $total_genes = $core_genes  + $soft_core_genes  + $shell_genes + $cloud_genes  ;
+	
+	$self->logger->error("Very few core genes detected with the current settings. Try modifying the core definition ( -cd 90 ) and/or 
+	the blast identity (-i 70) parameters.  Also try checking for contamination (-qc) and ensure you only have one species.") if($core_genes < 100);
 	
 	print {$fh} "Core genes ($core_percentage".'% <= strains <= 100%):'."\t$core_genes\n";
 	print {$fh} "Soft core genes (".$shell_percentage."% <= strains < ".$soft_core_percentage."%):\t$soft_core_genes\n";
