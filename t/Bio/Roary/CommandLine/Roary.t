@@ -31,7 +31,7 @@ cleanup_files();
 
 %scripts_and_expected_files = (
 
-   ' --dont_split_groups  ca   ' =>
+   ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
      [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
    ' -j Local -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
      [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
