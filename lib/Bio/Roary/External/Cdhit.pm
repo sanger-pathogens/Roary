@@ -30,6 +30,8 @@ has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 1
 has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_description_length'          => ( is => 'ro', isa => 'Int',  default  => 256 );
 has '_logging'                     => ( is => 'ro', isa => 'Str',  default  => '> /dev/null 2>&1' );
+has '_max_cpus'                    => ( is => 'ro', isa => 'Int',  default  => 40 );
+
 
 # Overload Role
 has 'memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build_memory_in_mb' );
@@ -70,11 +72,12 @@ sub _command_to_run {
 	
 	my $executable = $self->_find_exe([$self->exec, $self->alt_exec]);
 	
+	my $cpus = ($self->cpus > $self->_max_cpus) ? $self->_max_cpus :  $self->cpus;
     return join(
         ' ',
         (
             $executable,                        '-i', $self->input_file,                   '-o',
-            $self->output_base,                 '-T', $self->cpus,                         '-M',
+            $self->output_base,                 '-T', $cpus,                               '-M',
             $self->_max_available_memory_in_mb, '-g', $self->_use_most_similar_clustering, '-s',
             $self->_length_difference_cutoff,   '-d', $self->_description_length ,'-c', $self->_sequence_identity_threshold, 
             $self->_logging
