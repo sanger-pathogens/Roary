@@ -78,7 +78,7 @@ sub create_accessory_binary_fasta {
 
             next if ( @files <= $self->_lower_bound_value || @files > $self->_upper_bound_value );
 
-            my $group_to_file_genes = $self->groups_to_files->{$group}->{$filename};
+            my $group_to_file_genes = $self->groups_to_files->{$group}->{$full_filename};
             if ( defined($group_to_file_genes) && @{$group_to_file_genes} > 0 ) {
                 $output_sequence .= 'A';
             }
