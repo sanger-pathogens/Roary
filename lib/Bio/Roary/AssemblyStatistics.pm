@@ -76,9 +76,8 @@ sub create_summary_output
 sub _build_gene_category_count {
     my ($self) = @_;
     my %gene_category_count;
-    if ( $self->core_definition < $self->_soft_core_percentage ) {
-        $self->_soft_core_percentage( $self->core_definition - 0.01 );
-    }
+	$self->_soft_core_percentage($self->core_definition);
+	
     if ( $self->_soft_core_percentage <= $self->_shell_percentage ) {
         $self->_shell_percentage( $self->_soft_core_percentage - 0.01 );
     }
