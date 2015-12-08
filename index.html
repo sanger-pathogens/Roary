@@ -345,6 +345,16 @@ Just be aware that recombination is not taken care of with this method.  </p>
 <p>By default if there are more than 50,000 clusters, Roary will not create the core alignment. In virtually every case, having more than 50,000 clusters is a result of mixing different unrelated species and you should go back and QC your samples.  In some limited cases (e.g. E. coli) you can increase the maximum number of allowed clusters by using the <em>–g</em> parameter (<em>-g 60000</em>).  More clusters will mean a longer running time, and a lot more RAM usage.</p>
 
 <h2>
+<a id="why_do_the_results_vary" class="anchor" href="#why_do_the_results_vary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why do the results vary with the same input files?</h2>
+<p>Building pan genomes is NP-hard. Roary addresses this with a non deterministic heuristic. This means there will be a bit of variation in the results if you run it multiple times. Its fundamentally difficult and if we were not using a heuristic, it would potentially take millions/billions of years to run the program.</p>
+
+
+<h2>
+<a id="accessory_binary_fasta" class="anchor" href="#accessory_binary_fasta" aria-hidden="true"><span class="octicon octicon-link"></span></a>How was the accessory binary tree built?</h2>
+<p>To provide a quick insight into the data we build a quick and dirty tree based on the accessory genome. First of all we construct a FASTA file with the binary presence and absence of genes, where 'A' means a gene is present and 'C' means it is absent. Only the first 4000 genes in the accessory genome are considered to limit the running time and memory usage of FastTree. FastTree is then run with the fastest possible settings to produce a Newick tree.</p>
+
+
+<h2>
 <a id="what-tree-building-software-do-you-recommend" class="anchor" href="#what-tree-building-software-do-you-recommend" aria-hidden="true"><span class="octicon octicon-link"></span></a>What tree building software do you recommend?</h2>
 
 <p>RAxML (Stamatakis, 2014) is great, or if you need a quick and dirty tree try FastTree.</p>
