@@ -22,6 +22,7 @@ use File::Basename;
 use Bio::Roary::Exceptions;
 use Bio::Roary::AnalyseGroups;
 use Bio::Roary::AnnotateGroups;
+with 'Bio::Roary::Output::EMBLHeaderCommon';
 
 has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
 has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
@@ -156,23 +157,6 @@ sub _block_colour {
     return $colour;
 }
 
-sub _header_top {
-    my ($self) = @_;
-    my $header_lines = 'ID   Genome standard; DNA; PRO; 1234 BP.' . "\n";
-    $header_lines .= 'XX' . "\n";
-    $header_lines .= 'FH   Key             Location/Qualifiers' . "\n";
-    $header_lines .= 'FH' . "\n";
-    return $header_lines;
-}
-
-sub _header_bottom {
-    my ($self) = @_;
-    my $header_lines = 'XX' . "\n";
-    $header_lines .= 'SQ   Sequence 1234 BP; 789 A; 1717 C; 1693 G; 691 T; 0 other;' . "\n";
-    $header_lines .= '//' . "\n";
-    return $header_lines;
-}
-
 sub _header_block {
     my ( $self, $group ) = @_;
     my $annotated_group_name = $self->annotate_groups_obj->_groups_to_consensus_gene_names->{$group};
@@ -199,15 +183,6 @@ sub _header_block {
     $tab_file_entry .= "FT                   /colour=$colour\n";
 
     return $tab_file_entry;
-}
-
-sub _annotation_type {
-    my ( $self, $annotated_group_name ) = @_;
-    my $annotation_type = "   feature         ";
-    if ( $annotated_group_name =~ /group_/ ) {
-        $annotation_type = "   misc_feature    ";
-    }
-    return $annotation_type;
 }
 
 sub _fragment_blocks {
