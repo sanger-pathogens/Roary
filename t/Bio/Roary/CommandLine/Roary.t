@@ -91,6 +91,8 @@ SKIP:
 
     my @keys = keys %{ $seq_len->sequence_lengths };
     is( $seq_len->sequence_lengths->{ $keys[0] }, 64983, 'length of first sequence' );
+		
+		ok( -e 'core_alignment_header.embl', 'Core gene alignment header exists' );
 
     ok( -e 'accessory.tab' );
     ok( -e 'core_accessory.tab' );
@@ -315,5 +317,6 @@ sub cleanup_files {
     unlink('pan_genome_reference.fa');
     unlink('accessory_graph.dot');
     unlink('core_accessory_graph.dot');
-	unlink('some_different_output');
+	  unlink('some_different_output');
+	  unlink('core_alignment_header.embl');
 }
