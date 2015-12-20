@@ -1,10 +1,10 @@
 package Bio::Roary::AssemblyStatistics;
 
-# ABSTRACT: Given a spreadsheet of gene presence and absense calculate some statistics
+# ABSTRACT: Given a spreadsheet of gene presence and absence calculate some statistics
 
 =head1 SYNOPSIS
 
-Given a spreadsheet of gene presence and absense calculate some statistics
+Given a spreadsheet of gene presence and absence calculate some statistics
 
 =cut
 
