@@ -68,7 +68,7 @@ if __name__ == "__main__":
     # Set index (group name)
     roary.set_index('Gene', inplace=True)
     # Drop the other info columns
-    roary.drop(list(roary.columns[:10]), axis=1, inplace=True)
+    roary.drop(list(roary.columns[:13]), axis=1, inplace=True)
 
     # Transform it in a presence/absence matrix (1/0)
     roary.replace('.{2,100}', 1, regex=True, inplace=True)
