@@ -20,13 +20,16 @@ use Bio::Roary::Exceptions;
 use Bio::SeqIO;
 use File::Basename;
 
-has 'input_files'         => ( is => 'ro', isa => 'ArrayRef',                   required => 1 );
-has 'annotate_groups_obj' => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
-has 'analyse_groups_obj'  => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
-has 'output_filename'     => ( is => 'ro', isa => 'Str',                        default  => 'accessory_binary_genes.fa' );
-has 'groups_to_files'     => ( is => 'ro', isa => 'HashRef',                    lazy     => 1, builder => '_build__groups_to_files' );
-has '_lower_bound_value'  => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__lower_bound_value' );
-has '_upper_bound_value'  => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__upper_bound_value' );
+has 'input_files'            => ( is => 'ro', isa => 'ArrayRef',                   required => 1 );
+has 'annotate_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
+has 'analyse_groups_obj'     => ( is => 'ro', isa => 'Bio::Roary::AnalyseGroups',  required => 1 );
+has 'output_filename'        => ( is => 'ro', isa => 'Str',                        default  => 'accessory_binary_genes.fa' );
+has 'lower_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 5 );
+has 'upper_bound_percentage' => ( is => 'ro', isa => 'Int',                        default  => 5 );
+has 'max_accessory_to_include' => ( is => 'ro', isa => 'Int',                      default  => 4000 );
+has 'groups_to_files'        => ( is => 'ro', isa => 'HashRef',                    lazy     => 1, builder => '_build__groups_to_files' );
+has '_lower_bound_value'     => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__lower_bound_value' );
+has '_upper_bound_value'     => ( is => 'ro', isa => 'Int',                        lazy     => 1, builder => '_build__upper_bound_value' );
 
 sub _build__groups_to_files {
     my ($self) = @_;
@@ -44,21 +47,36 @@ sub _build__groups_to_files {
     return \%groups_to_files;
 }
 
+sub _build__lower_bound_value {
+    my ($self) = @_;
+    my $num_files = @{ $self->input_files };
+    return ceil( $num_files * ( $self->lower_bound_percentage / 100 ) );
+}
+
+sub _build__upper_bound_value {
+    my ($self) = @_;
+    my $num_files = @{ $self->input_files };
+    return $num_files - ceil( $num_files * ( $self->upper_bound_percentage / 100 ) );
+}
+
 sub create_accessory_binary_fasta {
     my ($self) = @_;
     my $out_seq_io = Bio::SeqIO->new( -file => ">" . $self->output_filename, -format => 'Fasta' );
 
     for my $full_filename ( @{ $self->input_files } ) {
-        my ( $filename, $dirs, $suffix ) = fileparse($full_filename);
-
+        my($filename, $dirs, $suffix) = fileparse($full_filename);
+        
         my $output_sequence = '';
         my $sample_name     = $filename;
         $sample_name =~ s!\.gff\.proteome\.faa!!;
 
-        my $gene_count = 0;
+		my $gene_count = 0;
         for my $group ( sort keys %{ $self->groups_to_files } ) {
+			last if($gene_count > $self->max_accessory_to_include);
 
             my @files = keys %{ $self->groups_to_files->{$group} };
+
+            next if ( @files <= $self->_lower_bound_value || @files > $self->_upper_bound_value );
 
             my $group_to_file_genes = $self->groups_to_files->{$group}->{$full_filename};
             if ( defined($group_to_file_genes) && @{$group_to_file_genes} > 0 ) {
@@ -67,10 +85,10 @@ sub create_accessory_binary_fasta {
             else {
                 $output_sequence .= 'C';
             }
-            $gene_count++;
-
+			$gene_count++;
+			
         }
-        next if ( $output_sequence eq '' );
+		next if($output_sequence eq '');
         $out_seq_io->write_seq( Bio::Seq->new( -display_id => $sample_name, -seq => $output_sequence ) );
     }
     return 1;
