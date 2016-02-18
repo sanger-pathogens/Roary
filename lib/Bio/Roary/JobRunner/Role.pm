@@ -13,14 +13,14 @@ use Moose::Role;
 use Log::Log4perl qw(:easy);
 use File::Spec;
 
-has 'job_runner'              => ( is => 'rw', isa => 'Str',  default  => 'Local' );
-has '_job_runner_class'       => ( is => 'ro', isa => 'Str',  lazy => 1, builder => '_build__job_runner_class' );
-has '_memory_required_in_mb'  => ( is => 'rw', isa => 'Int',  default => '200' );
-has '_queue'                  => ( is => 'rw', isa => 'Str',  default => 'normal' );
-has 'dont_wait'               => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'cpus'                    => ( is => 'ro', isa => 'Int',      default => 1 );
-has 'logger'                  => ( is => 'ro', lazy => 1, builder => '_build_logger');
-has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'job_runner'        => ( is => 'rw', isa => 'Str',  default  => 'Local' );
+has '_job_runner_class' => ( is => 'ro', isa => 'Str',  lazy => 1, builder => '_build__job_runner_class' );
+has 'memory_in_mb'      => ( is => 'rw', isa => 'Int',  default => '200' );
+has '_queue'            => ( is => 'rw', isa => 'Str',  default => 'normal' );
+has 'dont_wait'         => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'cpus'              => ( is => 'ro', isa => 'Int',      default => 1 );
+has 'logger'            => ( is => 'ro', lazy => 1, builder => '_build_logger');
+has 'verbose'           => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub _build_logger
 {

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -19,7 +19,7 @@ ok(
     'initialise with a groups file'
 );
 ok($obj->add_labels, 'Add labels to groups');
-is(read_file($obj->output_filename), read_file('t/data/expected_group_labels'), 'groups labeled as expected');
+compare_ok($obj->output_filename, 't/data/expected_group_labels', 'groups labeled as expected');
 unlink('labelled_groups_file');
 
 done_testing();

@@ -27,11 +27,11 @@ has 'output_combined_filename'        => ( is => 'ro', isa => 'Str', required =>
 has 'number_of_input_files'           => ( is => 'ro', isa => 'Int', required => 1 );
 has 'output_filtered_clustered_fasta' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'exec'                            => ( is => 'ro', isa => 'Str', default  => 'iterative_cdhit' );
-
+has '_max_cpus'                       => ( is => 'ro', isa => 'Int',  default  => 40 );
 # Overload Role
-has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build__memory_required_in_mb' );
+has 'memory_in_mb' => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_memory_in_mb' );
 
-sub _build__memory_required_in_mb {
+sub _build_memory_in_mb {
     my ($self)          = @_;
     my $filename        = $self->output_combined_filename;
     my $memory_required = 2000;
@@ -51,17 +51,19 @@ sub _build__memory_required_in_mb {
 
 sub _build__max_available_memory_in_mb {
     my ($self) = @_;
-    my $memory_to_cdhit = int( $self->_memory_required_in_mb * 0.9 );
+    my $memory_to_cdhit = int( $self->memory_in_mb * 0.9 );
     return $memory_to_cdhit;
 }
 
 sub _command_to_run {
     my ($self) = @_;
+	my $cpus = ($self->cpus > $self->_max_cpus) ? $self->_max_cpus :  $self->cpus;
+	
     return join(
         ' ',
         (
             $self->exec,                     '-c', $self->output_cd_hit_filename, '-m',
-            $self->output_combined_filename, '-n', $self->number_of_input_files, '--cpus', $self->cpus, '-f',
+            $self->output_combined_filename, '-n', $self->number_of_input_files, '--cpus', $cpus, '-f',
             $self->output_filtered_clustered_fasta
         )
     );
@@ -75,7 +77,7 @@ sub run {
 	
     my $job_runner_obj = $self->_job_runner_class->new(
         commands_to_run => \@commands_to_run,
-        memory_in_mb    => $self->_memory_required_in_mb,
+        memory_in_mb    => $self->memory_in_mb,
         queue           => $self->_queue,
         cpus            => $self->cpus 
     );

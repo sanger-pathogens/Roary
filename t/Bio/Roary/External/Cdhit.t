@@ -26,4 +26,14 @@ unlink('output');
 unlink('output.clstr');
 unlink('output.bak.clstr');
 
+
+ok($obj = Bio::Roary::External::Cdhit->new(
+  input_file   => 't/data/some_fasta_file.fa',
+  output_base  => 'output',
+  exec         =>  $cwd.'/t/bin/dummy_cd-hit',
+  cpus         => 1000
+),'initialise object with lots of threads');
+is($obj->_command_to_run, $cwd.'/t/bin/dummy_cd-hit -i t/data/some_fasta_file.fa -o output -T 40 -M 1800 -g 1 -s 1 -d 256 -c 1 > /dev/null 2>&1', 'number of threads capped at a lower level');
+
+
 done_testing();

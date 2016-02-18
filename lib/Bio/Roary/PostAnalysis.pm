@@ -117,6 +117,7 @@ sub run {
 
     $self->logger->info("Creating the spreadsheet with gene presence and absence");
     $self->_group_statistics_obj->create_spreadsheet;
+	$self->_group_statistics_obj->create_rtab;
 
     $self->logger->info("Creating summary statistics of the spreadsheet");
     $self->_assembly_statistics->create_summary_output;

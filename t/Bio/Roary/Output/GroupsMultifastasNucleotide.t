@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use File::Path qw( remove_tree);
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -60,7 +59,7 @@ ok(
 );
 ok( $obj->create_files(), 'Create multiple fasta files where you delete non core files' );
 
-is(read_file('pan_genome_sequences/hly.fa'),     read_file('t/data/pan_genome_sequences/hly.fa' ), 'Check multifasta content is correct for 3-hly.fa ');
+compare_ok('pan_genome_sequences/hly.fa', 't/data/pan_genome_sequences/hly.fa' , 'Check multifasta content is correct for 3-hly.fa ');
 ok(! -e 'pan_genome_sequences/speH.fa', 'Check 2-speH.fa doesnt exist since its non core');
 ok(! -e 'pan_genome_sequences/argF.fa', 'Check 2-argF.fa doesnt exist since its non core');
 cleanup_files();

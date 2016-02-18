@@ -1,4 +1,4 @@
-"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragment","Accessory Order with Fragment","QC","query_1.fa.tmp.filtered.fa","query_2.fa.tmp.filtered.fa","query_3.fa.tmp.filtered.fa"
-"group_4","","","2","2","1","","","","","","","2_4","3_4"
-"group_5","","","1","1","1","","","","","","","","3_5"
-"group_7","","","1","1","1","","","","","","","2_7",""
+"Gene","Non-unique Gene name","Annotation","No. isolates","No. sequences","Avg sequences per isolate","Genome Fragment","Order within Fragment","Accessory Fragment","Accessory Order with Fragment","QC","Min group size nuc","Max group size nuc","Avg group size nuc","query_1.fa.tmp.filtered.fa","query_2.fa.tmp.filtered.fa","query_3.fa.tmp.filtered.fa"
+"group_4","","","2","2","1","","","","","","","","","","2_4","3_4"
+"group_5","","","1","1","1","","","","","","","","","","","3_5"
+"group_7","","","1","1","1","","","","","","","","","","2_7",""

@@ -18,8 +18,9 @@ use Moose;
 use Log::Log4perl qw(:easy);
 
 has 'commands_to_run' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'logger'                  => ( is => 'ro', lazy => 1, builder => '_build_logger');
-has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'logger'          => ( is => 'ro', lazy => 1, builder => '_build_logger');
+has 'verbose'         => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'memory_in_mb'    => ( is => 'rw', isa => 'Int',  default => '200' );
 
 sub run {
     my ($self) = @_;

@@ -84,8 +84,8 @@ if __name__ == "__main__":
     plt.hist(roary.sum(axis=1), roary.shape[1],
              histtype="stepfilled", alpha=.7)
 
-    plt.xlabel('Number of genomes')
-    plt.ylabel('Number of genes')
+    plt.xlabel('No. of genomes')
+    plt.ylabel('No. of genes')
 
     sns.despine(left=True,
                 bottom=True)
@@ -123,7 +123,7 @@ if __name__ == "__main__":
                    ylabel=('',), xlabel=('',),
                    xlim=(-0.01,mdist+0.01),
                    axis=('off',),
-                   title=('parSNP tree\n(%d strains)'%roary.shape[1],),
+                   title=('Tree\n(%d strains)'%roary.shape[1],),
                    do_show=False,
                   )
         plt.savefig('pangenome_matrix.png')

@@ -30,11 +30,13 @@ has '_length_difference_cutoff'    => ( is => 'ro', isa => 'Num',  default  => 1
 has '_sequence_identity_threshold' => ( is => 'ro', isa => 'Num',  default  => 1 );
 has '_description_length'          => ( is => 'ro', isa => 'Int',  default  => 256 );
 has '_logging'                     => ( is => 'ro', isa => 'Str',  default  => '> /dev/null 2>&1' );
+has '_max_cpus'                    => ( is => 'ro', isa => 'Int',  default  => 40 );
+
 
 # Overload Role
-has '_memory_required_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__memory_required_in_mb' );
+has 'memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build_memory_in_mb' );
 
-sub _build__memory_required_in_mb
+sub _build_memory_in_mb
 {
   my ($self) = @_;
   my $filename = $self->input_file;
@@ -55,7 +57,7 @@ sub _build__memory_required_in_mb
 sub _build__max_available_memory_in_mb
 {
   my ($self) = @_;
-  my $memory_to_cdhit = int($self->_memory_required_in_mb *0.9);
+  my $memory_to_cdhit = int($self->memory_in_mb *0.9);
   return $memory_to_cdhit;
 }
 
@@ -70,11 +72,12 @@ sub _command_to_run {
 	
 	my $executable = $self->_find_exe([$self->exec, $self->alt_exec]);
 	
+	my $cpus = ($self->cpus > $self->_max_cpus) ? $self->_max_cpus :  $self->cpus;
     return join(
         ' ',
         (
             $executable,                        '-i', $self->input_file,                   '-o',
-            $self->output_base,                 '-T', $self->cpus,                         '-M',
+            $self->output_base,                 '-T', $cpus,                               '-M',
             $self->_max_available_memory_in_mb, '-g', $self->_use_most_similar_clustering, '-s',
             $self->_length_difference_cutoff,   '-d', $self->_description_length ,'-c', $self->_sequence_identity_threshold, 
             $self->_logging
@@ -88,7 +91,7 @@ sub run {
 	
     push(@commands_to_run, $self->_command_to_run() );
     $self->logger->info( "Running command: " . $self->_command_to_run() );
-    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->_memory_required_in_mb, queue => $self->_queue, cpus => $self->cpus );
+    my $job_runner_obj = $self->_job_runner_class->new( commands_to_run => \@commands_to_run, memory_in_mb => $self->memory_in_mb, queue => $self->_queue, cpus => $self->cpus );
     $job_runner_obj->run();
     
     1;

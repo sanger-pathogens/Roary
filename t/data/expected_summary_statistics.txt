@@ -1,5 +1,5 @@
-Core genes (99% <= strains <= 100%):	1
-Soft core genes (95% <= strains < 99%):	1
-Shell genes (15% <= strains < 95%):	24
-Cloud genes (0% <= strains < 15%):	4
-Total genes:	30
+Core genes	(99% <= strains <= 100%)	1
+Soft core genes	(95% <= strains < 99%)	1
+Shell genes	(15% <= strains < 95%)	24
+Cloud genes	(0% <= strains < 15%)	4
+Total genes	(0% <= strains <= 100%)	30

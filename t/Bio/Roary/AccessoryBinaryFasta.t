@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -26,13 +25,13 @@ my $dummy_analyse_groups = Bio::Roary::AnalyseGroups->new(
 
 ok(
     my $obj = Bio::Roary::AccessoryBinaryFasta->new(
-        input_files => [ 'aaa', 'bbb', 'ccc', 'ddd' ],
+        input_files => [ 't/abc/aaa', 't/abc/bbb', 't/abc/ccc', 't/abc/ddd' ],
         groups_to_files => 
 		{
-            group_1 => { 'aaa' => [1] },
-            group_2 => { 'aaa' => [1], 'bbb' => [2] },
-            group_3 => { 'aaa' => [1], 'bbb' => [2], 'ccc' => [3] },
-            group_4 => { 'aaa' => [1], 'bbb' => [2], 'ccc' => [3], 'ddd' => [4] },
+            group_1 => { 't/abc/aaa' => [1] },
+            group_2 => { 't/abc/aaa' => [1], 't/abc/bbb' => [2] },
+            group_3 => { 't/abc/aaa' => [1], 't/abc/bbb' => [2], 't/abc/ccc' => [3] },
+            group_4 => { 't/abc/aaa' => [1], 't/abc/bbb' => [2], 't/abc/ccc' => [3], 't/abc/ddd' => [4] },
         },
 		_lower_bound_value  => 0,
 		_upper_bound_value  => 4,

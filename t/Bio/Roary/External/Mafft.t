@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Cwd;
-use File::Slurp::Tiny qw(read_file write_file);
 use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }

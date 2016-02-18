@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use File::Path qw(remove_tree);
-use File::Slurp::Tiny qw(read_file write_file);
+use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
 $ENV{PATH} .= ":./bin";
@@ -42,7 +42,7 @@ ok($obj->fix_duplicate_gene_ids, 'fix duplicates with 2 input gffs');
 ok(( -d 'fixed_input_files'), 'Directory should exist because there is one gff thats fixed');
 is_deeply($obj->fixed_gff_files, ['t/data/reformat_input_gffs/query_1.gff','fixed_input_files/query_2.gff' ] ,'list of gff files one in the fixed directory');
 ok(( -e 'fixed_input_files/query_2.gff'), 'fixed file should exist');
-is_deeply(read_file('fixed_input_files/query_2.gff'),  read_file('t/data/reformat_input_gffs/expected_fixed_query_2.gff'),  'fixed file should have expected changes');
+compare_ok('fixed_input_files/query_2.gff', 't/data/reformat_input_gffs/expected_fixed_query_2.gff',  'fixed file should have expected changes');
 remove_tree('fixed_input_files');
 
 
@@ -53,15 +53,15 @@ ok(( -d 'fixed_input_files'), 'Directory should exist because there is 2 gffs th
 is_deeply($obj->fixed_gff_files, ['t/data/reformat_input_gffs/query_1.gff','fixed_input_files/query_2.gff','fixed_input_files/query_3.gff' ] ,'list of gff files 2 in the fixed directory');
 ok(( -e 'fixed_input_files/query_2.gff'), 'fixed file should exist');
 ok(( -e 'fixed_input_files/query_3.gff'), 'fixed file should exist');
-is_deeply(read_file('fixed_input_files/query_2.gff'),  read_file('t/data/reformat_input_gffs/expected_fixed_query_2.gff'),  'fixed file should have expected changes');
-is_deeply(read_file('fixed_input_files/query_3.gff'),  read_file('t/data/reformat_input_gffs/expected_fixed_query_3.gff'),  'fixed file should have expected changes');
+compare_ok('fixed_input_files/query_2.gff','t/data/reformat_input_gffs/expected_fixed_query_2.gff',  'fixed file should have expected changes');
+compare_ok('fixed_input_files/query_3.gff', 't/data/reformat_input_gffs/expected_fixed_query_3.gff',  'fixed file should have expected changes');
 remove_tree('fixed_input_files');
 	
 
 ok($obj = Bio::Roary::ReformatInputGFFs->new(gff_files => ['t/data/reformat_input_gffs/real_1.gff']), 'initialise with 1 gff that has shown to have a bug');
 ok(my $fixed_file = $obj->_add_suffix_to_gene_ids_and_return_new_file('t/data/reformat_input_gffs/real_1.gff'), 'fix duplicates');
 ok(( -e 'fixed_input_files/real_1.gff'), 'fixed file should exist');
-is_deeply(read_file('fixed_input_files/real_1.gff'),  read_file('t/data/reformat_input_gffs/expected_real_1.gff'),  'fixed file should have expected changes');
+compare_ok('fixed_input_files/real_1.gff', 't/data/reformat_input_gffs/expected_real_1.gff',  'fixed file should have expected changes');
 remove_tree('fixed_input_files');
 
 

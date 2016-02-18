@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use Moose;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 use File::Path qw( remove_tree);
 use File::Which;
 use File::Path qw(make_path);
@@ -32,16 +31,16 @@ cleanup_files();
 
 %scripts_and_expected_files = (
 
-    ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-      [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-    ' -j Local -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-      [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-    ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-      [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-    ' -t 1 -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
-      [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
-    ' -j Local --dont_split_groups t/data/genbank_gbff/genbank1.gff t/data/genbank_gbff/genbank2.gff t/data/genbank_gbff/genbank3.gff' =>
-      [ 'gene_presence_absence.csv', 't/data/genbank_gbff/genbank_gene_presence_absence.csv' ],
+   ' --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+     [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
+   ' -j Local -t 1 --dont_split_groups   t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+     [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
+   ' -j Parallel  --dont_split_groups t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+     [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
+   ' -t 1 -j Parallel --dont_split_groups  t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff    ' =>
+     [ 'gene_presence_absence.csv', 't/data/overall_gene_presence_absence.csv' ],
+   ' -j Local --dont_split_groups t/data/genbank_gbff/genbank1.gff t/data/genbank_gbff/genbank2.gff t/data/genbank_gbff/genbank3.gff' =>
+     [ 'gene_presence_absence.csv', 't/data/genbank_gbff/genbank_gene_presence_absence.csv' ],
     '-h' => [ 'empty_file', 't/data/empty_file' ],
 );
 
@@ -92,6 +91,8 @@ SKIP:
 
     my @keys = keys %{ $seq_len->sequence_lengths };
     is( $seq_len->sequence_lengths->{ $keys[0] }, 64983, 'length of first sequence' );
+		
+		ok( -e 'core_alignment_header.embl', 'Core gene alignment header exists' );
 
     ok( -e 'accessory.tab' );
     ok( -e 'core_accessory.tab' );
@@ -316,5 +317,6 @@ sub cleanup_files {
     unlink('pan_genome_reference.fa');
     unlink('accessory_graph.dot');
     unlink('core_accessory_graph.dot');
-	unlink('some_different_output');
+	  unlink('some_different_output');
+	  unlink('core_alignment_header.embl');
 }

@@ -23,27 +23,60 @@ Returns the path to the results file
 use Moose;
 with 'Bio::Roary::JobRunner::Role';
 
-has 'fasta_files'       => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'exec'              => ( is => 'ro', isa => 'Str',      default  => 'protein_alignment_from_nucleotides' );
-has 'translation_table' => ( is => 'rw', isa => 'Int',      default => 11 );
-has 'core_definition'   => ( is => 'ro', isa => 'Num',      default => 1 );
-has 'mafft'             => ( is => 'ro', isa => 'Bool',     default => 0 );
+has 'fasta_files'                 => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'exec'                        => ( is => 'ro', isa => 'Str',      default  => 'protein_alignment_from_nucleotides' );
+has 'translation_table'           => ( is => 'rw', isa => 'Int',      default => 11 );
+has 'core_definition'             => ( is => 'ro', isa => 'Num',      default => 1 );
+has 'mafft'                       => ( is => 'ro', isa => 'Bool',     default => 0 );
+has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'num_input_files'             => ( is => 'ro', isa => 'Int',      required => 1);
 
 # Overload Role
-has '_memory_required_in_mb' => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__memory_required_in_mb' );
+has 'memory_in_mb' => ( is => 'rw', isa => 'Int', lazy     => 1, builder => '_build_memory_in_mb' );
+has '_min_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 1500 );
+has '_max_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 60000 );
 has '_queue'                 => ( is => 'rw', isa => 'Str', default  => 'normal' );
-has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', default  => 25 );
+has '_files_per_chunk'       => ( is => 'ro', isa => 'Int', lazy     => 1, builder => '_build__files_per_chunk' );
 has '_core_alignment_cmd'    => ( is => 'rw', isa => 'Str', lazy_build => 1 );
+has '_dependancy_memory_in_mb'  => ( is => 'ro', isa => 'Int', default => 15000 );
 
+sub _build__files_per_chunk
+{
+    my ($self) = @_;
+    if($self->num_input_files > 1000)
+    {
+               return 5;
+    }
+    elsif($self->num_input_files > 500)
+    {
+               return 7;
+    }
+    return 10;
+}
 
-sub _build__memory_required_in_mb {
+sub _build_memory_in_mb {
     my ($self)          = @_;
-    my $memory_required = 5000;
+
+    my $largest_file_size = 1;
+    for my $file (@{$self->fasta_files})
+    {
+        my $file_size = -s $file;
+        if($file_size > $largest_file_size)
+        {
+            $largest_file_size = $file_size;
+        }
+    }
+    
+    my $approx_sequence_length_of_largest_file = $largest_file_size/ $self->num_input_files;
+    my $memory_required = int((($approx_sequence_length_of_largest_file*$approx_sequence_length_of_largest_file)/1000000)*2 + $self->_min_memory_in_mb);
+    
+    $memory_required = $self->_max_memory_in_mb if($memory_required  > $self->_max_memory_in_mb);
+
     return $memory_required;
 }
 
 sub _command_to_run {
-    my ( $self, $fasta_files, ) = @_;
+    my ( $self, $fasta_files) = @_;
 	my $verbose = "";
 	if($self->verbose)
 	{
@@ -59,6 +92,7 @@ sub _build__core_alignment_cmd {
     
     my $core_cmd = "pan_genome_core_alignment";
     $core_cmd .= " -cd " . ($self->core_definition*100) if ( defined $self->core_definition );
+    $core_cmd .= " --dont_delete_files " if ( defined $self->dont_delete_files  && $self->dont_delete_files == 1 );
 
     return $core_cmd;
 }
@@ -86,13 +120,14 @@ sub run {
 
     my $job_runner_obj = $self->_job_runner_class->new(
         commands_to_run => \@commands_to_run,
-        memory_in_mb    => $self->_memory_required_in_mb,
+        memory_in_mb    => $self->memory_in_mb,
         queue           => $self->_queue,
         dont_wait       => 1,
         cpus            => $self->cpus 
     );
     $job_runner_obj->run();
     
+	$job_runner_obj->memory_in_mb($self->_dependancy_memory_in_mb);
 	$self->logger->info( "Running command: " . $self->_core_alignment_cmd() );
     $job_runner_obj->submit_dependancy_job($self->_core_alignment_cmd);
     1;

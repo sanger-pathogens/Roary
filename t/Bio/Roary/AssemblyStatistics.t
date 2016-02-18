@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp::Tiny qw(read_file write_file);
 use Test::Files;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -47,12 +46,12 @@ is_deeply(
 is_deeply(
     $obj->sample_names_to_column_index,
     {
-        'threeblocks'          => 15,
-        'nocontigs'            => 14,
-        'contigwithgaps'       => 13,
-        'oneblock'             => 11,
-        'threeblocksinversion' => 16,
-        'oneblockrev'          => 12
+        'threeblocks'          => 18,
+        'nocontigs'            => 17,
+        'contigwithgaps'       => 16,
+        'oneblock'             => 14,
+        'threeblocksinversion' => 19,
+        'oneblockrev'          => 15
     },
     'sample names to column index'
 );
@@ -89,6 +88,33 @@ is_deeply(
 ok($obj->create_summary_output, 'create output file');
 compare_ok('summary_statistics.txt', 't/data/expected_summary_statistics.txt', 'summary statistics as expected');
 
+
+# t/data/gene_category_count.csv
+ok( $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => 't/data/gene_category_count.csv', core_definition => 0.9667 ),
+    'initialise spreadsheet with core of 96.67%' );
+is_deeply(
+    $obj->gene_category_count,
+    {
+        'core'      => 1,
+		'soft_core' => 1,
+        'cloud'     => 4,
+        'shell'     => 24
+    },
+    'Categories as expected with cd of 96.67%'
+);
+
+# t/data/gene_category_count.csv
+ok( $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => 't/data/gene_category_count.csv', core_definition => 0.9666 ),
+    'initialise spreadsheet with core of 96.66%' );
+is_deeply(
+    $obj->gene_category_count,
+    {
+        'core'      => 2,
+        'cloud'     => 4,
+        'shell'     => 24
+    },
+    'Categories as expected with cd of 96.66%'
+);
 
 
 unlink('summary_statistics.txt');
