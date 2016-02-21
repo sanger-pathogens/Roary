@@ -79,7 +79,7 @@ if __name__ == "__main__":
     roary.replace(np.nan, 0, regex=True, inplace=True)
 
     # Sort the matrix by the sum of strains presence
-    idx = roary.sum(axis=1).order(ascending=False).index
+    idx = roary.sum(axis=1).sort_values(ascending=False).index
     roary_sorted = roary.ix[idx]
 
     # Pangenome frequency plot
