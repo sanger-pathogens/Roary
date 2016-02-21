@@ -38,6 +38,10 @@ def get_options():
     parser.add_argument('spreadsheet', action='store',
                         help='Roary gene presence/absence spreadsheet', default='gene_presence_absence.csv')
 
+    parser.add_argument('--labels', action='store_true',
+                        default=False,
+                        help='Add node labels to the tree (up to 10 chars)')
+    
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
 
@@ -116,16 +120,28 @@ if __name__ == "__main__":
 
         ax1.set_title('Roary matrix\n(%d gene clusters)'%roary.shape[0])
 
-        Phylo.draw(t, axes=ax, 
-                   show_confidence=False,
-                   label_func=lambda x: None,
-                   xticks=([],), yticks=([],),
-                   ylabel=('',), xlabel=('',),
-                   xlim=(-0.01,mdist+0.01),
-                   axis=('off',),
-                   title=('Tree\n(%d strains)'%roary.shape[1],),
-                   do_show=False,
-                  )
+        if options.labels:
+            Phylo.draw(t, axes=ax, 
+                       show_confidence=False,
+                       label_func=lambda x: str(x)[:10],
+                       xticks=([],), yticks=([],),
+                       ylabel=('',), xlabel=('',),
+                       xlim=(-0.01,mdist+0.2),
+                       axis=('off',),
+                       title=('Tree\n(%d strains)'%roary.shape[1],),
+                       do_show=False,
+                      )
+        else:
+            Phylo.draw(t, axes=ax, 
+                       show_confidence=False,
+                       label_func=lambda x: None,
+                       xticks=([],), yticks=([],),
+                       ylabel=('',), xlabel=('',),
+                       xlim=(-0.01,mdist+0.01),
+                       axis=('off',),
+                       title=('Tree\n(%d strains)'%roary.shape[1],),
+                       do_show=False,
+                      )
         plt.savefig('pangenome_matrix.png')
         plt.clf()
 
