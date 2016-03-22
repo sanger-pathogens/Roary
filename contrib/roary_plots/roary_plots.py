@@ -41,6 +41,13 @@ def get_options():
     parser.add_argument('--labels', action='store_true',
                         default=False,
                         help='Add node labels to the tree (up to 10 chars)')
+    parser.add_argument('--format',
+                        choices=('png',
+                                 'tiff',
+                                 'pdf',
+                                 'svg'),
+                        default='png',
+                        help='Output format [Default: png]')
     
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
@@ -93,7 +100,7 @@ if __name__ == "__main__":
 
     sns.despine(left=True,
                 bottom=True)
-    plt.savefig('pangenome_frequency.png')
+    plt.savefig('pangenome_frequency.%s'%options.format, dpi=300)
     plt.clf()
 
     # Sort the matrix according to tip labels in the tree
@@ -121,28 +128,32 @@ if __name__ == "__main__":
         ax1.set_title('Roary matrix\n(%d gene clusters)'%roary.shape[0])
 
         if options.labels:
-            Phylo.draw(t, axes=ax, 
-                       show_confidence=False,
-                       label_func=lambda x: str(x)[:10],
-                       xticks=([],), yticks=([],),
-                       ylabel=('',), xlabel=('',),
-                       xlim=(-0.01,mdist+0.2),
-                       axis=('off',),
-                       title=('Tree\n(%d strains)'%roary.shape[1],),
-                       do_show=False,
-                      )
+            fsize = 12 - 0.1*roary.shape[1]
+            if fsize < 7:
+                fsize = 7
+            with plt.rc_context({'font.size': fsize}):
+                Phylo.draw(t, axes=ax, 
+                           show_confidence=False,
+                           label_func=lambda x: str(x)[:10],
+                           xticks=([],), yticks=([],),
+                           ylabel=('',), xlabel=('',),
+                           xlim=(-mdist*0.1,mdist+mdist*0.45-mdist*roary.shape[1]*0.001),
+                           axis=('off',),
+                           title=('Tree\n(%d strains)'%roary.shape[1],), 
+                           do_show=False,
+                          )
         else:
             Phylo.draw(t, axes=ax, 
                        show_confidence=False,
                        label_func=lambda x: None,
                        xticks=([],), yticks=([],),
                        ylabel=('',), xlabel=('',),
-                       xlim=(-0.01,mdist+0.01),
+                       xlim=(-mdist*0.1,mdist+mdist*0.1),
                        axis=('off',),
                        title=('Tree\n(%d strains)'%roary.shape[1],),
                        do_show=False,
                       )
-        plt.savefig('pangenome_matrix.png')
+        plt.savefig('pangenome_matrix.%s'%options.format, dpi=300)
         plt.clf()
 
     # Plot the pangenome pie chart
@@ -167,5 +178,5 @@ if __name__ == "__main__":
           explode=[0.1, 0.05, 0.02, 0], radius=0.9,
           colors=[(0, 0, 1, float(x)/total) for x in (core, softcore, shell, cloud)],
           autopct=my_autopct)
-    plt.savefig('pangenome_pie.png')
+    plt.savefig('pangenome_pie.%s'%options.format, dpi=300)
     plt.clf()
