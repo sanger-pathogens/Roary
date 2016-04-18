@@ -22,12 +22,19 @@ Theres are a number of dependancies required for Roary, with instructions specif
 If the installation fails please contact your system administrator. If you encounter a bug please let us know by emailing roary@sanger.ac.uk .
 
 ##Ubuntu/Debian
-All the dependancies can be installed using apt and cpanm (tested on Ubuntu 14.04). Root permissions are required.
+### Ubuntu 16.04
+
+```
+sudo apt-get install roary
+```
+
+###Ubuntu 14.04
+All the dependancies can be installed using apt and cpanm. Root permissions are required.
 
 ```
 sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft fasttree
 sudo cpanm -f Bio::Roary
-```   
+```
 
 ###Ubuntu 12.04
 Some of the software versions in apt are quite old so follow the instructions for [LinuxBrew](http://brew.sh/linuxbrew/) below.
