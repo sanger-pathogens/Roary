@@ -31,7 +31,7 @@
           <h1>
 <a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span class="octicon octicon-link"></span></a>Abstract</h1>
 
-<p><strong>By Andrew Page based on version 3.5.9 (23-Feb-2016)</strong></p>
+<p><strong>By Andrew Page based on version 3.6.1 (19-April-2016)</strong></p>
 
 <p>Roary is a high speed stand alone pan genome pipeline, which takes annotated assemblies in GFF3 format (produced by Prokka (Seemann, 2014)) and calculates the pan genome. Using a standard desktop PC, it can analyse datasets with thousands of samples, something which is computationally infeasible with existing methods, without compromising the quality of the results. 128 samples can be analysed in under 1 hour using 1 GB of RAM and a single processor. To perform this analysis using existing methods would take weeks and hundreds of GB of RAM. Roary is not intended for meta-genomics or for comparing extremely diverse sets of genomes. </p>
 
@@ -342,6 +342,7 @@ Just be aware that recombination is not taken care of with this method.  </p>
 
 <h1>
 <a id="faq" class="anchor" href="#faq" aria-hidden="true"><span class="octicon octicon-link"></span></a>FAQ</h1>
+<p>Below is a list of some questions that we have been asked.</p>
 
 <h2>
 <a id="strange-errors" class="anchor" href="#strange-errors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Strange errors</h2>
@@ -405,7 +406,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 <p>Yes.</p>
 
 <h2>
-<a id="will-it-work-with-mitochondria" class="anchor" href="#will-it-work-with-mitochondria" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Mitochondria?</h2>
+<a id="will-it-work-with-mitochondria" class="anchor" href="#will-it-work-with-mitochondria" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Mitochondria or Mycoplasma?</h2>
 <p>Yes, just set the translation table to 4 (<em>-t 4</em>).</p>
 
 <h2>
@@ -435,6 +436,14 @@ system administrator who can figure all this stuff out for themselves, so dont n
 <h2>
 <a id="private_data" class="anchor" href="#private_data" aria-hidden="true"><span class="octicon octicon-link"></span></a>I cant get Roary working on my private dataset. Will you sign an NDA if I send it to you?</h2>
 <p>Only if it is agreed in advance with our legal department.</p>
+
+<h2>
+<a id="python" class="anchor" href="#python" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roary throws lots of Python errors</h2>
+<p>Your trying to run a Perl program with Python. Its unlikely to work any time soon.</p>
+
+<h2>
+<a id="other_programs" class="anchor" href="#other_programs" aria-hidden="true"><span class="octicon octicon-link"></span></a>What are the alternatives to Roary?</h2>
+<p>If Roary doesnt suit your needs there are many other applications to create microbial pan genomes such as: OrthoMCL, PanOCT, PanSeq, LS-BSR, FindMyFriends, MicroPan and PGAP. New applications come out weekly.</p>
 
 <h2>
 <a id="cdhit-seg-faults" class="anchor" href="#cdhit-seg-faults" aria-hidden="true"><span class="octicon octicon-link"></span></a>cdhit seg faults</h2>
