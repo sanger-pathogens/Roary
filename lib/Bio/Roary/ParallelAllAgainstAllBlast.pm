@@ -88,8 +88,14 @@ sub _combine_blast_results {
         Bio::Roary::Exceptions::FileNotFound->throw( error => "Cant find blast results: " . $output_file )
           unless ( -e $output_file );
     }
-    my $output_files_param = join( ' ', @{$output_files} );
-    system( "cat $output_files_param > " . $self->blast_results_file_name );
+    if ( -e $self->blast_results_file_name )
+    {
+        system( "rm " . $self->blast_results_file_name );
+    }
+    system( "touch " . $self->blast_results_file_name );
+    for my $output_file ( @{$output_files} ) {
+        system( "cat $output_file >> " . $self->blast_results_file_name );
+    }
     return 1;
 }
 
