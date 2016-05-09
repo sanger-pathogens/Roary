@@ -92,9 +92,15 @@ sub _combine_blast_results {
     {
         system( "rm " . $self->blast_results_file_name );
     }
+    if ( -e $self->blast_results_file_name.'.filtered' )
+    {
+        system( "rm " . $self->blast_results_file_name.'.filtered');
+    }
     system( "touch " . $self->blast_results_file_name );
+    system( "touch " . $self->blast_results_file_name.'.filtered' );
     for my $output_file ( @{$output_files} ) {
         system( "cat $output_file >> " . $self->blast_results_file_name );
+        system( "cat $output_file.filtered >> " . $self->blast_results_file_name.'.filtered' );
     }
     return 1;
 }

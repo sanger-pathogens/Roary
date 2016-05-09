@@ -48,8 +48,8 @@ sub _command_to_run {
             '-num_threads', $self->_num_threads,
             '-outfmt 6',
             '-max_target_seqs', $self->_max_target_seqs,
-            ' | awk \'{ if ($3 > '.$self->perc_identity.') print $0;}\'',  
-            $self->_logging, '1> ', $self->output_file,
+            ' | awk \'{ if ($3 > '.$self->perc_identity.') print > "'.$self->output_file.'"; else print > "'.$self->output_file.'.filtered"}\'',  
+            $self->_logging,
         )
         
         
