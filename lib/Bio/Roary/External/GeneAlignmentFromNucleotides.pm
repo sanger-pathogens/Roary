@@ -31,7 +31,7 @@ has 'mafft'                       => ( is => 'ro', isa => 'Bool',     default =>
 has 'dont_delete_files'           => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'num_input_files'             => ( is => 'ro', isa => 'Int',      required => 1);
 
-# Overload Role
+# Overload Role`
 has 'memory_in_mb' => ( is => 'rw', isa => 'Int', lazy     => 1, builder => '_build_memory_in_mb' );
 has '_min_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 1500 );
 has '_max_memory_in_mb'      => ( is => 'ro', isa => 'Int', default => 60000 );
@@ -43,15 +43,7 @@ has '_dependancy_memory_in_mb'  => ( is => 'ro', isa => 'Int', default => 15000 
 sub _build__files_per_chunk
 {
     my ($self) = @_;
-    if($self->num_input_files > 1000)
-    {
-               return 5;
-    }
-    elsif($self->num_input_files > 500)
-    {
-               return 7;
-    }
-    return 10;
+    return 1;
 }
 
 sub _build_memory_in_mb {
