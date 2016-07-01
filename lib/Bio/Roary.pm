@@ -115,7 +115,7 @@ sub run {
     unlink($output_blast_results_filename) unless($self->dont_delete_files == 1);
     
     my $post_analysis = Bio::Roary::External::PostAnalysis->new(
-        job_runner                  => $self->job_runner,
+        job_runner                  => 'Local',
         cpus                        => $self->cpus,
         fasta_files                 => $self->fasta_files,
         input_files                 => $self->input_files,
