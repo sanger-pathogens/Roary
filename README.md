@@ -87,10 +87,10 @@ bedtools cd-hit blast mcl GNUparallel prank mafft fasttree
 ```
 
 ## Ancient systems and versions of perl
-The code will not work with perl 5.8 or below (pre-modern perl). If your running a very old verison of Linux, your also in trouble.
+The code will not work with perl 5.8 or below (pre-modern perl). We no longer test against 5.10 (released 2007). If your running a very old verison of Linux, your also in trouble.
 
 #Versions of software we test against
-* Perl 5.10, 5.14, 5.16, 5.18, 5.20
+* Perl 5.14, 5.16, 5.20, 5.24
 * cdhit 4.6.1
 * ncbi blast+ 2.2.30
 * mcl 14-137
