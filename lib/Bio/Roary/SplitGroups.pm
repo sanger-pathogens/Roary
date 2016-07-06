@@ -308,6 +308,10 @@ sub _shared_cgn_score {
 		next unless(defined($input_group));
 		$total_shared++ if($cgn2->{$input_group});
 	}
+	if( (scalar @{ $cgn1 }) == 0)
+	{
+	  return 0;
+  }
 	my $score = $total_shared/scalar @{ $cgn1 };
 	return $score;
 }
