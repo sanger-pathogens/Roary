@@ -37,6 +37,19 @@ unlink('example_annotation_2.gff.proteome.faa');
 
 ok(
     $plot_groups_obj = Bio::Roary::ExtractProteomeFromGFFs->new(
+        gff_files => [ 't/data/example_annotation_no_fasta_line.gff', 't/data/example_annotation_2.gff' ],
+    ),
+    'initialise object where one GFF has no FASTA line'
+);
+compare_ok( $plot_groups_obj->fasta_files->[0] ,
+    't/data/example_annotation.gff.proteome.faa.expected',
+    'content of proteome 1 as expected'
+);
+unlink('example_annotation_no_fasta_line.gff.proteome.faa');
+unlink('example_annotation_2.gff.proteome.faa');
+
+ok(
+    $plot_groups_obj = Bio::Roary::ExtractProteomeFromGFFs->new(
         gff_files => [ 't/data/genbank_gbff/genbank1.gff', 't/data/genbank_gbff/genbank2.gff', 't/data/genbank_gbff/genbank3.gff' ],
     ),
     'initialise object with genbank gff files'
