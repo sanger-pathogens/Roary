@@ -122,9 +122,9 @@ sub _extracted_nucleotide_fasta_file_from_bed_filename {
 sub _create_nucleotide_fasta_file_from_gff {
     my ($self) = @_;
     my $cmd =
-        'sed -n \'/##FASTA/,//p\' '
+        'sed -n \'/^>/,//p\' '
       . $self->gff_file
-      . ' | grep -v \'##FASTA\' > '
+      . ' > '
       . $self->_nucleotide_fasta_file_from_gff_filename;
     system($cmd);
 }

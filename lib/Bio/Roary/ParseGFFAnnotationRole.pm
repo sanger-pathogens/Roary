@@ -18,7 +18,7 @@ has '_awk_filter'     => ( is => 'ro', isa => 'Str',             lazy    => 1, b
 
 sub _gff_fh_input_string {
     my ($self) = @_;
-    return 'sed -n \'/##gff-version 3/,/##FASTA/p\' '.$self->gff_file.'| grep -v \'##FASTA\''." | " .  $self->_awk_filter;
+    return 'sed -n \'/##gff-version 3/,/^>/p\' '.$self->gff_file.'| grep -v \'^>\''." | " .  $self->_awk_filter;
 }
 
 sub _build__awk_filter {
