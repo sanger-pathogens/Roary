@@ -94,6 +94,6 @@ The code will not work with perl 5.8 or below (pre-modern perl). We no longer te
 * cdhit 4.6.1
 * ncbi blast+ 2.2.30
 * mcl 14-137
-* bedtools 2.20.1
+* bedtools 2.20.1  2.26.0
 * prank 130410
 * GNU parallel 20130922, 20141022, 20150122
