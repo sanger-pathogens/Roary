@@ -36,7 +36,7 @@ FASTTREE_VERSION="2.1.8"
 FASTTREE_DOWNLOAD_FILENAME="FastTree-${FASTTREE_VERSION}.c"
 FASTTREE_URL="http://microbesonline.org/fasttree/FastTree-${FASTTREE_VERSION}.c"
 
-MAFFT_VERSION="7.221"
+MAFFT_VERSION="7.271"
 MAFFT_DOWNLOAD_FILENAME="mafft-${MAFFT_VERSION}-without-extensions-src.tgz"
 MAFFT_URL="http://mafft.cbrc.jp/alignment/software/${MAFFT_DOWNLOAD_FILENAME}"
 

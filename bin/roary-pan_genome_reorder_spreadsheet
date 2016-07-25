@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::Roary::Main::RoaryReorderSpreadsheet;
+
+# ABSTRACT: Take in a tree and a spreadsheet and output a reordered spreadsheet
+# PODNAME: pan_genome_reorder_spreadsheet
+
+=head1 SYNOPSIS
+
+Take in a tree and a spreadsheet and output a reordered spreadsheet
+
+=cut
+
+use Cwd qw(abs_path); 
+BEGIN { unshift( @INC, abs_path('./lib') ) }
+BEGIN { unshift( @INC, abs_path('./t/lib') ) }
+use Bio::Roary::CommandLine::RoaryReorderSpreadsheet;
+
+Bio::Roary::CommandLine::RoaryReorderSpreadsheet->new(args => \@ARGV, script_name => $0)->run;

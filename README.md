@@ -22,12 +22,19 @@ Theres are a number of dependancies required for Roary, with instructions specif
 If the installation fails please contact your system administrator. If you encounter a bug please let us know by emailing roary@sanger.ac.uk .
 
 ##Ubuntu/Debian
-All the dependancies can be installed using apt and cpanm (tested on Ubuntu 14.04). Root permissions are required.
+### Ubuntu 16.04
+
+```
+sudo apt-get install roary
+```
+
+###Ubuntu 14.04
+All the dependancies can be installed using apt and cpanm. Root permissions are required.
 
 ```
 sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft fasttree
 sudo cpanm -f Bio::Roary
-```   
+```
 
 ###Ubuntu 12.04
 Some of the software versions in apt are quite old so follow the instructions for [LinuxBrew](http://brew.sh/linuxbrew/) below.
@@ -80,10 +87,10 @@ bedtools cd-hit blast mcl GNUparallel prank mafft fasttree
 ```
 
 ## Ancient systems and versions of perl
-The code will not work with perl 5.8 or below (pre-modern perl). If your running a very old verison of Linux, your also in trouble.
+The code will not work with perl 5.8 or below (pre-modern perl). We no longer test against 5.10 (released 2007). If your running a very old verison of Linux, your also in trouble.
 
 #Versions of software we test against
-* Perl 5.10, 5.14, 5.16, 5.18, 5.20
+* Perl 5.14, 5.16, 5.20, 5.24
 * cdhit 4.6.1
 * ncbi blast+ 2.2.30
 * mcl 14-137

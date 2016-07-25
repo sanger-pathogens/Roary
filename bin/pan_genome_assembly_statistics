@@ -2,12 +2,12 @@
 
 package Bio::Roary::Main::AssemblyStatistics;
 
-# ABSTRACT: Given a spreadsheet of gene presence and absense calculate some statistics
+# ABSTRACT: Given a spreadsheet of gene presence and absence calculate some statistics
 # PODNAME: pan_genome_assembly_statistics
 
 =head1 SYNOPSIS
 
-Given a spreadsheet of gene presence and absense calculate some statistics
+Given a spreadsheet of gene presence and absence calculate some statistics
 
 =cut
 

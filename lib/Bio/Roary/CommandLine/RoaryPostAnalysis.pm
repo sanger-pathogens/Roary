@@ -146,7 +146,7 @@ sub run {
       }
       else
       {
-          $job_runner_to_use = 'Local';
+          $job_runner_to_use = 'Parallel';
       }
       
       my $output_gene_files = $self->_find_input_files;

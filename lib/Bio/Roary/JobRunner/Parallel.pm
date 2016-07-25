@@ -18,6 +18,8 @@ package Bio::Roary::JobRunner::Parallel;
 use Moose;
 use File::Temp qw/ tempfile /;
 use Log::Log4perl qw(:easy);
+use File::Slurper 'write_text';
+use File::Temp qw/ tempfile /;
 
 has 'commands_to_run' => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'cpus'            => ( is => 'ro', isa => 'Int',      default => 1 );
@@ -28,13 +30,17 @@ has 'memory_in_mb'    => ( is => 'rw', isa => 'Int',  default => '200' );
 sub run {
     my ($self) = @_;
 	
+	  my($fh, $temp_command_filename) = tempfile();
+	  write_text($temp_command_filename, join("\n", @{ $self->commands_to_run }) );
+		
     for my $command_to_run(@{ $self->commands_to_run })
     {
        $self->logger->info($command_to_run);
     }
-	open(my $fh,"|-","parallel --gnu -j ".$self->cpus) || die "GNU Parallel failed";
-	print $fh join("\n", @{ $self->commands_to_run });
-	close $fh;
+		my $parallel_command  = "parallel --gnu -j ".$self->cpus." < ".$temp_command_filename ;
+		$self->logger->info($parallel_command );
+		
+		system($parallel_command);
     1;
 }
 
