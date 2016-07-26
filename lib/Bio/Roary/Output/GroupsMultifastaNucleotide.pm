@@ -119,16 +119,27 @@ sub _extracted_nucleotide_fasta_file_from_bed_filename {
     return join( '.', ( $self->output_filename, 'intermediate.extracted.fa' ) );
 }
 
-
-
 sub _create_nucleotide_fasta_file_from_gff {
     my ($self) = @_;
-    my $cmd =
-        'sed -n \'/^>/,//p\' '
-      . $self->gff_file
-      . ' > '
-      . $self->_nucleotide_fasta_file_from_gff_filename;
-    system($cmd);
+    
+    open(my $input_fh, $self->gff_file);
+    open(my $output_fh, '>', $self->_nucleotide_fasta_file_from_gff_filename);
+    my $at_sequence = 0;
+    while(<$input_fh>)
+    {
+	    my $line = $_;
+	    if($line =~/^>/)
+	    {
+	    	$at_sequence = 1;
+	    }
+	    
+	    if($at_sequence == 1)
+	    {
+		    print {$output_fh} $line;
+	    }
+    }
+    close($input_fh);
+    close($output_fh);
 }
 
 sub _nucleotide_fasta_file_from_gff_filename {
