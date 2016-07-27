@@ -4,6 +4,7 @@ use warnings;
 use Data::Dumper;
 use Moose;
 use Test::Files;
+use File::Slurper qw(read_lines);
 BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
 
@@ -108,7 +109,7 @@ ok(
     'initalise where gene key is replaced by Name'
 );
 ok( $obj->reannotate, 'reannotate' );
-compare_ok('reannotated_groups_file',
+compare_files('reannotated_groups_file',
     't/data/gene_name_field/expected_reannotated_groups_file',
     'Reannoated groups file has the gene names transferred'
 );

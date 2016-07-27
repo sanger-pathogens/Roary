@@ -162,12 +162,8 @@ SKIP:
         '-o some_different_output -e --mafft t/data/real_data_1.gff t/data/real_data_2.gff' =>
           [ 'core_gene_alignment.aln', 't/data/expected_mafft_real_data_core_gene_alignment.aln' ],
          # -e
-        '-e -i 95.3 t/data/real_data_1.gff t/data/real_data_2.gff'                 => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
-        '-e --translation_table 1 t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
-        '-e -v t/data/real_data_1.gff t/data/real_data_2.gff'                      => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
+        '-e -i 95.3 --translation_table 1 -v --group_limit 100000 --qc t/data/real_data_1.gff t/data/real_data_2.gff'   => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
         '-e --verbose_stats t/data/real_data_1.gff t/data/real_data_2.gff'         => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
-        '-e --group_limit 100000 -e t/data/real_data_1.gff t/data/real_data_2.gff' => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
-        '-e --qc t/data/real_data_1.gff t/data/real_data_2.gff'                    => [ 'core_gene_alignment.aln', 't/data/expected_real_data_core_gene_alignment.aln' ],
 
     #    # single parameters
         '--core_definition 60 t/data/real_data_1.gff t/data/real_data_2.gff'    => [ 'summary_statistics.txt', 't/data/expected_core_60_summary_statistics.txt' ],
