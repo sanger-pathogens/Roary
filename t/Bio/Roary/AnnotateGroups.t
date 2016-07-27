@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Moose;
+use Test::Files;
 BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
 
@@ -96,6 +97,21 @@ is_deeply(
 
 compare_files( 'reannotated_groups_file', 't/data/expected_reannotated_groups_file', 'groups reannotated as expected' );
 
+unlink('reannotated_groups_file');
+
+
+ok(
+    $obj = Bio::Roary::AnnotateGroups->new(
+        gff_files       => [ 't/data/gene_name_field/annotation_1.gff', 't/data/gene_name_field/annotation_2.gff' ],
+        groups_filename => 't/data/gene_name_field/groups',
+    ),
+    'initalise where gene key is replaced by Name'
+);
+ok( $obj->reannotate, 'reannotate' );
+compare_ok('reannotated_groups_file',
+    't/data/gene_name_field/expected_reannotated_groups_file',
+    'Reannoated groups file has the gene names transferred'
+);
 unlink('reannotated_groups_file');
 
 done_testing();
