@@ -175,7 +175,7 @@ SKIP:
         '-p 2 -e --mafft t/data/real_data_1.gff t/data/real_data_2.gff'               => [ 'core_gene_alignment.aln', 't/data/expected_mafft_real_data_core_gene_alignment.aln' ],
 
     );
-    mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+    mock_execute_script_and_check_output_sorted( $script_name, \%scripts_and_expected_files );
 
 }
 
