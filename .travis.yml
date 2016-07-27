@@ -7,12 +7,12 @@ addons:
     - mafft
 cache:
   directories:
-  - build/parallel-20150522
+  - build/parallel-20160722
   - build/parallel-20130922
   - build/bedtools2
-  - build/cd-hit-v4.6.3-2015-0515
+  - build/cd-hit-v4.6.6-2016-0711
   - build/prank-msa-master
-  - build/ncbi-blast-2.2.30+
+  - build/ncbi-blast-2.4.0+
   - build/mcl-14-137
   - build/fasttree
 perl:
@@ -20,8 +20,8 @@ perl:
   - "5.20"
   - "5.24"
 env:
-  - PARALLEL_VERSION=20150522
+  - PARALLEL_VERSION=20160722
   - PARALLEL_VERSION=20130922
 install:
   - "source ./install_dependencies.sh"
-script: "dzil test"
+script: "ROARY_FULL_TESTS=1 dzil test"
