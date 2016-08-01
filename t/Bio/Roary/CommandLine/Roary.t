@@ -101,12 +101,12 @@ SKIP:
     stderr_should_have($script_name,'--translation_table 1  -o some_different_output --core_definition 60 -p 2 -e --mafft  --group_limit 10 t/data/real_data_1.gff t/data/real_data_2.gff', 'Exiting early because number of clusters is too high');
     stderr_should_have($script_name,'--verbose_stats --group_limit 10 -e t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff', 'Exiting early because number of clusters is too high');
     stderr_should_not_have($script_name,'-e --group_limit 10 t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ', 'Cant access the multifasta base directory');
-    stderr_should_have($script_name,'-i 90 --core_definition 60 -p 2 -v t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ','Cleaning up files'); 
+    stderr_should_have($script_name,'-i 90 --core_definition 60 -p 2 -v t/data/real_data_1.gff t/data/real_data_2.gff ','Cleaning up files'); 
     stderr_should_have($script_name,'-i 30 t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff','The percentage identity is too low');
     stderr_should_not_have($script_name,'--dont_delete_files -v t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ','Cleaning up files');
-    stderr_should_have($script_name,'-v --group_limit 100000 -e t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' ,'Cleaning up files');
-    stderr_should_have($script_name,'--translation_table 1 -v t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' ,'Cleaning up files');
-    stderr_should_have($script_name,'-e -v t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ','Creating files with the nucleotide sequences for every cluster');
+    stderr_should_have($script_name,'-v --group_limit 100000 -e t/data/query_1.gff t/data/query_2.gff t/data/query_5.gff ' ,'Running command: pan_genome_core_alignment');
+    stderr_should_have($script_name,'--translation_table 1 -v t/data/real_data_1.gff t/data/real_data_2.gff ' ,'Cleaning up files');
+    stderr_should_have($script_name,'-e -v t/data/real_data_1.gff t/data/real_data_2.gff ','Creating files with the nucleotide sequences for every cluster');
     
     SKIP:
     {
