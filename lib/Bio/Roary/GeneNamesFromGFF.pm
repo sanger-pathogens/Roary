@@ -40,6 +40,14 @@ sub _build_ids_to_gene_name {
                 $id_to_gene_name{$gene_id} = $gene_name;
             }
         }
+        elsif ( $feature->has_tag('Name') ) {
+            my ( $gene_name, @junk ) = $feature->get_tag_values('Name');
+            $gene_name =~ s!"!!g;
+            if ( $gene_name ne "" ) {
+                $id_to_gene_name{$gene_id} = $gene_name;
+            }
+        }
+	
         if ( $feature->has_tag('product') ) {
             my ( $product, @junk ) = $feature->get_tag_values('product');
             $self->ids_to_product->{$gene_id} = $product;

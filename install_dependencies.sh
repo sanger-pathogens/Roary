@@ -7,7 +7,7 @@ start_dir=$(pwd)
 ROARY_LIB_DIR="${start_dir}/lib"
 ROARY_BIN_DIR="${start_dir}/bin"
 
-PARALLEL_VERSION=${PARALLEL_VERSION:-"20150522"}
+PARALLEL_VERSION=${PARALLEL_VERSION:-"20160722"}
 PARALLEL_DOWNLOAD_FILENAME="parallel-${PARALLEL_VERSION}.tar.bz2" 
 PARALLEL_URL="http://ftp.gnu.org/gnu/parallel/${PARALLEL_DOWNLOAD_FILENAME}"
 
@@ -15,8 +15,8 @@ BEDTOOLS_VERSION="2.26.0"
 BEDTOOLS_DOWNLOAD_FILENAME="bedtools-${BEDTOOLS_VERSION}.tar.gz"
 BEDTOOLS_URL="https://github.com/arq5x/bedtools2/releases/download/v${BEDTOOLS_VERSION}/${BEDTOOLS_DOWNLOAD_FILENAME}"
 
-CDHIT_SHORT_VERSION="4.6.3"
-CDHIT_LONG_VERSION="4.6.3-2015-0515"
+CDHIT_SHORT_VERSION="4.6.6"
+CDHIT_LONG_VERSION="4.6.6-2016-0711"
 CDHIT_DOWNLOAD_FILENAME="cd-hit-${CDHIT_SHORT_VERSION}.tar.gz"
 CDHIT_URL="https://github.com/weizhongli/cdhit/releases/download/V${CDHIT_SHORT_VERSION}/cd-hit-v${CDHIT_LONG_VERSION}.tar.gz"
 
@@ -24,7 +24,7 @@ PRANK_VERSION="0.140603"
 PRANK_DOWNLOAD_FILENAME="prank-msa-master.tar.gz"
 PRANK_URL="https://github.com/ariloytynoja/prank-msa/archive/master.tar.gz"
 
-BLAST_VERSION="2.2.30"
+BLAST_VERSION="2.4.0"
 BLAST_DOWNLOAD_FILENAME="ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz"
 BLAST_URL="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/${BLAST_VERSION}/${BLAST_DOWNLOAD_FILENAME}"
 
@@ -32,7 +32,7 @@ MCL_VERSION="14-137"
 MCL_DOWNLOAD_FILENAME="mcl-${MCL_VERSION}.tar.gz"
 MCL_URL="http://micans.org/mcl/src/mcl-${MCL_VERSION}.tar.gz"
 
-FASTTREE_VERSION="2.1.8"
+FASTTREE_VERSION="2.1.9"
 FASTTREE_DOWNLOAD_FILENAME="FastTree-${FASTTREE_VERSION}.c"
 FASTTREE_URL="http://microbesonline.org/fasttree/FastTree-${FASTTREE_VERSION}.c"
 
