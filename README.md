@@ -51,6 +51,13 @@ brew install bedtools cd-hit blast mcl parallel prank mafft fasttree cpanm
 sudo cpanm -f Bio::Roary
 ```
 
+##GNU Guix
+Roary is not included in version in [Guix](https://www.gnu.org/software/guix) 0.11.0 so `guix pull` is currently required before installation.
+```
+guix pull
+guix package --install roary
+```
+
 ##Virtual Machine - OSX/Linux/Windows
 Roary wont run natively on Windows but we have created virtual machine which has all of the software setup, including Prokka, along with the test datasets from the paper. It is based on [Bio-Linux 8](http://environmentalomics.org/bio-linux/).  You need to first install [VirtualBox](https://www.virtualbox.org/), then load the virtual machine, using the 'File -> Import Appliance' menu option. The root password is 'manager'.
 
