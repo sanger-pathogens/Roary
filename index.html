@@ -64,19 +64,7 @@
 <a id="input-files-from-genbank" class="anchor" href="#input-files-from-genbank" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files from GenBank</h2>
 
 <p>On NCBI's website, GFF3 files only contain annotation and not the nucleotide sequence so cannot be used. You need to download the GenBank files plus nucleotide sequence and convert them. When downloading, click on the <em>show sequence</em> option, <em>Update View</em> then <em>Send</em> to a <em>File</em> of type <em>GenBank</em>. You can then use the Bio::Perl script <em>bp_genbank2gff3.pl</em> to convert to GFF3. Just be aware that mixing different gene prediction methods and annotation pipelines can give noisier results.</p>
-
-<h2>
-<a id="input-files-from-genbank-draft-wgs" class="anchor" href="#input-files-from-genbank-draft-wgs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files from GenBank draft WGS</h2>
-
-<p>Install Bio-RetrieveAssemblies which will allow you to download draft WGS assemblies from GenBank. </p>
-
-<pre><code>sudo cpanm -f Bio::RetrieveAssemblies
-</code></pre>
-
-<p>To download all Salmonella typhi annotated assemblies as GFF3 files:</p>
-
-<pre><code>retrieve_assemblies -a -f gff typhi
-</code></pre>
+<p>Alternatively you can use <a href="https://github.com/kblin/ncbi-genome-download">ncbi-genome-download</a> to pull down the FASTA files and convert them to GFF3 with Prokka.</p>
 
 <h2>
 <a id="software-usage" class="anchor" href="#software-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Software usage</h2>
