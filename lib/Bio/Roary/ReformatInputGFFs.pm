@@ -33,7 +33,7 @@ has 'fixed_gff_files' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } 
 
 sub _build_logger {
     my ($self) = @_;
-    Log::Log4perl->easy_init( level => $ERROR );
+    Log::Log4perl->easy_init( $ERROR );
     my $logger = get_logger();
     return $logger;
 }
