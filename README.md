@@ -16,8 +16,10 @@ Theres are a number of dependancies required for Roary, with instructions specif
 * Ubuntu/Debian
 * CentOS/RedHat
 * Homebrew/Linuxbrew - OSX/Linux
-* Installing from source - OSX/Linux
+* Guix - Linux
 * Virtual Machine - OSX/Linux/Windows
+* Docker
+* Installing from source - OSX/Linux
 
 If the installation fails please contact your system administrator. If you encounter a bug please let us know by emailing roary@sanger.ac.uk .
 
@@ -64,6 +66,18 @@ Roary wont run natively on Windows but we have created virtual machine which has
 ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
 
 More importantly though, if your trying to do bioinformatics on Windows, your not going to get very far and you should seriously consider upgrading to Linux.
+
+##Docker
+We have a docker container which gets automatically built from the latest version of Roary in Debian Med. To install it:
+
+```
+docker pull sangerpathogens/roary
+```
+
+To use it you would use a command such as this (substituting in your directories), where your GFF files are assumed to be stored in /home/ubuntu/data:
+```
+docker run --rm -it -v /home/ubuntu/data:/data sangerpathogens/roary roary -f /data /data/*.gff
+```
 
 ##Installing from source (advanced Linux users only)
 As a last resort you can install everything from source. This is for users with advanced Linux skills and we do not provide any support with this method since you have the skills to figure things out.
