@@ -1,10 +1,10 @@
 package Bio::Roary::AnnotateGroups;
 
-# ABSTRACT: Take in a group file and assosiated GFF files for the isolates and update the group name to the gene name
+# ABSTRACT: Take in a group file and associated GFF files for the isolates and update the group name to the gene name
 
 =head1 SYNOPSIS
 
-Take in a group file and assosiated GFF files for the isolates and update the group name to the gene name
+Take in a group file and associated GFF files for the isolates and update the group name to the gene name
    use Bio::Roary::AnnotateGroups;
    
    my $obj = Bio::Roary::AnnotateGroups->new(
