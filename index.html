@@ -181,10 +181,13 @@ Options: -p INT    number of threads [1]
 <h3>
 <a id="iterative_cdhit" class="anchor" href="#iterative_cdhit" aria-hidden="true"><span class="octicon octicon-link"></span></a>iterative_cdhit</h3>
 
-<p>Iteratively cluster a set of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.</p>
+<p>Iteratively cluster a FASTA file of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.</p>
 
-<pre><code>Options: -p INT   number of threads [1]
-         -m STR   output filename for combined proteins [_combined_files]
+<pre><code>
+Required arguments:
+         -m STR   input FASTA file of protein sequences [_combined_files]
+	 
+Options: -p INT   number of threads [1]
          -n INT   number of isolates [1]
          -c STR   cd-hit output filename [_clustered]
          -f STR   output filename for filtered sequences [_clustered_filtered.fa]
