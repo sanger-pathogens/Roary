@@ -97,10 +97,12 @@ sub usage_text {
 
     return <<USAGE;
 Usage: iterative_cdhit [options]
-Iteratively cluster a set of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.
+Iteratively cluster a FASTA file of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.
+
+Required arguments:
+         -m STR   input FASTA file of protein sequences [_combined_files]
 
 Options: -p INT   number of threads [1]
-         -m STR   output filename for combined proteins [_combined_files]
          -n INT   number of isolates [1]
          -c STR   cd-hit output filename [_clustered]
          -f STR   output filename for filtered sequences [_clustered_filtered.fa]
