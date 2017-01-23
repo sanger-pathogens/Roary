@@ -50,7 +50,7 @@ has 'mafft'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'group_limit'             => ( is => 'rw', isa => 'Num',  default => 50000 );
 has 'core_definition'         => ( is => 'rw', isa => 'Num',  default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'kraken_db' => ( is => 'rw', isa => 'Str',  default => '/lustre/scratch108/pathogen/pathpipe/kraken/minikraken_20140330/' );
+has 'kraken_db' => ( is => 'rw', isa => 'Str',  default => '/lustre/scratch118/pathogen/pathpipe/kraken/minikraken_20140330/' );
 has 'run_qc'    => ( is => 'rw', isa => 'Bool', default => 0 );
 has '_working_directory' => ( is => 'rw', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__working_directory' );
 
