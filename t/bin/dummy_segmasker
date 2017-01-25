@@ -7,7 +7,6 @@ GetOptions(
     'i|in=s'       => \$in,
     'infmt=s'      => \$infmt,
     'outfmt=s'     => \$outfmt,
-    'parse_seqids' => \$parse_seqids,
     'mask_data=s'  => \$mask_data,
 );
 

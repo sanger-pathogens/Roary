@@ -7,7 +7,6 @@ GetOptions(
     'd|dbtype=s' => \$dbtype,
     'l|logfile=s' => \$logfile,
     'i|in=s' => \$in,
-    'parse_seqids' => \$parse_seqids,
     'mask_data=s' => \$mask_data,
 );
 
