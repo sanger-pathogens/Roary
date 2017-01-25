@@ -49,7 +49,6 @@ sub _command_to_run {
             $self->exec,    
             '-in',      $self->fasta_file,       
             '-dbtype',  $self->_dbtype, 
-            '-parse_seqids',
             '-out',     $self->output_database, 
             '-logfile', $self->_logfile
         )

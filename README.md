@@ -18,20 +18,19 @@ Theres are a number of dependancies required for Roary, with instructions specif
 * Homebrew/Linuxbrew - OSX/Linux
 * Guix - Linux
 * Virtual Machine - OSX/Linux/Windows
-* Docker
+* Docker - OSX/Linux/Windows/Cloud
 * Installing from source - OSX/Linux
 
 If the installation fails please contact your system administrator. If you encounter a bug please let us know by emailing roary@sanger.ac.uk .
 
 ##Ubuntu/Debian
-### Ubuntu 16.04
-
+###Debian Testing
 ```
 sudo apt-get install roary
 ```
 
-###Ubuntu 14.04
-All the dependancies can be installed using apt and cpanm. Root permissions are required.
+###Ubuntu 14.04/16.04
+All the dependancies can be installed using apt and cpanm. Root permissions are required. Ubuntu 16.04 contains a package for Roary but it is frozen at v3.6.0.
 
 ```
 sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft fasttree
@@ -67,7 +66,7 @@ ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
 
 More importantly though, if your trying to do bioinformatics on Windows, your not going to get very far and you should seriously consider upgrading to Linux.
 
-##Docker
+##Docker - OSX/Linux/Windows/Cloud
 We have a docker container which gets automatically built from the latest version of Roary in Debian Med. To install it:
 
 ```
