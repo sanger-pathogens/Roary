@@ -298,7 +298,6 @@ It provides 3 figures, showing the tree compared to a matrix with the presence a
 
 <h2>
 <a id="rtab" class="anchor" href="#rtab" aria-hidden="true"><span class="octicon octicon-link"></span></a>*.Rtab</h2>
-
 <p>There is an additional script called <em>create_pan_genome_plots.R</em> which requires R and the ggplot2 library. It takes in the *.Rtab files and produces graphs on how the pan genome varies as genomes are added (in random orders).</p>
 
 <p><img src="http://sanger-pathogens.github.io/Roary/images/conserved_vs_total_genes.png" alt="Total Conserved Genes">
@@ -306,12 +305,10 @@ It provides 3 figures, showing the tree compared to a matrix with the presence a
 
 <h2>
 <a id="accessory_binary_genesfanewick" class="anchor" href="#accessory_binary_genesfanewick" aria-hidden="true"><span class="octicon octicon-link"></span></a>accessory_binary_genes.fa.newick</h2>
-
 <p>This is a tree created using the binary presence and absence of accessory genes. It is in Newick format and can be viewed in FigTree. It is only a quick and dirty tree to roughly group isolates together based on their accessory genome and is in no way reliable other than to give a quick insight into the data. If you want a more accurate tree you need to use the core gene alignment as your starting point.</p>
 
 <h2>
 <a id="accessory_graphdot" class="anchor" href="#accessory_graphdot" aria-hidden="true"><span class="octicon octicon-link"></span></a>accessory_graph.dot</h2>
-
 <p>A graph in DOT format of how genes are linked together at the contig level in the accessory genome. You can view it using <a href="https://gephi.org">Gephi</a>.  Nodes correspond to genes. An edge represents where two genes are next to each other on any of the input assemblies.  To generate the weights on the edges, a count is kept of the frequency of the genes being beside each other, they are then weighted by the overall clustering of the accessory binary presence and absense (to reduce bias by over represented genotypes), then inverted.</p>
 
 <h2>
@@ -356,7 +353,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="gubbins" class="anchor" href="#gubbins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gubbins, detecting recombinatioin in pan genomes</h2>
-<p>You cannot use the output of Roary as the input to <a href="http://sanger-pathogens.github.io/gubbins/">Gubbins</a> (e.g. to detect recombination in the pan genome). They are fundamentally incompatible. Jukka Corander has suggested <a href="http://www.helsinki.fi/bsg/software/BRAT-NextGen/">BratNextGen</a> will work.</p>
+<p>You cannot use the output of Roary as the input to <a href="http://sanger-pathogens.github.io/gubbins/">Gubbins</a> (e.g. to detect recombination in the pan genome). They are fundamentally incompatible (at a theoretical level). Jukka Corander has suggested <a href="http://www.helsinki.fi/bsg/software/BRAT-NextGen/">BratNextGen</a> will work.</p>
 
 <h2>
 <a id="i-got-no-core-genes" class="anchor" href="#i-got-no-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>I got no core genes?</h2>
@@ -436,8 +433,20 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="private_data" class="anchor" href="#private_data" aria-hidden="true"><span class="octicon octicon-link"></span></a>I cant get Roary working on my private dataset. Will you sign an NDA if I send it to you?</h2>
-<p>Only if it is agreed in advance with our legal department.</p>
+<p>Only if it is agreed in advance with our legal department. Given the open science mission of the Wellcome Trust, we are likely to reject your request.</p>
 
+<h2>
+<a id="one_gene" class="anchor" href="#one_gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>My bacteria only has 1 gene, so why does Roary crash?</h2>
+<p>You are using the software for a purpose for which it was never designed with an artificial dataset.</p>
+	
+<h2>
+<a id="differing_annotation" class="anchor" href="#differing_annotation"   aria-hidden="true"><span class="octicon octicon-link"></span></a>I downloaded a load of random assemblies from GenBank. Why am I seeing crazy results?</h2>
+<p>Gene prediction software rarely completely agrees, with differing opinions on the actual start of a gene, 
+or which of the overlapping open reading frames is actually the correct one, etc. 
+As a result, if you mix these together you can get crazy results. 
+The solution is to reannotate all of the genomes with a single method (like PROKKA). 
+Otherwise you will waste vast amounts of time looking at noise, errors, and the batch effect.</p>
+	
 <h2>
 <a id="python" class="anchor" href="#python" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roary throws lots of Python errors</h2>
 <p>Your trying to run a Perl program with Python. Its unlikely to work any time soon.</p>
@@ -453,7 +462,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 <h2>
 <a id="encode" class="anchor" href="#encode"   aria-hidden="true"><span class="octicon octicon-link"></span></a>Use of uninitialized value in require at Encode.pm</h2>
 <p>If you see a warning like about the 'Use of uninitialized value' in Encode.pm, dont worry, its just a warning and has no impact the script. If you want to get rid of this warning, just update the Encode perl module to the latest version.</p>
-
+      
 <h2>
 <a id="kraken-installed-via-homebrew-throws-an-error" class="anchor" href="#kraken-installed-via-homebrew-throws-an-error" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kraken installed via homebrew throws an error.</h2>
 <p>Theres a bug and you'll need to install it from source on older versions of OSX (like Mountain Lion).</p>
