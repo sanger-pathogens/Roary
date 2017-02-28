@@ -89,33 +89,6 @@ ok($obj->create_summary_output, 'create output file');
 compare_ok('summary_statistics.txt', 't/data/expected_summary_statistics.txt', 'summary statistics as expected');
 
 
-# t/data/gene_category_count.csv
-ok( $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => 't/data/gene_category_count.csv', core_definition => 0.9667 ),
-    'initialise spreadsheet with core of 96.67%' );
-is_deeply(
-    $obj->gene_category_count,
-    {
-        'core'      => 1,
-		'soft_core' => 1,
-        'cloud'     => 4,
-        'shell'     => 24
-    },
-    'Categories as expected with cd of 96.67%'
-);
-
-# t/data/gene_category_count.csv
-ok( $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => 't/data/gene_category_count.csv', core_definition => 0.9666 ),
-    'initialise spreadsheet with core of 96.66%' );
-is_deeply(
-    $obj->gene_category_count,
-    {
-        'core'      => 2,
-        'cloud'     => 4,
-        'shell'     => 24
-    },
-    'Categories as expected with cd of 96.66%'
-);
-
 
 unlink('summary_statistics.txt');
 done_testing();

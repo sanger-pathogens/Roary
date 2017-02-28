@@ -1,6 +1,6 @@
 package Bio::Roary::SplitGroups;
 
-# ABSTRACT: split groups
+# ABSTRACT: 
 
 =head1 SYNOPSIS
 

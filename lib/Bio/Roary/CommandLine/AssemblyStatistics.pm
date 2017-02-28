@@ -1,11 +1,11 @@
 undef $VERSION;
 package Bio::Roary::CommandLine::AssemblyStatistics;
 
-# ABSTRACT: Given a spreadsheet of gene presence and absence calculate some statistics
+# ABSTRACT: Given a spreadsheet of gene presence and absense calculate some statistics
 
 =head1 SYNOPSIS
 
-Given a spreadsheet of gene presence and absence calculate some statistics
+Given a spreadsheet of gene presence and absense calculate some statistics
 
 =cut
 
@@ -104,7 +104,7 @@ sub _version
 sub run {
     my ($self) = @_;
 
-    my $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->spreadsheet, logger => $self->logger );
+    my $obj = Bio::Roary::AssemblyStatistics->new( spreadsheet => $self->spreadsheet );
 	$obj->create_summary_output;
 }
 

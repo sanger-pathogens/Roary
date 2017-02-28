@@ -22,19 +22,12 @@ Theres are a number of dependancies required for Roary, with instructions specif
 If the installation fails please contact your system administrator. If you encounter a bug please let us know by emailing roary@sanger.ac.uk .
 
 ##Ubuntu/Debian
-### Ubuntu 16.04
+All the dependancies can be installed using apt and cpanm (tested on Ubuntu 14.04). Root permissions are required.
 
 ```
-sudo apt-get install roary
-```
-
-###Ubuntu 14.04
-All the dependancies can be installed using apt and cpanm. Root permissions are required.
-
-```
-sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft fasttree
+sudo apt-get install bedtools cd-hit ncbi-blast+ mcl parallel cpanminus prank mafft exonerate fasttree
 sudo cpanm -f Bio::Roary
-```
+```   
 
 ###Ubuntu 12.04
 Some of the software versions in apt are quite old so follow the instructions for [LinuxBrew](http://brew.sh/linuxbrew/) below.
@@ -47,7 +40,7 @@ Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.s
 
 ```
 brew tap homebrew/science
-brew install bedtools cd-hit blast mcl parallel prank mafft fasttree cpanm
+brew install bedtools cd-hit blast mcl parallel prank mafft exonerate fasttree cpanm
 sudo cpanm -f Bio::Roary
 ```
 
@@ -79,11 +72,11 @@ export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 Install the perl dependancies:
 
 ```
-sudo cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy File::Find::Rule File::Grep File::Path File::Slurper File::Spec File::Temp File::Which FindBin Getopt::Long Graph Graph::Writer::Dot List::Util Log::Log4perl Moose Moose::Role Text::CSV PerlIO::utf8_strict 
+sudo cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy File::Find::Rule File::Grep File::Path File::Slurper File::Spec File::Temp File::Which FindBin Getopt::Long Graph Graph::Writer::Dot List::Util Log::Log4perl Moose Moose::Role Text::CSV
 ```
 Install the external dependances either from source or from your packaging system:
 ```
-bedtools cd-hit blast mcl GNUparallel prank mafft fasttree
+bedtools cd-hit blast mcl GNUparallel prank mafft exonerate fasttree
 ```
 
 ## Ancient systems and versions of perl

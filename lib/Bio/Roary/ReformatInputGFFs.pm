@@ -46,7 +46,6 @@ sub fix_duplicate_gene_ids {
 
         my $ids_seen      = 0;
         my $ids_from_file = $self->_get_ids_for_gff_file($file);
-
         if ( @{$ids_from_file} < 1 ) {
             $self->logger->warn(
                 "Input GFF file doesnt contain annotation we can use so excluding it from the analysis: $file"
@@ -129,6 +128,7 @@ sub _add_suffix_to_gene_ids_and_return_new_file {
 sub _get_ids_for_gff_file {
     my ( $self, $file ) = @_;
     my @gene_ids;
+    # my $asd;
     my $tags_regex = $self->_tags_to_filter;
     my $gffio = Bio::Tools::GFF->new( -file => $file, -gff_version => 3 );
     while ( my $feature = $gffio->next_feature() ) {

@@ -18,7 +18,6 @@ use Bio::Roary::AnnotateGroups;
 use Bio::Roary::AnalyseGroups;
 use Bio::Roary::Exceptions;
 use Bio::SeqIO;
-use File::Basename;
 
 has 'input_files'            => ( is => 'ro', isa => 'ArrayRef',                   required => 1 );
 has 'annotate_groups_obj'    => ( is => 'ro', isa => 'Bio::Roary::AnnotateGroups', required => 1 );
@@ -63,9 +62,7 @@ sub create_accessory_binary_fasta {
     my ($self) = @_;
     my $out_seq_io = Bio::SeqIO->new( -file => ">" . $self->output_filename, -format => 'Fasta' );
 
-    for my $full_filename ( @{ $self->input_files } ) {
-        my($filename, $dirs, $suffix) = fileparse($full_filename);
-        
+    for my $filename ( @{ $self->input_files } ) {
         my $output_sequence = '';
         my $sample_name     = $filename;
         $sample_name =~ s!\.gff\.proteome\.faa!!;
@@ -78,7 +75,7 @@ sub create_accessory_binary_fasta {
 
             next if ( @files <= $self->_lower_bound_value || @files > $self->_upper_bound_value );
 
-            my $group_to_file_genes = $self->groups_to_files->{$group}->{$full_filename};
+            my $group_to_file_genes = $self->groups_to_files->{$group}->{$filename};
             if ( defined($group_to_file_genes) && @{$group_to_file_genes} > 0 ) {
                 $output_sequence .= 'A';
             }

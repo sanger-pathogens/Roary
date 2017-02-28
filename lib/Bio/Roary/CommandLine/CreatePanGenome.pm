@@ -44,16 +44,12 @@ Options: -p INT    number of threads [1]
          -qc       generate QC report with Kraken
          -k STR    path to Kraken database for QC, use with -qc
          -w        print version and exit
-		 -a        check dependancies and print versions
+		 -a        check dependancies and exit
          -h        this help message
 
 Example: Quickly generate a core gene alignment using 16 threads
 
          bsub.py --threads 16 10 log create_pan_genome -e --mafft -p 16  *.gff
-         
-Example: Allow Roary to bsub the jobs to LSF - you cant bsub this command itself
-
-         create_pan_genome -j LSF -e --mafft -p 16  *.gff
 		 
 Example: Create a tree and visualise with iCANDY
 

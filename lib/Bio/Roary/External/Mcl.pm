@@ -1,5 +1,5 @@
-package Bio::Roary::External::Mcl;
 
+package Bio::Roary::External::Mcl;
 # ABSTRACT: Wrapper around MCL which takes in blast results and outputs clustered results
 
 =head1 SYNOPSIS
@@ -31,7 +31,7 @@ has 'output_file'     => ( is => 'ro', isa => 'Str', default  => 'output_groups'
 
 has '_score'     => ( is => 'ro', isa => 'Str', default  => 'r' );
 
-has '_inflation_value' => ( is => 'ro', isa => 'Num', default => 1.5 );
+has '_inflation_value' => ( is => 'ro', isa => 'Num', default => 10 );
 has '_logging'         => ( is => 'ro', isa => 'Str', default  => '> /dev/null 2>&1' );
 
 has 'memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build_memory_in_mb' );

@@ -138,21 +138,10 @@ sub run {
     if($self->output_multifasta_files == 1)
     {
 	  print "Aligning each cluster\n" if($self->verbose);
-      
-      my $job_runner_to_use = $self->job_runner;
-      if($self->_is_lsf_job_runner_available && $self->job_runner eq "LSF")
-      {
-          $job_runner_to_use = $self->job_runner;
-      }
-      else
-      {
-          $job_runner_to_use = 'Local';
-      }
-      
       my $output_gene_files = $self->_find_input_files;
       my $seg = Bio::Roary::External::GeneAlignmentFromNucleotides->new(
         fasta_files         => $output_gene_files,
-        job_runner          => $job_runner_to_use,
+        job_runner          => $self->_is_lsf_job_runner_available ? 'LSF' : $self->job_runner,
         translation_table   => $self->translation_table,
         core_definition     => $self->core_definition,
         cpus                => $self->cpus,
