@@ -48,6 +48,10 @@ def get_options():
                                  'svg'),
                         default='png',
                         help='Output format [Default: png]')
+    parser.add_argument('-N', '--skipped-columns', action='store',
+                        type=int,
+                        default=14,
+                        help='First N columns of Roary\'s output to exclude [Default: 14]')
     
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
@@ -79,7 +83,7 @@ if __name__ == "__main__":
     # Set index (group name)
     roary.set_index('Gene', inplace=True)
     # Drop the other info columns
-    roary.drop(list(roary.columns[:13]), axis=1, inplace=True)
+    roary.drop(list(roary.columns[:options.skipped_columns-1]), axis=1, inplace=True)
 
     # Transform it in a presence/absence matrix (1/0)
     roary.replace('.{2,100}', 1, regex=True, inplace=True)
