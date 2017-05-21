@@ -31,7 +31,7 @@ has 'output_file'     => ( is => 'ro', isa => 'Str', default  => 'output_groups'
 
 has '_score'     => ( is => 'ro', isa => 'Str', default  => 'r' );
 
-has '_inflation_value' => ( is => 'ro', isa => 'Num', default => 1.5 );
+has 'inflation_value' => ( is => 'ro', isa => 'Num', default => 1.5 );
 has '_logging'         => ( is => 'ro', isa => 'Str', default  => '> /dev/null 2>&1' );
 
 has 'memory_in_mb'  => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build_memory_in_mb' );
@@ -84,7 +84,7 @@ sub _command_to_run {
             $self->_full_mcxdeblast_exec, '-m9', '--score='.$self->_score,
             '--line-mode=abc', $self->blast_results, '2> /dev/null',
             '|', $self->mcl_exec, '-', '--abc',
-            '-I', $self->_inflation_value, '-o', $self->output_file, 
+            '-I', $self->inflation_value, '-o', $self->output_file, 
             $self->_logging
         )
     );

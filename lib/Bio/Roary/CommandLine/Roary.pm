@@ -54,6 +54,8 @@ has 'kraken_db' => ( is => 'rw', isa => 'Str',  default => '/lustre/scratch118/i
 has 'run_qc'    => ( is => 'rw', isa => 'Bool', default => 0 );
 has '_working_directory' => ( is => 'rw', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__working_directory' );
 
+has 'inflation_value'             => ( is => 'rw', isa => 'Num',      default  => 1.5 );
+
 sub _build__working_directory
 {
 	my ($self) = @_;
@@ -69,7 +71,7 @@ sub BUILD {
         $job_runner,            $makeblastdb_exec,  $mcxdeblast_exec,         $mcl_exec,      $blastp_exec,
         $apply_unknowns_filter, $cpus,              $output_multifasta_files, $verbose_stats, $translation_table,
         $run_qc,                $core_definition,   $help,                    $kraken_db,     $cmd_version,
-        $mafft,                 $output_directory,  $check_dependancies,
+        $mafft,                 $output_directory,  $check_dependancies, $inflation_value,
     );
 
     GetOptionsFromArray(
@@ -99,6 +101,7 @@ sub BUILD {
         'k|kraken_db=s'             => \$kraken_db,
         'w|version'                 => \$cmd_version,
         'a|check_dependancies'      => \$check_dependancies,
+	'inflation_value=f'         => \$inflation_value,
         'h|help'                    => \$help,
     );
 
@@ -143,6 +146,7 @@ sub BUILD {
     $self->mcxdeblast_exec($mcxdeblast_exec)   if ( defined($mcxdeblast_exec) );
     $self->mcl_exec($mcl_exec)                 if ( defined($mcl_exec) );
     $self->cpus($cpus)                         if ( defined($cpus) );
+    $self->inflation_value($inflation_value)   if ( defined($inflation_value));
 
     if ( defined($perc_identity) ) {
         $self->perc_identity($perc_identity);
@@ -298,6 +302,7 @@ sub run {
         core_definition         => $self->core_definition,
         verbose                 => $self->verbose,
         mafft                   => $self->mafft,
+	inflation_value         => $self->inflation_value,
     );
     $pan_genome_obj->run();
 
