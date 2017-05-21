@@ -105,6 +105,7 @@ Options: -p INT    number of threads [1]
          -v        verbose output to STDOUT
          -w        print version and exit
          -y        add gene inference information to spreadsheet, doesnt work with -e
+	 -iv STR   Change the MCL inflation value [1.5]      
          -h        this help message
 
 </code></pre>
@@ -388,6 +389,11 @@ system administrator who can figure all this stuff out for themselves, so dont n
 <h2>
 <a id="is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" class="anchor" href="#is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is there a server I can upload my data to and get a pan genome back?</h2>
 <p>No. One of the big selling points of Roary is that it can run on your own machine in a reasonable amount of time. Sending genomic data across borders is fraught with danger (and slow). For example, what if your private data gets accidentally publicly released, or you accidentally send data that is contaminated with Human reads (illegal without proper safeguards in many countries)? One possible alternative is to use <a href="http://wgsa.net">http://wgsa.net</a> if you wish to visualize your samples in the context of other published samples.</p>
+
+
+<h2>
+<a id="inflation" class="anchor" href="#inflation" aria-hidden="true"><span class="octicon octicon-link"></span></a>What does modifying the inflation value do?</h2>
+<p>The MCL inflation value is an interesting parameter because it can quite substantially change your clustering. It has been set to work with closely related species, so if your working at a different level, you should consider changing this value. I cant tell you what a good value is, but there is documentation out there to help you on the <a href="https://micans.org/mcl/man/mclfaq.html">mcl website</a>.</p>
 
 <h2>
 <a id="i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" class="anchor" href="#i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>I have no knowledge of the command line or bioinformatics and have just spent $500,000 sequencing lots of bacteria. What do I do to get a pretty tree?</h2>
