@@ -101,7 +101,7 @@ sub BUILD {
         'k|kraken_db=s'             => \$kraken_db,
         'w|version'                 => \$cmd_version,
         'a|check_dependancies'      => \$check_dependancies,
-	'inflation_value=f'         => \$inflation_value,
+	'iv|inflation_value=f'      => \$inflation_value,
         'h|help'                    => \$help,
     );
 
@@ -347,6 +347,7 @@ Options: -p INT    number of threads [1]
          -v        verbose output to STDOUT
          -w        print version and exit
          -y        add gene inference information to spreadsheet, doesnt work with -e
+	 -iv STR   Change the MCL inflation value [1.5]
          -h        this help message
 
 Example: Quickly generate a core gene alignment using 8 threads
