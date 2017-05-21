@@ -40,6 +40,11 @@
 
 <p>Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill, "Roary: Rapid large-scale prokaryote pan genome analysis", Bioinformatics, 2015;31(22):3691-3693 <a href="http://bioinformatics.oxfordjournals.org/content/31/22/3691">doi:10.1093/bioinformatics/btv421</a></p>
 
+<h1><a id="tutorial" class="anchor" href="#tutorial" aria-hidden="true"><span class="octicon octicon-link"></span></a>Step by step tutorial</h1>
+<p>
+	The Microbial Genomics Lab at CBIB have put together an excellent <a href="https://github.com/microgenomics/tutorials/blob/master/pangenome.md">step by step tutorial</a> on using Roary.
+</p>
+
 <h1>
 <a id="installation-instructions" class="anchor" href="#installation-instructions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation instructions</h1>
 
@@ -59,19 +64,7 @@
 <a id="input-files-from-genbank" class="anchor" href="#input-files-from-genbank" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files from GenBank</h2>
 
 <p>On NCBI's website, GFF3 files only contain annotation and not the nucleotide sequence so cannot be used. You need to download the GenBank files plus nucleotide sequence and convert them. When downloading, click on the <em>show sequence</em> option, <em>Update View</em> then <em>Send</em> to a <em>File</em> of type <em>GenBank</em>. You can then use the Bio::Perl script <em>bp_genbank2gff3.pl</em> to convert to GFF3. Just be aware that mixing different gene prediction methods and annotation pipelines can give noisier results.</p>
-
-<h2>
-<a id="input-files-from-genbank-draft-wgs" class="anchor" href="#input-files-from-genbank-draft-wgs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input files from GenBank draft WGS</h2>
-
-<p>Install Bio-RetrieveAssemblies which will allow you to download draft WGS assemblies from GenBank. </p>
-
-<pre><code>sudo cpanm -f Bio::RetrieveAssemblies
-</code></pre>
-
-<p>To download all Salmonella typhi annotated assemblies as GFF3 files:</p>
-
-<pre><code>retrieve_assemblies -a -f gff typhi
-</code></pre>
+<p>Alternatively you can use <a href="https://github.com/kblin/ncbi-genome-download">ncbi-genome-download</a> to pull down the FASTA files and convert them to GFF3 with Prokka.</p>
 
 <h2>
 <a id="software-usage" class="anchor" href="#software-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Software usage</h2>
@@ -189,10 +182,13 @@ Options: -p INT    number of threads [1]
 <h3>
 <a id="iterative_cdhit" class="anchor" href="#iterative_cdhit" aria-hidden="true"><span class="octicon octicon-link"></span></a>iterative_cdhit</h3>
 
-<p>Iteratively cluster a set of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.</p>
+<p>Iteratively cluster a FASTA file of proteins with CD-hit, lower the threshold each time and extracting core genes (1 per isolate) to another file, and remove them from the input proteins file.</p>
 
-<pre><code>Options: -p INT   number of threads [1]
-         -m STR   output filename for combined proteins [_combined_files]
+<pre><code>
+Required arguments:
+         -m STR   input FASTA file of protein sequences [_combined_files]
+	 
+Options: -p INT   number of threads [1]
          -n INT   number of isolates [1]
          -c STR   cd-hit output filename [_clustered]
          -f STR   output filename for filtered sequences [_clustered_filtered.fa]
@@ -217,7 +213,7 @@ It highlights genes which appear to be linked to the traits and gives lots of st
 <p>This contributed script by Marco Galardini is not installed by default but can be very useful. <a href="https://github.com/sanger-pathogens/Roary/tree/master/contrib/roary_plots">Additional details can be found here in the repository</a>.
 It provides 3 figures, showing the tree compared to a matrix with the presence and absence of core and accessory genes. The next is an pie chart of the breakdown of genes and the number of isolate they are present in. And finally there is a graph with the frequency of genes versus the number of genomes.</p>
 
-<pre><code>roary_plots.py my_tree.tre gene_presence_absence.csv
+<pre><code>roary_plots.py name_of_your_newick_tree_file.tre gene_presence_absence.csv
 </code></pre>
 
 <p><img src="http://sanger-pathogens.github.io/Roary/images/pangenome_matrix.png" alt="Pan Genome Matrix"></p>
@@ -237,6 +233,11 @@ It provides 3 figures, showing the tree compared to a matrix with the presence a
 <h3>
 <a id="PanVizGenerator" class="anchor" href="#PanVizGenerator" aria-hidden="true"><span class="octicon octicon-link"></span></a>PanVizGenerator</h3>
 <p>Thomas Lin Pedersen has created an R package which allows for some excellent visualisation of the output of Roary called <a href="https://github.com/thomasp85/PanVizGenerator">PanVizGenerator</a>. He also has alternative pan genome software called <a href="https://github.com/thomasp85/FindMyFriends">FindMyFriends.</a> Both are part of BioConductor.</p>
+
+<h3>
+<a id="panX" class="anchor" href="#panX" aria-hidden="true"><span class="octicon octicon-link"></span></a>panX</h3>
+<p>panX can use the output of roary as input to their <a href="http://pangenome.tuebingen.mpg.de/">excellent visualisation tool</a>.</p>
+
 
 <h3>
 <a id="Roary2svg" class="anchor" href="#Roary2svg" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roary2SVG</h3>
@@ -298,7 +299,6 @@ It provides 3 figures, showing the tree compared to a matrix with the presence a
 
 <h2>
 <a id="rtab" class="anchor" href="#rtab" aria-hidden="true"><span class="octicon octicon-link"></span></a>*.Rtab</h2>
-
 <p>There is an additional script called <em>create_pan_genome_plots.R</em> which requires R and the ggplot2 library. It takes in the *.Rtab files and produces graphs on how the pan genome varies as genomes are added (in random orders).</p>
 
 <p><img src="http://sanger-pathogens.github.io/Roary/images/conserved_vs_total_genes.png" alt="Total Conserved Genes">
@@ -306,12 +306,10 @@ It provides 3 figures, showing the tree compared to a matrix with the presence a
 
 <h2>
 <a id="accessory_binary_genesfanewick" class="anchor" href="#accessory_binary_genesfanewick" aria-hidden="true"><span class="octicon octicon-link"></span></a>accessory_binary_genes.fa.newick</h2>
-
 <p>This is a tree created using the binary presence and absence of accessory genes. It is in Newick format and can be viewed in FigTree. It is only a quick and dirty tree to roughly group isolates together based on their accessory genome and is in no way reliable other than to give a quick insight into the data. If you want a more accurate tree you need to use the core gene alignment as your starting point.</p>
 
 <h2>
 <a id="accessory_graphdot" class="anchor" href="#accessory_graphdot" aria-hidden="true"><span class="octicon octicon-link"></span></a>accessory_graph.dot</h2>
-
 <p>A graph in DOT format of how genes are linked together at the contig level in the accessory genome. You can view it using <a href="https://gephi.org">Gephi</a>.  Nodes correspond to genes. An edge represents where two genes are next to each other on any of the input assemblies.  To generate the weights on the edges, a count is kept of the frequency of the genes being beside each other, they are then weighted by the overall clustering of the accessory binary presence and absense (to reduce bias by over represented genotypes), then inverted.</p>
 
 <h2>
@@ -356,7 +354,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="gubbins" class="anchor" href="#gubbins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gubbins, detecting recombinatioin in pan genomes</h2>
-<p>You cannot use the output of Roary as the input to <a href="http://sanger-pathogens.github.io/gubbins/">Gubbins</a> (e.g. to detect recombination in the pan genome). They are fundamentally incompatible and we dont have a solution yet for this open problem.</p>
+<p>You cannot use the output of Roary as the input to <a href="http://sanger-pathogens.github.io/gubbins/">Gubbins</a> (e.g. to detect recombination in the pan genome). They are fundamentally incompatible (at a theoretical level). Jukka Corander has suggested <a href="http://www.helsinki.fi/bsg/software/BRAT-NextGen/">BratNextGen</a> will work.</p>
 
 <h2>
 <a id="i-got-no-core-genes" class="anchor" href="#i-got-no-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>I got no core genes?</h2>
@@ -417,12 +415,16 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="will-it-work-with-eukaryotes-eg-homo-sapiens-mus-musculus" class="anchor" href="#will-it-work-with-eukaryotes-eg-homo-sapiens-mus-musculus" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Eukaryotes (e.g. Homo sapiens, Mus musculus)?</h2>
-<p>No.</p>
+<p>No. The software will not work with organisms which have introns/exons.</p>
 
 <h2>
 <a id="do-you-have-plans-for-a-windows-version" class="anchor" href="#do-you-have-plans-for-a-windows-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Do you have plans for a Windows version?</h2>
 <p>No. Install Linux.</p>
 
+<h2>
+<a id="windows-version" class="anchor" href="#windows-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>My biologist boss says I must do my analysis in Windows? How can I use Roary?</h2>
+<p>Virtually all bioinformatics is performed using Linux/Unix, but the world of biology generally works in Windows (Microsoft Excel to be exact), which can lead to conflicting requirements. You need to choose the right tool for the job, so bite the bullet and use Linux. This can easily be done by renting a server in the cloud, or installing a virtual machine in Windows.</p>
+	      
 <h2>
 <a id="cost" class="anchor" href="#cost" aria-hidden="true"><span class="octicon octicon-link"></span></a>How much does the software cost?</h2>
 <p>£0, its open source.</p>
@@ -441,8 +443,24 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="private_data" class="anchor" href="#private_data" aria-hidden="true"><span class="octicon octicon-link"></span></a>I cant get Roary working on my private dataset. Will you sign an NDA if I send it to you?</h2>
-<p>Only if it is agreed in advance with our legal department.</p>
+<p>Only if it is agreed in advance with our legal department. Given the open science mission of the Wellcome Trust, we are likely to reject your request.</p>
 
+<h2>
+<a id="one_gene" class="anchor" href="#one_gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>My bacteria only has 1 gene, so why does Roary crash?</h2>
+<p>You are using the software for a purpose for which it was never designed with an artificial dataset.</p>
+	
+<h2>
+<a id="differing_annotation" class="anchor" href="#differing_annotation"   aria-hidden="true"><span class="octicon octicon-link"></span></a>I downloaded a load of random assemblies from GenBank. Why am I seeing crazy results?</h2>
+<p>Gene prediction software rarely completely agrees, with differing opinions on the actual start of a gene, 
+or which of the overlapping open reading frames is actually the correct one, etc. 
+As a result, if you mix these together you can get crazy results. 
+The solution is to reannotate all of the genomes with a single method (like PROKKA). 
+Otherwise you will waste vast amounts of time looking at noise, errors, and the batch effect.</p>
+
+<h2>
+<a id="proteins" class="anchor" href="#proteins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roary outputs genes as nucleotides but I want proteins!</h2>
+<p>It is straightforward to convert a gene of nucleotides to amino acids. If you dont know how to do it, I would suggest doing a beginners course in bioinformatics, or read an introductory book, before undertaking more advanced analysis.</p>
+	      
 <h2>
 <a id="python" class="anchor" href="#python" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roary throws lots of Python errors</h2>
 <p>Your trying to run a Perl program with Python. Its unlikely to work any time soon.</p>
@@ -458,7 +476,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 <h2>
 <a id="encode" class="anchor" href="#encode"   aria-hidden="true"><span class="octicon octicon-link"></span></a>Use of uninitialized value in require at Encode.pm</h2>
 <p>If you see a warning like about the 'Use of uninitialized value' in Encode.pm, dont worry, its just a warning and has no impact the script. If you want to get rid of this warning, just update the Encode perl module to the latest version.</p>
-
+      
 <h2>
 <a id="kraken-installed-via-homebrew-throws-an-error" class="anchor" href="#kraken-installed-via-homebrew-throws-an-error" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kraken installed via homebrew throws an error.</h2>
 <p>Theres a bug and you'll need to install it from source on older versions of OSX (like Mountain Lion).</p>
