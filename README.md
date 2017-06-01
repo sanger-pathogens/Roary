@@ -64,7 +64,7 @@ Roary wont run natively on Windows but we have created virtual machine which has
 
 ftp://ftp.sanger.ac.uk/pub/pathogens/pathogens-vm/pathogens-vm.latest.ova
 
-More importantly though, if your trying to do bioinformatics on Windows, your not going to get very far and you should seriously consider upgrading to Linux.
+More importantly though, if you're trying to do bioinformatics on Windows, you're not going to get very far and you should seriously consider upgrading to Linux.
 
 ## Docker - OSX/Linux/Windows/Cloud
 We have a docker container which gets automatically built from the latest version of Roary in Debian Med. To install it:
@@ -107,7 +107,7 @@ bedtools cd-hit blast mcl GNUparallel prank mafft fasttree
 ```
 
 ## Ancient systems and versions of perl
-The code will not work with perl 5.8 or below (pre-modern perl). We no longer test against 5.10 (released 2007). If your running a very old verison of Linux, your also in trouble.
+The code will not work with perl 5.8 or below (pre-modern perl). We no longer test against 5.10 (released 2007). If you're running a very old verison of Linux, you're also in trouble.
 
 # Versions of software we test against
 * Perl 5.14, 5.16, 5.20, 5.24
