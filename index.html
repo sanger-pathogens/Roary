@@ -92,12 +92,12 @@ Options: -p INT    number of threads [1]
          -g INT    maximum number of clusters [50000]
          -m STR    makeblastdb executable [makeblastdb]
          -r        create R plots, requires R and ggplot2
-         -s        dont split paralogs
+         -s        don't split paralogs
          -t INT    translation table [11]
-         -z        dont delete intermediate files
+         -z        don't delete intermediate files
          -v        verbose output to STDOUT
          -w        print version and exit
-         -y        add gene inference information to spreadsheet, doesnt work with -e
+         -y        add gene inference information to spreadsheet, doesn't work with -e
 	 -iv STR   Change the MCL inflation value [1.5]      
          -h        this help message
 
@@ -118,7 +118,7 @@ Options: -p INT    number of threads [1]
 <pre><code>roary –f output_dir *.gff
 </code></pre>
 
-<p>Change the minimum blastp percentage identity. Its not advised to go below 90% unless you know what you're doing.</p>
+<p>Change the minimum blastp percentage identity. ' not advised to go below 90% unless you know what you're doing.</p>
 
 <pre><code>roary –i 90 *.gff
 </code></pre>
@@ -128,7 +128,7 @@ Options: -p INT    number of threads [1]
 <pre><code>roary –qc –k /path/to/kraken/db *.gff
 </code></pre>
 
-<p>Dont split clusters containing paralogs</p>
+<p>don't split clusters containing paralogs</p>
 
 <pre><code>roary -s *.gff
 </code></pre>
@@ -348,9 +348,9 @@ Just be aware that recombination is not taken care of with this method.  </p>
 <p>Check the dependencies with <em>roary -a</em>.  If theres something missing, then you’ll need to install it.</p>
 
 <h2>
-<a id="ignored_installation" class="anchor" href="#ignored_installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>I ignored your installation instructions and now your software doesnt work</h2>
-<p>We recommend you install dependancies using the recommended methods (homebrew/linuxbrew/apt) because they can be a pain to install manually. If you ignore this advise, we assume your a super advanced 
-system administrator who can figure all this stuff out for themselves, so dont need any help from us.</p>
+<a id="ignored_installation" class="anchor" href="#ignored_installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>I ignored your installation instructions and now your software doesn't work</h2>
+<p>We recommend you install dependancies using the recommended methods (homebrew/linuxbrew/apt) because they can be a pain to install manually. If you ignore this advise, we assume you are a super advanced 
+system administrator who can figure all this stuff out for themselves, so don't need any help from us.</p>
 
 <h2>
 <a id="gubbins" class="anchor" href="#gubbins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gubbins, detecting recombinatioin in pan genomes</h2>
@@ -362,7 +362,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="the-core-is-a-lot-smaller-than-i-expected" class="anchor" href="#the-core-is-a-lot-smaller-than-i-expected" aria-hidden="true"><span class="octicon octicon-link"></span></a>The core is a lot smaller than I expected?</h2>
-<p>With bacteria, the rule of thumb is that there are about 1,000 genes per million bases. If you have a 2 megabase genome and are getting a core of 200 genes, instead of closer to 2,000 genes, then there is a problem. The species could be too diverse, in which case you should lower the blastp percentage identity (-i 90). Just be aware that you can get anything to cluster with anything else if you set this value low enough, but the results will be complete rubbish. If your setting this below 70%, then your doing something wrong. Other causes are contamination from a different species, or very poor assemblies (too small, too fragmented), see <em>I got no core genes</em>. </p>
+<p>With bacteria, the rule of thumb is that there are about 1,000 genes per million bases. If you have a 2 megabase genome and are getting a core of 200 genes, instead of closer to 2,000 genes, then there is a problem. The species could be too diverse, in which case you should lower the blastp percentage identity (-i 90). Just be aware that you can get anything to cluster with anything else if you set this value low enough, but the results will be complete rubbish. If you are setting this below 70%, then you're doing something wrong. Other causes are contamination from a different species, or very poor assemblies (too small, too fragmented), see <em>I got no core genes</em>. </p>
 
 <h2>
 <a id="no-core-alignment-is-produced-and-theres-an-error-about-too-many-clusters" class="anchor" href="#no-core-alignment-is-produced-and-theres-an-error-about-too-many-clusters" aria-hidden="true"><span class="octicon octicon-link"></span></a>No core alignment is produced and theres an error about too many clusters?</h2>
@@ -370,7 +370,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="why_do_the_results_vary" class="anchor" href="#why_do_the_results_vary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why do the results vary with the same input files?</h2>
-<p>Building pan genomes is NP-hard. Roary addresses this with a non deterministic heuristic. This means there will be a bit of variation in the results if you run it multiple times. Its fundamentally difficult and if we were not using a heuristic, it would potentially take millions/billions of years to run the program.</p>
+<p>Building pan genomes is NP-hard. Roary addresses this with a non deterministic heuristic. This means there will be a bit of variation in the results if you run it multiple times. It's fundamentally difficult and if we were not using a heuristic, it would potentially take millions/billions of years to run the program.</p>
 
 <h2>
 <a id="accessory_binary_fasta" class="anchor" href="#accessory_binary_fasta" aria-hidden="true"><span class="octicon octicon-link"></span></a>How was the accessory binary tree built?</h2>
@@ -382,7 +382,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="theres-some-very-long-branches-in-my-tree" class="anchor" href="#theres-some-very-long-branches-in-my-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>Theres some very long branches in my tree?</h2>
-<p>Its likely you have recombination. Roary doesn’t take recombination into account, so you will have to use a different method such as Gubbins (Croucher et al., 2014) which uses reads aligned to a reference genome. Do not use the output of Roary as the input to Gubbins, they are fundamentally incompatible.  Another possibility is that you might have contamination from two closely related strains.</p>
+<p>It's likely you have recombination. Roary doesn’t take recombination into account, so you will have to use a different method such as Gubbins (Croucher et al., 2014) which uses reads aligned to a reference genome. Do not use the output of Roary as the input to Gubbins, they are fundamentally incompatible.  Another possibility is that you might have contamination from two closely related strains.</p>
 
 <h2>
 <a id="is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" class="anchor" href="#is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is there a server I can upload my data to and get a pan genome back?</h2>
@@ -391,7 +391,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="inflation" class="anchor" href="#inflation" aria-hidden="true"><span class="octicon octicon-link"></span></a>What does modifying the inflation value do?</h2>
-<p>The MCL inflation value is an interesting parameter because it can quite substantially change your clustering. It has been set to work with closely related species, so if your working at a different level, you should consider changing this value. I cant tell you what a good value is, but there is documentation out there to help you on the <a href="https://micans.org/mcl/man/mclfaq.html">mcl website</a>.</p>
+<p>The MCL inflation value is an interesting parameter because it can quite substantially change your clustering. It has been set to work with closely related species, so if you're working at a different level, you should consider changing this value. I can't tell you what a good value is, but there is documentation out there to help you on the <a href="https://micans.org/mcl/man/mclfaq.html">mcl website</a>.</p>
 
 <h2>
 <a id="i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" class="anchor" href="#i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>I have no knowledge of the command line or bioinformatics and have just spent $500,000 sequencing lots of bacteria. What do I do to get a pretty tree?</h2>
@@ -427,7 +427,7 @@ system administrator who can figure all this stuff out for themselves, so dont n
 	      
 <h2>
 <a id="cost" class="anchor" href="#cost" aria-hidden="true"><span class="octicon octicon-link"></span></a>How much does the software cost?</h2>
-<p>£0, its open source.</p>
+<p>£0, it's open source.</p>
 
 <h2>
 <a id="galaxy" class="anchor" href="#galaxy" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is Roary available in Galaxy?</h2>
@@ -439,10 +439,10 @@ system administrator who can figure all this stuff out for themselves, so dont n
 
 <h2>
 <a id="visiting" class="anchor" href="#visiting" aria-hidden="true"><span class="octicon octicon-link"></span></a>I'm going to be in the area, can I drop in for a coffee?</h2>
-<p>Sure, drop us a line. Its always a pleasure to talk to people interested in this obscure part of biology.</p>
+<p>Sure, drop us a line. It's always a pleasure to talk to people interested in this obscure part of biology.</p>
 
 <h2>
-<a id="private_data" class="anchor" href="#private_data" aria-hidden="true"><span class="octicon octicon-link"></span></a>I cant get Roary working on my private dataset. Will you sign an NDA if I send it to you?</h2>
+<a id="private_data" class="anchor" href="#private_data" aria-hidden="true"><span class="octicon octicon-link"></span></a>I can't get Roary working on my private dataset. Will you sign an NDA if I send it to you?</h2>
 <p>Only if it is agreed in advance with our legal department. Given the open science mission of the Wellcome Trust, we are likely to reject your request.</p>
 
 <h2>
@@ -459,15 +459,15 @@ Otherwise you will waste vast amounts of time looking at noise, errors, and the 
 
 <h2>
 <a id="proteins" class="anchor" href="#proteins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roary outputs genes as nucleotides but I want proteins!</h2>
-<p>It is straightforward to convert a gene of nucleotides to amino acids. If you dont know how to do it, I would suggest doing a beginners course in bioinformatics, or read an introductory book, before undertaking more advanced analysis.</p>
+<p>It is straightforward to convert a gene of nucleotides to amino acids. If you don't know how to do it, I would suggest doing a beginners course in bioinformatics, or read an introductory book, before undertaking more advanced analysis.</p>
 	      
 <h2>
 <a id="python" class="anchor" href="#python" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roary throws lots of Python errors</h2>
-<p>Your trying to run a Perl program with Python. Its unlikely to work any time soon.</p>
+<p>Your trying to run a Perl program with Python. It's unlikely to work any time soon.</p>
 
 <h2>
 <a id="other_programs" class="anchor" href="#other_programs" aria-hidden="true"><span class="octicon octicon-link"></span></a>What are the alternatives to Roary?</h2>
-<p>If Roary doesnt suit your needs there are many other applications to create microbial pan genomes such as: OrthoMCL, PanOCT, PanSeq, LS-BSR, FindMyFriends, MicroPan and PGAP. New applications come out weekly.</p>
+<p>If Roary doesn't suit your needs there are many other applications to create microbial pan genomes such as: OrthoMCL, PanOCT, PanSeq, LS-BSR, FindMyFriends, MicroPan and PGAP. New applications come out weekly. Quality not guaranteed.</p>
 
 <h2>
 <a id="cdhit-seg-faults" class="anchor" href="#cdhit-seg-faults" aria-hidden="true"><span class="octicon octicon-link"></span></a>cdhit seg faults</h2>
@@ -475,15 +475,15 @@ Otherwise you will waste vast amounts of time looking at noise, errors, and the 
 
 <h2>
 <a id="encode" class="anchor" href="#encode"   aria-hidden="true"><span class="octicon octicon-link"></span></a>Use of uninitialized value in require at Encode.pm</h2>
-<p>If you see a warning like about the 'Use of uninitialized value' in Encode.pm, dont worry, its just a warning and has no impact the script. If you want to get rid of this warning, just update the Encode perl module to the latest version.</p>
+<p>If you see a warning like about the 'Use of uninitialized value' in Encode.pm, don't worry, it's just a warning and has no impact the script. If you want to get rid of this warning, just update the Encode perl module to the latest version.</p>
       
 <h2>
 <a id="kraken-installed-via-homebrew-throws-an-error" class="anchor" href="#kraken-installed-via-homebrew-throws-an-error" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kraken installed via homebrew throws an error.</h2>
 <p>Theres a bug and you'll need to install it from source on older versions of OSX (like Mountain Lion).</p>
 
 <h2>
-<a id="why-dont-you-bundle-a-kraken-database-for-the-qc" class="anchor" href="#why-dont-you-bundle-a-kraken-database-for-the-qc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why dont you bundle a Kraken database for the QC?</h2>
-<p>Its massive (2.7GB currently) and changes as RefSeq is updated. The authors have prebuilt databases and details about how to make your own.</p>
+<a id="why-don't-you-bundle-a-kraken-database-for-the-qc" class="anchor" href="#why-don't-you-bundle-a-kraken-database-for-the-qc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why don't you bundle a Kraken database for the QC?</h2>
+<p>It's massive (2.7GB currently) and changes as RefSeq is updated. The authors have prebuilt databases and details about how to make your own.</p>
         </section>
 
         <aside id="sidebar">
