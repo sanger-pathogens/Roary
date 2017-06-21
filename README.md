@@ -15,6 +15,8 @@ Roary is a high speed stand alone pan genome pipeline, which takes annotated ass
 Theres are a number of dependancies required for Roary, with instructions specific to the type of system you have:
 * Ubuntu/Debian
 * CentOS/RedHat
+* Bioconda - OSX/Linux
+* Galaxy
 * Homebrew/Linuxbrew - OSX/Linux
 * Guix - Linux
 * Virtual Machine - OSX/Linux/Windows
@@ -42,6 +44,20 @@ Some of the software versions in apt are quite old so follow the instructions fo
 
 ## CentOS/RedHat
 To install the dependancies, the easiest way is to install [LinuxBrew](http://brew.sh/linuxbrew/) using the steps for Fedora, then follow the steps below for installing Roary on LinuxBrew.
+
+## Bioconda - OSX/Linux
+Install conda. Then install bioconda and roary:
+
+```
+conda config --add channels r
+conda config --add channels defaults
+conda config --add channels conda-forge
+conda config --add channels bioconda
+conda install roary
+```
+
+## Galaxy
+Roary is available from the Galaxy toolshed ( as is Prokka).
 
 ## Homebrew/Linuxbrew - OSX/Linux
 Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.sh/linuxbrew/) (Linux) setup and installed on your system:
