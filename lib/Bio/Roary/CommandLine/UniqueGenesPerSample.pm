@@ -12,6 +12,8 @@ Take in the clustered file and produce a sorted file with the frequency of each 
 
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
+use Bio::Roary::UniqueGenesPerSample;
+
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -62,11 +64,10 @@ sub run {
     }
 
     my $obj = Bio::Roary::UniqueGenesPerSample->new(
-        gff_files       => $self->gff_files,
+        clustered_proteins  => $self->clustered_proteins,
         output_filename => $self->output_filename,
-        groups_filename => $self->groups_filename,
     );
-    $obj->reannotate;
+    $obj->write_unique_frequency;
 
 }
 
