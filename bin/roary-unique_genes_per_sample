@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+package Bio::Roary::Main::UniqueGenesPerSample;
+
+# ABSTRACT: Take in the clustered file and produce a sorted file with the frequency of each samples unique genes
+# PODNAME: roary-unique_genes_per_sample
+
+=head1 SYNOPSIS
+
+Take in the clustered file and produce a sorted file with the frequency of each samples unique genes
+
+=cut
+
+use Cwd qw(abs_path); 
+BEGIN { unshift( @INC, abs_path('./lib') ) }
+BEGIN { unshift( @INC, abs_path('./t/lib') ) }
+use Bio::Roary::CommandLine::UniqueGenesPerSample;
+
+Bio::Roary::CommandLine::UniqueGenesPerSample->new(args => \@ARGV, script_name => $0)->run;
