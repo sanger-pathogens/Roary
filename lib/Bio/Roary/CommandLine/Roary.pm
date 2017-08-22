@@ -346,12 +346,12 @@ Options: -p INT    number of threads [1]
          -r        create R plots, requires R and ggplot2
          -s        dont split paralogs
          -t INT    translation table [11]
-		 -ap       allow paralogs in core alignment
+         -ap       allow paralogs in core alignment
          -z        dont delete intermediate files
          -v        verbose output to STDOUT
          -w        print version and exit
          -y        add gene inference information to spreadsheet, doesnt work with -e
-	 -iv STR   Change the MCL inflation value [1.5]
+         -iv STR   Change the MCL inflation value [1.5]
          -h        this help message
 
 Example: Quickly generate a core gene alignment using 8 threads
