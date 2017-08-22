@@ -27,13 +27,14 @@ has 'spreadsheet_filename'      => ( is => 'rw', isa => 'Str', default => 'gene_
 has 'output_filename'           => ( is => 'rw', isa => 'Str', default => 'core_gene_alignment.aln' );
 has 'core_definition'           => ( is => 'rw', isa => 'Num', default => 0.99 );
 has 'dont_delete_files'         => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'allow_paralogs'            => ( is => 'rw', isa => 'Bool', default => 0 );
 has '_error_message'            => ( is => 'rw', isa => 'Str' );
 has 'verbose'                   => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
 
-    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help, $mafft, $dont_delete_files );
+    my ( $multifasta_base_directory, $spreadsheet_filename, $output_filename, $core_definition,$verbose,  $help, $mafft, $allow_paralogs, $dont_delete_files );
 
     GetOptionsFromArray(
         $self->args,
@@ -42,6 +43,7 @@ sub BUILD {
         'o|output_filename=s'           => \$output_filename,
         'cd|core_definition=f'          => \$core_definition,
         'z|dont_delete_files'           => \$dont_delete_files,
+		'p|allow_paralogs'              => \$allow_paralogs,
 		'v|verbose'                     => \$verbose,
         'h|help'                        => \$help,
     );
@@ -51,6 +53,7 @@ sub BUILD {
         $self->logger->level(10000);
     }
     $self->help($help) if(defined($help));
+	$self->allow_paralogs($allow_paralogs) if(defined($allow_paralogs));
 
     if ( defined($multifasta_base_directory) && ( -d $multifasta_base_directory ) ) {
         $self->multifasta_base_directory( abs_path($multifasta_base_directory));
@@ -95,7 +98,8 @@ sub run {
 	$self->logger->info("Extract core genes from spreadsheet");
     my $core_genes_obj = Bio::Roary::ExtractCoreGenesFromSpreadsheet->new( 
         spreadsheet     => $self->spreadsheet_filename,
-        core_definition => $self->core_definition
+        core_definition => $self->core_definition,
+		allow_paralogs => $self->allow_paralogs
     );
 	
 	$self->logger->info("Looking up genes in files");
@@ -130,6 +134,7 @@ Options: -o STR    output filename [core_gene_alignment.aln]
          -cd FLOAT percentage of isolates a gene must be in to be core [99]
          -m STR    directory containing gene multi-FASTAs [pan_genome_sequences]
          -s STR    gene presence and absence spreadsheet [gene_presence_absence.csv]
+		 -p        allow paralogs
          -z        dont delete intermediate files
          -v        verbose output to STDOUT
          -h        this help message

@@ -48,6 +48,7 @@ has 'core_definition'             => ( is => 'rw', isa => 'Num',      default  =
 has 'verbose'                     => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'mafft'                       => ( is => 'ro', isa => 'Bool',     default  => 0 );
 has 'inflation_value'             => ( is => 'rw', isa => 'Num',      default  => 1.5 );
+has 'allow_paralogs'              => ( is => 'rw', isa => 'Bool',     default => 0 );
 
 has 'output_multifasta_files' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -136,6 +137,7 @@ sub run {
         core_definition             => $self->core_definition,
 		verbose                     => $self->verbose,
 		mafft                       => $self->mafft,
+		allow_paralogs              => $self->allow_paralogs,
     );
     $post_analysis->run();
 

@@ -47,6 +47,7 @@ has 'dont_split_groups'       => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'verbose_stats'           => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'translation_table'       => ( is => 'rw', isa => 'Int',  default => 11 );
 has 'mafft'                   => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'allow_paralogs'          => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'group_limit'             => ( is => 'rw', isa => 'Num',  default => 50000 );
 has 'core_definition'         => ( is => 'rw', isa => 'Num',  default => 0.99 );
 has 'verbose'                 => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -71,7 +72,7 @@ sub BUILD {
         $job_runner,            $makeblastdb_exec,  $mcxdeblast_exec,         $mcl_exec,      $blastp_exec,
         $apply_unknowns_filter, $cpus,              $output_multifasta_files, $verbose_stats, $translation_table,
         $run_qc,                $core_definition,   $help,                    $kraken_db,     $cmd_version,
-        $mafft,                 $output_directory,  $check_dependancies, $inflation_value,
+        $mafft,                 $output_directory,  $check_dependancies, $inflation_value, $allow_paralogs,
     );
 
     GetOptionsFromArray(
@@ -98,6 +99,7 @@ sub BUILD {
         'cd|core_definition=f'      => \$core_definition,
         'v|verbose'                 => \$verbose,
         'n|mafft'                   => \$mafft,
+		'ap|allow_paralogs'         => \$allow_paralogs,
         'k|kraken_db=s'             => \$kraken_db,
         'w|version'                 => \$cmd_version,
         'a|check_dependancies'      => \$check_dependancies,
@@ -302,7 +304,8 @@ sub run {
         core_definition         => $self->core_definition,
         verbose                 => $self->verbose,
         mafft                   => $self->mafft,
-	inflation_value         => $self->inflation_value,
+        allow_paralogs          => $self->allow_paralogs,
+	    inflation_value         => $self->inflation_value,
     );
     $pan_genome_obj->run();
 
@@ -343,6 +346,7 @@ Options: -p INT    number of threads [1]
          -r        create R plots, requires R and ggplot2
          -s        dont split paralogs
          -t INT    translation table [11]
+		 -ap       allow paralogs in core alignment
          -z        dont delete intermediate files
          -v        verbose output to STDOUT
          -w        print version and exit
