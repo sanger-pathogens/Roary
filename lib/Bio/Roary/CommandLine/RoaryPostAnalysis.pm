@@ -41,6 +41,7 @@ has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default => 500
 has 'core_definition'             => ( is => 'rw', isa => 'Num',  default => 0.99 );
 has 'verbose'                     => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'mafft'                       => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'allow_paralogs'              => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
@@ -48,7 +49,7 @@ sub BUILD {
     my ( 
       $output_filename, $dont_create_rplots, $dont_delete_files, $dont_split_groups, $output_pan_geneome_filename, 
       $job_runner, $output_statistics_filename, $output_multifasta_files, $clusters_filename, $core_definition,
-      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit,$verbose,$mafft
+      $fasta_files, $input_files, $verbose_stats, $translation_table, $help, $cpus,$group_limit,$verbose,$mafft, $allow_paralogs
     );
 
 
@@ -72,6 +73,7 @@ sub BUILD {
         'cd|core_definition=f'      => \$core_definition,
 		'v|verbose'                 => \$verbose,
 		'n|mafft'                   => \$mafft,
+		'q|allow_paralogs'          => \$allow_paralogs,
         'h|help'                    => \$help,
     );
     
@@ -93,6 +95,7 @@ sub BUILD {
     $self->group_limit($group_limit)                                 if ( defined($group_limit) );
     $self->core_definition( $core_definition/100 )                   if ( defined($core_definition) );
 	$self->mafft($mafft)                                             if ( defined($mafft) );
+	$self->allow_paralogs($allow_paralogs)                           if ( defined($allow_paralogs) );
     if ( defined($verbose) ) {
         $self->verbose($verbose);
         $self->logger->level(10000);
@@ -158,6 +161,7 @@ sub run {
         cpus                => $self->cpus,
 		verbose             => $self->verbose,
 		mafft               => $self->mafft,
+		allow_paralogs      => $self->allow_paralogs,
         dont_delete_files   => $self->dont_delete_files,
         num_input_files     => $#{$input_files},
       );
@@ -222,6 +226,7 @@ Options: -a        dont delete intermediate files
          -n        fast core gene alignement with MAFFT instead of PRANK
          -o STR    clusters output filename [clustered_proteins]
          -p STR    output pan genome filename [pan_genome.fa]
+         -q        allow paralogs in core alignment
          -s STR    output gene presence and absence filename [gene_presence_absence.csv]
          -t INT    translation table [11]
          -z INT    number of threads [1]

@@ -72,7 +72,7 @@ sub _sequence_for_sample_from_gene_file {
     my ( $self, $sample_name, $gene_file ) = @_;
 
     # loop over this to get the geneIDs
-    for my $gene_id ( keys %{ $self->_gene_to_sequence->{$gene_file} } ) {
+    for my $gene_id ( sort keys %{ $self->_gene_to_sequence->{$gene_file} } ) {
         if ( defined( $self->sample_names_to_genes->{$sample_name}->{$gene_id} ) ) {
             return $self->_gene_to_sequence->{$gene_file}->{$gene_id};
         }

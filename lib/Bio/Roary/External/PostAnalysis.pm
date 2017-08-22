@@ -37,6 +37,7 @@ has 'group_limit'                 => ( is => 'rw', isa => 'Num',  default  => 50
 has 'core_definition'             => ( is => 'ro', isa => 'Num',  default  => 1.0 );
 has 'verbose'                     => ( is => 'rw', isa => 'Bool', default  => 0 );
 has 'mafft'                       => ( is => 'ro', isa => 'Bool', default  => 0 );
+has 'allow_paralogs'              => ( is => 'ro', isa => 'Bool', default  => 0 );
 has '_working_directory'          => ( is => 'ro', isa => 'File::Temp::Dir', default => sub { File::Temp->newdir( DIR => getcwd, CLEANUP => 1 ); } );
 has '_gff_fofn'                   => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__gff_fofn' );
 has '_fasta_fofn'                 => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__fasta_fofn'  );
@@ -137,6 +138,9 @@ sub _command_to_run {
 	
     my $verbose_flag = '';
     $verbose_flag = '-v' if ( defined($self->verbose) && $self->verbose == 1 );
+	
+	my $allow_paralogs_flag = '';
+	$allow_paralogs_flag = '--allow_paralogs'  if ( defined($self->allow_paralogs) && $self->allow_paralogs == 1 );
     
     return join(
         " ",
@@ -156,6 +160,7 @@ sub _command_to_run {
             $verbose_stats_flag,
 			$verbose_flag,
 			$mafft_flag,
+			$allow_paralogs_flag,
             '-j', $self->job_runner,
             '--processors', $self->cpus,
             '--group_limit', $self->group_limit,
