@@ -16,9 +16,9 @@ BEDTOOLS_DOWNLOAD_FILENAME="bedtools-${BEDTOOLS_VERSION}.tar.gz"
 BEDTOOLS_URL="https://github.com/arq5x/bedtools2/releases/download/v${BEDTOOLS_VERSION}/${BEDTOOLS_DOWNLOAD_FILENAME}"
 
 CDHIT_SHORT_VERSION="4.6.8"
-CDHIT_LONG_VERSION="4.6.8-2017-0621-source"
+CDHIT_LONG_VERSION="4.6.8-2017-0621"
 CDHIT_DOWNLOAD_FILENAME="cd-hit-${CDHIT_SHORT_VERSION}.tar.gz"
-CDHIT_URL="https://github.com/weizhongli/cdhit/releases/download/V${CDHIT_SHORT_VERSION}/cd-hit-v${CDHIT_LONG_VERSION}.tar.gz"
+CDHIT_URL="https://github.com/weizhongli/cdhit/releases/download/V${CDHIT_SHORT_VERSION}/cd-hit-v${CDHIT_LONG_VERSION}-source.tar.gz"
 
 PRANK_VERSION="0.140603"
 PRANK_DOWNLOAD_FILENAME="prank-msa-master.tar.gz"
