@@ -154,7 +154,7 @@ sub BUILD {
         $self->perc_identity($perc_identity);
         if ( $perc_identity < 50 ) {
             $self->logger->error(
-"The percentage identity is too low. Either somethings wrong with your data, like contamination, or your doing something that the software isnt designed to support."
+"The percentage identity is too low. Either something is wrong with your data, like contamination, or your doing something that the software isnt designed to support."
             );
         }
     }

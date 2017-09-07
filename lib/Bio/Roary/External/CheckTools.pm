@@ -57,7 +57,7 @@ my %tools = (
     },
     'mafft' => {
         GETVER => "mafft --version < /dev/null 2>&1",
-        REGEXP => qr/v($BIDEC) /,
+        REGEXP => qr/(\d+\.\d+) /,
         NEEDED => 1,
     },
     'kraken' => {
@@ -78,7 +78,7 @@ my %tools = (
     },
 
     # prank version also performs an update check so cant use it
-    'prank' => { NEEDED => 1 },
+    'prank' => { NEEDED => 0 },
 
     # now just the standard unix tools we need
     'grep' => { NEEDED => 1 },
