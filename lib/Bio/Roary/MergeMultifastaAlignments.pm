@@ -83,7 +83,7 @@ sub _sequence_for_sample_from_gene_file {
 sub _padded_string_for_gene_file {
     my ( $self, $gene_file ) = @_;
     return '' unless ( defined( $self->_gene_lengths->{$gene_file} ) );
-    return 'N' x ( $self->_gene_lengths->{$gene_file} );
+    return '-' x ( $self->_gene_lengths->{$gene_file} );
 }
 
 sub _create_merged_sequence_for_sample {
