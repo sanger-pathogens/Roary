@@ -69,9 +69,8 @@ sudo cpanm -f Bio::Roary
 ```
 
 ## GNU Guix
-Roary is not included in version in [Guix](https://www.gnu.org/software/guix) 0.11.0 so `guix pull` is currently required before installation.
+Roary is included in [Guix](https://www.gnu.org/software/guix) and can be installed in the usual way:
 ```
-guix pull
 guix package --install roary
 ```
 
