@@ -21,6 +21,7 @@ use File::Which;
 use File::Path qw(make_path);
 use Cwd qw(abs_path getcwd);
 use File::Temp;
+use File::Basename;
 extends 'Bio::Roary::CommandLine::Common';
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -120,7 +121,7 @@ sub BUILD {
 	Pubmed: 26198102\n\n";
 
     $self->help($help) if ( defined($help) );
-    if( $self->help ) 
+    if( $self->help )
 	{
 		print $self->usage_text;
 		return;
@@ -135,6 +136,18 @@ sub BUILD {
     if ( defined($verbose) ) {
         $self->verbose($verbose);
         $self->logger->level(10000);
+    }
+
+    if ( @{ $self->args } < 2 ) {
+        $self->logger->error("Error: You need to provide at least 2 files to build a pan genome");
+        die $self->usage_text;
+    }
+    my %basenames;
+    foreach my $string (@{$self->args}) {
+	my($base, $path, $suf) = fileparse($string);
+	next unless $basenames{$base}++;
+        $self->logger->error("Error: GFF files must have unique basenames.");
+        die $self->usage_text;
     }
 
     if ( @{ $self->args } < 2 ) {
@@ -246,7 +259,7 @@ sub _setup_output_directory {
 
 sub run {
     my ($self) = @_;
-	
+
 	return if($self->version || $self->help);
 
     $self->_setup_output_directory;
