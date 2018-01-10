@@ -129,7 +129,7 @@ The code will not work with perl 5.8 or below (pre-modern perl). We no longer te
 * cdhit 4.6.1
 * ncbi blast+ 2.4.0
 * mcl 14-137
-* bedtools 2.26.0
+* bedtools 2.27.1
 * prank 130410
 * GNU parallel 20130922, 20160722, 20150122
 * FastTree 2.1.9

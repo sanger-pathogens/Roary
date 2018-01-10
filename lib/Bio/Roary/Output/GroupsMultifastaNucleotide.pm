@@ -177,7 +177,12 @@ sub _cleanup_fasta {
     open( my $out, '>', $outfile );
     while ( my $line = <$in> ) {
         chomp $line;
-        $line =~ s/"//g if ( $line =~ /^>/ );
+        if ( $line =~ /^>/ )
+		{
+			$line =~ s/"//g ;
+			# newer versions of Bedtools add (-) or (+) to the end of the sequence name, remove them
+			$line =~ s!\([-+]\)!!;
+		}
 	
 	if($line =~ /^(>[^:]+)/)
 	{
