@@ -76,9 +76,11 @@ my %tools = (
 		MINVER => "3",
         NEEDED => 0,
     },
-
-    # prank version also performs an update check so cant use it
-    'prank' => { NEEDED => 0 },
+    'prank' => {
+        GETVER => "prank | grep -m 1 ^prank",
+        REGEXP => qr/prank v.(\d+)/,
+        NEEDED => 0,
+    },
 
     # now just the standard unix tools we need
     'grep' => { NEEDED => 1 },
