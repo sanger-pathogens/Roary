@@ -57,17 +57,17 @@ my %tools = (
     },
     'mafft' => {
         GETVER => "mafft --version < /dev/null 2>&1",
-        REGEXP => qr/(\d+\.\d+) /,
+        REGEXP => qr/(\d+\.\d+)/,
         NEEDED => 1,
     },
     'kraken' => {
-        GETVER => "kraken --version | head -n 1",
+        GETVER => "kraken -v | head -n 1",
         REGEXP => qr/(\d+\.\d+\.\d+.*)/,
         NEEDED => 0,
     },
     'kraken-report' => {
         GETVER => "kraken-report --version | head -n 1",
-        REGEXP => qr/(\d+\.\d+\.\d+.*)/,
+        REGEXP => qr/Kraken version (\d+\.\d+\.*\d*.*)/,
         NEEDED => 0,
     },
 	'Rscript'  => {
