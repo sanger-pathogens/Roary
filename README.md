@@ -17,7 +17,6 @@ Theres are a number of dependancies required for Roary, with instructions specif
 * CentOS/RedHat
 * Bioconda - OSX/Linux
 * Galaxy
-* Homebrew/Linuxbrew - OSX/Linux
 * Guix - Linux
 * Virtual Machine - OSX/Linux/Windows
 * Docker - OSX/Linux/Windows/Cloud
@@ -40,10 +39,7 @@ sudo cpanm -f Bio::Roary
 ```
 
 ### Ubuntu 12.04
-Some of the software versions in apt are quite old so follow the instructions for [LinuxBrew](http://brew.sh/linuxbrew/) below.
-
-## CentOS/RedHat
-To install the dependancies, the easiest way is to install [LinuxBrew](http://brew.sh/linuxbrew/) using the steps for Fedora, then follow the steps below for installing Roary on LinuxBrew.
+Some of the software versions in apt are quite old so follow the instructions for Bioconda below.
 
 ## Bioconda - OSX/Linux
 Install conda. Then install bioconda and roary:
@@ -57,16 +53,7 @@ conda install roary
 ```
 
 ## Galaxy
-Roary is available from the Galaxy toolshed ( as is Prokka).
-
-## Homebrew/Linuxbrew - OSX/Linux
-Assuming you have [homebrew](http://brew.sh/) (OSX) or [linuxbrew](http://brew.sh/linuxbrew/) (Linux) setup and installed on your system:
-
-```
-brew tap homebrew/science
-brew install bedtools cd-hit blast mcl parallel prank mafft fasttree cpanm
-sudo cpanm -f Bio::Roary
-```
+Roary is available from the Galaxy toolshed ( as is Prokka ).
 
 ## GNU Guix
 Roary is included in [Guix](https://www.gnu.org/software/guix) and can be installed in the usual way:
