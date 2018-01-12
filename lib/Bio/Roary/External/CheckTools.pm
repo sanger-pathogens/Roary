@@ -62,14 +62,14 @@ my %tools = (
     },
     'kraken' => {
         GETVER => "kraken -v | head -n 1",
-        REGEXP => qr/(\d+\.\d+\.\d+.*)/,
+        REGEXP => qr/(\d+\.\d+\.*\d*.*)/,
         NEEDED => 0,
     },
     'kraken-report' => {
-        GETVER => "kraken-report --version | head -n 1",
-        REGEXP => qr/Kraken version (\d+\.\d+\.*\d*.*)/,
+        GETVER => "kraken-report -v | head -n 1",
+        REGEXP => qr/(\d+\.\d+\.*\d*.*)/,
         NEEDED => 0,
-    },
+    },	
 	'Rscript'  => {
         GETVER => "Rscript --version 2>&1 | head -n 1",
         REGEXP => qr/R scripting front-end version ($BIDEC)/,
