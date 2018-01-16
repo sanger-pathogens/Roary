@@ -126,16 +126,21 @@ sub BUILD {
 		print $self->usage_text;
 		return;
 	}
+	
+    if ( defined($verbose) ) {
+        $self->verbose($verbose);
+        $self->logger->level(10000);
+    }
 
     if ($check_dependancies) {
         my $check_tools = Bio::Roary::External::CheckTools->new();
         $check_tools->check_all_tools;
         $self->logger->error( "Roary version " . $self->_version() );
-    }
-
-    if ( defined($verbose) ) {
-        $self->verbose($verbose);
-        $self->logger->level(10000);
+		
+		if( @{ $self->args } < 2 )
+		{
+			exit 0;
+		}
     }
 
     if ( @{ $self->args } < 2 ) {
