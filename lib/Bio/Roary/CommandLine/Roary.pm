@@ -42,6 +42,7 @@ has 'cpus'                    => ( is => 'rw', isa => 'Int',  default => 1 );
 has 'output_multifasta_files' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'perc_identity'           => ( is => 'rw', isa => 'Num',  default => 95 );
 has 'dont_delete_files'       => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'check_dependancies'      => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_create_rplots'      => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'dont_run_qc'             => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'dont_split_groups'       => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -126,16 +127,22 @@ sub BUILD {
 		print $self->usage_text;
 		return;
 	}
-
-    if ($check_dependancies) {
-        my $check_tools = Bio::Roary::External::CheckTools->new();
-        $check_tools->check_all_tools;
-        $self->logger->error( "Roary version " . $self->_version() );
-    }
-
+	
     if ( defined($verbose) ) {
         $self->verbose($verbose);
         $self->logger->level(10000);
+    }
+
+	$self->check_dependancies($check_dependancies) if ( defined($check_dependancies) );
+    if ($self->check_dependancies) {
+        my $check_tools = Bio::Roary::External::CheckTools->new();
+        $check_tools->check_all_tools;
+        $self->logger->error( "Roary version " . $self->_version() );
+		
+		if( @{ $self->args } < 1 )
+		{
+			return;
+		}
     }
 
     if ( @{ $self->args } < 2 ) {
@@ -260,7 +267,7 @@ sub _setup_output_directory {
 sub run {
     my ($self) = @_;
 
-	return if($self->version || $self->help);
+	return if($self->version || $self->help || ($self->check_dependancies && @{$self->fasta_files} < 1) );
 
     $self->_setup_output_directory;
 
