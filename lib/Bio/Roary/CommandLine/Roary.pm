@@ -137,7 +137,7 @@ sub BUILD {
         $check_tools->check_all_tools;
         $self->logger->error( "Roary version " . $self->_version() );
 		
-		if( @{ $self->args } < 2 )
+		if( @{ $self->args } < 1 )
 		{
 			exit 0;
 		}
