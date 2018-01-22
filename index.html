@@ -31,7 +31,7 @@
           <h1>
 <a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span class="octicon octicon-link"></span></a>Abstract</h1>
 
-<p><strong>By Andrew Page based on version 3.6.1 (19-April-2016)</strong></p>
+<p><strong>By Andrew Page based on version 3.11.2 (22-Jan-2018)</strong></p>
 
 <p>Roary is a high speed stand alone pan genome pipeline, which takes annotated assemblies in GFF3 format (produced by Prokka (Seemann, 2014)) and calculates the pan genome. Using a standard desktop PC, it can analyse datasets with thousands of samples, something which is computationally infeasible with existing methods, without compromising the quality of the results. 128 samples can be analysed in under 1 hour using 1 GB of RAM and a single processor. To perform this analysis using existing methods would take weeks and hundreds of GB of RAM. Roary is not intended for meta-genomics or for comparing extremely diverse sets of genomes. </p>
 
@@ -85,21 +85,23 @@ Options: -p INT    number of threads [1]
          -cd FLOAT percentage of isolates a gene must be in to be core [99]
          -qc       generate QC report with Kraken
          -k STR    path to Kraken database for QC, use with -qc
-         -a        check dependancies and exit
+         -a        check dependancies and print versions
          -b STR    blastp executable [blastp]
          -c STR    mcl executable [mcl]
          -d STR    mcxdeblast executable [mcxdeblast]
          -g INT    maximum number of clusters [50000]
          -m STR    makeblastdb executable [makeblastdb]
          -r        create R plots, requires R and ggplot2
-         -s        don't split paralogs
+         -s        dont split paralogs
          -t INT    translation table [11]
-         -z        don't delete intermediate files
+         -ap       allow paralogs in core alignment
+         -z        dont delete intermediate files
          -v        verbose output to STDOUT
          -w        print version and exit
-         -y        add gene inference information to spreadsheet, doesn't work with -e
-	 -iv STR   Change the MCL inflation value [1.5]      
+         -y        add gene inference information to spreadsheet, doesnt work with -e
+         -iv STR   Change the MCL inflation value [1.5]
          -h        this help message
+
 
 </code></pre>
 
@@ -348,9 +350,13 @@ Just be aware that recombination is not taken care of with this method.  </p>
 <p>Check the dependencies with <em>roary -a</em>.  If theres something missing, then you’ll need to install it.</p>
 
 <h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>The installation didnt work, what do I do?</h2>
+<p>Please follow the <a href="https://github.com/sanger-pathogens/Roary/blob/master/README.md">installation instructions</a> that are appropriate for the system you are working on.
+Then check the dependencies with <em>roary -a</em>.  If theres something missing, then you’ll need to install it. Failing that please contact your IT system administrator or someone with computing knowledge in your organisation because they are best placed to assist you.  If you think there is a bug in the software please <a href="https://github.com/sanger-pathogens/Roary/issues">file an issue on github</a> with a detailed example of your input and the error output, or if you have fixed it yourself send us a <a href="https://github.com/sanger-pathogens/Roary/pulls">pull request</a>.</p>
+
+<h2>
 <a id="ignored_installation" class="anchor" href="#ignored_installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>I ignored your installation instructions and now your software doesn't work</h2>
-<p>We recommend you install dependancies using the recommended methods (homebrew/linuxbrew/apt) because they can be a pain to install manually. If you ignore this advise, we assume you are a super advanced 
-system administrator who can figure all this stuff out for themselves, so don't need any help from us.</p>
+<p>We recommend you install dependancies using the recommended methods (bioconda/apt) because they can be a pain to install manually. If you ignore this advice, we assume you are a super advanced system administrator who can figure all this stuff out for themselves, so don't need any help from us.</p>
 
 <h2>
 <a id="gubbins" class="anchor" href="#gubbins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gubbins, detecting recombinatioin in pan genomes</h2>
@@ -359,6 +365,11 @@ system administrator who can figure all this stuff out for themselves, so don't 
 <h2>
 <a id="i-got-no-core-genes" class="anchor" href="#i-got-no-core-genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>I got no core genes?</h2>
 <p>Usually this means there is contamination, where one of your samples is from a different unrelated species.  If you have Kraken (Wood and Salzberg, 2014) installed, you can run a Kraken QC check with <em>—qc –k /path/to/kraken/db</em>. This will produce report which will list the top species for each sample.  Another quick way is to simply look at the size of your input files. If some are way too big or way too small, they might be a different species or partial assemblies. If assemblies are extremely fragmented (thousands of contigs), genes may be too fragmented to do anything with.</p>
+
+<h2>
+<a id="paralogs" class="anchor" href="#paralogs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why do identical sequences (paralogs) end up in different clusters/genes?</h2>
+<p>One of the big selling points of Roary is that it tries by default to detect paralogs and split them. It looks at the sytany (genes around your gene of interest) to split paralogs into the most appropriate cluster. This can result in identical sequences ending up in different clusters/genes. You can turn off paralog splitting by providing the '-s' option. By default any cluster containing paralogous genes gets filtered out of the final core gene alignment. You can force roary to output a representative sequence for each paralogous gene by providing the option '-ap'.
+</p>
 
 <h2>
 <a id="the-core-is-a-lot-smaller-than-i-expected" class="anchor" href="#the-core-is-a-lot-smaller-than-i-expected" aria-hidden="true"><span class="octicon octicon-link"></span></a>The core is a lot smaller than I expected?</h2>
@@ -388,10 +399,17 @@ system administrator who can figure all this stuff out for themselves, so don't 
 <a id="is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" class="anchor" href="#is-there-a-server-i-can-upload-my-data-to-and-get-a-pan-genome-back" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is there a server I can upload my data to and get a pan genome back?</h2>
 <p>No. One of the big selling points of Roary is that it can run on your own machine in a reasonable amount of time. Sending genomic data across borders is fraught with danger (and slow). For example, what if your private data gets accidentally publicly released, or you accidentally send data that is contaminated with Human reads (illegal without proper safeguards in many countries)? One possible alternative is to use <a href="http://wgsa.net">http://wgsa.net</a> if you wish to visualize your samples in the context of other published samples.</p>
 
+<h2>
+<a id="bumps" class="anchor" href="#bumps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why is there a sudden increase in the core genome size every 100 genomes></h2>
+<p>By default the definition of a core gene is that it is present in 99% of samples to account for the odd assembly error in large datasets. Since we operate with whole numbers (integers) when we talk about samples, it means that below 100 a gene must be present in all samples to be called core, between 100-199 samples it can be missing from 1 sample and still be called core, and so on. You can either use your favourite curve fitting algorithm in R to smooth things out, or you can increase the core definition (-cd) to 100% so a core gene must be present in all samples.</p>
 
 <h2>
 <a id="inflation" class="anchor" href="#inflation" aria-hidden="true"><span class="octicon octicon-link"></span></a>What does modifying the inflation value do?</h2>
 <p>The MCL inflation value is an interesting parameter because it can quite substantially change your clustering. It has been set to work with closely related species, so if you're working at a different level, you should consider changing this value. I can't tell you what a good value is, but there is documentation out there to help you on the <a href="https://micans.org/mcl/man/mclfaq.html">mcl website</a>.</p>
+
+<h2>
+<a id="crashed" class="anchor" href="#crashed" aria-hidden="true"><span class="octicon octicon-link"></span></a>The software produced no results, what do I do?</h2>
+<p>The first thing to check is you have enough memory and disk space. If you are providing thousands of diverse genomes, you will need a tens of GB of RAM. If memory is not a problem the next thing to check is the data itself. You may be shocked to hear this, but sometimes people dont QC their datasets and launch straight into largescale complex analysis wasting weeks/months/years of time. First off, never trust any data you download from the elsewhere or from published papers, always QC it ourself. Simple things to check include: is it the right species, is there contamination, was the coverage high enough for reasonable quality assemblies (30X), is there systematic bias in the reads, is the insert size distribution as expected, are the assemblies too big/small, are the assemblies too fragmented, are the number of genes too high/low, did your controls sequence and assemble as expected etc...? It might sound like a lot but they are quick to check. If you do run controls and QC your datasets, then feel free to contact us and we will do our best to help.</p>
 
 <h2>
 <a id="i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" class="anchor" href="#i-have-no-knowledge-of-the-command-line-or-bioinformatics-and-have-just-spent-500000-sequencing-lots-of-bacteria-what-do-i-do-to-get-a-pretty-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>I have no knowledge of the command line or bioinformatics and have just spent $500,000 sequencing lots of bacteria. What do I do to get a pretty tree?</h2>
@@ -423,7 +441,7 @@ system administrator who can figure all this stuff out for themselves, so don't 
 
 <h2>
 <a id="windows-version" class="anchor" href="#windows-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>My biologist boss says I must do my analysis in Windows? How can I use Roary?</h2>
-<p>Virtually all bioinformatics is performed using Linux/Unix, but the world of biology generally works in Windows (Microsoft Excel to be exact), which can lead to conflicting requirements. You need to choose the right tool for the job, so bite the bullet and use Linux. This can easily be done by renting a server in the cloud, or installing a virtual machine in Windows.</p>
+<p>Virtually all bioinformatics is performed using Linux/Unix/OSX, but the world of biology generally works in Windows (Microsoft Excel to be exact), which can lead to conflicting requirements. You need to choose the right tool for the job, so bite the bullet and use Linux. This can easily be done by renting a server in the cloud, or installing a virtual machine in Windows.</p>
 	      
 <h2>
 <a id="cost" class="anchor" href="#cost" aria-hidden="true"><span class="octicon octicon-link"></span></a>How much does the software cost?</h2>
@@ -432,6 +450,10 @@ system administrator who can figure all this stuff out for themselves, so don't 
 <h2>
 <a id="galaxy" class="anchor" href="#galaxy" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is Roary available in Galaxy?</h2>
 <p>Yes, thanks to Simon Gladman, Roary is now available in the Galaxy toolshed.</p>
+
+<h2>
+<a id="homebrew" class="anchor" href="#homebrew" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is Roary available in Homebrew?</h2>
+<p>Sort of. Homebrew has closed down most 'taps', such as homebrew-science, moving some software into the core and leaving the rest in unsupported third-party repositories. The probability of software working into the future is reduced, so we no longer recommend homebrew as an installation method. So it might work or it might not work, but you are on your own if you use this installation method, sorry but its out of our control.</p>
 
 <h2>
 <a id="analysis" class="anchor" href="#analysis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Can you analyse my data for me?</h2>
@@ -444,6 +466,10 @@ system administrator who can figure all this stuff out for themselves, so don't 
 <h2>
 <a id="private_data" class="anchor" href="#private_data" aria-hidden="true"><span class="octicon octicon-link"></span></a>I can't get Roary working on my private dataset. Will you sign an NDA if I send it to you?</h2>
 <p>Only if it is agreed in advance with our legal department. Given the open science mission of the Wellcome Trust, we are likely to reject your request.</p>
+
+<h2>
+<a id="private_data_retrospective" class="anchor" href="#private_data_retrospective" aria-hidden="true"><span class="octicon octicon-link"></span></a>I sent you private data as part of a bug report and didn't tell you it was subject to an NDA.  Will you retrospectively sign an NDA?</h2>
+<p>No.</p>
 
 <h2>
 <a id="one_gene" class="anchor" href="#one_gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>My bacteria only has 1 gene, so why does Roary crash?</h2>
@@ -467,7 +493,7 @@ Otherwise you will waste vast amounts of time looking at noise, errors, and the 
 
 <h2>
 <a id="other_programs" class="anchor" href="#other_programs" aria-hidden="true"><span class="octicon octicon-link"></span></a>What are the alternatives to Roary?</h2>
-<p>If Roary doesn't suit your needs there are many other applications to create microbial pan genomes such as: OrthoMCL, PanOCT, PanSeq, LS-BSR, FindMyFriends, MicroPan and PGAP. New applications come out weekly. Quality not guaranteed.</p>
+<p>If Roary doesn't suit your needs there are many other applications to create microbial pan-genomes such as: OrthoMCL, PanOCT, PanSeq, LS-BSR, FindMyFriends, MicroPan and PGAP. New applications come out weekly. Quality not guaranteed.</p>
 
 <h2>
 <a id="cdhit-seg-faults" class="anchor" href="#cdhit-seg-faults" aria-hidden="true"><span class="octicon octicon-link"></span></a>cdhit seg faults</h2>
