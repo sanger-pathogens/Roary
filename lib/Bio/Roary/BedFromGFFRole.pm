@@ -13,7 +13,7 @@ use Moose::Role;
 use Bio::Tools::GFF;
 
 has '_tags_to_filter'   => ( is => 'ro', isa => 'Str', default => '(CDS|ncRNA|tRNA|tmRNA|rRNA)' );
-has 'min_gene_size_in_nucleotides'   => ( is => 'ro', isa => 'Int',  default  => 120 );
+has 'min_gene_size_in_nucleotides'   => ( is => 'ro', isa => 'Int',  default  => 18 );
 has 'output_directory'               => ( is => 'ro', isa => 'Str', default => '.' );
 
 sub _bed_output_filename {
