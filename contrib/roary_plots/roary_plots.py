@@ -128,7 +128,11 @@ if __name__ == "__main__":
         ax1.axis('off')
 
         ax = fig.add_subplot(1,2,1)
-        ax=plt.subplot2grid((1,40), (0, 0), colspan=10, axisbg='white')
+        # matplotlib v1/2 workaround
+        try:
+            ax=plt.subplot2grid((1,40), (0, 0), colspan=10, facecolor='white')
+        except AttributeError:
+            ax=plt.subplot2grid((1,40), (0, 0), colspan=10, axisbg='white')
 
         fig.subplots_adjust(wspace=0, hspace=0)
 
