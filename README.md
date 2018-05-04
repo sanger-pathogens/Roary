@@ -98,10 +98,10 @@ Add the following lines to your $HOME/.bashrc file, or to /etc/profile.d/roary.s
 export PATH=$PATH:$HOME/Roary-x.x.x/bin
 export PERL5LIB=$PERL5LIB:$HOME/Roary-x.x.x/lib
 ```
-Install the perl dependancies:
+Install the Perl dependencies:
 
 ```
-sudo cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy File::Find::Rule File::Grep File::Path File::Slurper File::Spec File::Temp File::Which FindBin Getopt::Long Graph Graph::Writer::Dot List::Util Log::Log4perl Moose Moose::Role Text::CSV PerlIO::utf8_strict 
+sudo cpanm  Array::Utils Bio::Perl Exception::Class File::Basename File::Copy File::Find::Rule File::Grep File::Path File::Slurper File::Spec File::Temp File::Which FindBin Getopt::Long Graph Graph::Writer::Dot List::Util Log::Log4perl Moose Moose::Role Text::CSV PerlIO::utf8_strict Devel::OverloadInfo Digest::MD5::File
 ```
 Install the external dependances either from source or from your packaging system:
 ```
