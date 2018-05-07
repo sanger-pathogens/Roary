@@ -23,7 +23,7 @@ is_deeply(
     {
         'abc|SC|contig000001' => [
             '1_1',       'abc_00002', 'abc_00003', 'abc_00004', '1_2',       'abc_00006', '1_3', 'abc_00008',
-            'abc_01705', 'abc_00010', 'abc_00011', 'abc_00012', 'abc_00013', 'abc_00014', '1_6', 'abc_00016'
+            'abc_00010', 'abc_00011', 'abc_00012', 'abc_00014', '1_6', 'abc_00016'
         ]
     },
     'Contigs match expected with standard output'
