@@ -12,7 +12,7 @@ package Bio::Roary::BedFromGFFRole;
 use Moose::Role;
 use Bio::Tools::GFF;
 
-has '_tags_to_filter'   => ( is => 'ro', isa => 'Str', default => '(CDS|ncRNA|tRNA|tmRNA|rRNA)' );
+has '_tags_to_filter'   => ( is => 'ro', isa => 'Str', default => 'CDS' );
 has 'min_gene_size_in_nucleotides'   => ( is => 'ro', isa => 'Int',  default  => 18 );
 has 'output_directory'               => ( is => 'ro', isa => 'Str', default => '.' );
 
