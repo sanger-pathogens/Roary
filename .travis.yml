@@ -23,4 +23,10 @@ env:
   - PARALLEL_VERSION=20170822
 install:
   - "source ./install_dependencies.sh"
-script: "ROARY_FULL_TESTS=1 dzil test"
+before_script:
+  - cpanm --quiet --notest Dist::Zilla::App::Command::cover
+  - cpanm --quiet --notest --skip-satisfied Devel::Cover::Report::Codecov
+script: 
+  - ROARY_FULL_TESTS=1 dzil test
+after_success:
+  - dzil cover -test -report codecov
