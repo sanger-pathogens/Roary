@@ -434,10 +434,18 @@ Then check the dependencies with <em>roary -a</em>.  If theres something missing
 <h2>
 <a id="will-it-work-with-eukaryotes-eg-homo-sapiens-mus-musculus" class="anchor" href="#will-it-work-with-eukaryotes-eg-homo-sapiens-mus-musculus" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Eukaryotes (e.g. Homo sapiens, Mus musculus)?</h2>
 <p>No. The software will not work with organisms which have introns/exons.</p>
+	      
+<h2>
+<a id="will-it-work-with-fungi" class="anchor" href="#will-it-work-with-fungi" aria-hidden="true"><span class="octicon octicon-link"></span></a>Will it work with Fungi?</h2>
+<p>No.</p>
 
 <h2>
+<a id="error-with-missing_core_genes" class="anchor" href="#error-with-missing_core_genes" aria-hidden="true"><span class="octicon octicon-link"></span></a>I get errors about missing core genes when aligning with PRANK?</h2>
+<p>PRANK hasnt been updated in a few years and requires an old version of MAFFT. Modifying your environment variables may help: UNSET MAFFT_BINARIES. Alternatively just run MAFFT instead of PRANK.</p>
+	      
+<h2>
 <a id="do-you-have-plans-for-a-windows-version" class="anchor" href="#do-you-have-plans-for-a-windows-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Do you have plans for a Windows version?</h2>
-<p>No. Install Linux.</p>
+<p>No plans, however there are reports of a lot of bioinformatics software running on Ubuntu for Windows 10, so let us know if it works.</p>
 
 <h2>
 <a id="windows-version" class="anchor" href="#windows-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>My biologist boss says I must do my analysis in Windows? How can I use Roary?</h2>
@@ -474,7 +482,12 @@ Then check the dependencies with <em>roary -a</em>.  If theres something missing
 <h2>
 <a id="one_gene" class="anchor" href="#one_gene" aria-hidden="true"><span class="octicon octicon-link"></span></a>My bacteria only has 1 gene, so why does Roary crash?</h2>
 <p>You are using the software for a purpose for which it was never designed with an artificial dataset.</p>
-	
+
+<h2>
+<a id="old_os" class="anchor" href="#old_os" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why wont you help me debug an issue on my version of Linux which as last updated 4 years ago?</h2>
+<p>If your running a really old upsupported version of Linux, many issues could be causing this software not to work, 
+in addition to the probable security holes. So the first step should be to upgrade to a more modern operating system.</p>
+	      
 <h2>
 <a id="differing_annotation" class="anchor" href="#differing_annotation"   aria-hidden="true"><span class="octicon octicon-link"></span></a>I downloaded a load of random assemblies from GenBank. Why am I seeing crazy results?</h2>
 <p>Gene prediction software rarely completely agrees, with differing opinions on the actual start of a gene, 
@@ -493,7 +506,7 @@ Otherwise you will waste vast amounts of time looking at noise, errors, and the 
 
 <h2>
 <a id="other_programs" class="anchor" href="#other_programs" aria-hidden="true"><span class="octicon octicon-link"></span></a>What are the alternatives to Roary?</h2>
-<p>If Roary doesn't suit your needs there are many other applications to create microbial pan-genomes such as: OrthoMCL, PanOCT, PanSeq, LS-BSR, FindMyFriends, MicroPan and PGAP. New applications come out weekly. Quality not guaranteed.</p>
+<p>If Roary doesn't suit your needs there are many other applications to create microbial pan-genomes such as: OrthoMCL, PanOCT, PanSeq, LS-BSR, FindMyFriends, PopPunk, MicroPan and PGAP. New applications come out weekly. Quality not guaranteed.</p>
 
 <h2>
 <a id="cdhit-seg-faults" class="anchor" href="#cdhit-seg-faults" aria-hidden="true"><span class="octicon octicon-link"></span></a>cdhit seg faults</h2>
