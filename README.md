@@ -26,6 +26,7 @@ Takes annotated assemblies in GFF3 format and calculates the pan genome.
     * [Docker \- OSX/Linux/Windows/Cloud](#docker---osxlinuxwindowscloud)
     * [Installing from source (advanced Linux users only)](#installing-from-source-advanced-linux-users-only)
     * [Ancient systems and versions of perl](#ancient-systems-and-versions-of-perl)
+    * [Running the tests](#running-the-tests)
     * [Versions of software we test against](#versions-of-software-we-test-against)
   * [Usage](#usage)
   * [License](#license)
@@ -140,6 +141,13 @@ bedtools cd-hit blast mcl GNUparallel prank mafft fasttree
 
 ### Ancient systems and versions of perl
 The code will not work with perl 5.8 or below (pre-modern perl). We no longer test against 5.10 (released 2007) or 5.12 (released 2010). If you're running a very old verison of Linux, you're also in trouble.
+
+### Running the tests
+The test can be run with dzil from the top level directory:  
+
+```
+dzil test
+```
 
 ### Versions of software we test against
 * Perl 5.14, 5.26
