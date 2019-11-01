@@ -1,6 +1,9 @@
 # Roary - The pan genome pipeline
 Takes annotated assemblies in GFF3 format and calculates the pan genome.
 
+PLEASE NOTE: we currently do not have the resources to provide support for Roary, so please do not expect a reply if you flag any issue.
+
+[![Unmaintained](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)  
 [![Build Status](https://travis-ci.org/sanger-pathogens/Roary.svg?branch=master)](https://travis-ci.org/sanger-pathogens/Roary)   
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/roary/blob/master/GPL-LICENSE)   
 [![status](https://img.shields.io/badge/Bioinformatics-10.1093-brightgreen.svg)](https://academic.oup.com/bioinformatics/article/31/22/3691/240757)  
@@ -200,7 +203,7 @@ For further instructions on how to use the software, the input format and output
 Roary is free software, licensed under [GPLv3](https://github.com/sanger-pathogens/Roary/blob/master/GPL-LICENSE).
 
 ## Feedback/Issues
-Please report any issues to the [issues page](https://github.com/sanger-pathogens/Roary/issues) or email roary-help@sanger.ac.uk.
+We currently do not have the resources to provide support for Roary. However, the community might be able to help you out if you report any issues about usage of the software to the [issues page](https://github.com/sanger-pathogens/Roary/issues).
 
 ## Citation
 If you use this software please cite:
