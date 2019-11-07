@@ -3,7 +3,7 @@ Takes annotated assemblies in GFF3 format and calculates the pan genome.
 
 PLEASE NOTE: we currently do not have the resources to provide support for Roary, so please do not expect a reply if you flag any issue.
 
-[![Unmaintained](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)  
+[![Unmaintained](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)   
 [![Build Status](https://travis-ci.org/sanger-pathogens/Roary.svg?branch=master)](https://travis-ci.org/sanger-pathogens/Roary)   
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/roary/blob/master/GPL-LICENSE)   
 [![status](https://img.shields.io/badge/Bioinformatics-10.1093-brightgreen.svg)](https://academic.oup.com/bioinformatics/article/31/22/3691/240757)  
@@ -56,7 +56,7 @@ Roary has the following dependencies:
 ### Optional dependencies
 * [kraken](http://ccb.jhu.edu/software/kraken/MANUAL.html)
 
-There are a number of ways to install Roary and details are provided below. If you encounter an issue when installing Roary please contact your local system administrator. If you encounter a bug please log it [here](https://github.com/sanger-pathogens/Roary/issues) or email us at roary-help@sanger.ac.uk.
+There are a number of ways to install Roary and details are provided below. If you encounter an issue when installing Roary please contact your local system administrator.
 
 ### Ubuntu/Debian
 #### Debian Testing
