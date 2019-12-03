@@ -80,9 +80,7 @@ if __name__ == "__main__":
     mdist = max([t.distance(t.root, x) for x in t.get_terminals()])
 
     # Load roary
-    roary = pd.read_table(options.spreadsheet,
-                         sep=',',
-                         low_memory=False)
+    roary = pd.read_csv(options.spreadsheet, low_memory=False)
     # Set index (group name)
     roary.set_index('Gene', inplace=True)
     # Drop the other info columns
