@@ -97,7 +97,7 @@ my %cdhit_tools = (
     },
     'cd-hit' => {
         GETVER => "cd-hit -h | grep 'CD-HIT version'",
-        REGEXP => qr/version\s+($BIDEC)i/,
+        REGEXP => qr/version\s+($BIDEC)/i,
         MINVER => "4.6",
     }
 );
