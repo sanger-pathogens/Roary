@@ -235,8 +235,8 @@ update_perl_path $BEDTOOLS_LIB_DIR
 
 cd $start_dir
 cpanm --notest Dist::Zilla 
-dzil authordeps --missing | cpanm --notest
-dzil listdeps --missing | cpanm --notest
+dzil authordeps --missing | cpanm -f --notest
+dzil listdeps --missing | cpanm -f --notest
 
 cd $start_dir
 
