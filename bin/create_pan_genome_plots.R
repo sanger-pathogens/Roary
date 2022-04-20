@@ -6,26 +6,34 @@ library(ggplot2)
 
 
 mydata = read.table("number_of_new_genes.Rtab")
+png(filename = "number_new_genes.png", width = 6, height = 4, units = "in", res = 300)
 boxplot(mydata, data=mydata, main="Number of new genes",
          xlab="No. of genomes", ylab="No. of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
+dev.off()
 
 mydata = read.table("number_of_conserved_genes.Rtab")
+png(filename = "number_of_conserved_genes.png", width = 6, height = 4, units = "in", res = 300)
 boxplot(mydata, data=mydata, main="Number of conserved genes",
           xlab="No. of genomes", ylab="No. of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
- 
+dev.off()
+    
 mydata = read.table("number_of_genes_in_pan_genome.Rtab")
+png(filename = "number_of_genes_in_pan.png", width = 6, height = 4, units = "in", res = 300)
 boxplot(mydata, data=mydata, main="No. of genes in the pan-genome",
           xlab="No. of genomes", ylab="No. of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
+dev.off()
 
 mydata = read.table("number_of_unique_genes.Rtab")
+png(filename = "number_of_unique_genes.png", width = 6, height = 4, units = "in", res = 300)
 boxplot(mydata, data=mydata, main="Number of unique genes",
          xlab="No. of genomes", ylab="No. of genes",varwidth=TRUE, ylim=c(0,max(mydata)), outline=FALSE)
+dev.off()
 
 mydata = read.table("blast_identity_frequency.Rtab")
+png(filename = "blast_identify_frequency.png", width = 6, height = 4, units = "in", res = 300)
 plot(mydata,main="Number of blastp hits with different percentage identity",  xlab="Blast percentage identity", ylab="No. blast results")
+dev.off()
 
-
-library(ggplot2)
 conserved = colMeans(read.table("number_of_conserved_genes.Rtab"))
 total = colMeans(read.table("number_of_genes_in_pan_genome.Rtab"))
 
@@ -38,7 +46,7 @@ theme_classic() +
 ylim(c(1,max(total)))+
 xlim(c(1,length(total)))+
 xlab("No. of genomes") +
-ylab("No. of genes")+ theme_bw(base_size = 16) +  theme(legend.justification=c(0,1),legend.position=c(0,1))+
+ylab("No. of genes")+ theme_bw(base_size = 16) +  theme(legend.justification=c(0,1),legend.position=c(0,1))
 ggsave(filename="conserved_vs_total_genes.png", scale=1)
 
 ######################
@@ -55,5 +63,5 @@ theme_classic() +
 ylim(c(1,max(unique_genes)))+
 xlim(c(1,length(unique_genes)))+
 xlab("No. of genomes") +
-ylab("No. of genes")+ theme_bw(base_size = 16) +  theme(legend.justification=c(1,1),legend.position=c(1,1))+
+ylab("No. of genes")+ theme_bw(base_size = 16) +  theme(legend.justification=c(1,1),legend.position=c(1,1))
 ggsave(filename="unique_vs_new_genes.png", scale=1)
